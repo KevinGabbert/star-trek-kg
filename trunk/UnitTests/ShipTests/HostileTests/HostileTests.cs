@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
@@ -296,9 +297,6 @@ namespace UnitTests.ShipTests.HostileTests
                                                 new SectorDef(SectorItem.Friendly)
                                             }
                                    }));
-
-
-
 
             //this was creates an invisible hostile. why?
             //this.Map.Quadrants.GetActive().Hostiles.Add(new Ship("testbaddie", this.Map, new Sector(new LocationDef(3, 7, 3, 7))));

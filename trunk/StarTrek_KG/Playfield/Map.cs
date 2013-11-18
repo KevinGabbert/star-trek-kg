@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
@@ -29,10 +30,15 @@ namespace StarTrek_KG.Playfield
 
         public Map()
         {
-            
+
         }
 
         public Map(GameConfig setupOptions)
+        {
+            this.Initialize(setupOptions);
+        }
+
+        private void Initialize(GameConfig setupOptions)
         {
             this.GameConfig = setupOptions;
 
@@ -55,6 +61,7 @@ namespace StarTrek_KG.Playfield
                 }
             }
         }
+
         public void Initialize(SectorDefs sectorDefs)
         {
             this.GetGlobalInfo();
@@ -172,12 +179,12 @@ namespace StarTrek_KG.Playfield
         {
             //this.Hostiles = new Hostiles(); //todo: create an initial size the same as hostilesToSetUp
 
-            this.hostilesToSetUp = Convert.ToInt32(ConfigurationManager.AppSettings["totalHostiles"]) + (Utility.Random).Next(6);
-            this.Stardate = Convert.ToInt32(ConfigurationManager.AppSettings["stardate"]) + (Utility.Random).Next(50);
-            this.timeRemaining = Convert.ToInt32(ConfigurationManager.AppSettings["timeRemaining"]) + (Utility.Random).Next(10);
-            this.starbases = Convert.ToInt32(ConfigurationManager.AppSettings["starbases"]) + (Utility.Random).Next(3);
+            this.hostilesToSetUp = AppConfig.Setting<int>("totalHostiles") + (Utility.Random).Next(6);
+            this.Stardate = AppConfig.Setting<int>("stardate") + (Utility.Random).Next(50);
+            this.timeRemaining = AppConfig.Setting<int>("timeRemaining") + (Utility.Random).Next(10);
+            this.starbases = AppConfig.Setting<int>("starbases") + (Utility.Random).Next(3);
 
-            this.Text = ConfigurationManager.AppSettings["CommandPrompt"];
+            this.Text = AppConfig.Setting<string>("CommandPrompt");
         }
 
         //refactor these to a setup object
@@ -191,7 +198,7 @@ namespace StarTrek_KG.Playfield
 
             //todo: if playershipDef.GetFromConfig then grab info from config.  else set up with default random numbers.
 
-            var playerShipName = ConfigurationManager.AppSettings["playerShip"];
+            var playerShipName = AppConfig.Setting<string>("playerShip");
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
             this.Playership = new Ship(playerShipName, this, startingSector)
@@ -199,7 +206,7 @@ namespace StarTrek_KG.Playfield
                                       Allegiance = Allegiance.GoodGuy
                                   };
 
-            this.Playership.Energy = Convert.ToInt32(ConfigurationManager.AppSettings["energy"]);
+            this.Playership.Energy = AppConfig.Setting<int>("energy");
 
             this.SetupPlayershipQuadrant(playerShipDef);
 
@@ -233,7 +240,7 @@ namespace StarTrek_KG.Playfield
         private void SetupPlayershipTorpedoes()
         {
             var torpedoes = Torpedoes.For(this.Playership);
-            torpedoes.Count = Convert.ToInt32(ConfigurationManager.AppSettings["photonTorpedoes"]);
+            torpedoes.Count = AppConfig.Setting<int>("photonTorpedoes");
             torpedoes.Damage = 0;
         }
         private void SetupPlayershipShields()
@@ -247,7 +254,7 @@ namespace StarTrek_KG.Playfield
             var starshipNAV = Navigation.For(this.Playership);
 
             starshipNAV.Damage = 0;
-            starshipNAV.MaxWarpFactor = Convert.ToInt32(ConfigurationManager.AppSettings["MaxWarpFactor"]);
+            starshipNAV.MaxWarpFactor = AppConfig.Setting<int>("MaxWarpFactor");
             starshipNAV.docked = false;
         }
 

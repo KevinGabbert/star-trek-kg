@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Configuration;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -109,7 +109,8 @@ namespace StarTrek_KG
 
         public Allegiance GetAllegiance()
         {
-            string setting = ConfigurationManager.AppSettings["Hostile"];
+            //todo: remove this app setting (pass in as an argument?)
+            var setting = AppConfig.Setting<string>("Hostile");
 
             return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy;
         }
