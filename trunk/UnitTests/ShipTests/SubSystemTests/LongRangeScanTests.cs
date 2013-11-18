@@ -1,0 +1,143 @@
+﻿using NUnit.Framework;
+using StarTrek_KG.Enums;
+using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
+using StarTrek_KG.Subsystem;
+
+namespace UnitTests.ShipTests.SubSystemTests
+{
+    [TestFixture]
+    public class LongRangeScanTests
+    {
+        private LongRangeScan _testLongRangeScanner;
+        private Map _testLRSMap;
+
+        [SetUp]
+        public void Setup()
+        {
+            _testLRSMap = new Map(new GameConfig
+                                      {
+                                          Initialize = true,
+                                          GenerateMap = true,
+                                          SectorDefs = new SectorDefs
+                                                           {
+                                                               new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
+                                                               new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
+                                                           },
+                                          AddStars = false
+                                      });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+            Assert.AreEqual(SubsystemType.LongRangeScan, _testLongRangeScanner.Type);
+        }
+
+        [Test]
+        public void GetStarInfoFromScanner()
+        {
+            _testLRSMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 4)), SectorItem.Star),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 5)), SectorItem.Star),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Star)
+                    },
+                AddStars = false
+            });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+
+            var starbaseCount = 0;
+            var starCount = 0;
+            var hostileCount = 0;
+            LongRangeScan.GetMapInfoForScanner(_testLRSMap, 0, 0, out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+
+            Assert.AreEqual(3, starCount);
+        }
+
+        [Test]
+        public void GetHostileInfoFromScanner()
+        {
+            _testLRSMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Hostile)
+                    },
+                AddStars = false
+            });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+
+            var starbaseCount = 0;
+            var starCount = 0;
+            var hostileCount = 0;
+            LongRangeScan.GetMapInfoForScanner(_testLRSMap, 0, 0, out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+
+            Assert.AreEqual(2, hostileCount);
+        }
+
+        [Test]
+        public void GetStarbaseInfoFromScanner()
+        {
+            _testLRSMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 3)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 4)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 5)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
+                    },
+                    AddStars = false
+            });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+
+            var starbaseCount = 0;
+            var starCount = 0;
+            var hostileCount = 0;
+            LongRangeScan.GetMapInfoForScanner(_testLRSMap, 0, 0, out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+
+            Assert.AreEqual(5, starbaseCount);
+            Assert.AreEqual(0, starCount);
+            Assert.AreEqual(1, hostileCount);
+        }
+
+        [Ignore]
+        [Test]
+        public void GetMapInfoForScanner()
+        {
+            //todo: fix hostiles and starbases and stars to test fully
+
+            var starbaseCount = 0;
+            var starCount = 0;
+            var hostileCount = 0;
+            LongRangeScan.GetMapInfoForScanner(_testLRSMap, 0, 0, out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+
+            Assert.Greater(0, hostileCount);
+            Assert.Greater(0, starbaseCount);
+            Assert.Greater(0, starCount);
+        }
+
+        [Test]
+        public void ControlsDamaged()
+        {
+            _testLongRangeScanner.Damage = 47;
+            _testLongRangeScanner.Controls(_testLRSMap);
+            Assert.IsTrue(_testLongRangeScanner.Damaged());
+        }
+    }
+}
