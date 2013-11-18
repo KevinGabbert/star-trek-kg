@@ -23,78 +23,43 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                             }
-            })); 
+            }));
         }
 
         [Test]
         public void IsDockingLocation_Left()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 1, 1).Item = SectorItem.Starbase;
-            //_testMapNoObjects.Quadrants.Active.Sectors[1, 1] = SectorItem.Starbase;
-
-            var isDockingLocation = _testMapNoObjects.IsDockingLocation(0, 0, _testMapNoObjects.Quadrants.GetActive().Sectors);
-
-            Assert.IsTrue(isDockingLocation);
+            Assert.IsTrue(IsDockingLocation(1, 1, 0, 0));
         }
 
         [Test]
         public void IsDockingLocation_Right()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 1, 1).Item = SectorItem.Starbase;
-
-            var isDockingLocation = _testMapNoObjects.IsDockingLocation(0, 1, _testMapNoObjects.Quadrants.GetActive().Sectors);
-
-            Assert.IsTrue(isDockingLocation);
+            Assert.IsTrue(IsDockingLocation(1, 1, 0, 1));
         }
 
         [Test]
         public void IsDockingLocation_Top()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 0, 0).Item = SectorItem.Starbase;
-
-            var isDockingLocation = _testMapNoObjects.IsDockingLocation(1, 0, _testMapNoObjects.Quadrants.GetActive().Sectors);
-
-            Assert.IsTrue(isDockingLocation);
+            Assert.IsTrue(IsDockingLocation(0, 0, 1, 0));
         }
 
         [Test]
         public void IsDockingLocation_Bottom()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 1, 1).Item = SectorItem.Starbase;
-
-            var isDockingLocation = _testMapNoObjects.IsDockingLocation(0, 0, _testMapNoObjects.Quadrants.GetActive().Sectors);
-
-            Assert.IsTrue(isDockingLocation);
+            Assert.IsTrue(IsDockingLocation(1, 1, 1, 0));
         }
 
         [Test]
         public void IsDockingLocation_BottomLeft()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 1, 0).Item = SectorItem.Starbase;
-
-            var isDockingLocation = _testMapNoObjects.IsDockingLocation(0, 1, _testMapNoObjects.Quadrants.GetActive().Sectors);
-  
-            Assert.IsTrue(isDockingLocation);
+            Assert.IsTrue(IsDockingLocation(1, 0, 0, 1));
         }
 
         [Test]
-        public void NotDockingLocation()
+        public void NOTDockingLocation()
         {
-            var map = (new Map(new GameConfig
-            {
-                Initialize = true,
-                GenerateMap = true,
-                SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
-                            }
-            })); 
-
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Starbase;
-
-            var isDockingLocation = map.IsDockingLocation(0, 0, map.Quadrants.GetActive().Sectors);
-
-            Assert.IsFalse(isDockingLocation);
+            Assert.IsFalse(IsDockingLocation(3, 3, 0, 0));
         }
 
         [Test]
@@ -110,11 +75,7 @@ namespace UnitTests.ShipTests.MapTests
                             }
             }));
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Starbase;
-
-            var isDockingLocation = map.IsDockingLocation(0, 0, map.Quadrants.GetActive().Sectors);
-
-            Assert.IsFalse(isDockingLocation);
+            Assert.IsFalse(IsDockingLocation(map, 4, 4, 4, 4));
         }
 
         /// <summary>
@@ -124,21 +85,30 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void StarbaseIsADockingLocation_BugVerification()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 2, 0).Item = SectorItem.Starbase;
-
-            var isDockingLocation = _testMapNoObjects.IsDockingLocation(2, 0, _testMapNoObjects.Quadrants.GetActive().Sectors);
-
-            Assert.IsTrue(isDockingLocation); 
+            Assert.IsFalse(IsDockingLocation(2, 0, 2, 0));
         }
 
+
+        /// <summary>
+        /// TODO: why is this a bug?
+        /// </summary>
         [Test]
         public void StarbaseIsADockingLocation_BugVerification2()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 1, 0).Item = SectorItem.Starbase;
+            Assert.IsTrue(IsDockingLocation(1, 0, 0, 1));
+        }   
+     
+        private bool IsDockingLocation(int sectorX, int sectorY, int locationX, int locationY)
+        {
+            return this.IsDockingLocation(_testMapNoObjects, sectorX, sectorY, locationX, locationY);
+        }
 
-            var isDockingLocation = _testMapNoObjects.IsDockingLocation(0, 1, _testMapNoObjects.Quadrants.GetActive().Sectors);
+        private bool IsDockingLocation(Map map, int sectorX, int sectorY, int locationX, int locationY)
+        {
+            Sector.Get(map.Quadrants.GetActive().Sectors, sectorX, sectorY).Item = SectorItem.Starbase;
 
-            Assert.IsTrue(isDockingLocation);
+            var isDockingLocation = map.IsDockingLocation(locationX, locationY, _testMapNoObjects.Quadrants.GetActive().Sectors);
+            return isDockingLocation;
         }
     }
 }

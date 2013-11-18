@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -38,9 +39,10 @@ namespace StarTrek_KG.Subsystem
             if (Damaged()) return;
 
             var location = map.Playership.GetLocation();
-
             Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
-            Output.PrintSector(quadrant, map);
+
+            (new Output(AppConfig.Setting<int>("ShieldsDownLevel"), AppConfig.Setting<int>("LowEnergyLevel"))).PrintSector(quadrant, map); 
+
             quadrant.Scanned = true;
         }
 

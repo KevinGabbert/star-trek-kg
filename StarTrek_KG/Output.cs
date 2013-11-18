@@ -15,16 +15,24 @@ namespace StarTrek_KG
         int Starbases { get; set; }
         int Stardate { get; set; }
 
-        public Output()
+        int ShieldsDownLevel { get; set; }
+        int LowEnergyLevel { get; set; }
+
+        public Output(int shieldsDownLevel, int lowEnergyLevel)
         {
+            this.ShieldsDownLevel = shieldsDownLevel;
+            this.LowEnergyLevel = lowEnergyLevel;
         }
 
-        public Output(int totalHostiles, int timeRemaining, int starbases, int stardate)
+        public Output(int totalHostiles, int timeRemaining, int starbases, int stardate, int shieldsDownLevel, int lowEnergyLevel)
         {
             this.TotalHostiles = totalHostiles;
             this.TimeRemaining = timeRemaining;
             this.Starbases = starbases;
             this.Stardate = stardate;
+
+            this.ShieldsDownLevel = shieldsDownLevel;
+            this.LowEnergyLevel = lowEnergyLevel;
         }
 
         //TODO:  Have Game expose and raise an output event
@@ -149,16 +157,16 @@ namespace StarTrek_KG
             Console.WriteLine();
         }
 
-        public static void PrintSector(Quadrant quadrant, Map map)
+        public void PrintSector(Quadrant quadrant, Map map)
         {
-            var condition = GetCurrentConditon(quadrant, map);
+            var condition = this.GetCurrentConditon(quadrant, map);
 
             var myLocation = map.Playership.GetLocation();
             var totalHostiles = map.Quadrants.GetHostileCount(); 
             var docked = Navigation.For(map.Playership).docked;
 
             Output.CreateDisplay(quadrant, map, totalHostiles, condition, myLocation, docked);
-            Output.OutputWarnings(quadrant, map, docked);
+            this.OutputWarnings(quadrant, map, docked);
         }
 
         private static void CreateDisplay(Quadrant quadrant, 
@@ -271,7 +279,7 @@ namespace StarTrek_KG
             Console.Write(stringToOutput);
         }
 
-        private static void OutputWarnings(Quadrant quadrant, Map map, bool docked)
+        private void OutputWarnings(Quadrant quadrant, Map map, bool docked)
         {
             if (quadrant.Hostiles.Count > 0)
             {
@@ -284,17 +292,17 @@ namespace StarTrek_KG
 
                 Console.WriteLine("");
 
-                if (Shields.For(map.Playership).Energy == Convert.ToInt32(ConfigurationManager.AppSettings["ShieldsDownLevel"]) && !docked)
+                if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
                 {
                     Output.Write("Warning: Shields are down.");
                 }
             }
-            else if (map.Playership.Energy < Convert.ToInt32(ConfigurationManager.AppSettings["LowEnergyLevel"])) //todo: setting comes from app.config
+            else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
             {
                 Output.Write("Condition YELLOW: Low energy level.");
             }
         }
-        private static string GetCurrentConditon(Quadrant quadrant, Map map)
+        private string GetCurrentConditon(Quadrant quadrant, Map map)
         {
             var condition = "GREEN";
 
@@ -302,13 +310,12 @@ namespace StarTrek_KG
             {
                 condition = "RED";
             }
-            else if (map.Playership.Energy < Convert.ToInt32(ConfigurationManager.AppSettings["LowEnergyLevel"]))
+            else if (map.Playership.Energy < this.LowEnergyLevel)
             {
                 condition = "YELLOW";
             }
 
             return condition;
         }
-
     }
 }

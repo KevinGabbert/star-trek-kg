@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="Config\AppConfig.cs" />
     <Compile Include="Config\StarSystems.cs" />
     <Compile Include="Config\StarTrekKGSettings.cs" />
     <Compile Include="Config\StarSystem.cs" />

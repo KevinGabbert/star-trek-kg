@@ -1,6 +1,5 @@
-﻿using System;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -21,14 +20,16 @@ namespace StarTrek_KG
 
         public Game()
         {
+            Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");
 
-            Constants.SECTOR_MIN = Convert.ToInt32(ConfigurationManager.AppSettings["SECTOR_MIN"]);
-            Constants.SECTOR_MAX = Convert.ToInt32(ConfigurationManager.AppSettings["SECTOR_MAX"]);
+            Constants.QUADRANT_MIN = AppConfig.Setting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = AppConfig.Setting<int>("QuadrantMax");
 
-            Constants.QUADRANT_MIN = Convert.ToInt32(ConfigurationManager.AppSettings["QUADRANT_MIN"]);
-            Constants.QUADRANT_MAX = Convert.ToInt32(ConfigurationManager.AppSettings["QuadrantMax"]);
+            Constants.SHIELDS_DOWN_LEVEL = AppConfig.Setting<int>("ShieldsDownLevel");
+            Constants.LOW_ENERGY_LEVEL = AppConfig.Setting<int>("LowEnergyLevel");
 
-            this.Output = new Output();
+            this.Output = (new Output(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL));
 
             var startConfig = (new GameConfig
                                    {
@@ -43,11 +44,12 @@ namespace StarTrek_KG
             //todo: unless we want to have a mode that allows it for some reason.
             if (this.HostileCheck(startConfig)) return;
 
-            this.Output = new Output(this.Map.hostilesToSetUp, Map.timeRemaining, Map.starbases, Map.Stardate);
+            //todo: why are we creating this Output() class a second time??
+            this.Output = new Output(this.Map.hostilesToSetUp, Map.timeRemaining, Map.starbases, Map.Stardate, Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL);
             this.Command = new Command(this.Map);
         }
 
-        private static SectorDefs SectorSetup()
+        private SectorDefs SectorSetup()
         {
 
             //todo: these SectorDefs can be computed somewhere
@@ -61,13 +63,15 @@ namespace StarTrek_KG
         /// This is the setup we get if app config can not be read for some reason (or it is buggy)
         /// </summary>
         /// <returns></returns>
-        private static SectorDefs DefaultHardcodedSetup()
+        private SectorDefs DefaultHardcodedSetup()
         {
             return new SectorDefs
                        {
                            //This tells us what Types of items will be generated at start.  if Coordinates are passed, that is an
                            //indicator that an individual object needs to be placed, istead of generated objects from config file.
-                           new SectorDef(SectorItem.Friendly),
+
+                           //todo: get rid of that second, stupid parameter.
+                          new SectorDef(SectorItem.Friendly),
                            new SectorDef(SectorItem.Hostile),
                            new SectorDef(SectorItem.Hostile),
                            new SectorDef(SectorItem.Hostile),
@@ -118,7 +122,7 @@ namespace StarTrek_KG
         /// </summary>
         public void Run()
         {
-            bool keepPlaying = Convert.ToBoolean(ConfigurationManager.AppSettings["KeepPlaying"]);
+            var keepPlaying = AppConfig.Setting<bool>("KeepPlaying");
 
             while (keepPlaying)
             {
