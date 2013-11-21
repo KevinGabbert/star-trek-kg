@@ -58,13 +58,16 @@ namespace StarTrek_KG
             //todo: support the shieldEnergy config setting.
             //If there is a config setting, use it.  otherwise, 0
 
-            this.Subsystems.Add(new Shields(map) { Energy = 0 });
-            this.Subsystems.Add(new Computer(map));
-            this.Subsystems.Add(new Navigation(map));
-            this.Subsystems.Add(new ShortRangeScan(map));
-            this.Subsystems.Add(new LongRangeScan(map));
-            this.Subsystems.Add(new Torpedoes(map));
-            this.Subsystems.Add(new Phasers(map));
+            this.Subsystems = new List<ISubsystem>()
+                                  {
+                                     new Shields(map) { Energy = 0 },
+                                     new Computer(map),
+                                     new Navigation(map),
+                                     new ShortRangeScan(map),
+                                     new LongRangeScan(map),
+                                     new Torpedoes(map),
+                                     new Phasers(map)
+                                  };
 
             //todo: pull config settings here
             //refactor from Game.GetGlobalInfo()
@@ -95,16 +98,16 @@ namespace StarTrek_KG
         /// repairs one item every time called
         /// </summary>
         /// <returns></returns>
-        public bool RepairSubsystem()
+        public bool RepairSubsystem(Ship ship)
         {
             //TODO: make the priority level configurable
-            return ShortRangeScan.For(this).Repair() ||
-                   LongRangeScan.For(this).Repair() ||
-                   Navigation.For(this).Repair() ||
-                   Computer.For(this).Repair() ||
-                   Shields.For(this).Repair() ||
-                   Torpedoes.For(this).Repair() ||
-                   Phasers.For(this).Repair();
+            return ShortRangeScan.For(ship).Repair() ||
+                   LongRangeScan.For(ship).Repair() ||
+                   Navigation.For(ship).Repair() ||
+                   Computer.For(ship).Repair() ||
+                   Shields.For(ship).Repair() ||
+                   Torpedoes.For(ship).Repair() ||
+                   Phasers.For(ship).Repair();
         }
 
         public Allegiance GetAllegiance()
