@@ -5,7 +5,7 @@ namespace StarTrek_KG.Config
     public class StarSystem : ConfigurationElement
     {
         [ConfigurationProperty("name", IsRequired = true)]
-        public string Name
+        public string name
         {
             get
             {

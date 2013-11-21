@@ -1,6 +1,6 @@
 ﻿/*
  * Star Trek KG
- * Copyright (C) 2012, Kevin Gabbert
+ * Copyright (C) 2013, Kevin Gabbert
  * 
  * This file is part of Star Trek KG.
  *
@@ -25,7 +25,6 @@
  */
 
 using StarTrek_KG;
-using StarTrek_KG.Config;
 
 namespace StarTrek_Console {
 
@@ -33,20 +32,6 @@ namespace StarTrek_Console {
 
     public static void Main(string[] args)
     {
-
-        //var config2 = RegisterCompaniesConfig.GetConfig();
-        //foreach(var item in config2.Companies)
-        //{
-        
-        //}
-
-        var config = StarTrekKGSettings.GetConfig();
-        foreach (var item in config.StarSystems)
-        {
-
-        }
-
-
         (new Game()).Run();
     } 
   }

@@ -6,18 +6,18 @@ namespace StarTrek_KG.Config
     {
         public static StarTrekKGSettings GetConfig()
         {
-            return (StarTrekKGSettings)ConfigurationManager.GetSection("StarTrekKGSettings") ?? new StarTrekKGSettings();
+            var settings = (StarTrekKGSettings)ConfigurationManager.GetSection("StarTrekKGSettings");
+            return settings ?? new StarTrekKGSettings();
         }
 
         [ConfigurationProperty("StarSystems")]
+        [ConfigurationCollection(typeof(StarSystems), AddItemName = "StarSystem")]
         public StarSystems StarSystems
         {
             get
             {
-                var o = this["StarSystems"];
-                return o as StarSystems;
+                return (StarSystems)this["StarSystems"];
             }
         }
-
     }
 }

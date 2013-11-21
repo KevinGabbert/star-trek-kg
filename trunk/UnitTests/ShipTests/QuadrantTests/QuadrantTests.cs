@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 
@@ -41,7 +42,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void NewWithMap()
         {
-            _testQuadrant = new Quadrant(new Map(null), new Stack<string>(Constants.QUADRANT_NAMES.ToList()));
+            _testQuadrant = new Quadrant(new Map(null), new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<StarSystem>().Select(system => system.name).ToList()));
 
             //todo: make sure that map is not set up with anyting
 
@@ -56,7 +57,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         public void Create()
         {
             var name = new List<string>();
-            name.Add(Constants.QUADRANT_NAMES.ToList()[0]);
+            name.Add(StarTrekKGSettings.GetConfig().StarSystems.Cast<StarSystem>().Select(system => system.name).ToList()[0]);
 
             var names = new Stack<string>(name);
 
