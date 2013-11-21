@@ -91,7 +91,7 @@ namespace StarTrek_KG
                         if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
                         {
                             //vector_div is so you can get right up to an obstacle before hitting it.
-                            Output.Write("For safety purposes, " + this.Map.Playership.Name + " has been brought to a stop.");
+                            Output.Write(this.Map.Playership.Name + " has stopped.");
                             return true;
                         }
                     }
@@ -250,23 +250,23 @@ namespace StarTrek_KG
 
             if (x < 0)
             {
-                x = 0;
+                x = 0; //todo: gridXLowerBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
             else if (x > 63)
             {
-                x = 63;
+                x = 63; //todo: gridXUpperBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
 
             if (y < 0)
             {
-                y = 0;
+                y = 0; //todo: gridYLowerBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
             else if (y > 63)
             {
-                y = 63;
+                y = 63; //todo: gridYUpperBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
 

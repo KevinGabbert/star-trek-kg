@@ -109,7 +109,7 @@ namespace StarTrek_KG.Subsystem
             }
             else 
             {
-                map.Playership.RepairSubsystem();
+                map.Playership.RepairSubsystem(map.Playership);
             }
         }
 
