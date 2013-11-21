@@ -280,7 +280,7 @@ namespace StarTrek_KG
         //This prompt needs to be exposed to the user as an event
         public bool InvalidCourseCheck(out string direction)
         {
-            if (Command.PromptUser("Enter course: ", out direction))
+            if (Command.PromptUser("Enter course (e,w,n,s): ", out direction))
             {
                 if (!Constants.MAP_DIRECTION.Contains(direction))
                 {
