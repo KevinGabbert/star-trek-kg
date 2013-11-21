@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -66,8 +65,14 @@ namespace StarTrek_KG.Playfield
         {
             this.GetGlobalInfo();
 
-            //Get this list from app.config.  get list that matches baddie type that is created
-            var names = new Stack<string>(Constants.QUADRANT_NAMES.ToList().Shuffle());
+            var config = StarTrekKGSettings.GetConfig();
+
+            //This list should match baddie type that is created
+            var quadrantNames = config.StarSystems.Cast<StarSystem>().Select(system => system.name).ToList();
+
+            var names = new Stack<string>(quadrantNames.Shuffle());
+
+            //todo: stop using constants.  create a custom config section instead
             var baddieNames = new Stack<string>(Constants.KLINGON_SHIP_NAMES.ToList().Shuffle());
 
             //todo: this just set up a "friendly"
