@@ -73,7 +73,6 @@
     <Compile Include="Playfield\Coordinates.cs" />
     <Compile Include="Enums\Allegiance.cs" />
     <Compile Include="Enums\SubsystemType.cs" />
-    <Compile Include="Hostiles.cs" />
     <Compile Include="Playfield\Location.cs" />
     <Compile Include="Movement.cs" />
     <Compile Include="Playfield\LocationDef.cs" />
