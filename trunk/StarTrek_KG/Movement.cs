@@ -91,7 +91,7 @@ namespace StarTrek_KG
                         if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
                         {
                             //vector_div is so you can get right up to an obstacle before hitting it.
-                            Output.Write(this.Map.Playership.Name + " has stopped.");
+                            Output.WriteLine(this.Map.Playership.Name + " has stopped.");
                             return true;
                         }
                     }
@@ -128,7 +128,7 @@ namespace StarTrek_KG
                     //todo: move this to XXX label.  run tests.  should work.
                     Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.Friendly;
 
-                    Output.Write("Detected an obstacle while navigating: " + currentItem.ToString() + " at sector: [" + sector.X + "," + sector.Y + "]");
+                    Output.WriteLine("Detected an obstacle while navigating: " + currentItem.ToString() + " at sector: [" + sector.X + "," + sector.Y + "]");
                     this.BlockedByObstacle = true;
 
                     return true;
@@ -273,7 +273,7 @@ namespace StarTrek_KG
             if (this.BlockedByGalacticBarrier)
             {
                 //todo: which one?  name it.
-                Output.Write("Galactic Barrier hit. Navigation stopped.");
+                Output.WriteLine("Galactic Barrier hit. Navigation stopped.");
             }
         }
 
@@ -284,7 +284,7 @@ namespace StarTrek_KG
             {
                 if (!Constants.MAP_DIRECTION.Contains(direction))
                 {
-                    Output.Write("Invalid course.");
+                    Output.WriteLine("Invalid course.");
                     return true;
                 }
             }

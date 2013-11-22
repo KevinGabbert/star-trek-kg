@@ -34,7 +34,7 @@ namespace StarTrek_KG.Subsystem
         }
         public override void OutputRepairedMessage()
         {
-            Output.Write("Warp engines have been repaired.");
+            Output.WriteLine("Warp engines have been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -85,12 +85,12 @@ namespace StarTrek_KG.Subsystem
             docked = this.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Map.Quadrants.GetActive().Sectors);
             if (docked)
             {
-                Output.Write("Lowering shields as part of docking sequence...");
+                Output.WriteResourceLine("DockingMessageLowerShields");
                 Shields.For(this.Map.Playership).Damage = 0;
 
                 this.Map.Playership.RepairEverything();
 
-                Output.DockSuccess();
+                Output.DockSuccess(thisShip.name);
             }
             else
             {
@@ -126,14 +126,14 @@ namespace StarTrek_KG.Subsystem
             if (!Command.PromptUser("Enter destination quadrant X (1--8): ", out quadX)
                 || quadX < 1 || quadX > Constants.QUADRANT_MAX)
             {
-                Output.Write("Invalid X coordinate.");
+                Output.WriteLine("Invalid X coordinate.");
                 return;
             }
 
             if (!Command.PromptUser("Enter destination quadrant Y (1--8): ", out quadY)
                 || quadY < 1 || quadY > Constants.QUADRANT_MAX)
             {
-                Output.Write("Invalid Y coordinate.");
+                Output.WriteLine("Invalid Y coordinate.");
                 return;
             }
 

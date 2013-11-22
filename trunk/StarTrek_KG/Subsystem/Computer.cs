@@ -27,7 +27,7 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write("The main computer has been repaired.");
+            Output.WriteLine("The main computer has been repaired.");
         }
         public override void OutputRepairedMessage()
         {
@@ -35,7 +35,7 @@ namespace StarTrek_KG.Subsystem
         }
         public override void OutputMalfunctioningMessage()
         {
-            Output.Write("The Main Computer is malfunctioning.");
+            Output.WriteLine("The Main Computer is malfunctioning.");
         }
 
         public override void Controls(string command)
@@ -73,7 +73,7 @@ namespace StarTrek_KG.Subsystem
                     Navigation.For(this.Map.Playership).Calculator(this.Map);
                     break;
                 default:
-                    Output.Write("Invalid computer command.");
+                    Output.WriteLine("Invalid computer command.");
                     break;
             }
 

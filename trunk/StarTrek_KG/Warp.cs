@@ -22,7 +22,7 @@ namespace StarTrek_KG
             var energyRequired = (int)distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
-                Output.Write("Insufficient energy to travel that speed.");
+                Output.WriteLine("Insufficient energy to travel that speed.");
                 returnVal = false;
             }
             else
@@ -40,7 +40,7 @@ namespace StarTrek_KG
             if (!Command.PromptUser(String.Format("Enter warp factor (0.1--{0}): ", maxWarpFactor), out distance)
                 || distance < 0.1 || distance > maxWarpFactor)
             {
-                Output.Write("Invalid warp factor.");
+                Output.WriteLine("Invalid warp factor.");
                 return true;
             }
             return false;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Text;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
@@ -10,6 +10,8 @@ namespace StarTrek_KG
 {
     public class Output
     {
+        public static StarTrekKGSettings Get;
+
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }
         int Starbases { get; set; }
@@ -43,24 +45,27 @@ namespace StarTrek_KG
         //all *print* mnemonics will be changed to Output
         //UI needs to read this text and display it how it wants
 
-        public static void DockSuccess()
+        public static void DockSuccess(string shipName)
         {
-            Output.Write("Enterprise successfully docked with starbase."); 
+            Output.WriteResourceLine(shipName, "SuccessfullDock"); 
         }            
             
         public static void ComputerDamageMessage()
         {
-            Output.Write("The main computer is damaged. Repairs are underway.");
+            Output.WriteResource("ComputerDamaged");
+            Output.WriteResourceLine("RepairsUnderway");
         }
 
         public static void ShortRangeScanDamageMessage()
         {
-            Output.Write("Short range scanner is damaged. Repairs are underway.");
+            Output.WriteResource("SRSDamaged");
+            Output.WriteResourceLine("RepairsUnderway");
         }
 
         public static void LongRangeScanDamageMessage()
         {
-            Output.Write("Long range scanner is damaged. Repairs are underway.");
+            Output.WriteResource("LRSDamaged");
+            Output.WriteResourceLine("RepairsUnderway");
         }
         
         //missionResult needs to be an enum
@@ -87,7 +92,7 @@ namespace StarTrek_KG
 
             //else - No status to report.  Game continues
 
-            Output.Write(missionEndResult);
+            Output.WriteLine(missionEndResult);
         }
 
         //output this as KeyValueCollection that the UI can display as it likes.
@@ -120,9 +125,7 @@ namespace StarTrek_KG
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            Console.WriteLine("Mission: Destroy {0} Hostile ships in {1} stardates with {2} starbases.",
-                              this.TotalHostiles, this.TimeRemaining, this.Starbases);
-
+            Console.WriteLine(Output.Get.ConsoleText["MissionStatement"].value, this.TotalHostiles, this.TimeRemaining, this.Starbases);
             Console.WriteLine();
         }
 
@@ -131,16 +134,16 @@ namespace StarTrek_KG
         {
             Console.WriteLine();
             var sb = new StringBuilder();
-            Console.WriteLine("-------------------------------------------------");
-            for (var x = 0; x < Constants.QUADRANT_MAX; x++)
+            Output.WriteResourceLine("GalacticRecordLine");
+            for (var quadrantLB = 0; quadrantLB < Constants.QUADRANT_MAX; quadrantLB++)
             {
-                for (var y = 0; y < Constants.QUADRANT_MAX; y++)
+                for (var quadrantUB = 0; quadrantUB < Constants.QUADRANT_MAX; quadrantUB++)
                 {
                     sb.Append("| ");
-                    var starbaseCount = 0;
-                    var starCount = -1;
+                    const int starbaseCount = 0;
+                    const int starCount = -1;
 
-                    Quadrant quadrant = StarTrek_KG.Playfield.Quadrants.Get(Quadrants, x, y);
+                    var quadrant = StarTrek_KG.Playfield.Quadrants.Get(Quadrants, quadrantLB, quadrantUB);
                     if (quadrant.Scanned)
                     {
                         //starbaseCount = quadrant.Starbase ? 1 : 0;
@@ -149,27 +152,28 @@ namespace StarTrek_KG
 
                     sb.Append(String.Format("{0}{1}{2} ", quadrant.Hostiles.Count, starbaseCount, starCount));
                 }
+
                 sb.Append("|");
                 Console.WriteLine(sb.ToString());
                 sb.Length = 0;
-                Console.WriteLine("-------------------------------------------------");
+                Output.WriteResourceLine("GalacticRecordLine");
             }
             Console.WriteLine();
         }
 
         public void PrintSector(Quadrant quadrant, Map map)
         {
-            var condition = this.GetCurrentConditon(quadrant, map);
+            var condition = this.GetCurrentCondition(quadrant, map);
 
-            var myLocation = map.Playership.GetLocation();
-            var totalHostiles = map.Quadrants.GetHostileCount(); 
-            var docked = Navigation.For(map.Playership).docked;
+            Location myLocation = map.Playership.GetLocation();
+            int totalHostiles = map.Quadrants.GetHostileCount(); 
+            bool docked = Navigation.For(map.Playership).docked;
 
-            Output.CreateDisplay(quadrant, map, totalHostiles, condition, myLocation, docked);
+            Output.CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
             this.OutputWarnings(quadrant, map, docked);
         }
 
-        private static void CreateDisplay(Quadrant quadrant, 
+        private static void CreateViewScreen(Quadrant quadrant, 
                                           Map map, 
                                           int totalHostiles, 
                                           string condition,
@@ -263,9 +267,26 @@ namespace StarTrek_KG
             Console.WriteLine();
         }
 
-        public static void Write(string stringToOutput)
+        public static void WriteLine(string stringToOutput)
         {
             Console.WriteLine(stringToOutput);
+            Console.WriteLine();
+        }
+
+        public static void WriteResource(string text)
+        {
+            Console.WriteLine(Output.Get.ConsoleText[text].value + " ");
+        }
+
+        public static void WriteResourceLine(string text)
+        {
+            Console.WriteLine(Output.Get.ConsoleText[text].value);
+            Console.WriteLine();
+        }
+
+        public static void WriteResourceLine(string prependText, string text)
+        {
+            Console.WriteLine(prependText + " " + Output.Get.ConsoleText[text].value);
             Console.WriteLine();
         }
 
@@ -283,26 +304,32 @@ namespace StarTrek_KG
         {
             if (quadrant.Hostiles.Count > 0)
             {
-                Console.WriteLine("Condition RED: Hostile{0} detected.", (quadrant.Hostiles.Count == 1 ? "" : "s"));
-
-                foreach (var hostile in quadrant.Hostiles)
-                {
-                    Console.WriteLine("Hostile identified as: " + hostile.Name);
-                }
-
-                Console.WriteLine("");
-
-                if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
-                {
-                    Output.Write("Warning: Shields are down.");
-                }
+                this.ScanHostile(quadrant, map, docked);
             }
             else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
             {
-                Output.Write("Condition YELLOW: Low energy level.");
+                Output.WriteResourceLine("LowEnergyLevel");
             }
         }
-        private string GetCurrentConditon(Quadrant quadrant, Map map)
+
+        private void ScanHostile(Quadrant quadrant, Map map, bool docked)
+        {
+            Console.WriteLine(Output.Get.ConsoleText["HostileDetected"].value, (quadrant.Hostiles.Count == 1 ? "" : "s"));
+
+            foreach (var hostile in quadrant.Hostiles)
+            {
+                Console.WriteLine(Output.Get.ConsoleText["IDHostile"].value, hostile.Name);
+            }
+
+            Console.WriteLine("");
+
+            if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
+            {
+                Output.WriteResourceLine("ShieldsDown");
+            }
+        }
+
+        private string GetCurrentCondition(Quadrant quadrant, Map map)
         {
             var condition = "GREEN";
 

@@ -22,7 +22,7 @@ namespace StarTrek_KG.Subsystem
         }
         public override void OutputRepairedMessage()
         {
-            Output.Write("Short range scanner has been repaired.");
+            Output.WriteLine("Short range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {

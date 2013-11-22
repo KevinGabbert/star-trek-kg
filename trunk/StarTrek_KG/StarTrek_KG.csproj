@@ -57,6 +57,12 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="Config\AppConfig.cs" />
+    <Compile Include="Config\KGConfigNameCollection.cs" />
+    <Compile Include="Config\KGConfigNameValueCollection.cs" />
+    <Compile Include="Config\NameElement.cs" />
+    <Compile Include="Config\NameValueElement.cs" />
+    <Compile Include="Config\Text.cs" />
+    <Compile Include="Config\ConsoleText.cs" />
     <Compile Include="Config\StarSystems.cs" />
     <Compile Include="Config\StarTrekKGSettings.cs" />
     <Compile Include="Config\StarSystem.cs" />
