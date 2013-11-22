@@ -16,5 +16,14 @@ namespace StarTrek_KG.Playfield
             this.Quadrant = quadrant;
             this.Sector = sector;
         }
+
+        private string _name;
+
+        public string name
+        {
+            get { return "Enterprise"; }
+            set { _name = value; }
+        }
+        
     }
 }

@@ -24,7 +24,7 @@ namespace StarTrek_KG.Subsystem
         }
         public override void OutputRepairedMessage()
         {
-            Output.Write("Long range scanner has been repaired.");
+            Output.WriteLine("Long range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -63,7 +63,7 @@ namespace StarTrek_KG.Subsystem
 
                 sb.Append("|");
 
-                Output.Write(sb.ToString());
+                Output.WriteLine(sb.ToString());
                 sb.Length = 0;
                 Output.WriteSingleLine("-------------------");
             }

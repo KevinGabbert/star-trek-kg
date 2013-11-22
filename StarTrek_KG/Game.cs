@@ -20,6 +20,8 @@ namespace StarTrek_KG
 
         public Game()
         {
+            Output.Get = StarTrekKGSettings.GetConfig();
+
             Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
             Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");
 
@@ -49,7 +51,7 @@ namespace StarTrek_KG
             this.Command = new Command(this.Map);
         }
 
-        private SectorDefs SectorSetup()
+        private static SectorDefs SectorSetup()
         {
 
             //todo: these SectorDefs can be computed somewhere
@@ -63,7 +65,7 @@ namespace StarTrek_KG
         /// This is the setup we get if app config can not be read for some reason (or it is buggy)
         /// </summary>
         /// <returns></returns>
-        private SectorDefs DefaultHardcodedSetup()
+        private static SectorDefs DefaultHardcodedSetup()
         {
             return new SectorDefs
                        {
@@ -71,7 +73,7 @@ namespace StarTrek_KG
                            //indicator that an individual object needs to be placed, istead of generated objects from config file.
 
                            //todo: get rid of that second, stupid parameter.
-                          new SectorDef(SectorItem.Friendly),
+                           new SectorDef(SectorItem.Friendly),
                            new SectorDef(SectorItem.Hostile),
                            new SectorDef(SectorItem.Hostile),
                            new SectorDef(SectorItem.Hostile),
@@ -109,7 +111,7 @@ namespace StarTrek_KG
         {
             if (startConfig.SectorDefs.Hostiles().Count() < 1)
             {
-                Output.Write("No Hostiles have been set up.");
+                Output.WriteLine("No Hostiles have been set up.");
                     //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
                 this.gameOver = true;
                 return true;

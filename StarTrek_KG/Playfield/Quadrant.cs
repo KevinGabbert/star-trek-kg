@@ -275,7 +275,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                Output.Write("There are no Hostile ships in this quadrant.");
+                Output.WriteLine("There are no Hostile ships in this quadrant.");
                 return true;
             }
             return false;

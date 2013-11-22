@@ -80,7 +80,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                Output.Write("There are no Hostile ships in this quadrant.");
+                Output.WriteLine("There are no Hostile ships in this quadrant.");
                 return true;
             }
             return false;
@@ -105,8 +105,6 @@ namespace StarTrek_KG.Playfield
             //linq through quadrants and sectors to remove all ships that have the same details as Ship
             Coordinate shipToRemoveQuadrant = shipToRemove.QuadrantDef;
 
-            //todo: output name of destroyed ship:  "IKS Kardasz destroyed"
-
             if(shipToRemoveQuadrant == null)
             {
                 //For now, ships having no location is a config error, that is, until such a time comes that
@@ -116,18 +114,25 @@ namespace StarTrek_KG.Playfield
                 throw new GameConfigException("ship has no location. ");
             }
 
-            //Delete from Map
-            map.Get(shipToRemove.QuadrantDef.X, 
-                    shipToRemove.QuadrantDef.Y, 
-                    shipToRemove.Sector.X, 
+            Quadrants.DeleteShip(shipToRemove, map);
+
+            Console.WriteLine("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, Output.Get.ConsoleText["shipDestroyed"].value);
+        }
+
+        private static void DeleteShip(Ship shipToRemove, Map map)
+        {
+            map.Get(shipToRemove.QuadrantDef.X,
+                    shipToRemove.QuadrantDef.Y,
+                    shipToRemove.Sector.X,
                     shipToRemove.Sector.Y).Item = SectorItem.Empty;
 
             var quadrantToRemoveFrom = map.Quadrants.Single(q => q.X == shipToRemove.QuadrantDef.X &&
                                                                  q.Y == shipToRemove.QuadrantDef.Y);
             //todo: NO HOSTILE HERE TO REMOVE??
-            quadrantToRemoveFrom.Hostiles.Remove(quadrantToRemoveFrom.Hostiles.Where(h => h.Sector.X == shipToRemove.Sector.X && 
+            quadrantToRemoveFrom.Hostiles.Remove(quadrantToRemoveFrom.Hostiles.Where(h => h.Sector.X == shipToRemove.Sector.X &&
                                                                                           h.Sector.Y == shipToRemove.Sector.Y &&
-                                                                                          h.Name == shipToRemove.Name ).Single()); //Remove from local set of Hostiles.
+                                                                                          h.Name == shipToRemove.Name).Single());
+                //Remove from local set of Hostiles.
         }
 
         /// <summary>

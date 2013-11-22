@@ -24,12 +24,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write("Photon torpedo control is damaged. Repairs are underway.");
+            Output.WriteLine("Photon torpedo control is damaged. Repairs are underway.");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.Write("Photon torpedo controls have been repaired.");
+            Output.WriteLine("Photon torpedo controls have been repaired.");
         }
 
         public override void OutputMalfunctioningMessage()
@@ -50,11 +50,11 @@ namespace StarTrek_KG.Subsystem
             if (!Command.PromptUser("Enter firing direction (1.0--9.0): ", out direction)
                 || direction < 1.0 || direction > 9.0)
             {
-                Output.Write("Invalid direction.");
+                Output.WriteLine("Invalid direction.");
                 return;
             }
 
-            Output.Write("Photon torpedo fired...");
+            Output.WriteLine("Photon torpedo fired...");
             this.Count--;
 
             var angle = ComputeAngle(map, direction);
@@ -83,11 +83,11 @@ namespace StarTrek_KG.Subsystem
 
                 var hostilesInSector = map.Quadrants.Hostiles.Where(ship => ship.Sector.X == newX && ship.Sector.Y == newY);
 
-                if (Torpedoes.HitBaddies(map, hostilesInSector)) goto label;
+                if (Map.DestroyedBaddies(map, hostilesInSector)) goto label;
                 if (Torpedoes.HitSomethingElse(map, vx, vy, location, newY, newX, ref x, ref y)) goto label;
             }
 
-            Output.Write("Photon torpedo failed to hit anything.");
+            Output.WriteLine("Photon torpedo failed to hit anything.");
 
             label:
 
@@ -134,25 +134,11 @@ namespace StarTrek_KG.Subsystem
             return false;
         }
 
-        private static bool HitBaddies(Map map, IEnumerable<Ship> query)
-        {
-            foreach (var ship in query)
-            {
-                Console.WriteLine("Hostile ship destroyed at sector [{0},{1}].", (ship.Sector.X), (ship.Sector.Y));
-
-                map.Quadrants.Remove(ship, map);
-
-                return true;
-            }
-
-            return false;
-        }
-
         private bool Exhausted()
         {
             if (this.Count == 0)
             {
-                Output.Write("Photon torpedoes exhausted.");
+                Output.WriteLine("Photon torpedoes exhausted.");
                 return true;
             }
             return false;

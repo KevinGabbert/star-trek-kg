@@ -19,5 +19,15 @@ namespace StarTrek_KG.Config
                 return (StarSystems)this["StarSystems"];
             }
         }
+
+        [ConfigurationProperty("ConsoleText")]
+        [ConfigurationCollection(typeof(ConsoleText), AddItemName = "Text")]
+        public ConsoleText ConsoleText
+        {
+            get
+            {
+                return (ConsoleText)this["ConsoleText"];
+            }
+        }
     }
 }

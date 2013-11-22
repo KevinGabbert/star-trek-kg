@@ -18,12 +18,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write("Phasers are damaged. Repairs are underway.");
+            Output.WriteLine("Phasers are damaged. Repairs are underway.");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.Write("Phasers have been repaired.");
+            Output.WriteLine("Phasers have been repaired.");
         }
 
         public override void OutputMalfunctioningMessage()
@@ -56,7 +56,7 @@ namespace StarTrek_KG.Subsystem
             Console.WriteLine("Phasers locked on target.");
             if (!GotPhaserEnergyFromUser(map, out phaserEnergy) || EnergyCheckFail(phaserEnergy, map))
             {
-                Output.Write("Invalid energy level.");
+                Output.WriteLine("Invalid energy level.");
                 return;
             }
             Console.WriteLine();
@@ -66,7 +66,7 @@ namespace StarTrek_KG.Subsystem
 
         private static void Execute(Map map, double phaserEnergy)
         {
-            Output.Write("Firing phasers..."); //todo: pull from config
+            Output.WriteLine("Firing phasers..."); //todo: pull from config
 
             var destroyedShips = new List<Ship>();
             foreach (var badGuyShip in map.Quadrants.GetActive().Hostiles)
@@ -113,9 +113,6 @@ namespace StarTrek_KG.Subsystem
             badGuyShields.Energy -= (int) deliveredEnergy;
             if (badGuyShields.Energy <= 0)
             {
-                Console.WriteLine(badGuyShip.Name + " destroyed at sector [{0},{1}].",
-                                  (badGuyShip.Sector.X), (badGuyShip.Sector.Y));
-
                 badGuyShip.Destroyed = true;
 
                 //Phasers hit all ships on a single turn, so this builds up a list of destroyed ships
