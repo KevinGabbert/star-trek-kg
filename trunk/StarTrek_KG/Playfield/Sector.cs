@@ -9,10 +9,17 @@ namespace StarTrek_KG.Playfield
     /// </summary>
     public class Sector: Coordinate //todo: this should be called SectorItems (or quadrantItems)
     {
+
         #region Properties
-            public SectorItem Item { get; set; }
-            public Coordinate QuadrantDef { get; set; }
+
+            //TODO: get rid of enum. 
+            //TODO: A SectorItem needs to be the *actual* object held.  (a star, or ship (I want a starbase to be a type of ship so it can have hitpoints, shield, be hostile, and fight back.))
+            public SectorItem Item { get; set; } 
+
+            public Coordinate QuadrantDef { get; set; } //needed.  so it can set ship coordinate
+
         #endregion
+
 
         //todo: create a constructor overload that will let you create a sector without an associated quadrant
 

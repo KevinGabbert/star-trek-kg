@@ -454,7 +454,7 @@ namespace UnitTests.ShipTests.MapTests
         {
             //todo: Assert for each item set
 
-            Assert.IsInstanceOf(typeof(Hostiles), _testMap.Quadrants.GetActive().Hostiles);
+            Assert.IsInstanceOf(typeof(List<Ship>), _testMap.Quadrants.GetActive().Hostiles);
             Assert.AreEqual(0, _testMap.Quadrants.GetActive().Hostiles.Count);
 
             Assert.Greater(_testMap.hostilesToSetUp, -1);

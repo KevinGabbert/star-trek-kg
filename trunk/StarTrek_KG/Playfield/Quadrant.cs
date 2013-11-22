@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Playfield
@@ -12,7 +11,9 @@ namespace StarTrek_KG.Playfield
         #region Properties
             public string Name { get; set; }
 
-            public Hostiles Hostiles { get; set; }
+            //TODO: This property needs to be changed to a function, and that function needs to count Hostiles in this quadrant when called
+            public List<Ship> Hostiles { get; set; } //TODO: this needs to be changed to a List<ship> that have a hostile property=true
+
             public Sectors Sectors { get; set; }
             public bool Scanned { get; set; }
             public bool Empty { get; set; }
@@ -41,14 +42,14 @@ namespace StarTrek_KG.Playfield
         public Quadrant()
         {
             this.Empty = true;
-            this.Hostiles = new Hostiles();
+            this.Hostiles = new List<Ship>();
             this.Name = String.Empty;
         }
 
         public Quadrant(Map map, Stack<string> names)
         {
             this.Empty = true;
-            this.Hostiles = new Hostiles();
+            this.Hostiles = new List<Ship>();
             this.Map = map;
             this.Create(names);
             this.Name = String.Empty;
@@ -57,7 +58,7 @@ namespace StarTrek_KG.Playfield
         public Quadrant(Map map, Stack<string> names, out int nameIndex)
         {
             this.Empty = true;
-            this.Hostiles = new Hostiles();
+            this.Hostiles = new List<Ship>();
             this.Map = map;
             this.Create(names, out nameIndex);
             this.Name = String.Empty;
@@ -320,7 +321,7 @@ namespace StarTrek_KG.Playfield
         /// goes through each sector in this quadrant and counts hostiles
         /// </summary>
         /// <returns></returns>
-        public int GetHostiles()
+        public List<Ship> GetHostiles()
         {
             //var x =  Sectors.Where(sector => sector.Item == SectorItem.Hostile);
 

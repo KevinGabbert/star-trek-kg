@@ -11,7 +11,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Fields
 
-            private Hostiles hostiles;
+        private List<Ship> hostiles; //This property needs to be changed to a function, and that function needs to count Hostiles in the passed List<quadrant> when called
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace StarTrek_KG.Playfield
         /// Movement.Execute and Map.SetupPlayership are the only places this is set
         /// </summary>
 
-        public Hostiles Hostiles
+        public List<Ship> Hostiles
         {
             get { return hostiles; }
         }
