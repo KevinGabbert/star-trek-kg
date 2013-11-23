@@ -147,18 +147,14 @@ namespace StarTrek_KG
         /// Prints title and sets up the playfield.
         /// This is where the Map is created, and references to it are passed around from here on.
         /// </summary>
-        private void Initialize()
+        private void PrintOpeningScreen()
         {
             Output.PrintAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
             
             Output.WriteResourceLine("UnderConstructionMessage");
             Output.WriteResourceLine("UnderConstructionMessage2");
-            Output.PrintMission();
 
-            if(!this.gameOver)
-            {
-                //this.Map.Quadrants.PopulateSectors(this.Map.GameConfig.SectorDefs, this.Map);
-            }
+            Output.PrintMission();
         }
 
         /// <summary>
@@ -171,11 +167,11 @@ namespace StarTrek_KG
                 return;
             }
 
-            this.Initialize();
+            this.PrintOpeningScreen();
 
             while (!gameOver)
             {
-                gameOver = this.NewTurn();
+                gameOver = this.NewTurn(); //Shows Command Prompt
 
                 if (gameOver)
                 {

@@ -1,8 +1,8 @@
 ﻿using System.Configuration;
 
-namespace StarTrek_KG.Config
+namespace StarTrek_KG.Config.Elements
 {
-    public class NameValueElement : ConfigurationElement
+    public class NameAllegianceElement : ConfigurationElement
     {
         [ConfigurationProperty("name", IsRequired = true)]
         public string name
@@ -13,12 +13,12 @@ namespace StarTrek_KG.Config
             }
         }
 
-        [ConfigurationProperty("value", IsRequired = true)]
-        public string value
+        [ConfigurationProperty("allegiance", IsRequired = true)]
+        public string allegiance
         {
             get
             {
-                return this["value"] as string;
+                return this["allegiance"] as string;
             }
         }
     }

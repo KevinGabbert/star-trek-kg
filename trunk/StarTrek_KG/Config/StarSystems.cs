@@ -1,6 +1,8 @@
-﻿namespace StarTrek_KG.Config
+﻿using StarTrek_KG.Config.Collections;
+
+namespace StarTrek_KG.Config
 {
-    public class StarSystems : KGConfigNameCollection
+    public class StarSystems : KGNameCollection
     {
     }
 }

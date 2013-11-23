@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
+using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
