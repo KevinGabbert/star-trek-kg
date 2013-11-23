@@ -1,6 +1,4 @@
-﻿using System;
-using System.Configuration;
-using StarTrek_KG.Config;
+﻿using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 
@@ -25,7 +23,7 @@ namespace StarTrek_KG.Playfield
             this.Item = sectorItem;
         }
 
-        private void Setup_Playfield_Constants()
+        private static void Setup_Playfield_Constants()
         {
             Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
             Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");
@@ -36,26 +34,28 @@ namespace StarTrek_KG.Playfield
 
         public SectorDef(LocationDef location, SectorItem sectorItem)
         {
-            Setup_Playfield_Constants();
+            SectorDef.Setup_Playfield_Constants();
+
+            string sectorSetupError = Output.GetText("SectorDefSetupError");
 
             if (location.Sector.X < Constants.SECTOR_MIN)
             {
-                throw new GameConfigException("Error setting up Sector.  Sector x < " + Constants.SECTOR_MIN.ToString());
+                throw new GameConfigException(sectorSetupError + " Sector x < " + Constants.SECTOR_MIN);
             }
 
             if (location.Sector.X > Constants.SECTOR_MAX)
             {
-                throw new GameConfigException("Error setting up Sector.  Sector x > " + Constants.SECTOR_MAX.ToString());
+                throw new GameConfigException(sectorSetupError + " Sector x > " + Constants.SECTOR_MAX);
             }
 
             if (location.Sector.Y < Constants.SECTOR_MIN)
             {
-                throw new GameConfigException("Error setting up Sector.  Sector y < " + Constants.SECTOR_MIN.ToString());
+                throw new GameConfigException(sectorSetupError + "Sector y < " + Constants.SECTOR_MIN);
             }
 
             if (location.Sector.Y > Constants.SECTOR_MAX)
             {
-                throw new GameConfigException("Error setting up Sector.  Sector y > " + Constants.SECTOR_MAX.ToString());
+                throw new GameConfigException(sectorSetupError + "Sector y > " + Constants.SECTOR_MAX);
             }
 
             this.Sector = new Sector(new LocationDef(location.Quadrant, new Coordinate(location.Sector.X, location.Sector.Y)));
