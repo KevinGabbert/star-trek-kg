@@ -10,7 +10,7 @@ namespace StarTrek_KG
 {
     public class Output
     {
-        public static StarTrekKGSettings Get;
+        public static StarTrekKGSettings Get { get; set; }
 
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }
@@ -44,6 +44,16 @@ namespace StarTrek_KG
         //goal is to output message that a UI can read
         //all *print* mnemonics will be changed to Output
         //UI needs to read this text and display it how it wants
+
+        public static string GetText(string textToGet)
+        {
+            return Output.Get.ConsoleText[textToGet].value;
+        }
+
+        public static string GetText(string textToGet, string textToGet2)
+        {
+            return Output.Get.ConsoleText[textToGet].value + Output.Get.ConsoleText[textToGet2].value;
+        }
 
         public static void DockSuccess(string shipName)
         {
@@ -125,7 +135,7 @@ namespace StarTrek_KG
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            Console.WriteLine(Output.Get.ConsoleText["MissionStatement"].value, this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            Console.WriteLine(Output.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
             Console.WriteLine();
         }
 
@@ -183,21 +193,21 @@ namespace StarTrek_KG
             var sb = new StringBuilder();
             var activeQuadrant = map.Quadrants.GetActive();
 
-            Console.WriteLine("|=--=--=--=--=--=--=--=|             Region: {0}", quadrant.Name);
+            Console.WriteLine(Output.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
 
-            Output.PrintSectorRow(sb, 0, String.Format("           Quadrant: [{0},{1}]", location.Quadrant.X, location.Quadrant.Y), activeQuadrant.Sectors, totalHostiles);
-            Output.PrintSectorRow(sb, 1, String.Format("             Sector: [{0},{1}]", location.Sector.X, location.Sector.Y), activeQuadrant.Sectors, totalHostiles);
-            Output.PrintSectorRow(sb, 2, String.Format("           Stardate: {0}", map.Stardate), activeQuadrant.Sectors, totalHostiles);
-            Output.PrintSectorRow(sb, 3, String.Format("     Time remaining: {0}", map.timeRemaining), activeQuadrant.Sectors, totalHostiles);
-            Output.PrintSectorRow(sb, 4, String.Format("          Condition: {0}", condition), activeQuadrant.Sectors, totalHostiles);
-            Output.PrintSectorRow(sb, 5, String.Format("             Energy: {0}", map.Playership.Energy), activeQuadrant.Sectors, totalHostiles);
-            Output.PrintSectorRow(sb, 6, String.Format("            Shields: {0}", Shields.For(map.Playership).Energy), activeQuadrant.Sectors, totalHostiles);
-            Output.PrintSectorRow(sb, 7, String.Format("   Photon Torpedoes: {0}", Torpedoes.For(map.Playership).Count), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 0, String.Format(Output.GetText("SRSQuadrantIndicator"), location.Quadrant.X, location.Quadrant.Y), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 1, String.Format(Output.GetText("SRSSectorIndicator"), location.Sector.X, location.Sector.Y), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 2, String.Format(Output.GetText("SRSStardateIndicator"), map.Stardate), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 3, String.Format(Output.GetText("SRSTimeRemainingIndicator"), map.timeRemaining), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 4, String.Format(Output.GetText("SRSConditionIndicator"), condition), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 5, String.Format(Output.GetText("SRSEnergyIndicator"), map.Playership.Energy), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 6, String.Format(Output.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 7, String.Format(Output.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count), activeQuadrant.Sectors, totalHostiles);
 
-            Console.WriteLine("|=--=--=--=--=--=--=--=|             Docked: {0}", docked);
+            Console.WriteLine(Output.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
-        private static void PrintSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles)
+        private static void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles)
         {
             for (var column = 0; column < Constants.SECTOR_MAX; column++)
             {
@@ -275,18 +285,18 @@ namespace StarTrek_KG
 
         public static void WriteResource(string text)
         {
-            Console.WriteLine(Output.Get.ConsoleText[text].value + " ");
+            Console.WriteLine(Output.GetText(text) + " ");
         }
 
         public static void WriteResourceLine(string text)
         {
-            Console.WriteLine(Output.Get.ConsoleText[text].value);
+            Console.WriteLine(Output.GetText(text));
             Console.WriteLine();
         }
 
         public static void WriteResourceLine(string prependText, string text)
         {
-            Console.WriteLine(prependText + " " + Output.Get.ConsoleText[text].value);
+            Console.WriteLine(prependText + " " + Output.GetText(text));
             Console.WriteLine();
         }
 
@@ -314,11 +324,11 @@ namespace StarTrek_KG
 
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
-            Console.WriteLine(Output.Get.ConsoleText["HostileDetected"].value, (quadrant.Hostiles.Count == 1 ? "" : "s"));
+            Console.WriteLine(Output.GetText("HostileDetected"), (quadrant.Hostiles.Count == 1 ? "" : "s"));
 
             foreach (var hostile in quadrant.Hostiles)
             {
-                Console.WriteLine(Output.Get.ConsoleText["IDHostile"].value, hostile.Name);
+                Console.WriteLine(Output.GetText("IDHostile"), hostile.Name);
             }
 
             Console.WriteLine("");

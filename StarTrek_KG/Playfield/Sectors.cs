@@ -78,6 +78,5 @@ namespace StarTrek_KG.Playfield
             //}
 
         }
-
     }
 }

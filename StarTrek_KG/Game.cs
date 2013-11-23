@@ -20,16 +20,7 @@ namespace StarTrek_KG
 
         public Game()
         {
-            Output.Get = StarTrekKGSettings.GetConfig();
-
-            Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");
-
-            Constants.QUADRANT_MIN = AppConfig.Setting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = AppConfig.Setting<int>("QuadrantMax");
-
-            Constants.SHIELDS_DOWN_LEVEL = AppConfig.Setting<int>("ShieldsDownLevel");
-            Constants.LOW_ENERGY_LEVEL = AppConfig.Setting<int>("LowEnergyLevel");
+            Game.GetConstants();
 
             this.Output = (new Output(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL));
 
@@ -49,6 +40,25 @@ namespace StarTrek_KG
             //todo: why are we creating this Output() class a second time??
             this.Output = new Output(this.Map.hostilesToSetUp, Map.timeRemaining, Map.starbases, Map.Stardate, Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL);
             this.Command = new Command(this.Map);
+        }
+
+        private static void GetConstants()
+        {
+            //The config file is loaded here, and persisted through the rest of the game. 
+            //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
+            //might try to reload the file. #NotInThisVersion
+            Output.Get = StarTrekKGSettings.GetConfig();
+
+            //TODO: Migrate these into StarTrekKGSettings
+
+            Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");
+
+            Constants.QUADRANT_MIN = AppConfig.Setting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = AppConfig.Setting<int>("QuadrantMax");
+
+            Constants.SHIELDS_DOWN_LEVEL = AppConfig.Setting<int>("ShieldsDownLevel");
+            Constants.LOW_ENERGY_LEVEL = AppConfig.Setting<int>("LowEnergyLevel");
         }
 
         private static SectorDefs SectorSetup()

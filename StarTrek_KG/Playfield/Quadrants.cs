@@ -116,7 +116,7 @@ namespace StarTrek_KG.Playfield
 
             Quadrants.DeleteShip(shipToRemove, map);
 
-            Console.WriteLine("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, Output.Get.ConsoleText["shipDestroyed"].value);
+            Console.WriteLine("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, Output.GetText("shipDestroyed"));
         }
 
         private static void DeleteShip(Ship shipToRemove, Map map)
