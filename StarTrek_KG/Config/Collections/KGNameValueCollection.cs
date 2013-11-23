@@ -1,8 +1,9 @@
 ﻿using System.Configuration;
+using StarTrek_KG.Config.Elements;
 
-namespace StarTrek_KG.Config
+namespace StarTrek_KG.Config.Collections
 {
-    public class KGConfigNameValueCollection : ConfigurationElementCollection
+    public class KGNameValueCollection : ConfigurationElementCollection
     {
         public NameValueElement this[int index]
         {
