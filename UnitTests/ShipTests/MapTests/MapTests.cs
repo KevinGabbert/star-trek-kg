@@ -48,7 +48,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void InitializeQuadrants()
         {
-            _testMap.InitializeQuadrants(new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<NameElement>().Select(system => system.name).ToList()), 
+            _testMap.InitializeQuadrants(new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()), 
                                          new Stack<string>(Constants.KLINGON_SHIP_NAMES.ToList()),
                                          new SectorDefs());
 
@@ -62,7 +62,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void PopulateWithHostilesAndStarbases()
         {
-            _testMap.InitializeQuadrants(new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<NameElement>().Select(system => system.name).ToList()),
+            _testMap.InitializeQuadrants(new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()),
                                          new Stack<string>(Constants.KLINGON_SHIP_NAMES.ToList()),
                                          null);
             //Quadrant.Populate(_testMap);
@@ -202,7 +202,7 @@ namespace UnitTests.ShipTests.MapTests
                 AddStars = false
             }));
 
-            Quadrant.InitializeSectors(_testMap.Quadrants.GetActive(), null, new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<NameElement>().Select(system => system.name).ToList()), _testMap, false);
+            Quadrant.InitializeSectors(_testMap.Quadrants.GetActive(), null, new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()), _testMap, false);
 
             Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);  
 

@@ -1,16 +1,15 @@
-﻿
-using System.Configuration;
+﻿using System.Configuration;
 using StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config.Collections
 {
-    public class KGFactionCollection : KGNameAllegianceCollection
+    public class NameAllegiances: ConfigurationElementCollection
     {
-        public FactionElement this[int index]
+        public NameAllegiance this[int index]
         {
             get
             {
-                return base.BaseGet(index) as FactionElement;
+                return base.BaseGet(index) as NameAllegiance;
             }
             set
             {
@@ -22,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new FactionElement this[string responseString]
+        public new NameAllegiance this[string responseString]
         {
             get
             {
-                return (FactionElement)BaseGet(responseString);
+                return (NameAllegiance)BaseGet(responseString);
             }
             set
             {
@@ -41,20 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new FactionElement();
+            return new NameAllegiance();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((FactionElement)element).name;
+            return ((NameAllegiance)element).name;
         }
-
-        //public override ConfigurationElementCollectionType CollectionType
-        //{
-        //    get
-        //    {
-        //        return ConfigurationElementCollectionType.BasicMap;
-        //    }
-        //}
     }
 }

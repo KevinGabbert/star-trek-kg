@@ -69,7 +69,7 @@ namespace StarTrek_KG.Playfield
             var config = StarTrekKGSettings.GetConfig();
 
             //This list should match baddie type that is created
-            List<string> quadrantNames = config.StarSystems.Cast<NameElement>().Select(system => system.name).ToList();
+            List<string> quadrantNames = config.StarSystems.Cast<Name>().Select(system => system.name).ToList();
 
             var names = new Stack<string>(quadrantNames.Shuffle());
 
