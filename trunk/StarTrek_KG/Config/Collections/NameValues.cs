@@ -1,14 +1,15 @@
 ﻿using System.Configuration;
+using E = StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config.Collections
 {
-    public class KGFactionShipsCollection: KGNameCollection
+    public class NameValues : ConfigurationElementCollection
     {
-        public FactionShip this[int index]
+        public E.NameValue this[int index]
         {
             get
             {
-                return base.BaseGet(index) as FactionShip;
+                return base.BaseGet(index) as E.NameValue;
             }
             set
             {
@@ -20,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new FactionShip this[string responseString]
+        public new E.NameValue this[string responseString]
         {
             get
             {
-                return (FactionShip)BaseGet(responseString);
+                return (E.NameValue)BaseGet(responseString);
             }
             set
             {
@@ -39,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new FactionShip();
+            return new E.NameValue();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((FactionShip)element).name;
+            return ((E.NameValue)element).name;
         }
     }
 }

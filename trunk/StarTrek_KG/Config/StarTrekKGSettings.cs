@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System;
+using StarTrek_KG.Config.Collections;
 
 namespace StarTrek_KG.Config
 {
@@ -12,10 +13,7 @@ namespace StarTrek_KG.Config
             try
             {
                 settings = (StarTrekKGSettings)ConfigurationManager.GetSection("StarTrekKGSettings");
-                var x = settings.Factions["Vulcan"];
-                var y = x.name;
-                var z = x.allegiance;
-                var a = x.FactionShips[0];
+                //var x = settings.Factions["Vulcan"].FactionShips[0];
             }
             catch (ConfigurationErrorsException cx)
             {
@@ -43,22 +41,22 @@ namespace StarTrek_KG.Config
         }
 
         [ConfigurationProperty("StarSystems")]
-        [ConfigurationCollection(typeof(StarSystems), AddItemName = "StarSystem")]
-        public StarSystems StarSystems
+        [ConfigurationCollection(typeof(Names), AddItemName = "StarSystem")]
+        public Names StarSystems
         {
             get
             {
-                return (StarSystems)this["StarSystems"];
+                return (Names)this["StarSystems"];
             }
         }
 
         [ConfigurationProperty("ConsoleText")]
-        [ConfigurationCollection(typeof(ConsoleText), AddItemName = "Text")]
-        public ConsoleText ConsoleText
+        [ConfigurationCollection(typeof(NameValues), AddItemName = "Text")]
+        public NameValues ConsoleText
         {
             get
             {
-                return (ConsoleText)this["ConsoleText"];
+                return (NameValues)this["ConsoleText"];
             }
         }
 
