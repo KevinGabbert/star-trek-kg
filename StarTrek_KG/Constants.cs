@@ -10,7 +10,7 @@ namespace StarTrek_KG
         public const string HOSTILE = "+++";
         public const string STARBASE = ">!<";
         public const string STAR = " * ";
-        //public const string ALLY = "<++>";
+        public const string ALLY = "<++>";
 
         public static int SECTOR_MIN; 
         public static int SECTOR_MAX; 
