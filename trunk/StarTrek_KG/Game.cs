@@ -149,8 +149,10 @@ namespace StarTrek_KG
         /// </summary>
         private void Initialize()
         {
-            Output.PrintStrings(Constants.APP_TITLE); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
-
+            Output.PrintAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
+            
+            Output.WriteResourceLine("UnderConstructionMessage");
+            Output.WriteResourceLine("UnderConstructionMessage2");
             Output.PrintMission();
 
             if(!this.gameOver)

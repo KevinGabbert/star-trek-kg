@@ -1,33 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using StarTrek_KG.Config;
 
 namespace StarTrek_KG
 {
     public class Constants
     {
-        //Title by Joshua Bell, Enterprise by Unknown, modified by Kevin Gabbert
-        public static readonly string[] APP_TITLE = {
-                                                        @"     ________________ _     _____      _______________      ______ ___   ___"
-                                                        ,
-                                                        @"   ,' ________   ___// \    \  __ \   /___   ___/\  __ \   / ____/ \ /  ,' /"
-                                                        ,
-                                                        @"  |  `-.__    | |   / . \   | | / /       | |    | | / /  | /____  | | / .'"
-                                                        ,
-                                                        @"   `-.___ `.  | |  / /_\ \  |  _ `.       | |    |  _ `.  | ____/  |  _ `."
-                                                        ,
-                                                        @"  _______\  \ | | / _____ \ | | `. \_     | |    | | `. \_| \____  | | `. \____"
-                                                        ,
-                                                        @" /___________|/_|/_/     \_\|_\  /__/     /_\    |_\  /__/ `.____| |_\   /_____\"
-                                                        ,
-                                                        @"",
-                                                        @"                       _________________        _",
-                                                        @"                       \-__(=======//o)/____.--'-`--.___",
-                                                        @"                                  \ \  `,--,--.___.-----'",
-                                                        @"                                .--`\\-'-==",
-                                                        @"                               '--.______.|]"
-                                                    };
-
         public const string EMPTY = "   ";
         public const string ENTERPRISE = "<*>";
         public const string HOSTILE = "+++";
