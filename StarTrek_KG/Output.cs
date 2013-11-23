@@ -263,6 +263,15 @@ namespace StarTrek_KG
             Console.WriteLine();
         }
 
+        public static void PrintAppTitle()
+        {
+            const string appTitle = "AppTitle";
+            for (int i = 1; i < 13; i++ )
+            {
+                Output.WriteResource(appTitle + i);
+            }
+        }
+
         public static void PrintPanel(string panelHead, IEnumerable<string> strings)
         {
             Console.WriteLine();
