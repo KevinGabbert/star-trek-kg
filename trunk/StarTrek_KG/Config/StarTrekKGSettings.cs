@@ -96,5 +96,25 @@ namespace StarTrek_KG.Config
             var systemNames = (from NameElement starSystem in systems select starSystem.name).ToList();
             return systemNames;
         }
+
+        public static string GetText(string textToGet)
+        {
+            StarTrekKGSettings.Reset();
+            return StarTrekKGSettings.Get.ConsoleText[textToGet].value;
+        }
+
+        public static string GetText(string textToGet, string textToGet2)
+        {
+            StarTrekKGSettings.Reset();
+            return StarTrekKGSettings.Get.ConsoleText[textToGet].value + StarTrekKGSettings.Get.ConsoleText[textToGet2].value;
+        }
+
+        private static void Reset()
+        {
+            if (StarTrekKGSettings.Get == null)
+            {
+                StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
+            }
+        }
     }
 }
