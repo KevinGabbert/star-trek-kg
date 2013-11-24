@@ -45,16 +45,6 @@ namespace StarTrek_KG
         //all *print* mnemonics will be changed to Output
         //UI needs to read this text and display it how it wants
 
-        public static string GetText(string textToGet)
-        {
-            return StarTrekKGSettings.Get.ConsoleText[textToGet].value;
-        }
-
-        public static string GetText(string textToGet, string textToGet2)
-        {
-            return StarTrekKGSettings.Get.ConsoleText[textToGet].value + StarTrekKGSettings.Get.ConsoleText[textToGet2].value;
-        }
-
         public static void DockSuccess(string shipName)
         {
             Output.WriteResourceLine(shipName, "SuccessfullDock"); 
@@ -109,17 +99,17 @@ namespace StarTrek_KG
         public static void PrintCurrentStatus(Map map, int computerDamage, Ship ship, Quadrant currentQuadrant)
         {
             Console.WriteLine();
-            Console.WriteLine(Output.GetText("CSTimeRemaining"), map.timeRemaining);
-            Console.WriteLine(Output.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount()); //Map.GetAllHostiles(map).Count
-            Console.WriteLine(Output.GetText("CSHostilesInQuadrant"), currentQuadrant.Hostiles.Count);
-            Console.WriteLine(Output.GetText("CSStarbases"), map.starbases);
-            Console.WriteLine(Output.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
-            Console.WriteLine(Output.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
-            Console.WriteLine(Output.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
-            Console.WriteLine(Output.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
-            Console.WriteLine(Output.GetText("CSComputerDamage"), computerDamage);
-            Console.WriteLine(Output.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
-            Console.WriteLine(Output.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSTimeRemaining"), map.timeRemaining);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount()); //Map.GetAllHostiles(map).Count
+            Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesInQuadrant"), currentQuadrant.Hostiles.Count);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSStarbases"), map.starbases);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSComputerDamage"), computerDamage);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
             Console.WriteLine();
 
             //foreach (var badGuy in currentQuadrant.Hostiles)
@@ -135,7 +125,7 @@ namespace StarTrek_KG
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            Console.WriteLine(Output.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            Console.WriteLine(StarTrekKGSettings.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
             Console.WriteLine();
         }
 
@@ -193,18 +183,18 @@ namespace StarTrek_KG
             var sb = new StringBuilder();
             var activeQuadrant = map.Quadrants.GetActive();
 
-            Console.WriteLine(Output.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
+            Console.WriteLine(StarTrekKGSettings.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
 
-            Output.ShowSectorRow(sb, 0, String.Format(Output.GetText("SRSQuadrantIndicator"), location.Quadrant.X, location.Quadrant.Y), activeQuadrant.Sectors, totalHostiles);
-            Output.ShowSectorRow(sb, 1, String.Format(Output.GetText("SRSSectorIndicator"), location.Sector.X, location.Sector.Y), activeQuadrant.Sectors, totalHostiles);
-            Output.ShowSectorRow(sb, 2, String.Format(Output.GetText("SRSStardateIndicator"), map.Stardate), activeQuadrant.Sectors, totalHostiles);
-            Output.ShowSectorRow(sb, 3, String.Format(Output.GetText("SRSTimeRemainingIndicator"), map.timeRemaining), activeQuadrant.Sectors, totalHostiles);
-            Output.ShowSectorRow(sb, 4, String.Format(Output.GetText("SRSConditionIndicator"), condition), activeQuadrant.Sectors, totalHostiles);
-            Output.ShowSectorRow(sb, 5, String.Format(Output.GetText("SRSEnergyIndicator"), map.Playership.Energy), activeQuadrant.Sectors, totalHostiles);
-            Output.ShowSectorRow(sb, 6, String.Format(Output.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy), activeQuadrant.Sectors, totalHostiles);
-            Output.ShowSectorRow(sb, 7, String.Format(Output.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 0, String.Format(StarTrekKGSettings.GetText("SRSQuadrantIndicator"), location.Quadrant.X, location.Quadrant.Y), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 1, String.Format(StarTrekKGSettings.GetText("SRSSectorIndicator"), location.Sector.X, location.Sector.Y), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 2, String.Format(StarTrekKGSettings.GetText("SRSStardateIndicator"), map.Stardate), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 3, String.Format(StarTrekKGSettings.GetText("SRSTimeRemainingIndicator"), map.timeRemaining), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 4, String.Format(StarTrekKGSettings.GetText("SRSConditionIndicator"), condition), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 5, String.Format(StarTrekKGSettings.GetText("SRSEnergyIndicator"), map.Playership.Energy), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 6, String.Format(StarTrekKGSettings.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy), activeQuadrant.Sectors, totalHostiles);
+            Output.ShowSectorRow(sb, 7, String.Format(StarTrekKGSettings.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count), activeQuadrant.Sectors, totalHostiles);
 
-            Console.WriteLine(Output.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
+            Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
         private static void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles)
@@ -294,18 +284,18 @@ namespace StarTrek_KG
 
         public static void WriteResource(string text)
         {
-            Console.WriteLine(Output.GetText(text) + " ");
+            Console.WriteLine(StarTrekKGSettings.GetText(text) + " ");
         }
 
         public static void WriteResourceLine(string text)
         {
-            Console.WriteLine(Output.GetText(text));
+            Console.WriteLine(StarTrekKGSettings.GetText(text));
             Console.WriteLine();
         }
 
         public static void WriteResourceLine(string prependText, string text)
         {
-            Console.WriteLine(prependText + " " + Output.GetText(text));
+            Console.WriteLine(prependText + " " + StarTrekKGSettings.GetText(text));
             Console.WriteLine();
         }
 
@@ -333,11 +323,11 @@ namespace StarTrek_KG
 
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
-            Console.WriteLine(Output.GetText("HostileDetected"), (quadrant.Hostiles.Count == 1 ? "" : "s"));
+            Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"), (quadrant.Hostiles.Count == 1 ? "" : "s"));
 
             foreach (var hostile in quadrant.Hostiles)
             {
-                Console.WriteLine(Output.GetText("IDHostile"), hostile.Name);
+                Console.WriteLine(StarTrekKGSettings.GetText("IDHostile"), hostile.Name);
             }
 
             Console.WriteLine("");

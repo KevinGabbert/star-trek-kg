@@ -36,7 +36,7 @@ namespace StarTrek_KG.Playfield
         {
             SectorDef.Setup_Playfield_Constants();
 
-            string sectorSetupError = Output.GetText("SectorDefSetupError");
+            string sectorSetupError = StarTrekKGSettings.GetText("SectorDefSetupError");
 
             if (location.Sector.X < Constants.SECTOR_MIN)
             {

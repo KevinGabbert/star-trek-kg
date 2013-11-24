@@ -3,8 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
-using StarTrek_KG.Config.Collections;
-using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
@@ -21,9 +19,7 @@ namespace UnitTests.ShipTests.MapTests
         public void Setup()
         {
              Assert.IsInstanceOf(typeof(Map), _testMap);
-            //todo: call VerifyGlobalInfoSettings()
-
-             //StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
+            //todo: call VerifyGlobalInfoSettings
         }
 
         [Test]

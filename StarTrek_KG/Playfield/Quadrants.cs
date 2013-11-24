@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Subsystem;
@@ -116,7 +117,7 @@ namespace StarTrek_KG.Playfield
 
             Quadrants.DeleteShip(shipToRemove, map);
 
-            Console.WriteLine("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, Output.GetText("shipDestroyed"));
+            Console.WriteLine("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed"));
         }
 
         private static void DeleteShip(Ship shipToRemove, Map map)
