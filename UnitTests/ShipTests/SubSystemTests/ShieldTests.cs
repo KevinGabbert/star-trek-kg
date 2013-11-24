@@ -117,18 +117,5 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testShields.Damage = 0;
             Assert.IsFalse(_testShields.Damaged());
         }
-
-        [Test]
-        public void TakeDamage()
-        {
-            var mockedComputer = new Mock<ISubsystem>();
-
-            int i = 0;
-            int i1 = i;
-            mockedComputer.Setup(c => c.GetNext(It.IsAny<int>())).Returns(() => i1).Callback(() => i = -1);
-
-            mockedComputer.Object.TakeDamage(); 
-            Assert.Greater(1, mockedComputer.Object.Damage);
-        }
     }
 }

@@ -109,7 +109,7 @@ namespace StarTrek_KG.Subsystem
             }
             else 
             {
-                map.Playership.RepairSubsystem(map.Playership);
+                map.Playership.RepairSubsystems(map.Playership);
             }
         }
 
@@ -146,8 +146,8 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            Console.WriteLine("Direction: {0:#.##}", Map.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy));
-            Console.WriteLine("Distance:  {0:##.##}", Map.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy));
+            Console.WriteLine("Direction: {0:#.##}", Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy));
+            Console.WriteLine("Distance:  {0:##.##}", Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy));
         }
 
         public new static Navigation For(Ship ship)

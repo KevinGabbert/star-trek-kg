@@ -102,6 +102,7 @@
     <Compile Include="Subsystem\Phasers.cs" />
     <Compile Include="Subsystem\Shields.cs" />
     <Compile Include="Subsystem\ShortRangeScan.cs" />
+    <Compile Include="Subsystem\Subsystems.cs" />
     <Compile Include="Subsystem\SubSystem_Base.cs" />
     <Compile Include="Subsystem\Torpedoes.cs" />
     <Compile Include="System.cs" />

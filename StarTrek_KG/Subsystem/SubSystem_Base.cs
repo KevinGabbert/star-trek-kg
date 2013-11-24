@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -52,21 +53,29 @@ namespace StarTrek_KG.Subsystem
         /// The amount of damage is random from within the seed defined in app.config
         /// </summary>
         public void TakeDamage()
-        {
-            if (this.GetNext(7) > 0) //todo: this should be ship.subsystem.count
-            {
-                return;
-            }
+        {          
+            this.Damage = 1 + (Utility.Random).Next(AppConfig.Setting<int>("DamageSeed"));
 
-            this.Damage = 1 + (Utility.Random).Next(5); //todo: pull this seed from app.config on startup.
+            //todo: if number is small, then this.OutputMalfunctioningMessage.. else...
+            this.OutputDamagedMessage();
 
-            if ((int)this.Type < 0)
-            {
-                if (this.GetNext(7) == (int)this.Type)
-                {
-                    this.OutputMalfunctioningMessage();
-                }
-            }
+            //todo: this might be something to do if shields are up..
+            //const int subsystemCount = 7; //todo: how can we find this out at this point?
+
+            //if (this.GetNext(subsystemCount) > 0) //todo: this should be ship.subsystem.count
+            //{
+            //    return;
+            //}
+
+            //this.Damage = 1 + (Utility.Random).Next(AppConfig.Setting<int>("DamageSeed"));
+
+            //if ((int)this.Type < 0)
+            //{
+            //    if (this.GetNext(subsystemCount) == (int)this.Type)
+            //    {
+            //        this.OutputMalfunctioningMessage();
+            //    }
+            //}
         }
 
         public int GetNext(int seed)

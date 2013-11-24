@@ -101,7 +101,7 @@ namespace StarTrek_KG.Subsystem
         private static double ComputeDeliveredEnergy(Map map, double phaserEnergy, IShip badGuyShip)
         {
             var location = map.Playership.GetLocation();
-            var distance = Map.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
+            var distance = Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
             var deliveredEnergy = phaserEnergy*(1.0 - distance/11.3);
 
             return deliveredEnergy;

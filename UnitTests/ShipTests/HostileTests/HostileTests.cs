@@ -64,35 +64,6 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(_testMap.Playership.Energy, 3000);      
         }
 
-        /// <summary>
-        /// The only point behind this test was to understand the limit.
-        /// Apparently, currently using a hardcoded seed of 300, and a distanceDeprecationLevel of 11.3
-        /// ** This test will break once those values are pulled from config **
-        /// (lets hope that the config settings never get pulled *in* this function, as then the test will go very slow)
-        /// </summary>
-        [Test]
-        public void DisruptorShot()
-        {
-            //todo: pull these from config
-            const double deprecationLevel = 11.3;
-            const int seed = 300;
-
-            for (var i = 1; i < 100000; i++)
-            {
-                var oneSector = _testMap.DisruptorShot(seed, deprecationLevel, 1);
-                var twoSector = _testMap.DisruptorShot(seed, deprecationLevel, 2);
-                var fourSector = _testMap.DisruptorShot(seed, deprecationLevel, 4);
-                var sevenSector = _testMap.DisruptorShot(seed, deprecationLevel, 7);
-                var eightSector = _testMap.DisruptorShot(seed, deprecationLevel, 8);
-
-                Assert.Less(oneSector, 290, "iteration: " + i);
-                Assert.Less(twoSector, 247, "iteration: " + i);
-                Assert.Less(fourSector, 194, "iteration: " + i);
-                Assert.Less(sevenSector, 115, "iteration: " + i);
-                Assert.Less(eightSector, 88, "iteration: " + i);
-            }
-        }
-
         [Test]
         public void MapWith0Friendlies()
         {

@@ -57,7 +57,7 @@ namespace StarTrek_KG.Subsystem
             Output.WriteLine("Photon torpedo fired...");
             this.Count--;
 
-            var angle = ComputeAngle(map, direction);
+            var angle = Utility.ComputeAngle(map, direction);
 
             Location location = map.Playership.GetLocation();
 
@@ -160,18 +160,8 @@ namespace StarTrek_KG.Subsystem
             {
                 Console.WriteLine("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
                                   (ship.Sector.X), (ship.Sector.Y),
-                                  Map.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y));
+                                  Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y));
             }
-        }
-
-        private static double ComputeAngle(Map map, double direction) // todo: can this be refactored with nav computeangle?
-        {
-            var angle = -(Math.PI*(direction - 1.0)/4.0);
-            if ((Utility.Random).Next(3) == 0)
-            {
-                angle += ((1.0 - 2.0*(Utility.Random).NextDouble())*Math.PI*2.0)*0.03;
-            }
-            return angle;
         }
 
         public new static Torpedoes For(Ship ship)

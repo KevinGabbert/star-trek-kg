@@ -410,25 +410,25 @@ namespace UnitTests.ShipTests.MapTests
             const double oneDiagonalSector = 1.4142135623730951;
             const double twoDiagonalSectors = 2.8284271247461903;
 
-            Assert.AreEqual(twoDiagonalSectors, Map.Distance(0, 0, 2, 2));
-            Assert.AreEqual(twoDiagonalSectors, Map.Distance(2, 2, 0, 0));
-            Assert.AreEqual(oneDiagonalSector, Map.Distance(1, 1, 0, 0));
-            Assert.AreEqual(twoDiagonalSectors, Map.Distance(1, 2, 3, 4));
+            Assert.AreEqual(twoDiagonalSectors, Utility.Distance(0, 0, 2, 2));
+            Assert.AreEqual(twoDiagonalSectors, Utility.Distance(2, 2, 0, 0));
+            Assert.AreEqual(oneDiagonalSector, Utility.Distance(1, 1, 0, 0));
+            Assert.AreEqual(twoDiagonalSectors, Utility.Distance(1, 2, 3, 4));
 
-            Assert.AreEqual(1.0, Map.Distance(0, 0, 0, 1));
-            Assert.AreEqual(2.0, Map.Distance(0, 0, 0, 2));
-            Assert.AreEqual(3.0, Map.Distance(0, 0, 0, 3));
-            Assert.AreEqual(4.0, Map.Distance(0, 0, 0, 4));
-            Assert.AreEqual(8.0, Map.Distance(0, 0, 0, 8));
+            Assert.AreEqual(1.0, Utility.Distance(0, 0, 0, 1));
+            Assert.AreEqual(2.0, Utility.Distance(0, 0, 0, 2));
+            Assert.AreEqual(3.0, Utility.Distance(0, 0, 0, 3));
+            Assert.AreEqual(4.0, Utility.Distance(0, 0, 0, 4));
+            Assert.AreEqual(8.0, Utility.Distance(0, 0, 0, 8));
         }
 
         [Test]
         public void ComputeDirection()
         {
-            Assert.AreEqual(8.0, Map.ComputeDirection(0, 0, 2, 2));
-            Assert.AreEqual(4.0, Map.ComputeDirection(2, 2, 0, 0));
-            Assert.AreEqual(4.0, Map.ComputeDirection(1, 1, 0, 0));
-            Assert.AreEqual(8.0, Map.ComputeDirection(1, 2, 3, 4));
+            Assert.AreEqual(8.0, Utility.ComputeDirection(0, 0, 2, 2));
+            Assert.AreEqual(4.0, Utility.ComputeDirection(2, 2, 0, 0));
+            Assert.AreEqual(4.0, Utility.ComputeDirection(1, 1, 0, 0));
+            Assert.AreEqual(8.0, Utility.ComputeDirection(1, 2, 3, 4));
         }
 
         [Test]
@@ -436,13 +436,13 @@ namespace UnitTests.ShipTests.MapTests
         {
             //Covering the rest of the paths
 
-            Assert.AreEqual(7.0, Map.ComputeDirection(0, 0, 0, 2));
-            Assert.AreEqual(1.0, Map.ComputeDirection(0, 0, 2, 0));
+            Assert.AreEqual(7.0, Utility.ComputeDirection(0, 0, 0, 2));
+            Assert.AreEqual(1.0, Utility.ComputeDirection(0, 0, 2, 0));
 
-            Assert.AreEqual(7.5903344706017331d, Map.ComputeDirection(0, 0, 2, 4));
-            Assert.AreEqual(1.5903344706017331d, Map.ComputeDirection(0, 1, 2, 0));
+            Assert.AreEqual(7.5903344706017331d, Utility.ComputeDirection(0, 0, 2, 4));
+            Assert.AreEqual(1.5903344706017331d, Utility.ComputeDirection(0, 1, 2, 0));
 
-            Assert.AreEqual(6.0, Map.ComputeDirection(2, 0, 1, 1));
+            Assert.AreEqual(6.0, Utility.ComputeDirection(2, 0, 1, 1));
         }
 
         [Ignore]

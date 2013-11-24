@@ -2,20 +2,17 @@
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public  class Shields : SubSystem_Base, IMap
+    public  class Shields : SubSystem_Base
     {
-
         public static readonly string[] CONTROL_PANEL = {
                                                     "--- > Shield Controls ----------------",
                                                     "add = Add energy to shields.",
                                                     "sub = Subtract energy from shields."
-                                                };
-        
+                                                };     
         public Shields(Map map)
         {
             this.Map = map;
@@ -30,7 +27,7 @@ namespace StarTrek_KG.Subsystem
         }
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("Shield controls have been repaired.");
+            Output.WriteLine("Shield control has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -39,7 +36,7 @@ namespace StarTrek_KG.Subsystem
 
         public override void Controls(string command)
         {
-            if (Damaged()) return;
+            if (this.Damaged()) return;
 
             bool adding;
             switch (command)
