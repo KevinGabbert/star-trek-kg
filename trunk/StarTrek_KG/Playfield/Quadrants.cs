@@ -181,7 +181,8 @@ namespace StarTrek_KG.Playfield
                         }
                         else
                         {
-                            if (!Ship.AbsorbHitFrom(badGuy, map)) return true;
+                            bool absorbedHit = map.Playership.AbsorbHitFrom(badGuy, map);
+                            if (!absorbedHit) return true;
                         }
                     }
                     return true;

@@ -40,7 +40,7 @@ namespace StarTrek_KG
             public string Name { get; set; }
             public Allegiance Allegiance { get; set; }
 
-            public List<ISubsystem> Subsystems { get; set; }
+            public Subsystems Subsystems { get; set; }
 
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
@@ -53,21 +53,10 @@ namespace StarTrek_KG
             this.Name = name;
             this.QuadrantDef = position.QuadrantDef;
             
-            this.Subsystems = new List<ISubsystem>();
+            this.Subsystems = new Subsystems(map);
 
             //todo: support the shieldEnergy config setting.
             //If there is a config setting, use it.  otherwise, 0
-
-            this.Subsystems = new List<ISubsystem>()
-                                  {
-                                     new Shields(map) { Energy = 0 },
-                                     new Computer(map),
-                                     new Navigation(map),
-                                     new ShortRangeScan(map),
-                                     new LongRangeScan(map),
-                                     new Torpedoes(map),
-                                     new Phasers(map)
-                                  };
 
             //todo: pull config settings here
             //refactor from Game.GetGlobalInfo()
@@ -98,7 +87,7 @@ namespace StarTrek_KG
         /// repairs one item every time called
         /// </summary>
         /// <returns></returns>
-        public bool RepairSubsystem(Ship ship)
+        public bool RepairSubsystems(Ship ship)
         {
             //TODO: make the priority level configurable
             return ShortRangeScan.For(ship).Repair() ||
@@ -120,17 +109,19 @@ namespace StarTrek_KG
 
         ///interesting.  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
-        public static bool AbsorbHitFrom(Ship attacker, Map map)
+        public bool AbsorbHitFrom(Ship attacker, Map map)
         {
             var ship = map.Playership.GetLocation();
-            var distance = Map.Distance(ship.Sector.X, 
+            var distance = Utility.Distance(ship.Sector.X, 
                                         ship.Sector.Y,
                                         attacker.Sector.X,
                                         attacker.Sector.Y);
 
-            Shields.For(map.Playership).Energy -= map.DisruptorShot(300, 11.3, distance); //todo: pull values from config
+            //TODO: Currently, ships can only be struck by Disruptor.  Modify so ship can take a hit from a photon
+            //This could be as simple as setting an energy level for a photon, and renaming DisruptorShot to be something else..
+            Shields.For(map.Playership).Energy -= Ship.DisruptorShot(distance); //todo: pull values from config
 
-            Ship.UpdateDestroyedStatus(map);
+            this.UpdateShipHealthStatus(map);
 
             Console.WriteLine(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}]. Shields dropped to {2}.",
                              (attacker.Sector.X), (attacker.Sector.Y), Shields.For(map.Playership).Energy);
@@ -138,13 +129,31 @@ namespace StarTrek_KG
             return Shields.For(map.Playership).Energy != 0;
         }
 
-        private static void UpdateDestroyedStatus(Map map)
+        private void UpdateShipHealthStatus(Map map)
         {
-            if (Shields.For(map.Playership).Energy < 0)
+            if (Shields.For(this).Energy < 0)
             {
-                Shields.For(map.Playership).Energy = 0; //for the benefit of the output message telling the user that they have no shields. )
-                map.Playership.Energy = 0;
-                map.Playership.Destroyed = true;
+                int boltStrength = Math.Abs(Shields.For(this).Energy);
+
+                //todo: if(Math.Abs(Shields.For(this).Energy) == all subsystems damage remaining, then blow up the ship.
+                //This is going to require each subsystem to have a damage number, which has to be implemented.
+                //if there are 5 subsystems, and each subsystem has 50 damage points left, then a bolt of 2400 should
+                //either #1. knock out 4 of them and one almost all the way, or #2. leave 5 barely functioning systems.
+                //#1 is easier to code, #2 would be more interesting to code, and would allow for responses to different
+                //weapons types.  Perhaps an Ion Cannon can take out only shields and weapons and warp, but leave everything
+                //else intact.  or another kind of bolt could hit all systems the same, taking some out, and leaving others
+                //barely functioning.
+
+                //TODO: for the moment, this is our current behavior.  The opposing ship might not want to unload all phaser power into an enemy, as it will be wasted
+                Shields.For(this).Energy = 0; //for the benefit of the output message telling the user that they have no shields. )
+
+                bool tookDamage = this.Subsystems.TakeDamageIfAppropriate(boltStrength);
+                if (!tookDamage)
+                {
+                    //this means there was nothing left to damage.  Blow the ship up.
+                    map.Playership.Energy = 0;
+                    map.Playership.Destroyed = true;
+                }
             }   
         }
 
@@ -173,6 +182,26 @@ namespace StarTrek_KG
             shipLocation.Quadrant = this.Map.Playership.GetQuadrant();
 
             return shipLocation;
+        }
+
+
+        /// <summary>
+        /// This function represents the amount of energy fired by an opposing ship.
+        /// The value is a seeded random number that decreases by distance.
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public static int DisruptorShot(double distance)
+        {
+            //todo: give ship a disruptor weapon type, enable it only on hostileType.Klingon.  delete this.
+
+            var seed = AppConfig.Setting<int>("DisruptorShotSeed"); //todo: pull from config
+            var distanceDeprecationLevel = AppConfig.Setting<double>("DisruptorShotDeprecationLevel"); //todo: pull deprecationlevel from config
+
+            var adjustedDisruptorEnergy = (AppConfig.Setting<double>("DisruptorEnergyAdjustment") - distance / distanceDeprecationLevel);
+            var deliveredEnergy = (int)(seed * (Utility.Random).NextDouble() * adjustedDisruptorEnergy);
+
+            return deliveredEnergy;
         }
     }
 }

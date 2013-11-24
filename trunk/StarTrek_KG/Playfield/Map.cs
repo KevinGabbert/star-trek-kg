@@ -292,101 +292,6 @@ namespace StarTrek_KG.Playfield
             return false;
         }
 
-        //calculates distance traveled mostly to be able to have a value for diagonal distance, as straight line calculation doesnt need all this effort.
-        public static double Distance(double startX, double startY, double destinationX, double destinationY)
-        {
-            var distanceTraveledX = destinationX - startX;
-            var distanceTraveledY = destinationY - startY;
-
-            //X squared + Y Squared = Z squared. (Pythagorean Theorem), then Square Root to solve: 
-            return Math.Sqrt(distanceTraveledX * distanceTraveledX + 
-                             distanceTraveledY * distanceTraveledY);
-        }
-
-        /// <summary>
-        /// This function represents the amount of energy fired by an opposing ship.
-        /// The value is a seeded random number that decreases by distance
-        /// </summary>
-        /// <param name="distanceDeprecationLevel"> </param>
-        /// <param name="distance"></param>
-        /// <param name="seed"> </param>
-        /// <returns></returns>
-        public int DisruptorShot(int seed, double distanceDeprecationLevel, double distance)
-        {
-            //todo: give ship a disruptor weapon type, enable it only on hostileType.Klingon.  delete this.
-
-            //const int seed = 300; //todo: pull from config
-            //const double distanceDeprecationLevel = 11.3; //todo: pull deprecationlevel from config
-            var x = (1.0 - distance / distanceDeprecationLevel);
-
-            var deliveredEnergy = (int)(seed * (Utility.Random).NextDouble() * x);
-
-            return deliveredEnergy;
-        }
-
-        //starbase position info (there needs to be a starbase object)
-        public static int starbaseX;
-        public static int starbaseY;
-
-        public void StarbaseCalculator()
-        {
-            var location = Navigation.For(this.Playership);
-            //if (StarTrek_KG.Quadrants.Get(this, location.quadrantX, location.quadrantY).Starbase)
-            //{
-            //    Console.WriteLine("Starbase in sector [{0},{1}].", (starbaseX + 1), (starbaseY + 1));
-            //    Console.WriteLine("Direction: {0:#.##}", Map.ComputeDirection(location.sectorX, location.sectorY, starbaseX, starbaseY));
-            //    Console.WriteLine("Distance:  {0:##.##}", Distance(location.sectorX, location.sectorY, starbaseX, starbaseY) / Constants.SECTOR_MAX);
-            //}
-            //else
-            //{
-            //    Output.Write("There are no starbases in this quadrant.");
-            //}
-        }
-
-        public static double ComputeDirection(int x1, int y1, int x2, int y2)
-        {
-            //Todo:  to place this in the right place, resolve StarbaseCalculator
-
-            double direction;
-            if (x1 == x2)
-            {
-                direction = y1 < y2 ? 7 : 3;
-            }
-            else if (y1 == y2)
-            {
-                direction = x1 < x2 ? 1 : 5;
-            }
-            else
-            {
-                double dy = Math.Abs(y2 - y1);
-                double dx = Math.Abs(x2 - x1);
-                var angle = Math.Atan2(dy, dx);
-                if (x1 < x2)
-                {
-                    if (y1 < y2)
-                    {
-                        direction = 9.0 - 4.0 * angle / Math.PI;
-                    }
-                    else
-                    {
-                        direction = 1.0 + 4.0 * angle / Math.PI;
-                    }
-                }
-                else
-                {
-                    if (y1 < y2)
-                    {
-                        direction = 5.0 + 4.0 * angle / Math.PI;
-                    }
-                    else
-                    {
-                        direction = 5.0 - 4.0 * angle / Math.PI;
-                    }
-                }
-            }
-            return direction;
-        }
-
         ///// <summary>
         ///// TODO: this needs to be changed.  after destruction, it appears to take several method returns to realize that we are dead.
         ///// </summary>
@@ -460,5 +365,19 @@ namespace StarTrek_KG.Playfield
 
 
         //}
+        public void StarbaseCalculator()
+        {
+            var location = Navigation.For(this.Playership);
+            //if (StarTrek_KG.Quadrants.Get(this, location.quadrantX, location.quadrantY).Starbase)
+            //{
+            //    Console.WriteLine("Starbase in sector [{0},{1}].", (starbaseX + 1), (starbaseY + 1));
+            //    Console.WriteLine("Direction: {0:#.##}", Map.ComputeDirection(location.sectorX, location.sectorY, starbaseX, starbaseY));
+            //    Console.WriteLine("Distance:  {0:##.##}", Distance(location.sectorX, location.sectorY, starbaseX, starbaseY) / Constants.SECTOR_MAX);
+            //}
+            //else
+            //{
+            //    Output.Write("There are no starbases in this quadrant.");
+            //}
+        }
     }
 }

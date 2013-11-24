@@ -54,6 +54,7 @@
     <Compile Include="ShipTests\MapTests\MapTests.cs" />
     <Compile Include="ShipTests\MovementTests\MovementTests.cs" />
     <Compile Include="ShipTests\OutputTests.cs" />
+    <Compile Include="ShipTests\SubSystemTests\DamageTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\PhaserTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\PhotonTests.cs" />
     <Compile Include="ShipTests\QuadrantTests\QuadrantTests.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="ShipTests\ShipTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\ComputerTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\Subsystem_BaseTests.cs" />
+    <Compile Include="ShipTests\SubSystemTests\Subsystem_Base_Tests.cs" />
     <Compile Include="ShipTests\WarpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -106,20 +106,20 @@ namespace StarTrek_KG
         }
 
         //output this as KeyValueCollection that the UI can display as it likes.
-        public static void PrintCurrentStatus(Map map, int computerDamage, int shieldControlDamage, int navigationDamage, int shortRangeScanDamage, int longRangeScanDamage, int photonDamage, int phaserDamage, Quadrant currentQuadrant)
+        public static void PrintCurrentStatus(Map map, int computerDamage, Ship ship, Quadrant currentQuadrant)
         {
             Console.WriteLine();
-            Console.WriteLine("               Time Remaining: {0}", map.timeRemaining);
-            Console.WriteLine("      Hostile Ships Remaining: {0}", map.Quadrants.GetHostileCount()); //Map.GetAllHostiles(map).Count
-            Console.WriteLine("         Hostiles in Quadrant: {0}", currentQuadrant.Hostiles);     
-            Console.WriteLine("                    Starbases: {0}", map.starbases);
-            Console.WriteLine("           Warp Engine Damage: {0}", navigationDamage);
-            Console.WriteLine("   Short Range Scanner Damage: {0}", shortRangeScanDamage);
-            Console.WriteLine("    Long Range Scanner Damage: {0}", longRangeScanDamage);
-            Console.WriteLine("       Shield Controls Damage: {0}", shieldControlDamage);
-            Console.WriteLine("         Main Computer Damage: {0}", computerDamage);
-            Console.WriteLine("Photon Torpedo Control Damage: {0}", photonDamage);
-            Console.WriteLine("                Phaser Damage: {0}", phaserDamage);
+            Console.WriteLine(Output.GetText("CSTimeRemaining"), map.timeRemaining);
+            Console.WriteLine(Output.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount()); //Map.GetAllHostiles(map).Count
+            Console.WriteLine(Output.GetText("CSHostilesInQuadrant"), currentQuadrant.Hostiles.Count);
+            Console.WriteLine(Output.GetText("CSStarbases"), map.starbases);
+            Console.WriteLine(Output.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
+            Console.WriteLine(Output.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
+            Console.WriteLine(Output.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
+            Console.WriteLine(Output.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
+            Console.WriteLine(Output.GetText("CSComputerDamage"), computerDamage);
+            Console.WriteLine(Output.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
+            Console.WriteLine(Output.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
             Console.WriteLine();
 
             //foreach (var badGuy in currentQuadrant.Hostiles)

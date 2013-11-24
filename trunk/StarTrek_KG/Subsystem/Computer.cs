@@ -1,13 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Computer : SubSystem_Base, IMap
+    public class Computer : SubSystem_Base
     {
         public static readonly string[] CONTROL_PANEL = {
                                                     "--- > Main Computer --------------",
@@ -55,12 +53,7 @@ namespace StarTrek_KG.Subsystem
 
                     Output.PrintCurrentStatus(this.Map, 
                                               this.Damage, 
-                                              Shields.For(starship).Damage, 
-                                              Navigation.For(starship).Damage,
-                                              ShortRangeScan.For(starship).Damage,
-                                              LongRangeScan.For(starship).Damage,
-                                              Torpedoes.For(starship).Damage,
-                                              Phasers.For(starship).Damage,
+                                              starship,
                                               this.Map.Playership.GetQuadrant());
                     break;
                 case "tor":
