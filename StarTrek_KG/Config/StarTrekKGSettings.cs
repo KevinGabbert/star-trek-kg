@@ -1,6 +1,9 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System;
+using System.Linq;
 using StarTrek_KG.Config.Collections;
+using StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config
 {
@@ -13,7 +16,6 @@ namespace StarTrek_KG.Config
             try
             {
                 settings = (StarTrekKGSettings)ConfigurationManager.GetSection("StarTrekKGSettings");
-                //var x = settings.Factions["Vulcan"].FactionShips[0];
             }
             catch (ConfigurationErrorsException cx)
             {
@@ -39,6 +41,7 @@ namespace StarTrek_KG.Config
 
             return settings ?? new StarTrekKGSettings();
         }
+        public static StarTrekKGSettings Get { get; set; }
 
         [ConfigurationProperty("StarSystems")]
         [ConfigurationCollection(typeof(Names), AddItemName = "StarSystem")]
@@ -66,89 +69,32 @@ namespace StarTrek_KG.Config
         {
             get
             {
-                return (Factions)this["Factions"];
+                return (Factions)this["Factions"];             
             }
         }
-    }
-}
 
-
-namespace Brh.Web
-{
-    class RedirectConfigurationHandler : ConfigurationSection
-    {
-        [ConfigurationProperty("", IsDefaultCollection=true, IsKey=false, IsRequired=true)]
-        public RedirectCollection Redirects
+        public static List<string> GetShips(string faction)
         {
-            get
+            if(StarTrekKGSettings.Get == null)
             {
-                return base[""] as RedirectCollection;
+                StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
             }
 
-            set
+            FactionShips factionShips = StarTrekKGSettings.Get.Factions[faction].FactionShips;
+            var shipNames = (from NameElement shipElement in factionShips select shipElement.name).ToList();
+            return shipNames;
+        }
+
+        public static List<string> GetStarSystems()
+        {
+            if (StarTrekKGSettings.Get == null)
             {
-                base[""] = value;
+                StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
             }
-        }
-    }
 
-    class RedirectCollection : ConfigurationElementCollection
-    {
-
-        protected override ConfigurationElement CreateNewElement()
-        {
-            return new RedirectElement();
-        }
-
-        protected override object GetElementKey(ConfigurationElement element)
-        {
-            return ((RedirectElement)element).FilePattern;
-        }
-
-        protected override string ElementName
-        {
-            get
-            {
-                return "redirect";
-            }
-        }
-
-        protected override bool IsElementName(string elementName)
-        {
-            return !String.IsNullOrEmpty(elementName) && elementName == "redirect";
-        }
-
-        public override ConfigurationElementCollectionType CollectionType
-        {
-            get
-            {
-                return ConfigurationElementCollectionType.BasicMap;
-            }
-        }
-
-
-        public RedirectElement this[int index] {
-            get
-            {
-                return base.BaseGet(index) as RedirectElement;
-            }
-        }
-    }
-
-    class RedirectElement : ConfigurationElement
-    {
-        [ConfigurationProperty("filePattern", IsRequired=true, IsKey=true)]
-        public string FilePattern
-        {
-            get { return base["filePattern"] as string; }
-            set { base["filePattern"] = value; }
-        }
-
-        [ConfigurationProperty("url", IsRequired=true, IsKey=false)]
-        public string RedirectUrl
-        {
-            get { return base["url"] as string; }
-            set { base["url"] = value; }
+            var systems = StarTrekKGSettings.Get.StarSystems;
+            var systemNames = (from NameElement starSystem in systems select starSystem.name).ToList();
+            return systemNames;
         }
     }
 }

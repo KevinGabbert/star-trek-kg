@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
+using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -22,7 +23,7 @@ namespace UnitTests.ShipTests.MapTests
              Assert.IsInstanceOf(typeof(Map), _testMap);
             //todo: call VerifyGlobalInfoSettings()
 
-             Output.Get = StarTrekKGSettings.GetConfig();
+             //StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
         }
 
         [Test]
@@ -48,28 +49,33 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void InitializeQuadrants()
         {
-            _testMap.InitializeQuadrants(new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()), 
-                                         new Stack<string>(Constants.KLINGON_SHIP_NAMES.ToList()),
-                                         new SectorDefs());
+            var klingonShipNames =  StarTrekKGSettings.GetShips("Klingon");
+            var systemNames = StarTrekKGSettings.GetStarSystems();
+            _testMap.InitializeQuadrants(new Stack<string>(systemNames),
+                                         new Stack<string>(klingonShipNames),
+                                         null);
 
             Assert.IsInstanceOf(typeof(Map), _testMap);
             Assert.Greater(_testMap.Quadrants.Count, 63); //todo: currently these reside in constants, but will be moving to app.config
 
-            //todo: Assert that no baddies or friendlies are set up.
+            ////todo: Assert that no baddies or friendlies are set up.
         }
 
         [Ignore]
         [Test]
         public void PopulateWithHostilesAndStarbases()
         {
-            _testMap.InitializeQuadrants(new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()),
-                                         new Stack<string>(Constants.KLINGON_SHIP_NAMES.ToList()),
+            var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
+            var systemNames = StarTrekKGSettings.GetStarSystems();
+
+            _testMap.InitializeQuadrants(new Stack<string>(systemNames),
+                                         new Stack<string>(klingonShipNames),
                                          null);
             //Quadrant.Populate(_testMap);
 
             Assert.Greater(_testMap.Quadrants.Count, 63); //currently these reside in constants, but will be moving to app.config
-            
-            
+
+
             //todo: query quadrants for number of starbases (change quadrants to a collection!) and get rid of "starbases" variable)
         }
         
@@ -202,7 +208,8 @@ namespace UnitTests.ShipTests.MapTests
                 AddStars = false
             }));
 
-            Quadrant.InitializeSectors(_testMap.Quadrants.GetActive(), null, new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()), _testMap, false);
+            var systemNames = StarTrekKGSettings.GetStarSystems();
+            Quadrant.InitializeSectors(_testMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), _testMap, false);
 
             Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);  
 

@@ -5,11 +5,11 @@ namespace StarTrek_KG.Config.Collections
 {
     public class NameAllegiances: ConfigurationElementCollection
     {
-        public NameAllegiance this[int index]
+        public NameAllegianceElement this[int index]
         {
             get
             {
-                return base.BaseGet(index) as NameAllegiance;
+                return base.BaseGet(index) as NameAllegianceElement;
             }
             set
             {
@@ -21,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new NameAllegiance this[string responseString]
+        public new NameAllegianceElement this[string responseString]
         {
             get
             {
-                return (NameAllegiance)BaseGet(responseString);
+                return (NameAllegianceElement)BaseGet(responseString);
             }
             set
             {
@@ -40,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new NameAllegiance();
+            return new NameAllegianceElement();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((NameAllegiance)element).name;
+            return ((NameAllegianceElement)element).name;
         }
     }
 }

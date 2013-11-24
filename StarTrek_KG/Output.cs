@@ -10,7 +10,7 @@ namespace StarTrek_KG
 {
     public class Output
     {
-        public static StarTrekKGSettings Get { get; set; }
+        //public static StarTrekKGSettings Get { get; set; }
 
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }
@@ -47,12 +47,12 @@ namespace StarTrek_KG
 
         public static string GetText(string textToGet)
         {
-            return Output.Get.ConsoleText[textToGet].value;
+            return StarTrekKGSettings.Get.ConsoleText[textToGet].value;
         }
 
         public static string GetText(string textToGet, string textToGet2)
         {
-            return Output.Get.ConsoleText[textToGet].value + Output.Get.ConsoleText[textToGet2].value;
+            return StarTrekKGSettings.Get.ConsoleText[textToGet].value + StarTrekKGSettings.Get.ConsoleText[textToGet2].value;
         }
 
         public static void DockSuccess(string shipName)

@@ -60,12 +60,12 @@
     <Compile Include="Config\Collections\Factions.cs" />
     <Compile Include="Config\Collections\NameAllegiances.cs" />
     <Compile Include="Config\Collections\FactionShips.cs" />
-    <Compile Include="Config\Elements\Faction.cs" />
+    <Compile Include="Config\Elements\FactionElement.cs" />
     <Compile Include="Config\Collections\Names.cs" />
     <Compile Include="Config\Collections\NameValues.cs" />
-    <Compile Include="Config\Elements\Name.cs" />
-    <Compile Include="Config\Elements\NameAllegiance.cs" />
-    <Compile Include="Config\Elements\NameValue.cs" />
+    <Compile Include="Config\Elements\NameElement.cs" />
+    <Compile Include="Config\Elements\NameAllegianceElement.cs" />
+    <Compile Include="Config\Elements\NameValueElement.cs" />
     <Compile Include="Config\StarTrekKGSettings.cs" />
     <Compile Include="Exceptions\GameConfigException.cs" />
     <Compile Include="Exceptions\GameException.cs" />

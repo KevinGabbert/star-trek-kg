@@ -43,7 +43,9 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void NewWithMap()
         {
-            _testQuadrant = new Quadrant(new Map(null), new Stack<string>(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()));
+            var systemNames = StarTrekKGSettings.GetStarSystems();
+
+            _testQuadrant = new Quadrant(new Map(null), new Stack<string>(systemNames));
 
             //todo: make sure that map is not set up with anyting
 
@@ -58,14 +60,16 @@ namespace UnitTests.ShipTests.QuadrantTests
         public void Create()
         {
             var name = new List<string>();
-            name.Add(StarTrekKGSettings.GetConfig().StarSystems.Cast<Name>().Select(system => system.name).ToList()[0]);
+            var systemNames = StarTrekKGSettings.GetStarSystems();
+            var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
+            name.Add(systemNames[0]);
 
             var names = new Stack<string>(name);
 
             int index;
             var newQuadrant = new Quadrant();
-            newQuadrant.Create(new Map(null), names, 
-                               new Stack<string>(Constants.KLINGON_SHIP_NAMES.ToList()),
+            newQuadrant.Create(new Map(null), names,
+                               new Stack<string>(klingonShipNames),
                                new Coordinate(1, 1), out index, null);
 
             Assert.IsInstanceOf(typeof(Map), _testQuadrant.Map);

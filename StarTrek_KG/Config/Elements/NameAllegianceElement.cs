@@ -2,7 +2,7 @@
 
 namespace StarTrek_KG.Config.Elements
 {
-    public class NameAllegiance : ConfigurationElement
+    public class NameAllegianceElement : ConfigurationElement
     {
         [ConfigurationProperty("name", IsRequired = true)]
         public string name

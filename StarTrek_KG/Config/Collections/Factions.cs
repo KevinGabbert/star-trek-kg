@@ -5,11 +5,11 @@ namespace StarTrek_KG.Config.Collections
 {
     public class Factions : NameAllegiances
     {
-        public Faction this[int index]
+        public FactionElement this[int index]
         {
             get
             {
-                return base.BaseGet(index) as Faction;
+                return base.BaseGet(index) as FactionElement;
             }
             set
             {
@@ -21,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new Faction this[string responseString]
+        public new FactionElement this[string responseString]
         {
             get
             {
-                return (Faction)BaseGet(responseString);
+                return (FactionElement)BaseGet(responseString);
             }
             set
             {
@@ -40,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new Faction();
+            return new FactionElement();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((Faction)element).name;
+            return ((FactionElement)element).name;
         }
 
         //public override ConfigurationElementCollectionType CollectionType
