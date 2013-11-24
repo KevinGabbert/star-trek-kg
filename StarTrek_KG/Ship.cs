@@ -106,7 +106,7 @@ namespace StarTrek_KG
 
             return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy;
         }
-
+          
         ///interesting.  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public bool AbsorbHitFrom(Ship attacker, Map map)

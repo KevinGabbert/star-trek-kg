@@ -35,7 +35,7 @@ namespace StarTrek_KG
             return Math.Sqrt(distanceTraveledX * distanceTraveledX +
                              distanceTraveledY * distanceTraveledY);
         }
-
+         
         public static double ComputeDirection(int x1, int y1, int x2, int y2)
         {
             //Todo:  to place this in the right place, resolve StarbaseCalculator
