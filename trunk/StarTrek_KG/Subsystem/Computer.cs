@@ -25,11 +25,11 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.WriteLine("The main computer has been repaired.");
+            Output.WriteLine("The main computer has been Damaged.");
         }
         public override void OutputRepairedMessage()
         {
-            Output.ComputerDamageMessage();
+            Output.WriteLine("The main computer has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
