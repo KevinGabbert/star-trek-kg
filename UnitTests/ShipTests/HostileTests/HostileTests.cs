@@ -15,6 +15,12 @@ namespace UnitTests.ShipTests.HostileTests
     {
         private Map _testMap; 
 
+        [SetUp]
+        public void SetUp()
+        {
+            Output.Get = StarTrekKGSettings.GetConfig();
+        }
+
         [Test]
         public void ALLHostilesAttack_ShipUndocked_WithShields()
         {
@@ -44,8 +50,10 @@ namespace UnitTests.ShipTests.HostileTests
 
             _testMap.Quadrants.ALLHostilesAttack(_testMap);
 
-            Assert.IsTrue(_testMap.Playership.Destroyed);  //guess you shoulda raised shields first, huh?
-            Assert.AreEqual(0, _testMap.Playership.Energy);  //todo: check all of ship's systems in HostileTests
+            Assert.IsFalse(_testMap.Playership.Destroyed);
+
+            //2 subsystems should have been taken out.
+            Assert.AreEqual(2, _testMap.Playership.Subsystems.Count(s => s.Damaged()));  //todo: check all of ship's systems in HostileTests
         }
 
         [Test]
