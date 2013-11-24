@@ -53,7 +53,7 @@ namespace UnitTests.ShipTests.MapTests
             var systemNames = StarTrekKGSettings.GetStarSystems();
             _testMap.InitializeQuadrants(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames),
-                                         null);
+                                         new SectorDefs());
 
             Assert.IsInstanceOf(typeof(Map), _testMap);
             Assert.Greater(_testMap.Quadrants.Count, 63); //todo: currently these reside in constants, but will be moving to app.config
