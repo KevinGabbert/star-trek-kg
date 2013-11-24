@@ -69,8 +69,6 @@ namespace StarTrek_KG.Subsystem
                     Output.WriteLine("Invalid computer command.");
                     break;
             }
-
-            this.TakeDamage();
         }
 
         public new static Computer For(Ship ship)

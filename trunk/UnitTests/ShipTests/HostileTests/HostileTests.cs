@@ -18,7 +18,7 @@ namespace UnitTests.ShipTests.HostileTests
         [SetUp]
         public void SetUp()
         {
-            Output.Get = StarTrekKGSettings.GetConfig();
+            //StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
         }
 
         [Test]

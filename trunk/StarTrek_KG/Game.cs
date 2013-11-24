@@ -20,6 +20,11 @@ namespace StarTrek_KG
 
         public Game()
         {
+            //The config file is loaded here, and persisted through the rest of the game. 
+            //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
+            //might try to reload the file. #NotInThisVersion
+            StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
+
             Game.GetConstants();
 
             this.Output = (new Output(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL));
@@ -44,11 +49,6 @@ namespace StarTrek_KG
 
         private static void GetConstants()
         {
-            //The config file is loaded here, and persisted through the rest of the game. 
-            //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
-            //might try to reload the file. #NotInThisVersion
-            Output.Get = StarTrekKGSettings.GetConfig();
-
             //TODO: Migrate these into StarTrekKGSettings
 
             Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");

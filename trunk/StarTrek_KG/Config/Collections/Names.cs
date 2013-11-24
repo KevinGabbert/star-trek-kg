@@ -5,11 +5,11 @@ namespace StarTrek_KG.Config.Collections
 {
     public class Names: ConfigurationElementCollection
     {
-        public Name this[int index]
+        public NameElement this[int index]
         {
             get
             {
-                return base.BaseGet(index) as Name;
+                return base.BaseGet(index) as NameElement;
             }
             set
             {
@@ -21,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new Name this[string responseString]
+        public new NameElement this[string responseString]
         {
             get
             {
-                return (Name)BaseGet(responseString);
+                return (NameElement)BaseGet(responseString);
             }
             set
             {
@@ -40,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new Name();
+            return new NameElement();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((Name)element).name;
+            return ((NameElement)element).name;
         }
 
         //public override ConfigurationElementCollectionType CollectionType
