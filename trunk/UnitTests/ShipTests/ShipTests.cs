@@ -1,8 +1,6 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
-using StarTrek_KG.Playfield;
-using StarTrek_KG.Settings;
 
 namespace UnitTests.ShipTests
 {

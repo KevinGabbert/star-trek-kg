@@ -12,29 +12,19 @@ namespace StarTrek_KG.Playfield
             public Sector Sector { get; set; } 
 
             public SectorItem Item { get; set; }
+
         #endregion
 
         //todo: get rid of that second, stupid parameter.
         public SectorDef(SectorItem sectorItem)
         {
-            Setup_Playfield_Constants();
-
+ 
             this.Sector = new Sector(new LocationDef(null, new Coordinate((Utility.Random).Next(Constants.SECTOR_MAX), (Utility.Random).Next(Constants.SECTOR_MAX))));
             this.Item = sectorItem;
         }
 
-        private static void Setup_Playfield_Constants()
-        {
-            Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");
-
-            Constants.QUADRANT_MIN = AppConfig.Setting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = AppConfig.Setting<int>("QuadrantMax");
-        }
-
         public SectorDef(LocationDef location, SectorItem sectorItem)
         {
-            SectorDef.Setup_Playfield_Constants();
 
             string sectorSetupError = StarTrekKGSettings.GetText("SectorDefSetupError");
 
