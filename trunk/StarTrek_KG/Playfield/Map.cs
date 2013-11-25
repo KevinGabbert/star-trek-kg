@@ -239,6 +239,11 @@ namespace StarTrek_KG.Playfield
                                                            (Utility.Random).Next(Constants.SECTOR_MAX));
             }
 
+            if(this.Quadrants.Count == 0)
+            {
+                throw new ArgumentException("No quadrants set up!");
+            }
+
             var m = this.Quadrants.Where(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y).Single();
             this.Playership.QuadrantDef = new Coordinate(m.X, m.Y);
             this.Playership.GetQuadrant().Active = true;

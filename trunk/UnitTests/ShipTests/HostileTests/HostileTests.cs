@@ -29,6 +29,8 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void ALLHostilesAttack_ShipUndocked_WithShields()
         {
+            //todo:  verify that quadrants are set up correctly.
+            //todo: This test does not run alone.  what do the other tests set up that this needs?  why don't thea other tests tear down their stuff?
             this.SetupMapWith2Hostiles();
 
             //raise shields
@@ -44,6 +46,43 @@ namespace UnitTests.ShipTests.HostileTests
     
             //Assert that ship has taken 2 hits.
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
+        }
+
+        [Ignore("Test here that shields go lower when Playership is hit")]
+        [Test]
+        public void ALLHostilesAttack_ShipUndocked_WithShields2()
+        {
+            //this.SetupMapWith2Hostiles();
+
+            ////raise shields
+            //Shields.For(_testMap.Playership).AddEnergy(2500, true); //hopefully a single hit wont be harder than this!
+            //Assert.AreEqual(2500, Shields.For(_testMap.Playership).Energy, "Unexpected shield energy level"); //shields charged correctly // todo: do more tests on this in ShieldTests          
+            //Assert.AreEqual(500, _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
+
+            //_testMap.Quadrants.ALLHostilesAttack(_testMap);
+
+            //Assert.IsFalse(_testMap.Playership.Destroyed);
+            //Assert.Less(Shields.For(_testMap.Playership).Energy, 2500);
+            //Assert.AreEqual(_testMap.Playership.Energy, 500);
+
+            ////Assert that ship has taken 2 hits.
+            ////todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
+        }
+
+        [Ignore("Test here that output messages are called where shields are lower")]
+        [Test]
+        public void ALLHostilesAttack_ShipUndocked_NoShields2()
+        {
+            //this.SetupMapWith2Hostiles();
+
+            //Assert.AreEqual(3000, _testMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
+
+            //_testMap.Quadrants.ALLHostilesAttack(_testMap);
+
+            //Assert.IsFalse(_testMap.Playership.Destroyed);
+
+            ////2 subsystems should have been taken out.
+            //Assert.AreEqual(2, _testMap.Playership.Subsystems.Count(s => s.Damaged()));  //todo: check all of ship's systems in HostileTests
         }
 
         [Test]
