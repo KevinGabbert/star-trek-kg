@@ -56,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
-    <Compile Include="Config\AppConfig.cs" />
     <Compile Include="Config\Collections\Factions.cs" />
     <Compile Include="Config\Collections\NameAllegiances.cs" />
     <Compile Include="Config\Collections\FactionShips.cs" />
@@ -121,6 +120,7 @@
     <Content Include="Content\Enterprise.txt" />
     <Content Include="Content\Enterprise2.txt" />
     <Content Include="Content\Klingon Ship Names.txt" />
+    <Content Include="Content\trek4a.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
