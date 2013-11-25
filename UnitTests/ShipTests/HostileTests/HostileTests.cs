@@ -31,6 +31,8 @@ namespace UnitTests.ShipTests.HostileTests
         {
             //todo:  verify that quadrants are set up correctly.
             //todo: This test does not run alone.  what do the other tests set up that this needs?  why don't thea other tests tear down their stuff?
+
+            //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
             this.SetupMapWith2Hostiles();
 
             //raise shields
