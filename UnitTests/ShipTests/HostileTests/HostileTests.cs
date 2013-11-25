@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
@@ -18,7 +17,13 @@ namespace UnitTests.ShipTests.HostileTests
         [SetUp]
         public void SetUp()
         {
-            //StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
+            _testMap = null;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _testMap = null;
         }
 
         [Test]
@@ -222,20 +227,9 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder2()
         {
-            _testMap = (new Map(new GameConfig
-            {
-                Initialize = true,
-                GenerateMap = true,
-                UseAppConfigSectorDefs = false,
-                SectorDefs = new SectorDefs
-                {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.Friendly),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.Hostile),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.Hostile),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.Hostile)
-                },
-                AddStars = false
-            }));
+            //**This test has an interesting error in it..
+
+            _testMap = HostileTests.SetUp3Hostiles();
 
             Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);
 
@@ -243,14 +237,69 @@ namespace UnitTests.ShipTests.HostileTests
             var activeQuadrant = _testMap.Quadrants.GetActive();
 
             Assert.AreEqual(SectorItem.Friendly, activeQuadrant.Sectors[1].Item);
-            Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[38].Item);
-            Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[23].Item);
+            Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[38].Item, "Expected Hostile at activeQuadrant.Sectors[38]");
+            Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[23].Item, "Expected Hostile at activeQuadrant.Sectors[23]");
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[24].Item);
-            Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[36].Item);
+            Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[36].Item, "Expected Hostile at activeQuadrant.Sectors[39]");
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[39].Item);
+
+
+            //when the following code is run after this, when the full test harness is run, this errors.
+            //Assert.AreEqual(2, activeQuadrant.Hostiles[0].Sector.X);
+            //Assert.AreEqual(7, activeQuadrant.Hostiles[0].Sector.Y);
+
+            //Assert.AreEqual(4, activeQuadrant.Hostiles[1].Sector.X, "SectorX location expected to be a 4");
+            //Assert.AreEqual(6, activeQuadrant.Hostiles[1].Sector.Y, "SectorY location expected to be a 6"); //when run with a lot of tests, this is 6.  if run by itself, its 4
+
+            //Assert.AreEqual(4, activeQuadrant.Hostiles[2].Sector.X);
+            //Assert.AreEqual(6, activeQuadrant.Hostiles[2].Sector.Y);
+        }
+
+        private static Map SetUp3Hostiles()
+        {
+            return (new Map(new GameConfig
+                                {
+                                    Initialize = true,
+                                    GenerateMap = true,
+                                    UseAppConfigSectorDefs = false,
+                                    SectorDefs = new SectorDefs
+                                                     {
+                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.Friendly),
+                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.Hostile),
+                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.Hostile),
+                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.Hostile)
+                                                     },
+                                    AddStars = false
+                                }));
+        }
+
+        /// <summary>
+        /// This addresses an issue where ships added in descending order causes the first one not to be entered when all tests are run
+        /// </summary>
+        [Test]
+        public void MapWith3HostilesTheConfigWayAddedInDescendingOrder3()
+        {
+            _testMap = HostileTests.SetUp3Hostiles();
+
+            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);
+
+            //todo: why active? are hostiles in the same sector?
+            var activeQuadrant = _testMap.Quadrants.GetActive();
 
             Assert.AreEqual(3, activeQuadrant.Hostiles.Count());
             Assert.AreEqual(3, activeQuadrant.GetHostileCount());
+        }
+
+        /// <summary>
+        /// This addresses an issue where ships added in descending order causes the first one not to be entered when all tests are run
+        /// </summary>
+        [Test]
+        public void MapWith3HostilesTheConfigWayAddedInDescendingOrder4()
+        {
+            _testMap = HostileTests.SetUp3Hostiles();
+
+            //todo: why active? are hostiles in the same sector?
+            var activeQuadrant = _testMap.Quadrants.GetActive();
 
             Assert.AreEqual(2, activeQuadrant.Hostiles[0].Sector.X);
             Assert.AreEqual(7, activeQuadrant.Hostiles[0].Sector.Y);

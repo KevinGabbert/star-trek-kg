@@ -10,8 +10,6 @@ namespace StarTrek_KG
 {
     public class Output
     {
-        //public static StarTrekKGSettings Get { get; set; }
-
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }
         int Starbases { get; set; }

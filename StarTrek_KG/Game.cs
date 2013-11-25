@@ -49,7 +49,7 @@ namespace StarTrek_KG
 
         private static void GetConstants()
         {
-            //TODO: Migrate these into StarTrekKGSettings
+            //TODO: Migrate these into StarTrekKG
 
             Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
             Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");

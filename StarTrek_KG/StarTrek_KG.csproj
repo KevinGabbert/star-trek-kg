@@ -119,6 +119,7 @@
     <Content Include="Content\ASCII Repository.txt" />
     <Content Include="Content\Enterprise.gif" />
     <Content Include="Content\Enterprise.txt" />
+    <Content Include="Content\Enterprise2.txt" />
     <Content Include="Content\Klingon Ship Names.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
