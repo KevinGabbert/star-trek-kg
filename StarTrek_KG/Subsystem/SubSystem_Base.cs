@@ -54,7 +54,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public void TakeDamage()
         {          
-            this.Damage = 1 + (Utility.Random).Next(AppConfig.Setting<int>("DamageSeed"));
+            this.Damage = 1 + (Utility.Random).Next(StarTrekKGSettings.GetSetting<int>("DamageSeed"));
 
             //todo: if number is small, then this.OutputMalfunctioningMessage.. else...
             this.OutputDamagedMessage();

@@ -51,14 +51,14 @@ namespace StarTrek_KG
         {
             //TODO: Migrate these into StarTrekKG
 
-            Constants.SECTOR_MIN = AppConfig.Setting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = AppConfig.Setting<int>("SECTOR_MAX");
+            Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
 
-            Constants.QUADRANT_MIN = AppConfig.Setting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = AppConfig.Setting<int>("QuadrantMax");
+            Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
 
-            Constants.SHIELDS_DOWN_LEVEL = AppConfig.Setting<int>("ShieldsDownLevel");
-            Constants.LOW_ENERGY_LEVEL = AppConfig.Setting<int>("LowEnergyLevel");
+            Constants.SHIELDS_DOWN_LEVEL = StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel");
+            Constants.LOW_ENERGY_LEVEL = StarTrekKGSettings.GetSetting<int>("LowEnergyLevel");
         }
 
         private static SectorDefs SectorSetup()
@@ -134,7 +134,7 @@ namespace StarTrek_KG
         /// </summary>
         public void Run()
         {
-            var keepPlaying = AppConfig.Setting<bool>("KeepPlaying");
+            var keepPlaying = StarTrekKGSettings.GetSetting<bool>("KeepPlaying");
 
             while (keepPlaying)
             {

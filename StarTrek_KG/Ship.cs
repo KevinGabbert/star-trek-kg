@@ -102,7 +102,7 @@ namespace StarTrek_KG
         public Allegiance GetAllegiance()
         {
             //todo: remove this app setting (pass in as an argument?)
-            var setting = AppConfig.Setting<string>("Hostile");
+            var setting = StarTrekKGSettings.GetSetting<string>("Hostile");
 
             return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy;
         }
@@ -195,10 +195,10 @@ namespace StarTrek_KG
         {
             //todo: give ship a disruptor weapon type, enable it only on hostileType.Klingon.  delete this.
 
-            var seed = AppConfig.Setting<int>("DisruptorShotSeed"); //todo: pull from config
-            var distanceDeprecationLevel = AppConfig.Setting<double>("DisruptorShotDeprecationLevel"); //todo: pull deprecationlevel from config
+            var seed = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed"); //todo: pull from config
+            var distanceDeprecationLevel = StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"); //todo: pull deprecationlevel from config
 
-            var adjustedDisruptorEnergy = (AppConfig.Setting<double>("DisruptorEnergyAdjustment") - distance / distanceDeprecationLevel);
+            var adjustedDisruptorEnergy = (StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment") - distance / distanceDeprecationLevel);
             var deliveredEnergy = (int)(seed * (Utility.Random).NextDouble() * adjustedDisruptorEnergy);
 
             return deliveredEnergy;
