@@ -117,16 +117,36 @@ namespace StarTrek_KG
                                         attacker.Sector.X,
                                         attacker.Sector.Y);
 
+            var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
+
+            Console.Write(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}].", (attacker.Sector.X), (attacker.Sector.Y));
+
             //TODO: Currently, ships can only be struck by Disruptor.  Modify so ship can take a hit from a photon
             //This could be as simple as setting an energy level for a photon, and renaming DisruptorShot to be something else..
             Shields.For(map.Playership).Energy -= Ship.DisruptorShot(distance); //todo: pull values from config
 
             this.UpdateShipHealthStatus(map);
 
-            Console.WriteLine(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}]. Shields dropped to {2}.",
-                             (attacker.Sector.X), (attacker.Sector.Y), Shields.For(map.Playership).Energy);
+            Ship.ReportShieldsStatus(map, shieldsValueBeforeHit);
 
             return Shields.For(map.Playership).Energy != 0;
+        }
+
+        private static void ReportShieldsStatus(Map map, int shieldsValueBeforeHit)
+        {
+            var shieldsValueAfterHit = Shields.For(map.Playership).Energy;
+
+            if (shieldsValueAfterHit <= shieldsValueBeforeHit)
+            {
+                if (shieldsValueAfterHit == 0)
+                {
+                    Console.Write("Warning: Shields are Down.");
+                }
+                else
+                {
+                    Console.Write("Shields dropped to {0}.", Shields.For(map.Playership).Energy);
+                }
+            }
         }
 
         private void UpdateShipHealthStatus(Map map)

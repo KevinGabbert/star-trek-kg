@@ -10,8 +10,6 @@ namespace UnitTests.GameTests
     [TestFixture]
     public class GameTests
     {
-
-
         [Test]
         public void NewGame()
         {

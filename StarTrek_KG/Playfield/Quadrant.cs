@@ -6,6 +6,9 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Playfield
 {
+    /// <summary>
+    /// A Quadrant in this game is a named area of space. It can contain ships, starbases, or stars. 
+    /// </summary>
     public class Quadrant: Coordinate
     {
         #region Properties
