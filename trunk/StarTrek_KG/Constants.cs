@@ -12,6 +12,8 @@ namespace StarTrek_KG
         public const string STAR = " * ";
         public const string ALLY = "<++>";
 
+
+        //Make these part of the Map Object.  There should be only 1 map instance.. right?
         public static int SECTOR_MIN; 
         public static int SECTOR_MAX; 
 
