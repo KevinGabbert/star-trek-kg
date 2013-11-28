@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -32,8 +33,15 @@ namespace UnitTests.ShipTests.MovementTests
         [SetUp]
         public void Setup()
         {
+            Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
+
+            Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
+
             reset();
             this.CheckBeforeMovement();
+
         }
 
         [TearDown]
@@ -45,6 +53,12 @@ namespace UnitTests.ShipTests.MovementTests
             _testMapNoObjects.Playership = null;
             _testMapNoObjects = null;
             _testMovement = null;
+
+            Constants.SECTOR_MIN = 0;
+            Constants.SECTOR_MAX = 0;
+
+            Constants.QUADRANT_MIN = 0;
+            Constants.QUADRANT_MAX = 0;
         }
 
         private void reset()

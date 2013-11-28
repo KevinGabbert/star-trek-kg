@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
@@ -6,7 +7,7 @@ using StarTrek_KG.Settings;
 
 namespace StarTrek_KG
 {
-    public class Game
+    public class Game: IDisposable
     {
         #region Properties
 
@@ -208,6 +209,15 @@ namespace StarTrek_KG
                 map.timeRemaining--;
                 map.Stardate++;
             }
+        }
+
+        public void Dispose()
+        {
+            Constants.SECTOR_MIN = 0;
+            Constants.SECTOR_MAX = 0;
+
+            Constants.QUADRANT_MIN = 0;
+            Constants.QUADRANT_MAX = 0;
         }
     }
 }

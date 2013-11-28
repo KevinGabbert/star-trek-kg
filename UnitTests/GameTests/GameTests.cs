@@ -1,5 +1,4 @@
 ﻿
-using System;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
@@ -20,11 +19,12 @@ namespace UnitTests.GameTests
             Assert.IsInstanceOf<Map>(game.Map);
 
             StarTrekKGSettings.Get = null;
+        }
 
-            game.Map = null;
-            GC.Collect();
-            game = null;
-            GC.Collect();
+        [TearDown]
+        public void TearDown()
+        {
+            
         }
     }
 }

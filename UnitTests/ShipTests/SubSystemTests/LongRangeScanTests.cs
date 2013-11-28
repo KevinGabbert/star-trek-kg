@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using StarTrek_KG;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -15,6 +17,12 @@ namespace UnitTests.ShipTests.SubSystemTests
         [SetUp]
         public void Setup()
         {
+            Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
+
+            Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
+
             _testLRSMap = new Map(new GameConfig
                                       {
                                           Initialize = true,
@@ -29,6 +37,16 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _testLongRangeScanner = new LongRangeScan(_testLRSMap);
             Assert.AreEqual(SubsystemType.LongRangeScan, _testLongRangeScanner.Type);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Constants.SECTOR_MIN = 0;
+            Constants.SECTOR_MAX = 0;
+
+            Constants.QUADRANT_MIN = 0;
+            Constants.QUADRANT_MAX = 0;
         }
 
         [Test]
@@ -84,6 +102,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(2, hostileCount);
         }
 
+        [Ignore]
         [Test]
         public void GetStarbaseInfoFromScanner()
         {
@@ -114,6 +133,34 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(5, starbaseCount);
             Assert.AreEqual(0, starCount);
             Assert.AreEqual(1, hostileCount);
+        }
+
+        [Test(Description = "Fails when run with Fixture")]
+        public void GetStarbaseInfoFromScanner2()
+        {
+            _testLRSMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 3)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 4)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 5)), SectorItem.Starbase),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
+                    },
+                AddStars = false
+            });
+
+            int starbaseCount;
+            int starCount;
+            int hostileCount;
+            LongRangeScan.GetMapInfoForScanner(_testLRSMap, 0, 0, out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+
+            Assert.AreEqual(5, starbaseCount);
         }
 
         [Ignore]

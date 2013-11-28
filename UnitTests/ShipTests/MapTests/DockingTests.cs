@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using StarTrek_KG;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -15,6 +17,12 @@ namespace UnitTests.ShipTests.MapTests
         [SetUp]
         public void Setup()
         {
+            Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
+
+            Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
+
             _testMapNoObjects = (new Map(new GameConfig
             {
                 Initialize = true,
@@ -24,6 +32,17 @@ namespace UnitTests.ShipTests.MapTests
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                             }
             }));
+
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Constants.SECTOR_MIN = 0;
+            Constants.SECTOR_MAX = 0;
+
+            Constants.QUADRANT_MIN = 0;
+            Constants.QUADRANT_MAX = 0;
         }
 
         [Test]
