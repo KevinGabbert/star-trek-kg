@@ -70,13 +70,12 @@ namespace StarTrek_KG.Playfield
                     }
                 }
 
-                newSectors.Add(newSector);
+                newSectors.Add(newSector);    
             }
             //else
             //{
             //    //throw new GameException("Can't set up sector at " + sectorDef.Sector.X + "," + sectorDef.Sector.Y + ". Sector already set up.");
             //}
-
         }
     }
 }

@@ -54,5 +54,10 @@ namespace StarTrek_KG.Playfield
                 throw new GameConfigException("Out of bounds");
             }
         }
+
+        public override string ToString()
+        {
+            return "Coordinate: " + this.X + ", " + this.Y;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -83,6 +84,17 @@ namespace StarTrek_KG.Playfield
             {
                 this.SetupFriendlies(sectorDefs);
             }
+
+
+            //Modify this to output everything
+            if (Constants.DEBUG_MODE)
+            {
+                //TODO: write a hidden command that displays everything. (for debug purposes)
+
+                Output.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
+                Output.WriteLine(" ---------------- Debug Mode ----------------//");
+                Output.WriteLine("");
+            }
         }
 
         private void SetupFriendlies(SectorDefs sectorDefs)
@@ -134,6 +146,17 @@ namespace StarTrek_KG.Playfield
 
                     newQuadrant.Create(this, names, baddieNames, quadrantXY, out index, itemsToPopulate, this.GameConfig.AddStars);
                     this.Quadrants.Add(newQuadrant);
+
+                    if (Constants.DEBUG_MODE)
+                    {
+                        Output.WriteSingleLine("Adding new Quadrant.");
+                        
+                        Output.DisplayPropertiesOf(newQuadrant);
+
+                        //TODO: each object within quadrant needs a .ToString()
+
+                        Output.WriteLine("");
+                    }
                 }
             }
         }
@@ -196,6 +219,7 @@ namespace StarTrek_KG.Playfield
         //refactor these to a setup object
         private void SetUpPlayerShip(SectorDef playerShipDef)
         {
+            Output.WriteLine("Setting up PlayerShip.");
             //todo: remove this requirement
             if (this.Quadrants == null)
             {
@@ -207,6 +231,7 @@ namespace StarTrek_KG.Playfield
             var playerShipName = StarTrekKGSettings.GetSetting<string>("PlayerShip");
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
+
             this.Playership = new Ship(playerShipName, this, startingSector)
                                   {
                                       Allegiance = Allegiance.GoodGuy
@@ -283,7 +308,7 @@ namespace StarTrek_KG.Playfield
             {
                 for (int x = j - 1; x <= j + 1; x++)
                 {
-                    var gotSector = Playfield.Sectors.GetNoError(x, y, sectors);
+                    var gotSector = Sectors.GetNoError(x, y, sectors);
 
                     if (gotSector != null)
                     {
@@ -383,6 +408,52 @@ namespace StarTrek_KG.Playfield
             //{
             //    Output.Write("There are no starbases in this quadrant.");
             //}
+        }
+
+        /// <summary>
+        /// Removes all friendlies fromevery sector in the entire map.
+        /// </summary>
+        /// <param name="map"></param>
+        public static void RemoveAllFriendlies(Map map)
+        {
+            var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
+
+            foreach (Sector sector in sectorsWithFriendlies)
+            {
+                sector.Item = SectorItem.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
+        /// </summary>
+        /// <param name="map"></param>
+        public static void SetFriendly(Map map)
+        {
+            //zip through all sectors in all quadrants.  remove any friendlies
+
+            //This is a bit of a brute force approach, and not preferred, as it disguises any bugs that might have to do with forgetting
+            //to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
+            //to have multiple friendlies, as is the eventual plan.
+
+            Map.RemoveAllFriendlies(map);
+            Sector.Get(map.Quadrants.GetActive().Sectors, map.Playership.Sector.X,
+                       map.Playership.Sector.Y).Item = SectorItem.Friendly;
+        }
+
+        public override string ToString()
+        {
+            string returnVal = null;
+
+            //if debugMode
+            //returns the location of every single object in the map
+
+            //roll out every object in:
+            //this.Quadrants;
+            //this.GameConfig;
+            
+
+            return returnVal;
         }
     }
 }
