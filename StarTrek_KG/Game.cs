@@ -26,6 +26,7 @@ namespace StarTrek_KG
             //might try to reload the file. #NotInThisVersion
             StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
 
+            //These constants need to be localized to Game:
             Game.GetConstants();
 
             this.Output = (new Output(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL));
@@ -50,7 +51,12 @@ namespace StarTrek_KG
 
         private static void GetConstants()
         {
-            //TODO: Migrate these into StarTrekKG
+            Constants.DEBUG_MODE = StarTrekKGSettings.GetSetting<bool>("DebugMode");
+
+            if (Constants.DEBUG_MODE)
+            {
+                Output.WriteLine("// ---------------- Debug Mode ----------------");
+            }
 
             Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
             Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
@@ -59,7 +65,7 @@ namespace StarTrek_KG
             Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
 
             Constants.SHIELDS_DOWN_LEVEL = StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel");
-            Constants.LOW_ENERGY_LEVEL = StarTrekKGSettings.GetSetting<int>("LowEnergyLevel");
+            Constants.LOW_ENERGY_LEVEL = StarTrekKGSettings.GetSetting<int>("LowEnergyLevel");  
         }
 
         private static SectorDefs SectorSetup()
@@ -154,6 +160,7 @@ namespace StarTrek_KG
             
             Output.WriteResourceLine("UnderConstructionMessage");
             Output.WriteResourceLine("UnderConstructionMessage2");
+            Output.WriteResourceLine("UnderConstructionMessage3");
 
             Output.PrintMission();
         }
@@ -177,6 +184,7 @@ namespace StarTrek_KG
                 if (gameOver)
                 {
                     this.Map.Initialize(this.Map.GameConfig.SectorDefs); //we gonna start over
+
                     break;
                 }
             }

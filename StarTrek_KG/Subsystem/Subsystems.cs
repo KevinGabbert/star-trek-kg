@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 
@@ -70,6 +69,18 @@ namespace StarTrek_KG.Subsystem
             }
 
             return wasDamaged;
+        }
+
+        //Needs to be improved
+        public override string ToString()
+        {
+            string returnVal = null;
+            foreach (ISubsystem subSystem in this)
+            {
+                returnVal += " " + subSystem.GetType().Name;
+            }
+
+            return returnVal;
         }
     }
 }

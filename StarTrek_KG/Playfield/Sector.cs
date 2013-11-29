@@ -63,35 +63,9 @@ namespace StarTrek_KG.Playfield
             return sector;
         }
 
-        /// <summary>
-        /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
-        /// </summary>
-        /// <param name="map"></param>
-        public static void SetFriendly(Map map)
+        public override string ToString()
         {
-            //zip through all sectors in all quadrants.  remove any friendlies
-
-            //This is a bit of a brute force approach, and not preferred, as it disguises any bugs that might have to do with forgetting
-            //to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
-            //to have multiple friendlies, as is the eventual plan.
-
-            Sector.RemoveAllFriendlies(map);
-            Sector.Get(map.Quadrants.GetActive().Sectors, map.Playership.Sector.X,
-                                                          map.Playership.Sector.Y).Item = SectorItem.Friendly;
-        }
-
-        /// <summary>
-        /// Removes all friendlies fromevery sector in the entire map.
-        /// </summary>
-        /// <param name="map"></param>
-        public static void RemoveAllFriendlies(Map map)
-        {
-            var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
-
-            foreach (Sector sector in sectorsWithFriendlies)
-            {
-                sector.Item = SectorItem.Empty;
-            }
+            return "Sector: " + this.X + ", " + this.Y;
         }
     }
 }

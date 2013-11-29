@@ -14,8 +14,9 @@ namespace StarTrek_KG.Playfield
         #region Properties
             public string Name { get; set; }
 
-            //TODO: This property needs to be changed to a function, and that function needs to count Hostiles in this quadrant when called
-            public List<Ship> Hostiles { get; set; } //TODO: this needs to be changed to a List<ship> that have a hostile property=true
+            //TODO: THIS PROPERTY NEEDS TO BE CHANGED TO A FUNCTION, and that function needs to count Hostiles in this quadrant when called
+
+            public List<Ship> Hostiles { get; set; } 
 
             public Sectors Sectors { get; set; }
             public bool Scanned { get; set; }

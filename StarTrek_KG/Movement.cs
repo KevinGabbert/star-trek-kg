@@ -237,7 +237,7 @@ namespace StarTrek_KG
             shipQuadrant.Y = quadY;
 
             this.Map.Playership.GetQuadrant().Active = true;
-            Sector.SetFriendly(this.Map); //sets friendly in Active Quadrant  
+            Map.SetFriendly(this.Map); //sets friendly in Active Quadrant  
         }
 
         //todo: put these values in app.config
