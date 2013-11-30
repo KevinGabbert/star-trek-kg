@@ -19,6 +19,24 @@ namespace StarTrek_KG.Playfield
             return sectorFound.Single();
         }
 
+        public Sector Get(Coordinate coordinate)
+        {
+            var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
+
+            if (gotSectors.Count() < 1)
+            {
+                throw new GameConfigException("Sector not found:  X: " + coordinate.X + " Y: " + coordinate.Y + " Total Sectors: " + " Total Sectors: " + gotSectors.Count());
+            }
+
+            if (gotSectors.Count() > 1)
+            {
+                throw new GameConfigException("Multiple sectors found. X: " + coordinate.X + " Y: " + coordinate.Y + " Total Sectors: " + gotSectors.Count());
+            }
+
+            //There can only be one active sector
+            return gotSectors.Single();
+        }
+
         public static Sector GetNoError(int x, int y, List<Sector> sectors)
         {
             var sectorFound = sectors.Where(si => si.X == x && si.Y == y).ToList();

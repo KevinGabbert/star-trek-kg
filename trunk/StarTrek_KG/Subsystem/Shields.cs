@@ -2,6 +2,7 @@
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
@@ -81,7 +82,7 @@ namespace StarTrek_KG.Subsystem
             return (int)transfer;
         }
 
-        public new static Shields For(Ship ship)
+        public new static Shields For(IShip ship)
         {
             if(ship== null)
             {

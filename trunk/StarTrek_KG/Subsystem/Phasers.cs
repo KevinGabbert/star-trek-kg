@@ -50,7 +50,10 @@ namespace StarTrek_KG.Subsystem
         public void Controls(Map map)
         {
             if (Damaged()) return;
-            if (Quadrants.NoHostiles(map.Quadrants.GetActive().Hostiles)) return;
+            if (Quadrants.NoHostiles(map.Quadrants.GetActive().GetHostiles()))
+            {
+                return;
+            }
 
             double phaserEnergy;
             Console.WriteLine("Phasers locked on target.");
@@ -68,8 +71,8 @@ namespace StarTrek_KG.Subsystem
         {
             Output.WriteLine("Firing phasers..."); //todo: pull from config
 
-            var destroyedShips = new List<Ship>();
-            foreach (var badGuyShip in map.Quadrants.GetActive().Hostiles)
+            var destroyedShips = new List<IShip>();
+            foreach (var badGuyShip in map.Quadrants.GetActive().GetHostiles())
             {
                 double deliveredEnergy = ComputeDeliveredEnergy(map, phaserEnergy, badGuyShip);
                 Phasers.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
@@ -107,7 +110,7 @@ namespace StarTrek_KG.Subsystem
             return deliveredEnergy;
         }
 
-        private static void BadGuyTakesDamage(ICollection<Ship> destroyedShips, Ship badGuyShip, double deliveredEnergy)
+        private static void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
         {
             var badGuyShields = Shields.For(badGuyShip);
             badGuyShields.Energy -= (int) deliveredEnergy;

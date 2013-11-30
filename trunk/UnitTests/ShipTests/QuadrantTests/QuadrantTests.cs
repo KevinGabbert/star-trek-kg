@@ -22,7 +22,6 @@ namespace UnitTests.ShipTests.QuadrantTests
 
             _testQuadrant.Map = new Map(null);
             _testQuadrant.Name = "Setup";
-            _testQuadrant.Hostiles = null;
             _testQuadrant.Scanned = false;
 
             _testQuadrant.X = 0;
@@ -52,7 +51,13 @@ namespace UnitTests.ShipTests.QuadrantTests
             Assert.IsInstanceOf(typeof(Map), _testQuadrant.Map);
 
             //UnitTests.ShipTests.MapTests.MapTests.NoInitializeAsserts(_testQuadrant.Map);
-            this.QuadrantNewAsserts();
+            Assert.AreEqual(string.Empty, _testQuadrant.Name);
+            Assert.IsInstanceOf<Sectors>(_testQuadrant.Sectors);
+            Assert.AreEqual(false, _testQuadrant.Scanned);
+            Assert.AreEqual(0, _testQuadrant.X);
+            Assert.AreEqual(0, _testQuadrant.Y);
+            Assert.AreEqual(true, _testQuadrant.Empty);
+
             Assert.IsNotNull(_testQuadrant.Sectors);
         }
 
@@ -76,8 +81,8 @@ namespace UnitTests.ShipTests.QuadrantTests
 
             //todo: make sure that map is not set up with anyting
 
-            Assert.AreEqual(0, newQuadrant.Hostiles.Count);
-            //Assert.AreEqual(null, newQuadrant.Sectors);
+            Assert.AreEqual(0, newQuadrant.GetHostiles().Count);
+            Assert.IsInstanceOf<Sectors>(newQuadrant.Sectors);
             Assert.AreEqual(false, newQuadrant.Scanned);
             Assert.AreEqual(1, newQuadrant.X);
             Assert.AreEqual(1, newQuadrant.Y);
@@ -106,11 +111,12 @@ namespace UnitTests.ShipTests.QuadrantTests
         private void QuadrantNewAsserts()
         {
             Assert.AreEqual(string.Empty, _testQuadrant.Name);
-            Assert.AreEqual(0, _testQuadrant.Hostiles.Count);
+            Assert.IsNull(_testQuadrant.Sectors);
             Assert.AreEqual(false, _testQuadrant.Scanned);
             Assert.AreEqual(0, _testQuadrant.X);
             Assert.AreEqual(0, _testQuadrant.Y);
             Assert.AreEqual(true, _testQuadrant.Empty);
+            //Assert.AreEqual(0, _testQuadrant.GetHostiles().Count); //This would rightfully return an exception
         }
 
         [Ignore]

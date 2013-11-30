@@ -4,18 +4,13 @@ using System.Linq;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Playfield
 {
     public class Quadrants: List<Quadrant>
     {
-        #region Fields
-
-        private List<Ship> hostiles; //This property needs to be changed to a function, and that function needs to count Hostiles in the passed List<quadrant> when called
-
-        #endregion
-
         #region Properties
 
             public Map Map { get; set; }
@@ -23,11 +18,6 @@ namespace StarTrek_KG.Playfield
         /// <summary>
         /// Movement.Execute and Map.SetupPlayership are the only places this is set
         /// </summary>
-
-        public List<Ship> Hostiles
-        {
-            get { return hostiles; }
-        }
 
         #endregion
 
@@ -77,7 +67,7 @@ namespace StarTrek_KG.Playfield
             return activeQuadrants.Single();
         }
 
-        public static bool NoHostiles(List<Ship> hostiles)
+        public static bool NoHostiles(List<IShip> hostiles)
         {
             if (hostiles.Count == 0)
             {
@@ -87,13 +77,25 @@ namespace StarTrek_KG.Playfield
             return false;
         }
 
-        public int GetHostileCount()
+        public List<IShip> GetHostiles()
         {
-            int allHostiles = this.Sum(q => q.Hostiles.Count);
+            var allHostiles = new List<IShip>();
+
+            foreach (Quadrant quadrant in this)
+            {
+                allHostiles.AddRange(quadrant.GetHostiles());
+            }
+
             return allHostiles;
         }
 
-        public void Remove(List<Ship> shipsToRemove, Map map)
+        public int GetHostileCount()
+        {
+            int allHostiles = this.Sum(q => q.GetHostiles().Count);
+            return allHostiles;
+        }
+
+        public void Remove(List<IShip> shipsToRemove, Map map)
         {
             foreach (var ship in shipsToRemove)
             {
@@ -101,7 +103,69 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public void Remove(Ship shipToRemove, Map map)
+        /// <summary>
+        /// goes through each sector in this quadrant and clears hostiles
+        /// </summary>
+        /// <returns></returns>
+        public void RemoveShip(string name)
+        {
+            Sector sectorToDeleteShip = null;
+
+            //There should only be 1 ship with this name
+
+            foreach (var quadrant in this)
+            {
+                if (quadrant.Sectors != null)
+                {
+                    foreach (var sector in quadrant.Sectors)
+                    {
+                        var @object = sector.Object;
+
+                        if (@object != null)
+                        {
+                            if (@object.Type.Name == "Ship")
+                            {
+                                var possibleShipToDelete = (IShip) @object;
+                                if (possibleShipToDelete.Name == name)
+                                {
+                                    sectorToDeleteShip = Quadrants.GetFoundShip(name, sector, sectorToDeleteShip);
+                                    goto DeleteNow;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    throw new GameException("No Sectors Set up in Quadrant: " + quadrant.Name + "...");
+                }
+            }
+
+            DeleteNow:
+            if (sectorToDeleteShip == null)
+            {
+                throw new GameException("Unexpected State. " + name + " not found.");
+            }
+
+            sectorToDeleteShip.Item = SectorItem.Empty;
+            sectorToDeleteShip.Object = null;
+        }
+
+        private static Sector GetFoundShip(string name, Sector sector, Sector sectorToDeleteShip)
+        {
+            if (sectorToDeleteShip == null)
+            {
+                sectorToDeleteShip = sector;
+            }
+            else
+            {
+                throw new GameException("Unexpected State. > instance of " + name + " found.");
+            }
+
+            return sectorToDeleteShip;
+        }
+
+        public void Remove(IShip shipToRemove, Map map)
         {
             //linq through quadrants and sectors to remove all ships that have the same details as Ship
             Coordinate shipToRemoveQuadrant = shipToRemove.QuadrantDef;
@@ -115,26 +179,29 @@ namespace StarTrek_KG.Playfield
                 throw new GameConfigException("ship has no location. ");
             }
 
-            Quadrants.DeleteShip(shipToRemove, map);
+            //Quadrants.DeleteShip(shipToRemove, map);
+
+            this.RemoveShip(shipToRemove.Name);
 
             Console.WriteLine("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed"));
         }
 
-        private static void DeleteShip(Ship shipToRemove, Map map)
-        {
-            map.Get(shipToRemove.QuadrantDef.X,
-                    shipToRemove.QuadrantDef.Y,
-                    shipToRemove.Sector.X,
-                    shipToRemove.Sector.Y).Item = SectorItem.Empty;
+        //private static void DeleteShip(IShip shipToRemove, Map map)
+        //{
+        //    map.Get(shipToRemove.QuadrantDef.X,
+        //            shipToRemove.QuadrantDef.Y,
+        //            shipToRemove.Sector.X,
+        //            shipToRemove.Sector.Y).Item = SectorItem.Empty;
 
-            var quadrantToRemoveFrom = map.Quadrants.Single(q => q.X == shipToRemove.QuadrantDef.X &&
-                                                                 q.Y == shipToRemove.QuadrantDef.Y);
-            //todo: NO HOSTILE HERE TO REMOVE??
-            quadrantToRemoveFrom.Hostiles.Remove(quadrantToRemoveFrom.Hostiles.Where(h => h.Sector.X == shipToRemove.Sector.X &&
-                                                                                          h.Sector.Y == shipToRemove.Sector.Y &&
-                                                                                          h.Name == shipToRemove.Name).Single());
-                //Remove from local set of Hostiles.
-        }
+        //    var quadrantToRemoveFrom = map.Quadrants.Single(q => q.X == shipToRemove.QuadrantDef.X &&
+        //                                                         q.Y == shipToRemove.QuadrantDef.Y);
+        //    //todo: NO HOSTILE HERE TO REMOVE??
+        //    quadrantToRemoveFrom.GetHostiles().Remove(quadrantToRemoveFrom.GetHostiles().Where(h => h.Sector.X == shipToRemove.Sector.X &&
+        //                                                                                      h.Sector.Y == shipToRemove.Sector.Y &&
+        //                                                                                      h.Name == shipToRemove.Name).Single());
+
+        //        //Remove from local set of Hostiles.
+        //}
 
         /// <summary>
         /// This is actually placeholder code, as hopefully, one day, there will be a lot of playerships running around, needing removal,
@@ -164,7 +231,7 @@ namespace StarTrek_KG.Playfield
             //this is called from torpedo control/phaser control, and navigation control
 
             var activeQuadrant = map.Quadrants.GetActive();
-            var hostilesAttacking = activeQuadrant.Hostiles;
+            var hostilesAttacking = activeQuadrant.GetHostiles();
 
             //temporary
             if (hostilesAttacking != null)//todo: remove this.
@@ -234,10 +301,11 @@ namespace StarTrek_KG.Playfield
             //    }
             //}
         }
-        private static IEnumerable<Sector> SectorsWithShips(Quadrant quadrant)
-        {
-            return quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly || sector.Item == SectorItem.Hostile);
-        }
+
+        //private static IEnumerable<Sector> SectorsWithShips(Quadrant quadrant)
+        //{
+        //    return quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly || sector.Item == SectorItem.Hostile);
+        //}
 
     }
 }

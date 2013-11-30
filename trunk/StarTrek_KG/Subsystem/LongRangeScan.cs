@@ -86,7 +86,7 @@ namespace StarTrek_KG.Subsystem
                 Quadrant quadrant = Quadrants.Get(map, quadrantX, quadrantY);
                 quadrant.Scanned = true;
 
-                hostileCount = quadrant.Hostiles.Count;
+                hostileCount = quadrant.GetHostiles().Count;
                 starbaseCount = quadrant.GetStarbaseCount();
                 starCount = quadrant.GetStarCount();
             }

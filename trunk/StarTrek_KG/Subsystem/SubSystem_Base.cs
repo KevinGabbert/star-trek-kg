@@ -4,6 +4,7 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {

@@ -180,6 +180,88 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(SectorItem.Friendly, _testMap.Quadrants.GetActive().Sectors.Single(s => s.X == _testMap.Playership.Sector.X && s.Y == _testMap.Playership.Sector.Y).Item);
         }
 
+        //Maybe you want to add/remove hostiles on the fly or something, during the game 
+        [Test]
+        public void MapWith1Hostile()
+        {
+            _testMap = (new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                UseAppConfigSectorDefs = false,
+                SectorDefs = new SectorDefs()
+            }));
+
+
+            var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
+
+            //add a ship
+            var hostileShip = new Ship("ship1", _testMap, new Sector(locationDef));
+
+            _testMap.Quadrants[0].AddShip(hostileShip, _testMap.Quadrants[0].Sectors.Get(new Coordinate(1,7)));
+
+            var hostiles = _testMap.Quadrants.GetHostiles();
+            Assert.AreEqual(1, hostiles.Count);
+
+            var firstHostile = _testMap.Quadrants.GetHostiles()[0];
+            Assert.AreEqual("Sector: 1, 7", firstHostile.Sector.ToString());
+
+            Assert.AreEqual(1, _testMap.Quadrants.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(7, _testMap.Quadrants.GetHostiles()[0].Sector.Y);
+        }
+
+        [Test]
+        public void MapWith1HostileAlternate()
+        {
+            _testMap = (new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                UseAppConfigSectorDefs = false,
+                SectorDefs = new SectorDefs
+                                            {
+                                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.Hostile)
+                                            }
+            }));
+
+            //add a ship
+            //var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7))));
+
+            //_testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+
+            Assert.AreEqual(1, _testMap.Quadrants.GetHostiles().Count);
+
+            var firstHostile = _testMap.Quadrants.GetHostiles()[0];
+            Assert.AreEqual("Sector: 1,7", firstHostile.Sector.ToString());
+
+            Assert.AreEqual(4, _testMap.Quadrants.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(6, _testMap.Quadrants.GetHostiles()[0].Sector.Y);
+        }
+
+        //Maybe you want to add/remove hostiles on the fly or something, during the game 
+        [Test]
+        public void Remove1Hostile()
+        {
+            _testMap = (new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                UseAppConfigSectorDefs = false,
+                SectorDefs = new SectorDefs()
+            }));
+
+            var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
+
+            //add a ship
+            var hostileShip = new Ship("ship1", _testMap, new Sector(locationDef));
+
+            _testMap.Quadrants[0].AddShip(hostileShip, _testMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
+
+            _testMap.Quadrants.RemoveShip(hostileShip.Name);
+
+            Assert.AreEqual(0, _testMap.Quadrants.GetHostiles().Count);
+        }
+
         //this method is here to test passing in 
         [Test]
         public void MapWith3HostilesTheConfigWay()
@@ -212,17 +294,16 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[36].Item);
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[37].Item);
 
-            Assert.AreEqual(3, activeQuadrant.Hostiles.Count());
-            Assert.AreEqual(3, activeQuadrant.GetHostileCount());
+            Assert.AreEqual(3, activeQuadrant.GetHostiles().Count());
 
-            Assert.AreEqual(2, activeQuadrant.Hostiles[0].Sector.X);
-            Assert.AreEqual(6, activeQuadrant.Hostiles[0].Sector.Y);
+            Assert.AreEqual(2, activeQuadrant.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(6, activeQuadrant.GetHostiles()[0].Sector.Y);
 
-            Assert.AreEqual(2, activeQuadrant.Hostiles[1].Sector.X);
-            Assert.AreEqual(7, activeQuadrant.Hostiles[1].Sector.Y);
+            Assert.AreEqual(2, activeQuadrant.GetHostiles()[1].Sector.X);
+            Assert.AreEqual(7, activeQuadrant.GetHostiles()[1].Sector.Y);
 
-            Assert.AreEqual(4, activeQuadrant.Hostiles[2].Sector.X);
-            Assert.AreEqual(4, activeQuadrant.Hostiles[2].Sector.Y);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[2].Sector.X);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[2].Sector.Y);
         }
 
         /// <summary>
@@ -258,17 +339,17 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[36].Item);
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[39].Item);
 
-            Assert.AreEqual(3, activeQuadrant.Hostiles.Count());
-            Assert.AreEqual(3, activeQuadrant.GetHostileCount());
+            Assert.AreEqual(3, activeQuadrant.GetHostiles().Count());
+            Assert.AreEqual(3, activeQuadrant.GetHostiles().Count());
 
-            Assert.AreEqual(2, activeQuadrant.Hostiles[0].Sector.X);
-            Assert.AreEqual(7, activeQuadrant.Hostiles[0].Sector.Y);
+            Assert.AreEqual(2, activeQuadrant.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(7, activeQuadrant.GetHostiles()[0].Sector.Y);
 
-            Assert.AreEqual(4, activeQuadrant.Hostiles[1].Sector.X);
-            Assert.AreEqual(4, activeQuadrant.Hostiles[1].Sector.Y);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[1].Sector.X);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[1].Sector.Y);
 
-            Assert.AreEqual(4, activeQuadrant.Hostiles[2].Sector.X);
-            Assert.AreEqual(6, activeQuadrant.Hostiles[2].Sector.Y);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[2].Sector.X);
+            Assert.AreEqual(6, activeQuadrant.GetHostiles()[2].Sector.Y);
         }
 
         /// <summary>
@@ -336,8 +417,8 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = _testMap.Quadrants.GetActive();
 
-            Assert.AreEqual(3, activeQuadrant.Hostiles.Count());
-            Assert.AreEqual(3, activeQuadrant.GetHostileCount());
+            Assert.AreEqual(3, activeQuadrant.GetHostiles().Count());
+            Assert.AreEqual(3, activeQuadrant.GetHostiles().Count());
         }
 
         /// <summary>
@@ -351,14 +432,14 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = _testMap.Quadrants.GetActive();
 
-            Assert.AreEqual(2, activeQuadrant.Hostiles[0].Sector.X);
-            Assert.AreEqual(7, activeQuadrant.Hostiles[0].Sector.Y);
+            Assert.AreEqual(2, activeQuadrant.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(7, activeQuadrant.GetHostiles()[0].Sector.Y);
 
-            Assert.AreEqual(4, activeQuadrant.Hostiles[1].Sector.X);
-            Assert.AreEqual(4, activeQuadrant.Hostiles[1].Sector.Y);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[1].Sector.X);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[1].Sector.Y);
 
-            Assert.AreEqual(4, activeQuadrant.Hostiles[2].Sector.X);
-            Assert.AreEqual(6, activeQuadrant.Hostiles[2].Sector.Y);
+            Assert.AreEqual(4, activeQuadrant.GetHostiles()[2].Sector.X);
+            Assert.AreEqual(6, activeQuadrant.GetHostiles()[2].Sector.Y);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -383,16 +464,16 @@ namespace UnitTests.ShipTests.HostileTests
             var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(null, new Coordinate(1, 7))));
             var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(null, new Coordinate(1, 6))));
 
-            _testMap.Quadrants.GetActive().Hostiles.Add(hostileShip);
-            _testMap.Quadrants.GetActive().Hostiles.Add(hostileShip2);
+            _testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+            _testMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip.Sector);
 
-            Assert.AreEqual(2, _testMap.Quadrants.GetActive().Hostiles.Count);
+            Assert.AreEqual(2, _testMap.Quadrants.GetActive().GetHostiles().Count);
 
-            Assert.AreEqual(1, _testMap.Quadrants.GetActive().Hostiles[0].Sector.X);
-            Assert.AreEqual(7, _testMap.Quadrants.GetActive().Hostiles[0].Sector.Y);
+            Assert.AreEqual(1, _testMap.Quadrants.GetActive().GetHostiles()[0].Sector.X);
+            Assert.AreEqual(7, _testMap.Quadrants.GetActive().GetHostiles()[0].Sector.Y);
 
-            Assert.AreEqual(1, _testMap.Quadrants.GetActive().Hostiles[1].Sector.X);
-            Assert.AreEqual(6, _testMap.Quadrants.GetActive().Hostiles[1].Sector.Y);
+            Assert.AreEqual(1, _testMap.Quadrants.GetActive().GetHostiles()[1].Sector.X);
+            Assert.AreEqual(6, _testMap.Quadrants.GetActive().GetHostiles()[1].Sector.Y);
         }
 
         private void SetupMapWith2Hostiles()
@@ -411,8 +492,8 @@ namespace UnitTests.ShipTests.HostileTests
             var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(null, new Coordinate(2, 7))));
             var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(null, new Coordinate(2, 5))));
 
-            _testMap.Quadrants.GetActive().Hostiles.Add(hostileShip);
-            _testMap.Quadrants.GetActive().Hostiles.Add(hostileShip2);
+            _testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+            _testMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip.Sector);
         }
 
         #region OutOfBounds

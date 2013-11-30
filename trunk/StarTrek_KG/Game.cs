@@ -39,14 +39,13 @@ namespace StarTrek_KG
                                    });
 
             this.Map = new Map(startConfig);
+            this.Command = new Command(this.Map);
 
             //We don't want to start game without hostiles
-            //todo: unless we want to have a mode that allows it for some reason.
-            if (this.HostileCheck(startConfig)) return;
+            if (this.HostileCheck(this.Map)) return;  //todo: unless we want to have a mode that allows it for some reason.
 
             //todo: why are we creating this Output() class a second time??
             this.Output = new Output(this.Map.hostilesToSetUp, Map.timeRemaining, Map.starbases, Map.Stardate, Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL);
-            this.Command = new Command(this.Map);
         }
 
         private static void GetConstants()
@@ -124,12 +123,30 @@ namespace StarTrek_KG
                        };
         }
 
-        private bool HostileCheck(GameConfig startConfig)
+        //private bool HostileCheck(GameConfig startConfig)
+        //{
+        //    if (startConfig.SectorDefs.GetHostiles().Count() < 1)
+        //    {
+        //        Output.WriteLine("ERROR: --- No Hostiles have been set up.");
+                
+        //        //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
+        //        //todo: in that case, this function would not be called
+
+        //        this.gameOver = true;
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+        private bool HostileCheck(Map map)
         {
-            if (startConfig.SectorDefs.Hostiles().Count() < 1)
+            if (map.Quadrants.GetHostiles().Count() < 1)
             {
-                Output.WriteLine("No Hostiles have been set up.");
-                    //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
+                Output.WriteLine("ERROR: --- No Hostiles have been set up.");
+
+                //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
+                //todo: in that case, this function would not be called
+
                 this.gameOver = true;
                 return true;
             }
@@ -172,6 +189,7 @@ namespace StarTrek_KG
         {
             if(gameOver)
             {
+                Output.WriteDebugLine("Game Over.");
                 return;
             }
 
@@ -183,6 +201,9 @@ namespace StarTrek_KG
 
                 if (gameOver)
                 {
+                    Output.WriteDebugLine("Game Over.. Restarting.");
+
+                    //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
                     this.Map.Initialize(this.Map.GameConfig.SectorDefs); //we gonna start over
 
                     break;
