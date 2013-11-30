@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -8,6 +7,9 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
+    //todo: make it so that a subsystem can be shut off at will
+    //todo: subsystems use energy
+    //todo: introduce the concept of damage control.  Repairs can be prioritized through a panel
     public abstract class SubSystem_Base: System, ISubsystem
     {
         #region Properties
