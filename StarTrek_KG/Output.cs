@@ -104,7 +104,7 @@ namespace StarTrek_KG
             Console.WriteLine(StarTrekKGSettings.GetText("CSTimeRemaining"), map.timeRemaining);
             Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount());
                 //Map.GetAllHostiles(map).Count
-            Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesInQuadrant"), currentQuadrant.Hostiles.Count);
+            Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesInQuadrant"), currentQuadrant.GetHostiles().Count);
             Console.WriteLine(StarTrekKGSettings.GetText("CSStarbases"), map.starbases);
             Console.WriteLine(StarTrekKGSettings.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
             Console.WriteLine(StarTrekKGSettings.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
@@ -154,7 +154,7 @@ namespace StarTrek_KG
                         //starCount = quadrant.Stars;
                     }
 
-                    sb.Append(String.Format("{0}{1}{2} ", quadrant.Hostiles.Count, starbaseCount, starCount));
+                    sb.Append(String.Format("{0}{1}{2} ", quadrant.GetHostiles().Count, starbaseCount, starCount));
                 }
 
                 sb.Append("|");
@@ -299,6 +299,14 @@ namespace StarTrek_KG
             Console.WriteLine();
         }
 
+        public static void WriteDebugLine(string stringToOutput)
+        {
+            if(Constants.DEBUG_MODE)
+            {
+                Console.WriteLine(stringToOutput);
+            }
+        }
+
         public static void WriteResource(string text)
         {
             Console.WriteLine(StarTrekKGSettings.GetText(text) + " ");
@@ -328,7 +336,7 @@ namespace StarTrek_KG
 
         private void OutputWarnings(Quadrant quadrant, Map map, bool docked)
         {
-            if (quadrant.Hostiles.Count > 0)
+            if (quadrant.GetHostiles().Count > 0)
             {
                 this.ScanHostile(quadrant, map, docked);
             }
@@ -340,9 +348,9 @@ namespace StarTrek_KG
 
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
-            Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"), (quadrant.Hostiles.Count == 1 ? "" : "s"));
+            Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"), (quadrant.GetHostiles().Count == 1 ? "" : "s"));
 
-            foreach (var hostile in quadrant.Hostiles)
+            foreach (var hostile in quadrant.GetHostiles())
             {
                 Console.WriteLine(StarTrekKGSettings.GetText("IDHostile"), hostile.Name);
             }
@@ -359,7 +367,7 @@ namespace StarTrek_KG
         {
             var condition = "GREEN";
 
-            if (quadrant.Hostiles.Count > 0)
+            if (quadrant.GetHostiles().Count > 0)
             {
                 condition = "RED";
             }

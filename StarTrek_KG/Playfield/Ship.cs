@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
-namespace StarTrek_KG
+namespace StarTrek_KG.Playfield
 {
     //TODO: ship.Energy not decrementing after being hit
-    public class Ship : System, IShip
+    public class Ship : ISystem, IShip
     {
         #region Properties
 
@@ -39,14 +37,23 @@ namespace StarTrek_KG
 
             public string Name { get; set; }
             public Allegiance Allegiance { get; set; }
-
             public Subsystems Subsystems { get; set; }
+
+            public int Energy { get; set; }
+            public bool Destroyed { get; set; }
+            public Map Map { get; set; }
+            public Type Type { get; set; }
+
+            ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
+            //public Log Log { get; set; } //
+
 
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
         public Ship(string name, Map map, Sector position)
         {
+            this.Type = this.GetType();
             this.Map = map;
             this.Sector = new Sector(new LocationDef(null, new Coordinate(position.X, position.Y)));
             this.Allegiance = this.GetAllegiance(); 
@@ -109,7 +116,7 @@ namespace StarTrek_KG
           
         ///interesting.  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
-        public bool AbsorbHitFrom(Ship attacker, Map map)
+        public bool AbsorbHitFrom(IShip attacker, Map map)
         {
             var ship = map.Playership.GetLocation();
             var distance = Utility.Distance(ship.Sector.X, 
@@ -119,10 +126,12 @@ namespace StarTrek_KG
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
-            Console.Write(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}].", (attacker.Sector.X), (attacker.Sector.Y));
+            Console.Write(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}]. ", (attacker.Sector.X), (attacker.Sector.Y));
 
             //TODO: Currently, ships can only be struck by Disruptor.  Modify so ship can take a hit from a photon
             //This could be as simple as setting an energy level for a photon, and renaming DisruptorShot to be something else..
+
+
             Shields.For(map.Playership).Energy -= Ship.DisruptorShot(distance); //todo: pull values from config
 
             this.UpdateShipHealthStatus(map);
@@ -204,7 +213,6 @@ namespace StarTrek_KG
             return shipLocation;
         }
 
-
         /// <summary>
         /// This function represents the amount of energy fired by an opposing ship.
         /// The value is a seeded random number that decreases by distance.
@@ -223,5 +231,6 @@ namespace StarTrek_KG
 
             return deliveredEnergy;
         }
+
     }
 }

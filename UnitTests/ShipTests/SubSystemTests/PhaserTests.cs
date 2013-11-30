@@ -72,17 +72,17 @@ namespace UnitTests.ShipTests.SubSystemTests
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = _testMap.Quadrants.GetActive();
 
-            Assert.AreEqual(1, activeQuadrant.Hostiles.Count);
+            Assert.AreEqual(1, activeQuadrant.GetHostiles().Count);
 
             //Verify ship's location
-            Assert.AreEqual(2, activeQuadrant.Hostiles[0].Sector.X);
-            Assert.AreEqual(6, activeQuadrant.Hostiles[0].Sector.Y);
+            Assert.AreEqual(2, activeQuadrant.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(6, activeQuadrant.GetHostiles()[0].Sector.Y);
 
             //verify position on map.
             Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[22].Item);
 
             //set its energy
-            Shields.For(activeQuadrant.Hostiles[0]).Energy = 50;
+            Shields.For(activeQuadrant.GetHostiles()[0]).Energy = 50;
 
             //todo: verify firing ship's starting energy.
 
@@ -92,7 +92,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             //todo: verify energy subtracted from firing ship.
 
             //in space. no one can hear you scream.
-            Assert.AreEqual(0, activeQuadrant.Hostiles.Count);
+            Assert.AreEqual(0, activeQuadrant.GetHostiles().Count);
+            Assert.AreEqual(null, activeQuadrant.Sectors[22].Object);
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[22].Item);
         }
 

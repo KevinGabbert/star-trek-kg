@@ -1,6 +1,7 @@
 ﻿using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {
@@ -9,8 +10,9 @@ namespace StarTrek_KG.Playfield
         #region Properties
 
             public Coordinate QuadrantDef { get; set; }
-            public Sector Sector { get; set; } 
+            public Sector Sector { get; set; }
 
+            public ISectorObject Object { get; set; }
             public SectorItem Item { get; set; }
 
         #endregion
@@ -18,7 +20,6 @@ namespace StarTrek_KG.Playfield
         //todo: get rid of that second, stupid parameter.
         public SectorDef(SectorItem sectorItem)
         {
- 
             this.Sector = new Sector(new LocationDef(null, new Coordinate((Utility.Random).Next(Constants.SECTOR_MAX), (Utility.Random).Next(Constants.SECTOR_MAX))));
             this.Item = sectorItem;
         }

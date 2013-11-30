@@ -44,7 +44,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Controls(Map map)
         {
-            if (Damaged() || Exhausted() || Quadrants.NoHostiles(map.Quadrants.Hostiles)) return;
+            if (Damaged() || Exhausted() || Quadrants.NoHostiles(map.Quadrants.GetHostiles())) return;
 
             double direction;
             if (!Command.PromptUser("Enter firing direction (1.0--9.0): ", out direction)
@@ -81,7 +81,7 @@ namespace StarTrek_KG.Subsystem
                     lastY = newY;
                 }
 
-                var hostilesInSector = map.Quadrants.Hostiles.Where(ship => ship.Sector.X == newX && ship.Sector.Y == newY);
+                var hostilesInSector = map.Quadrants.GetHostiles().Where(ship => ship.Sector.X == newX && ship.Sector.Y == newY);
 
                 if (Map.DestroyedBaddies(map, hostilesInSector)) goto label;
                 if (Torpedoes.HitSomethingElse(map, vx, vy, location, newY, newX, ref x, ref y)) goto label;
@@ -91,7 +91,7 @@ namespace StarTrek_KG.Subsystem
 
             label:
 
-            if (map.Quadrants.Hostiles.Count > 0)
+            if (map.Quadrants.GetHostiles().Count > 0)
             {
                 map.Quadrants.ALLHostilesAttack(map);
             }
@@ -147,16 +147,16 @@ namespace StarTrek_KG.Subsystem
         public void Calculator(Map map)
         {
             Console.WriteLine();
-            if (map.Quadrants.GetActive().Hostiles.Count == 0)
+            if (map.Quadrants.GetActive().GetHostiles().Count == 0)
             {
-                Console.WriteLine("There are no Hostile ships in this quadrant.");
-                Console.WriteLine();
+                Output.WriteLine("There are no Hostile ships in this quadrant.");
+                Output.WriteLine("");
                 return;
             }
 
             Location location = map.Playership.GetLocation(); 
 
-            foreach (var ship in map.Quadrants.Hostiles)
+            foreach (var ship in map.Quadrants.GetHostiles())
             {
                 Console.WriteLine("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
                                   (ship.Sector.X), (ship.Sector.Y),

@@ -6,6 +6,7 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 
@@ -66,10 +67,8 @@ namespace StarTrek_KG.Playfield
         {
             this.GetGlobalInfo();
 
-            var systemNames = StarTrekKGSettings.GetStarSystems();
-
             //This list should match baddie type that is created
-            List<string> quadrantNames = systemNames;
+            List<string> quadrantNames = StarTrekKGSettings.GetStarSystems();
 
             var names = new Stack<string>(quadrantNames.Shuffle());
 
@@ -78,13 +77,12 @@ namespace StarTrek_KG.Playfield
             var baddieNames = new Stack<string>(klingonShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
-            this.InitializeQuadrants(names, baddieNames, sectorDefs);
+            this.InitializeQuadrantsWithBaddies(names, baddieNames, sectorDefs);
 
             if (sectorDefs != null)
             {
                 this.SetupFriendlies(sectorDefs);
             }
-
 
             //Modify this to output everything
             if (Constants.DEBUG_MODE)
@@ -127,7 +125,7 @@ namespace StarTrek_KG.Playfield
         }
 
         //Creates a 2D array of quadrants.  This is how all of our game pieces will be moving around.
-        public void InitializeQuadrants(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs)
+        public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs)
         {
             this.Quadrants = new Quadrants(this);
 
@@ -368,13 +366,13 @@ namespace StarTrek_KG.Playfield
             return item;
         }
 
-        public void RemoveAllDestroyedShips(Map map, List<Ship> destroyedShips)
+        public void RemoveAllDestroyedShips(Map map, List<IShip> destroyedShips)
         {
             map.Quadrants.Remove(destroyedShips, map);
-            map.Quadrants.GetActive().Hostiles.RemoveAll(s => s.Destroyed);
+            map.Quadrants.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
         }
 
-        public static bool DestroyedBaddies(Map map, IEnumerable<Ship> query)
+        public static bool DestroyedBaddies(Map map, IEnumerable<IShip> query)
         {
             foreach (var ship in query)
             {

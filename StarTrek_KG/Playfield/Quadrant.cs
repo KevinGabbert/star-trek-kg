@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Playfield
@@ -14,9 +16,10 @@ namespace StarTrek_KG.Playfield
         #region Properties
             public string Name { get; set; }
 
-            //TODO: THIS PROPERTY NEEDS TO BE CHANGED TO A FUNCTION, and that function needs to count Hostiles in this quadrant when called
+            //TODO: This property needs to be changed to a function, and that function needs to count Hostiles in this quadrant when called
 
-            public List<Ship> Hostiles { get; set; } 
+            //for this to work, each sector needs to be able to store a hostile
+            //public List<Ship> Hostiles { get; set; } //TODO: this needs to be changed to a List<ship> that have a hostile property=true
 
             public Sectors Sectors { get; set; }
             public bool Scanned { get; set; }
@@ -46,14 +49,12 @@ namespace StarTrek_KG.Playfield
         public Quadrant()
         {
             this.Empty = true;
-            this.Hostiles = new List<Ship>();
             this.Name = String.Empty;
         }
 
         public Quadrant(Map map, Stack<string> names)
         {
             this.Empty = true;
-            this.Hostiles = new List<Ship>();
             this.Map = map;
             this.Create(names);
             this.Name = String.Empty;
@@ -62,7 +63,6 @@ namespace StarTrek_KG.Playfield
         public Quadrant(Map map, Stack<string> names, out int nameIndex)
         {
             this.Empty = true;
-            this.Hostiles = new List<Ship>();
             this.Map = map;
             this.Create(names, out nameIndex);
             this.Name = String.Empty;
@@ -187,17 +187,67 @@ namespace StarTrek_KG.Playfield
 
         public static void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, Map map)
         {
-            var sector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
+            var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
+            Output.WriteDebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
 
             if(itemToPopulate == SectorItem.Hostile)
             {
                 //if a baddie name is passed, then use it.  otherwise
-                quadrant.Hostiles.Add(Quadrant.CreateHostileShip(sector, baddieNames, map));
+                var newShip = Quadrant.CreateHostileShip(newlyCreatedSector, baddieNames, map);
+                quadrant.AddShip(newShip, newlyCreatedSector);
             }
 
-            sector.Item = itemToPopulate;
+            newlyCreatedSector.Item = itemToPopulate;
 
-            quadrant.Sectors.Add(sector);
+            quadrant.Sectors.Add(newlyCreatedSector);
+        }
+
+        public void AddShip(IShip ship, Sector toSector)
+        {
+            if (toSector == null)
+            {
+                Output.WriteDebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
+                throw new GameException("No Sector passed. cannot add to Quadrant: " + this.Name);
+            }
+
+            if (ship == null)
+            {
+                Output.WriteDebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
+                throw new GameException("No ship passed. cannot add to Quadrant: " + this.Name);
+            }
+
+            Output.WriteDebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
+
+            try
+            {
+                toSector.Object = ship;
+            }
+            catch(Exception ex)
+            {
+                Output.WriteDebugLine("unable to add ship to sector " + toSector + ". " + ex.Message);
+                throw new GameException("unable to add ship to sector " + toSector + ". " + ex.Message);
+            }
+        }
+
+        public void RemoveShip(IShip ship)
+        {
+            //staple ship to sector passed.
+            Sector sectorToAdd = this.Sectors.Where(s => s.X == ship.Sector.X && s.Y == ship.Sector.Y).Single();
+            sectorToAdd.Object = ship;
+        }
+
+        private static Ship CreateHostileShip(Sector position, Stack<string> listOfBaddies, Map map)
+        {
+            //todo: this should be a random baddie, from the list of baddies in app.config
+            var hostileShip = new Ship(listOfBaddies.Pop(), map, position); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
+            hostileShip.Sector.X = position.X; 
+            hostileShip.Sector.Y = position.Y;
+
+            Shields.For(hostileShip).Energy = 300 + (Utility.Random).Next(200);
+
+            Output.WriteDebugLine("Created Ship: " + hostileShip.Name);
+
+            return hostileShip;
         }
 
         public static void AddEmptySector(Quadrant quadrant, int x, int y)
@@ -207,19 +257,6 @@ namespace StarTrek_KG.Playfield
             quadrant.Sectors.Add(sector);
         }
 
-        private static Ship CreateHostileShip(Sector position, Stack<string> listOfBaddies, Map map)
-        {
-            //todo: this should be a random baddie, from the list of baddies in app.config
-            //todo: note, in leter versions, baddies and allies can fight each other automatically (when they move to within range of each other.  status of the battles can be kept in the ships log (if observed by a friendly)
-
-            var hostileShip = new Ship(listOfBaddies.Pop(), map, position);
-            hostileShip.Sector.X = position.X; 
-            hostileShip.Sector.Y = position.Y;
-
-            Shields.For(hostileShip).Energy = 300 + (Utility.Random).Next(200);
-
-            return hostileShip;
-        }
 
         //Loop for each Hostile and starbase.  Each go around pops a hostile
         //(up to 3) into a random sector.  Same thing with Starbase, but the limit
@@ -316,21 +353,74 @@ namespace StarTrek_KG.Playfield
         /// goes through each sector in this quadrant and counts hostiles
         /// </summary>
         /// <returns></returns>
-        public int GetHostileCount()
+        public List<IShip> GetHostiles()
         {
-            return Sectors.Count(sector => sector.Item == SectorItem.Hostile);
+            var badGuys = new List<IShip>();
+
+            try
+            {
+                if (this.Sectors != null)
+                {
+                    foreach (var sector in this.Sectors)
+                    {
+                        var @object = sector.Object;
+
+                        if (@object != null)
+                        {
+                            var objectType = @object.Type.Name;
+                            if (objectType == "Ship")
+                            {
+                                var possibleShipToGet = (IShip) @object;
+                                if (possibleShipToGet.Allegiance == Allegiance.BadGuy)
+                                {
+                                    badGuys.Add(possibleShipToGet);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    throw new GameException("No Sectors Set up in Quadrant: " + this.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return badGuys;
         }
 
         /// <summary>
-        /// goes through each sector in this quadrant and counts hostiles
+        /// goes through each sector in this quadrant and clears hostiles
         /// </summary>
         /// <returns></returns>
-        public List<Ship> GetHostiles()
+        public void ClearHostiles()
         {
-            //var x =  Sectors.Where(sector => sector.Item == SectorItem.Hostile);
+            if (this.Sectors != null)
+            {
+                foreach (var sector in this.Sectors)
+                {
+                    var @object = sector.Object;
 
-            //List<Ship> baddies = this.Sectors.Where()
-            throw new NotImplementedException();
+                    if (@object != null)
+                    {
+                        if (@object.Type.Name == "Ship")
+                        {
+                            var possibleShipToDelete = (IShip) @object;
+                            if (possibleShipToDelete.Allegiance == Allegiance.BadGuy)
+                            {
+                                sector.Object = null;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                throw new GameException("No Sectors Set up in Quadrant: " + this.Name + ".");
+            }
         }
 
         internal int GetStarbaseCount()
@@ -341,6 +431,11 @@ namespace StarTrek_KG.Playfield
         internal int GetStarCount()
         {
             return Sectors.Count(sector => sector.Item == SectorItem.Star);
+        }
+
+        public object GetSector(Coordinate coordinate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

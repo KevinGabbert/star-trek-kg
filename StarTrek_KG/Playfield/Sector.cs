@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {
@@ -14,7 +15,8 @@ namespace StarTrek_KG.Playfield
 
             //TODO: get rid of enum. 
             //TODO: A SectorItem needs to be the *actual* object held.  (a star, or ship (I want a starbase to be a type of ship so it can have hitpoints, shield, be hostile, and fight back.))
-            public SectorItem Item { get; set; } 
+            public SectorItem Item { get; set; }
+            public ISectorObject Object { get; set; }
 
             public Coordinate QuadrantDef { get; set; } //needed.  so it can set ship coordinate
 
