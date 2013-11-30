@@ -8,7 +8,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Phasers : SubSystem_Base, IMap //, IDestructionCheck
+    public class Phasers : SubSystem_Base, IMap, IWeapon //, IDestructionCheck
     {
         public Phasers(Map map)
         {

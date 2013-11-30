@@ -5,6 +5,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
+    //todo: make feature where opposing ships can hack into your computer (and you, theirs) if shields are down
     public class Computer : SubSystem_Base
     {
         public static readonly string[] CONTROL_PANEL = {
