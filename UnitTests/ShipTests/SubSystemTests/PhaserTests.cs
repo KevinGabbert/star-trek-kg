@@ -54,6 +54,92 @@ namespace UnitTests.ShipTests.SubSystemTests
         }
 
         [Test]
+        public void PhaserFireSubtractsEnergyFromShip()
+        {
+            _testMap = (new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                UseAppConfigSectorDefs = false,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
+                    },
+                AddStars = false
+            }));
+
+            const double startingEnergy = 3000.0;
+            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+
+            const double testBoltEnergy = 89.6829;
+
+            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership); 
+
+            //Verifies energy subtracted from firing ship.
+            Assert.AreEqual(startingEnergy - testBoltEnergy, _testMap.Playership.Energy);
+        }
+
+        [Test]
+        public void PhasersWontFireWhenToldTooMuchEnergy()
+        {
+            _testMap = (new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                UseAppConfigSectorDefs = false,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
+                    },
+                AddStars = false
+            }));
+
+            const double startingEnergy = 3000.0;
+            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+
+            const double testBoltEnergy = 4000;
+
+            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership);
+
+            //Todo: Mock up Output so we can see the text result
+            //Without a mock for Output, we can't see the output, but the conclusion we can draw here is that the phasers didn't fire, and no energy was expended
+
+            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+        }
+
+        [Test]
+        public void PhasersWontFireWhenToldNotEnoughEnergy()
+        {
+            _testMap = (new Map(new GameConfig
+            {
+                Initialize = true,
+                GenerateMap = true,
+                UseAppConfigSectorDefs = false,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
+                    },
+                AddStars = false
+            }));
+
+            const double startingEnergy = 3000.0;
+            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+
+            const double testBoltEnergy = -1;
+
+            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership);
+
+            //Todo: Mock up Output so we can see the text result
+            //Without a mock for Output, we can't see the output, but the conclusion we can draw here is that the phasers didn't fire, and no energy was expended
+
+            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+        }
+
+
+        [Test]
         public void HitThatDestroys()
         {
             _testMap = (new Map(new GameConfig
@@ -86,10 +172,17 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //todo: verify firing ship's starting energy.
 
-            //This action will hit every single hostile in the quadrant
-            Phasers.For(_testMap.Playership).Fire(89.6829); //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
+            const double startingEnergy = 3000.0;
 
-            //todo: verify energy subtracted from firing ship.
+            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+
+            const double testBoltEnergy = 89.6829;
+
+            //This action will hit every single hostile in the quadrant
+            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership); //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
+
+            //Verifies energy subtracted from firing ship.
+            Assert.AreEqual(startingEnergy - testBoltEnergy, _testMap.Playership.Energy);
 
             //in space. no one can hear you scream.
             Assert.AreEqual(0, activeQuadrant.GetHostiles().Count);
@@ -110,7 +203,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             //_testMap.Quadrants.GetHostile(0).Shields = 20
 
             //todo: ensure that baddie has less than 50 (from config?)
-            Phasers.For(_testMap.Playership).Fire(50);
+            Phasers.For(_testMap.Playership).Fire(50, _testMap.Playership);
         }
 
         public void HitThatWoundsMultipleHostiles()

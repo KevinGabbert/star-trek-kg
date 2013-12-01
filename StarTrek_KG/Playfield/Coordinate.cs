@@ -1,4 +1,5 @@
-﻿using StarTrek_KG.Exceptions;
+﻿using StarTrek_KG.Config;
+using StarTrek_KG.Exceptions;
 
 namespace StarTrek_KG.Playfield
 {
@@ -49,7 +50,8 @@ namespace StarTrek_KG.Playfield
 
         private static void CheckForOutOfBounds(int value)
         {
-            if ((value > 7) || value < 0) //todo: pull this item from app.config
+            if ((value > StarTrekKGSettings.GetSetting<int>("BoundsHigh")) || 
+                 value < StarTrekKGSettings.GetSetting<int>("BoundsLow")) 
             {
                 throw new GameConfigException("Out of bounds");
             }

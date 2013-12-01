@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -30,11 +31,11 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Console.WriteLine("Warp engines damaged.");
+            Output.WriteLine(StarTrekKGSettings.GetSetting<string>("WarpEnginesDamaged"));
         }
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("Warp engines have been repaired.");
+            Output.WriteLine(StarTrekKGSettings.GetSetting<string>("WarpEnginesRepaired"));
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -44,7 +45,7 @@ namespace StarTrek_KG.Subsystem
         private void SetMaxWarpFactor()
         {
             this.MaxWarpFactor = (int)(0.2 + (Utility.Random).Next(9)); // / 10.0
-            Console.WriteLine("Maximum warp factor: {0}", this.MaxWarpFactor);
+            Output.WriteLine(string.Format(StarTrekKGSettings.GetSetting<string>("MaxWarpFactorMessage"), this.MaxWarpFactor));
         }
 
         public override void Controls(string command)
@@ -80,7 +81,7 @@ namespace StarTrek_KG.Subsystem
 
         private void RepairOrTakeDamage(int lastQuadX, int lastQuadY) //, Sectors sectors
         {
-            var thisShip = this.Map.Playership.GetLocation();
+            Location thisShip = this.Map.Playership.GetLocation();
 
             docked = this.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Map.Quadrants.GetActive().Sectors);
             if (docked)
@@ -90,7 +91,7 @@ namespace StarTrek_KG.Subsystem
 
                 this.Map.Playership.RepairEverything();
 
-                Output.DockSuccess(thisShip.name);
+                Output.DockSuccess(StarTrekKGSettings.GetSetting<string>("PlayerShip"));
             }
             else
             {
@@ -120,46 +121,47 @@ namespace StarTrek_KG.Subsystem
             double quadX;
             double quadY;
 
-            Console.WriteLine(this.Map.Playership.Name + " located in quadrant [{0},{1}].", (thisShip.Quadrant.X),
+            Console.WriteLine(this.Map.Playership.Name + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X),
                               (thisShip.Quadrant.Y));
 
-            if (!Command.PromptUser("Enter destination quadrant X (1--8): ", out quadX)
-                || quadX < 1 || quadX > Constants.QUADRANT_MAX)
-            {
-                Output.WriteLine("Invalid X coordinate.");
-                return;
-            }
+            if (!Command.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantX"), out quadX)
+                || quadX < (Constants.QUADRANT_MIN + 1) 
+                || quadX > Constants.QUADRANT_MAX)
+                {
+                    Output.WriteLine(StarTrekKGSettings.GetSetting<string>("InvalidXCoordinate"));
+                    return;
+                }
 
-            if (!Command.PromptUser("Enter destination quadrant Y (1--8): ", out quadY)
-                || quadY < 1 || quadY > Constants.QUADRANT_MAX)
-            {
-                Output.WriteLine("Invalid Y coordinate.");
-                return;
-            }
+            if (!Command.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantY"), out quadY)
+                || quadY < (Constants.QUADRANT_MIN + 1) 
+                || quadY > Constants.QUADRANT_MAX)
+                {
+                    Output.WriteLine(StarTrekKGSettings.GetSetting<string>("InvalidYCoordinate"));
+                    return;
+                }
 
             Console.WriteLine();
             var qx = ((int)(quadX)) - 1;
             var qy = ((int)(quadY)) - 1;
             if (qx == thisShip.Quadrant.X && qy == thisShip.Quadrant.Y)
             {
-                Console.WriteLine("That is the current location of the " + this.Map.Playership.Name + ".");
+                Output.WriteLine(StarTrekKGSettings.GetSetting<string>("TheCurrentLocation") + this.Map.Playership.Name + ".");
                 return;
             }
 
-            Console.WriteLine("Direction: {0:#.##}", Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy));
-            Console.WriteLine("Distance:  {0:##.##}", Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy));
+            Output.WriteLine(string.Format("Direction: {0:#.##}", Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+            Output.WriteLine(string.Format("Distance:  {0:##.##}", Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
         }
 
         public new static Navigation For(Ship ship)
         {
             if (ship == null)
             {
-                throw new GameConfigException("Ship not set up (Navigation). Add a Friendly to your GameConfig"); //todo: make this a custom exception
+                throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("NavigationNotSetUp")); //todo: make this a custom exception
             }
 
             return (Navigation)ship.Subsystems.Single(s => s.Type == SubsystemType.Navigation);
         }
-
 
         ////temporary
         //public static Location GetLocation(Ship ship)

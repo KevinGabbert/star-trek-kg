@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -317,7 +318,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                Output.WriteLine("There are no Hostile ships in this quadrant.");
+                Output.WriteLine(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
                 return true;
             }
             return false;
@@ -381,7 +382,7 @@ namespace StarTrek_KG.Playfield
                 }
                 else
                 {
-                    throw new GameException("No Sectors Set up in Quadrant: " + this.Name);
+                    throw new GameException(StarTrekKGSettings.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name);
                 }
             }
             catch (Exception ex)
@@ -419,7 +420,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException("No Sectors Set up in Quadrant: " + this.Name + ".");
+                throw new GameException(StarTrekKGSettings.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
             }
         }
 

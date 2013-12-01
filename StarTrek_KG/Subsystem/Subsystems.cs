@@ -8,12 +8,9 @@ namespace StarTrek_KG.Subsystem
 {
     public class Subsystems: List<ISubsystem>
     {
-        private Playfield.Map map;
-
         public Subsystems(Playfield.Map map)
         {
             // TODO: Complete member initialization
-            this.map = map;
 
             this.AddRange(new List<ISubsystem>(){
                                      new Shields(map) { Energy = 0 },
@@ -74,7 +71,7 @@ namespace StarTrek_KG.Subsystem
         //Needs to be improved
         public override string ToString()
         {
-            string returnVal = null;
+            string returnVal = "";
             foreach (ISubsystem subSystem in this)
             {
                 returnVal += " " + subSystem.GetType().Name;

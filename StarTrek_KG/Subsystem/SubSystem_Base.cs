@@ -15,7 +15,7 @@ namespace StarTrek_KG.Subsystem
         #region Properties
 
             public int Damage { get; set; }
-            public int MaxTransfer { get; set; }
+            public double MaxTransfer { get; set; }
             public SubsystemType Type { get; set; }
 
         #endregion
@@ -24,7 +24,10 @@ namespace StarTrek_KG.Subsystem
         public abstract void OutputRepairedMessage();
         public abstract void OutputMalfunctioningMessage();
 
-        public abstract void Controls(string command);
+        public virtual void Controls(string command)
+        {
+            
+        }
 
         public virtual bool Repair()
         {
