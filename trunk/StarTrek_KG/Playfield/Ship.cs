@@ -39,7 +39,7 @@ namespace StarTrek_KG.Playfield
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
 
-            public int Energy { get; set; }
+            public double Energy { get; set; }
             public bool Destroyed { get; set; }
             public Map Map { get; set; }
             public Type Type { get; set; }

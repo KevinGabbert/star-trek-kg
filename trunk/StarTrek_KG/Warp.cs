@@ -52,11 +52,11 @@ namespace StarTrek_KG
 
             if (success)
             {
-                Console.WriteLine("Warp engines engaged.");
+                Output.WriteLine("Warp engines engaged.");
 
                 Navigation.For(map.Playership).Movement.Execute(direction, distance, distanceEntered, out lastQuadX, out lastQuadY);
 
-                Console.WriteLine(map.Playership.Name + " has arrived."); 
+                Output.WriteLine(map.Playership.Name + " has arrived."); 
             }
             else
             {

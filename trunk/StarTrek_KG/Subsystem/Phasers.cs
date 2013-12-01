@@ -8,7 +8,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Phasers : SubSystem_Base, IMap, IWeapon //, IDestructionCheck
+    public class Phasers : SubSystem_Base, IMap, IWeapon
     {
         public Phasers(Map map)
         {
@@ -31,45 +31,50 @@ namespace StarTrek_KG.Subsystem
             throw new NotImplementedException();
         }
 
-        public void Fire(double energy)
+        public void Fire(double energyToFire, IShip shipFiringPhasers)
         {
-            if (!EnergyCheckFail(energy, this.Map))
+            if (!EnergyCheckFail(energyToFire, shipFiringPhasers))
             {
-                Phasers.Execute(this.Map, energy);
+                shipFiringPhasers.Energy = this.Map.Playership.Energy -= energyToFire;
+                Phasers.Execute(this.Map, energyToFire);
 
                 //any remaining bad guys now have the opportunity to fire back
                 this.Map.Quadrants.ALLHostilesAttack(this.Map);
             }
+            else
+            {
+                //Energy Check has failed
+                Output.WriteLine("Not enough Energy to fire Phasers");
+            }
         }
 
-        public override void Controls(string command)
+        public void Controls(Map map, IShip shipFiringPhasers)
         {
-            this.Controls(this.Map);
-        }
-
-        public void Controls(Map map)
-        {
-            if (Damaged()) return;
+            if (this.Damaged()) return;
             if (Quadrants.NoHostiles(map.Quadrants.GetActive().GetHostiles()))
             {
                 return;
             }
 
             double phaserEnergy;
-            Console.WriteLine("Phasers locked on target.");
-            if (!GotPhaserEnergyFromUser(map, out phaserEnergy) || EnergyCheckFail(phaserEnergy, map))
+
+            Output.WriteLine("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
+
+            if (!Phasers.PromptUserForPhaserEnergy(map, out phaserEnergy))
             {
                 Output.WriteLine("Invalid energy level.");
                 return;
             }
-            Console.WriteLine();
+            Output.WriteLine("");
 
-            this.Fire(phaserEnergy);
+            this.Fire(phaserEnergy, shipFiringPhasers);
         }
 
         private static void Execute(Map map, double phaserEnergy)
         {
             Output.WriteLine("Firing phasers..."); //todo: pull from config
+
+            //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
             var destroyedShips = new List<IShip>();
             foreach (var badGuyShip in map.Quadrants.GetActive().GetHostiles())
@@ -81,25 +86,26 @@ namespace StarTrek_KG.Subsystem
             map.RemoveAllDestroyedShips(map, destroyedShips);//remove from Hostiles collection
         }
 
-        private static bool GotPhaserEnergyFromUser(Map map, out double phaserEnergy)
+        private static bool PromptUserForPhaserEnergy(Map map, out double phaserEnergy)
         {
             return Command.PromptUser(String.Format("Enter phaser energy (1--{0}): ", map.Playership.Energy), out phaserEnergy);
         }
 
-        private static bool EnergyCheckFail(double phaserEnergy, Map map)
+        private static bool EnergyCheckFail(double phaserEnergy, IShip firingShip)
         {
-            return phaserEnergy < 1 || phaserEnergy > map.Playership.Energy;
+            return phaserEnergy < 1 || phaserEnergy > firingShip.Energy;
         }
-        private static bool StarshipTakesHit(Map map, double phaserEnergy)
-        {
-            Shields.For(map.Playership).Energy -= (int) phaserEnergy;
-            if (Shields.For(map.Playership).Energy < 0)
-            {
-                Shields.For(map.Playership).Energy = 0;
-                return true;
-            }
-            return false;
-        }
+
+        //private static bool StarshipTakesHit(Map map, double phaserEnergy)
+        //{
+        //    Shields.For(map.Playership).Energy -= (int) phaserEnergy;
+        //    if (Shields.For(map.Playership).Energy < 0)
+        //    {
+        //        Shields.For(map.Playership).Energy = 0;
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
         private static double ComputeDeliveredEnergy(Map map, double phaserEnergy, IShip badGuyShip)
         {
@@ -132,7 +138,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException("Ship not set up (Phasers). Add a Friendly to your GameConfig"); //todo: make this a custom exception
+                throw new GameConfigException("Ship not set up (Phasers). Add a Friendly to your GameConfig"); 
             }
 
             return (Phasers)ship.Subsystems.Single(s => s.Type == SubsystemType.Phasers);

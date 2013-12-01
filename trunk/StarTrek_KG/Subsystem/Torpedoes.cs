@@ -48,7 +48,8 @@ namespace StarTrek_KG.Subsystem
 
             double direction;
             if (!Command.PromptUser("Enter firing direction (1.0--9.0): ", out direction)
-                || direction < 1.0 || direction > 9.0)
+                || direction < 1.0 
+                || direction > 9.0)
             {
                 Output.WriteLine("Invalid direction.");
                 return;

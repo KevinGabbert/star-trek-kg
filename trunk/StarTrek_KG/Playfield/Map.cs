@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -50,7 +49,7 @@ namespace StarTrek_KG.Playfield
                     if (setupOptions.SectorDefs == null)
                     {
                         //todo: then use appConfigSectorDefs  
-                        throw new GameConfigException("No SectorDefs set up.");
+                        throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("NoSectorDefsSetUp"));
                     }
 
                     this.Initialize(setupOptions.SectorDefs); //Playership is set up here.
@@ -90,7 +89,7 @@ namespace StarTrek_KG.Playfield
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
                 Output.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
-                Output.WriteLine(" ---------------- Debug Mode ----------------//");
+                Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
                 Output.WriteLine("");
             }
         }
@@ -111,11 +110,11 @@ namespace StarTrek_KG.Playfield
                 }
                 catch (InvalidOperationException ex)
                 {
-                    throw new GameConfigException("Invalid Operation in setting up PlayerShip. " + ex.Message);
+                    throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("InvalidPlayershipSetup") + ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    throw new GameConfigException("error setting up PlayerShip. " + ex.Message);
+                    throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("ErrorPlayershipSetup") + ex.Message);
                 }
             }
             else
@@ -147,7 +146,7 @@ namespace StarTrek_KG.Playfield
 
                     if (Constants.DEBUG_MODE)
                     {
-                        Output.WriteSingleLine("Adding new Quadrant.");
+                        Output.WriteSingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
                         
                         Output.DisplayPropertiesOf(newQuadrant);
 
@@ -217,11 +216,12 @@ namespace StarTrek_KG.Playfield
         //refactor these to a setup object
         private void SetUpPlayerShip(SectorDef playerShipDef)
         {
-            Output.WriteLine("Setting up PlayerShip.");
+            Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
+
             //todo: remove this requirement
             if (this.Quadrants == null)
             {
-                throw new GameException("Quadrants need to be set up before setting up a playership");
+                throw new GameException(StarTrekKGSettings.GetSetting<string>("QuadrantsNeedToBeSetup1"));
             }
 
             //todo: if playershipDef.GetFromConfig then grab info from config.  else set up with default random numbers.
@@ -264,7 +264,7 @@ namespace StarTrek_KG.Playfield
 
             if(this.Quadrants.Count == 0)
             {
-                throw new ArgumentException("No quadrants set up!");
+                throw new ArgumentException(StarTrekKGSettings.GetSetting<string>("QuadrantsNotSetUp"));
             }
 
             var m = this.Quadrants.Where(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y).Single();
@@ -352,9 +352,7 @@ namespace StarTrek_KG.Playfield
 
         public SectorItem GetItem(int quadrantX, int quadrantY, int sectorX, int sectorY)
         {
-            var item = this.Quadrants.Single(q => q.X == quadrantX &&
-                                                  q.Y == quadrantY).Sectors.Single(s => s.X == sectorX &&
-                                                                                        s.Y == sectorY).Item;
+            var item = this.Get(quadrantX, quadrantY, sectorX, sectorY).Item;
             return item;
         }
 

@@ -10,7 +10,7 @@ namespace StarTrek_KG.Interfaces
     {
         Map Map { get; set; }
         int Damage { get; set; }
-        int MaxTransfer { get; set; }
+        double MaxTransfer { get; set; }
         int Energy { get; set; }
         
         ISubsystem For(Ship ship);

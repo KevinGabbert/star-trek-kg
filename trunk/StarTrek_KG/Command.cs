@@ -69,16 +69,25 @@ namespace StarTrek_KG
             var command = readLine.Trim().ToLower();
             switch (command)
             {
-                case "nav": Navigation.For(this.Map.Playership).Controls("nav");
+                case "nav": 
+                    Navigation.For(this.Map.Playership).Controls("nav");
                     break;
-                case "srs": ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
+
+                case "srs": 
+                    ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
                     break;
-                case "lrs": LongRangeScan.For(this.Map.Playership).Controls(this.Map);
+
+                case "lrs": 
+                    LongRangeScan.For(this.Map.Playership).Controls(this.Map);
                     break;
-                case "pha": Phasers.For(this.Map.Playership).Controls(this.Map);
+
+                case "pha": Phasers.For(this.Map.Playership).Controls(this.Map, this.Map.Playership);
                     break;
-                case "tor": Torpedoes.For(this.Map.Playership).Controls(this.Map);
+
+                case "tor": 
+                    Torpedoes.For(this.Map.Playership).Controls(this.Map);
                     break;
+
                 case "she":
 
                     if (Shields.For(this.Map.Playership).Damaged()) break;
@@ -118,7 +127,7 @@ namespace StarTrek_KG
         {
             try
             {
-                Console.Write(promptMessage);
+                Output.WriteSingleLine(promptMessage);
 
                 value = Double.Parse(Console.ReadLine());
 

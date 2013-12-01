@@ -17,7 +17,7 @@ namespace StarTrek_KG.Playfield
             set { throw new NotImplementedException(); }
         }
 
-        public int Energy
+        public double Energy
         {
             get
             {
