@@ -16,8 +16,8 @@ namespace StarTrek_KG.Playfield
 
         public void Execute(string direction, double distance, double distanceEntered, out int lastQuadX, out int lastQuadY)
         {
-            var playerShipSector = this.Map.Playership.Sector;
-            var playershipQuadrant = this.Map.Playership.GetQuadrant();
+            Sector playerShipSector = this.Map.Playership.Sector;
+            Quadrant playershipQuadrant = this.Map.Playership.GetQuadrant();
 
             lastQuadY = playershipQuadrant.Y;
             lastQuadX = playershipQuadrant.X;
@@ -35,7 +35,7 @@ namespace StarTrek_KG.Playfield
             var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
 
             //Clear Old Sector
-            Sector.Get(this.Map.Quadrants.GetActive().Sectors, playerShipSector.X, playerShipSector.Y).Item = SectorItem.Empty;
+            Sector.GetFrom(this.Map.Playership).Item = SectorItem.Empty;
 
             if (this.TravelThroughSectors(distanceEntered, distance, numericDirection, ref vectorLocationX, ref vectorLocationY, playershipQuadrant, lastSector)) goto EndNavigation;
 
@@ -53,7 +53,7 @@ namespace StarTrek_KG.Playfield
 
         private bool TravelThroughSectors(double distanceEntered, double distance, int numericDirection, 
                                           ref double vectorLocationX, ref double vectorLocationY, 
-                                          Coordinate playershipQuadrant, Coordinate lastSector)
+                                          Quadrant playershipQuadrant, Coordinate lastSector)
         {
             double angle = -(Math.PI * (numericDirection - 1.0) / 4.0);
 
@@ -63,7 +63,7 @@ namespace StarTrek_KG.Playfield
             var vector = new Vector(distanceX / Constants.MOVEMENT_PRECISION,
                                     distanceY / Constants.MOVEMENT_PRECISION);
 
-            var activeSectors = this.Map.Quadrants.GetActive().Sectors;
+            var activeSectors = playershipQuadrant.Sectors;
 
             for (var unit = 0; unit < Constants.MOVEMENT_PRECISION; unit++)
             {
