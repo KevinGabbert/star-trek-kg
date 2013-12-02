@@ -38,9 +38,10 @@ namespace StarTrek_KG
         public bool InvalidWarpFactorCheck(double maxWarpFactor, out double distance)
         {
             if (!Command.PromptUser(String.Format("Enter warp factor (0.1--{0}): ", maxWarpFactor), out distance)
-                || distance < 0.1 || distance > maxWarpFactor)
+                || distance < 0.1 
+                || distance > maxWarpFactor)
             {
-                Output.WriteLine("Invalid warp factor.");
+                Output.WriteLine("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
                 return true;
             }
             return false;
@@ -56,7 +57,7 @@ namespace StarTrek_KG
 
                 Navigation.For(map.Playership).Movement.Execute(direction, distance, distanceEntered, out lastQuadX, out lastQuadY);
 
-                Output.WriteLine(map.Playership.Name + " has arrived."); 
+                Output.WriteLine("Warp engines disengaged."); 
             }
             else
             {

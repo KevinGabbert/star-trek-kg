@@ -44,7 +44,9 @@ namespace StarTrek_KG.Subsystem
 
         public void Controls(Map map)
         {
-            if (Damaged() || Exhausted() || Quadrants.NoHostiles(map.Quadrants.GetHostiles())) return;
+            if (this.Damaged() || 
+                this.Exhausted() || 
+                Quadrants.NoHostiles(map.Quadrants.GetHostiles())) return;
 
             double direction;
             if (!Command.PromptUser("Enter firing direction (1.0--9.0): ", out direction)
@@ -82,16 +84,25 @@ namespace StarTrek_KG.Subsystem
                     lastY = newY;
                 }
 
-                var hostilesInSector = map.Quadrants.GetHostiles().Where(ship => ship.Sector.X == newX && ship.Sector.Y == newY);
+                //todo: query map.quadrants for ship
 
-                if (Map.DestroyedBaddies(map, hostilesInSector)) goto label;
-                if (Torpedoes.HitSomethingElse(map, vx, vy, location, newY, newX, ref x, ref y)) goto label;
+                var hostilesInSector = map.Quadrants.GetActive().GetHostiles().Where(ship => 
+                                                                             ship.Sector.X == newX && 
+                                                                             ship.Sector.Y == newY);
+
+                if (Map.DestroyedBaddies(map, hostilesInSector) || 
+                   (Torpedoes.HitSomethingElse(map, vx, vy, location, newY, newX, ref x, ref y)))
+                {
+                    this.AllHostilesAttack(map);
+                    return;
+                }
             }
 
             Output.WriteLine("Photon torpedo failed to hit anything.");
+        }
 
-            label:
-
+        private void AllHostilesAttack(Map map)
+        {
             if (map.Quadrants.GetHostiles().Count > 0)
             {
                 map.Quadrants.ALLHostilesAttack(map);
@@ -108,7 +119,7 @@ namespace StarTrek_KG.Subsystem
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
             Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
-            Sector qLocation = null; // = quadrant.Map.Sectors.Where(s => s.X == newX && s.Y == newY).Single();
+            Sector qLocation = quadrant.Sectors.Where(s => s.X == newX && s.Y == newY).Single();
 
             switch (qLocation.Item)
             {
