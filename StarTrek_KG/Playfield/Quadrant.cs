@@ -197,8 +197,10 @@ namespace StarTrek_KG.Playfield
                 var newShip = Quadrant.CreateHostileShip(newlyCreatedSector, baddieNames, map);
                 quadrant.AddShip(newShip, newlyCreatedSector);
             }
-
-            newlyCreatedSector.Item = itemToPopulate;
+            else
+            {
+                newlyCreatedSector.Item = itemToPopulate;
+            }
 
             quadrant.Sectors.Add(newlyCreatedSector);
         }
@@ -219,9 +221,22 @@ namespace StarTrek_KG.Playfield
 
             Output.WriteDebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
 
+            var addToSector = this.GetSector(toSector) ?? toSector; //if we can't retrieve it, then it hasn't been created yet, so add to our new variable and the caller of this function can add it if they want
+
             try
             {
-                toSector.Object = ship;
+                addToSector.Object = ship;
+
+                switch(ship.Allegiance)
+                {
+                    case Allegiance.GoodGuy:
+                        addToSector.Item = SectorItem.Friendly;
+                        break;
+
+                    case Allegiance.BadGuy:
+                        addToSector.Item = SectorItem.Hostile;
+                        break;
+                }        
             }
             catch(Exception ex)
             {
@@ -434,9 +449,9 @@ namespace StarTrek_KG.Playfield
             return Sectors.Count(sector => sector.Item == SectorItem.Star);
         }
 
-        public object GetSector(Coordinate coordinate)
+        public Sector GetSector(Coordinate coordinate)
         {
-            throw new NotImplementedException();
+            return this.Sectors.Where(sector => sector.X == coordinate.X && sector.Y == coordinate.Y).FirstOrDefault();
         }
     }
 }

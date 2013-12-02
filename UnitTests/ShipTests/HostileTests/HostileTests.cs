@@ -224,18 +224,14 @@ namespace UnitTests.ShipTests.HostileTests
                                             }
             }));
 
-            //add a ship
-            //var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7))));
+            var hostiles = _testMap.Quadrants.GetHostiles();
+            Assert.AreEqual(1, hostiles.Count);
 
-            //_testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+            var firstHostile = hostiles[0];
+            Assert.AreEqual("Sector: 4, 6", firstHostile.Sector.ToString());
 
-            Assert.AreEqual(1, _testMap.Quadrants.GetHostiles().Count);
-
-            var firstHostile = _testMap.Quadrants.GetHostiles()[0];
-            Assert.AreEqual("Sector: 1,7", firstHostile.Sector.ToString());
-
-            Assert.AreEqual(4, _testMap.Quadrants.GetHostiles()[0].Sector.X);
-            Assert.AreEqual(6, _testMap.Quadrants.GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(4, hostiles[0].Sector.X);
+            Assert.AreEqual(6, hostiles[0].Sector.Y);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -457,24 +453,27 @@ namespace UnitTests.ShipTests.HostileTests
                                             }
                                    }));
 
-            //this was creates an invisible hostile. why?
-            //this.Map.Quadrants.GetActive().Hostiles.Add(new Ship("testbaddie", this.Map, new Sector(new LocationDef(3, 7, 3, 7))));
+            var activeQuadrant = _testMap.Quadrants.GetActive();
 
             //add a ship
-            var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(null, new Coordinate(1, 7))));
-            var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(null, new Coordinate(1, 6))));
+            var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 7))));
+            var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 6))));
 
-            _testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
-            _testMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip.Sector);
+            activeQuadrant.AddShip(hostileShip, hostileShip.Sector);
+            activeQuadrant.AddShip(hostileShip2, hostileShip2.Sector);
 
-            Assert.AreEqual(2, _testMap.Quadrants.GetActive().GetHostiles().Count);
+            var activeQuadrantAfterAdding = _testMap.Quadrants.GetActive();
+            var hostiles = activeQuadrantAfterAdding.GetHostiles();
 
-            Assert.AreEqual(1, _testMap.Quadrants.GetActive().GetHostiles()[0].Sector.X);
-            Assert.AreEqual(7, _testMap.Quadrants.GetActive().GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(2, hostiles.Count);
 
-            Assert.AreEqual(1, _testMap.Quadrants.GetActive().GetHostiles()[1].Sector.X);
-            Assert.AreEqual(6, _testMap.Quadrants.GetActive().GetHostiles()[1].Sector.Y);
+            Assert.AreEqual(1, hostiles[0].Sector.X);
+            Assert.AreEqual(6, hostiles[0].Sector.Y);
+
+            Assert.AreEqual(1, hostiles[1].Sector.X);
+            Assert.AreEqual(7, hostiles[1].Sector.Y);
         }
+
 
         private void SetupMapWith2Hostiles()
         {
