@@ -13,7 +13,7 @@ namespace StarTrek_KG.Playfield
             get { return _x; }
             set
             {
-                CheckForOutOfBounds(value);
+                Coordinate.CheckForOutOfBounds(value);
                 _x = value;
             }
         }
@@ -25,7 +25,7 @@ namespace StarTrek_KG.Playfield
             get { return _y; }
             set
             {
-                CheckForOutOfBounds(value);
+                Coordinate.CheckForOutOfBounds(value);
                 _y = value;
             }
         }
@@ -50,8 +50,11 @@ namespace StarTrek_KG.Playfield
 
         private static void CheckForOutOfBounds(int value)
         {
-            if ((value > StarTrekKGSettings.GetSetting<int>("BoundsHigh")) || 
-                 value < StarTrekKGSettings.GetSetting<int>("BoundsLow")) 
+            var boundsHigh = StarTrekKGSettings.GetSetting<int>("BoundsHigh");
+            var boundsLow = StarTrekKGSettings.GetSetting<int>("BoundsLow");
+
+            if ((value > boundsHigh) || 
+                 value < boundsLow) 
             {
                 throw new GameConfigException("Out of bounds");
             }

@@ -9,7 +9,7 @@ namespace StarTrek_KG
 {
     public static class Utility
     {
-        public static Random Random = new Random(Convert.ToInt32(DateTime.Today.Millisecond + DateTime.Today.Minute));
+        public static Random Random = new Random(Guid.NewGuid().GetHashCode());
 
         public static IList<T> Shuffle<T>(this IList<T> list)
         {

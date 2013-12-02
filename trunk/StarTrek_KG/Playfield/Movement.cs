@@ -1,8 +1,7 @@
 ﻿using System;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Playfield;
 
-namespace StarTrek_KG
+namespace StarTrek_KG.Playfield
 {
     public class Movement : System
     {
@@ -42,8 +41,7 @@ namespace StarTrek_KG
 
             this.CheckForGalacticBarrier(ref vectorLocationX, ref vectorLocationY);
 
-            //todo: if quadrant hasnt changed because ship cant move off map, then output a message that the galactic barrier has
-            //been hit
+            //todo: if quadrant hasnt changed because ship cant move off map, then output a message that the galactic barrier has been hit
 
             //todo: Map Friendly was set in obstacle check (move that here)
             this.SetShipLocation(vectorLocationX, vectorLocationY);//Set new Sector

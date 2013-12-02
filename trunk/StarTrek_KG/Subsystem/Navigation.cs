@@ -44,7 +44,7 @@ namespace StarTrek_KG.Subsystem
 
         private void SetMaxWarpFactor()
         {
-            this.MaxWarpFactor = (int)(0.2 + (Utility.Random).Next(9)); // / 10.0
+            this.MaxWarpFactor = (int)(0.2 + (Utility.Random).Next(9)); //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
             Output.WriteLine(string.Format(StarTrekKGSettings.GetSetting<string>("MaxWarpFactorMessage"), this.MaxWarpFactor));
         }
 
@@ -71,12 +71,14 @@ namespace StarTrek_KG.Subsystem
 
             if (!Warp.EngageWarp(direction, distance, out lastQuadY, out lastQuadX, this.Map)) return;
 
-            ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
-
             //var lastPosition = Quadrants.Get(this.Map, lastQuadX, lastQuadY);
             //Sectors currentPosition = this.Map.GetCurrentSectors();  //fixme
 
             this.RepairOrTakeDamage(lastQuadX, lastQuadY );//,currentPosition
+
+            ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
+
+            //todo: upon arriving in quadrant, all damaged controls need to be enumerated
         }
 
         private void RepairOrTakeDamage(int lastQuadX, int lastQuadY) //, Sectors sectors
@@ -86,18 +88,24 @@ namespace StarTrek_KG.Subsystem
             docked = this.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Map.Quadrants.GetActive().Sectors);
             if (docked)
             {
-                Output.WriteResourceLine("DockingMessageLowerShields");
-                Shields.For(this.Map.Playership).Damage = 0;
-
-                this.Map.Playership.RepairEverything();
-
-                Output.DockSuccess(StarTrekKGSettings.GetSetting<string>("PlayerShip"));
+                this.SuccessfulDockWithStarbase();
             }
             else
             {
                 this.TakeAttackDamageOrRepair(this.Map, lastQuadY, lastQuadX);
             }
         }
+
+        private void SuccessfulDockWithStarbase()
+        {
+            Output.WriteResourceLine("DockingMessageLowerShields");
+            Shields.For(this.Map.Playership).Damage = 0;
+
+            this.Map.Playership.RepairEverything();
+
+            Output.DockSuccess(StarTrekKGSettings.GetSetting<string>("PlayerShip"));
+        }
+
         private void TakeAttackDamageOrRepair(Map map, int lastQuadY, int lastQuadX)
         {
             var thisShip = this.Map.Playership.GetLocation();
