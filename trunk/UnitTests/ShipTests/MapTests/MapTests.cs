@@ -5,6 +5,7 @@ using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 
@@ -474,7 +475,7 @@ namespace UnitTests.ShipTests.MapTests
         {
             //todo: Assert for each item set
 
-            Assert.IsInstanceOf(typeof(List<Ship>), _testMap.Quadrants.GetActive().GetHostiles());
+            Assert.IsInstanceOf(typeof(List<IShip>), _testMap.Quadrants.GetActive().GetHostiles());
             Assert.AreEqual(0, _testMap.Quadrants.GetActive().GetHostiles().Count);
 
             Assert.Greater(_testMap.hostilesToSetUp, -1);
