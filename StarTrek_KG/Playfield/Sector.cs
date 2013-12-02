@@ -57,6 +57,25 @@ namespace StarTrek_KG.Playfield
             return gotSectors.Single();
         }
 
+        public static Sector GetFrom(Ship shipToGetFrom)
+        {
+            var shipQuadrant = shipToGetFrom.GetQuadrant();
+            var gotSectors = shipQuadrant.Sectors.Where(s => s.X == shipToGetFrom.Sector.X && s.Y == shipToGetFrom.Sector.Y).ToList();
+
+            if (gotSectors.Count() < 1)
+            {
+                throw new GameConfigException("Sector not found:  X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipQuadrant.Sectors.Count());
+            }
+
+            if (gotSectors.Count() > 1)
+            {
+                throw new GameConfigException("Multiple sectors found. X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipQuadrant.Sectors.Count());
+            }
+
+            //There can only be one active sector
+            return gotSectors.Single();
+        }
+
         public static Sector CreateEmpty(Quadrant quadrant, Coordinate sectorDef)
         {
             var sector = new Sector(new LocationDef(quadrant, sectorDef));
