@@ -1,4 +1,7 @@
-﻿namespace StarTrek_KG.Playfield
+﻿using System;
+using StarTrek_KG.Exceptions;
+
+namespace StarTrek_KG.Playfield
 {
     public class LocationDef
     {
@@ -10,8 +13,18 @@
 
         }
 
-        public LocationDef(Coordinate quadrant, Coordinate sector)
+        public LocationDef(NonNullable<Coordinate> quadrant, NonNullable<Coordinate> sector)
         {
+            //if(quadrant == null)
+            //{
+            //    throw new GameException("Error during Initialization. Quadrant cannot be null");
+            //}
+
+            //if (sector == null)
+            //{
+            //    throw new GameException("Error during Initialization. Sector cannot be null");
+            //}
+
             this.Quadrant = quadrant;
             this.Sector = sector;
         }

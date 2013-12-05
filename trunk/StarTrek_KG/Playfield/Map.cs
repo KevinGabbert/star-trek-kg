@@ -105,8 +105,10 @@ namespace StarTrek_KG.Playfield
                 {
                     this.SetUpPlayerShip(sectorDefs.Friendlies().Single());
 
+                    var sectorToPlaceShip = Sector.Get(this.Quadrants.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
+
                     //This places our newly created ship into our newly created List of Quadrants.
-                    Sector.Get(this.Quadrants.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y).Item = SectorItem.Friendly;
+                    sectorToPlaceShip.Item = SectorItem.Friendly;
                 }
                 catch (InvalidOperationException ex)
                 {

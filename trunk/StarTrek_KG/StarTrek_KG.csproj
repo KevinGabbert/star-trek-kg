@@ -73,6 +73,7 @@
     <Compile Include="Interfaces\IStar.cs" />
     <Compile Include="Interfaces\ISystem.cs" />
     <Compile Include="Interfaces\IWeapon.cs" />
+    <Compile Include="NonNullable.cs" />
     <Compile Include="Playfield\BlackHole.cs" />
     <Compile Include="Playfield\Coordinate.cs" />
     <Compile Include="Playfield\Coordinates.cs" />

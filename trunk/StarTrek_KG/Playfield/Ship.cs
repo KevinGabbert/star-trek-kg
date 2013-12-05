@@ -55,7 +55,7 @@ namespace StarTrek_KG.Playfield
         {
             this.Type = this.GetType();
             this.Map = map;
-            this.Sector = new Sector(new LocationDef(null, new Coordinate(position.X, position.Y)));
+            this.Sector = position;
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
             this.QuadrantDef = position.QuadrantDef;
