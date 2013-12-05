@@ -483,13 +483,13 @@ namespace UnitTests.ShipTests.HostileTests
                                     GenerateMap = true,
                                     SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(null, new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                     }
                                 }));
 
             //add a ship
-            var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(null, new Coordinate(2, 7))));
-            var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(null, new Coordinate(2, 5))));
+            var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
+            var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))));
 
             _testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
             _testMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip.Sector);
