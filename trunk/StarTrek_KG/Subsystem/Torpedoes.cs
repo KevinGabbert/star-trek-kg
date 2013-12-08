@@ -24,12 +24,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.WriteLine("Photon torpedo control is damaged. Repairs are underway.");
+            Output.WriteLine("Photon torpedo control is damaged. Repairs are underway. ");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("Photon torpedo controls have been repaired.");
+            Output.WriteLine("Photon torpedo controls have been repaired. ");
         }
 
         public override void OutputMalfunctioningMessage()
