@@ -97,18 +97,40 @@ namespace UnitTests.ShipTests.HostileTests
         }
 
         [Test]
-        public void ALLHostilesAttack_ShipUndocked_NoShields()
+        public void ShipUndocked_NoShields_CheckEnergy()
         {
             this.SetupMapWith2Hostiles();
-            
+
             Assert.AreEqual(3000, _testMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
+        }
+
+        [Test]
+        public void ALLHostilesAttack_Check_Subsystems()
+        {
+            //TODO: this fails. Create a test for subsystems.DamageRandomSubsystem()
+            for(int i = 0; i < 50; i ++)
+            {
+                 this.AttackAndCheck();
+            }
+        }
+
+        [Test]
+        public void ALLHostilesAttack_ShipUndocked_NoShields()
+        {
+            AttackAndCheck();
+        }
+
+        private void AttackAndCheck()
+        {
+            this.SetupMapWith2Hostiles();
 
             _testMap.Quadrants.ALLHostilesAttack(_testMap);
 
             Assert.IsFalse(_testMap.Playership.Destroyed);
 
-            //2 subsystems should have been taken out.
-            Assert.AreEqual(2, _testMap.Playership.Subsystems.Count(s => s.Damaged()));  //todo: check all of ship's systems in HostileTests
+            //2 *different* subsystems should have been taken out.
+            Assert.AreEqual(2, _testMap.Playership.Subsystems.Count(s => s.Damaged()));
+                //todo: check all of ship's systems in HostileTests
         }
 
         [Test]
@@ -492,7 +514,7 @@ namespace UnitTests.ShipTests.HostileTests
             var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))));
 
             _testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
-            _testMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip.Sector);
+            _testMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip2.Sector);
         }
 
         #region OutOfBounds

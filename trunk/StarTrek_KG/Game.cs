@@ -35,7 +35,7 @@ namespace StarTrek_KG
                                    {
                                        Initialize = true,
                                        GenerateMap = true,
-                                       SectorDefs = SectorSetup()
+                                       SectorDefs = Game.SectorSetup()
                                    });
 
             this.Map = new Map(startConfig);

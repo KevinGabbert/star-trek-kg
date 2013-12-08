@@ -20,7 +20,12 @@ namespace StarTrek_KG.Playfield
         //todo: get rid of that second, stupid parameter.
         public SectorDef(SectorItem sectorItem)
         {
-            this.Sector = new Sector(new LocationDef(null, new Coordinate((Utility.Random).Next(Constants.SECTOR_MAX), (Utility.Random).Next(Constants.SECTOR_MAX))));
+            var randomCoordinate = new Coordinate((Utility.Random).Next(Constants.SECTOR_MAX),
+                                                  (Utility.Random).Next(Constants.SECTOR_MAX));
+
+            this.Sector = new Sector(new LocationDef(randomCoordinate, randomCoordinate));
+
+            //populate QuadrantDef with default item here?
             this.Item = sectorItem;
         }
 
