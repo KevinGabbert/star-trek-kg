@@ -68,25 +68,17 @@ namespace StarTrek_KG.Playfield
 
         public static void SetupNewSector(SectorDef sectorDef, Sectors newSectors, Quadrants quadrants)
         {
-            //come up with random Sector nuumber
             var randomSectorX = (Utility.Random).Next(Constants.SECTOR_MAX);
             var randomSectorY = (Utility.Random).Next(Constants.SECTOR_MAX);
 
             if (newSectors.NotFound(randomSectorX, randomSectorY))
             {
-                var newSector = new Sector(new LocationDef(sectorDef.QuadrantDef, new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y)));
+                Sectors.SetupRandomQuadrantDef(sectorDef, quadrants);
+
+                var locationDef = new LocationDef(sectorDef.QuadrantDef,
+                                                  new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
+                var newSector = new Sector(locationDef);
                 newSector.Item = sectorDef.Item;
-
-                if (sectorDef.QuadrantDef == null)
-                {
-                    var randomQuadrantX = (Utility.Random).Next(Constants.SECTOR_MAX);
-                    var randomQuadrantY = (Utility.Random).Next(Constants.SECTOR_MAX);
-
-                    if(quadrants.NotFound(randomQuadrantX, randomQuadrantY))
-                    {
-                        newSector.QuadrantDef = new Coordinate(randomQuadrantX, randomQuadrantY);
-                    }
-                }
 
                 newSectors.Add(newSector);    
             }
@@ -94,6 +86,20 @@ namespace StarTrek_KG.Playfield
             //{
             //    //throw new GameException("Can't set up sector at " + sectorDef.Sector.X + "," + sectorDef.Sector.Y + ". Sector already set up.");
             //}
+        }
+
+        private static void SetupRandomQuadrantDef(SectorDef sectorDef, Quadrants quadrants)
+        {
+            if (sectorDef.QuadrantDef == null)
+            {
+                var randomQuadrantX = (Utility.Random).Next(Constants.SECTOR_MAX);
+                var randomQuadrantY = (Utility.Random).Next(Constants.SECTOR_MAX);
+
+                if (quadrants.NotFound(randomQuadrantX, randomQuadrantY))
+                {
+                    sectorDef.QuadrantDef = new Coordinate(randomQuadrantX, randomQuadrantY);
+                }
+            }
         }
     }
 }
