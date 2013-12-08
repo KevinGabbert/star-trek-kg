@@ -244,7 +244,7 @@ namespace StarTrek_KG.Playfield
                         {
                             Console.WriteLine(
                                 map.Playership.Name +
-                                " hit by " + badGuy.Name + " at sector [{0},{1}]. No damage due to starbase shields.",
+                                " hit by " + badGuy.Name + " at sector [{0},{1}].. No damage due to starbase shields.",
                                 (badGuy.Sector.X), (badGuy.Sector.Y));
                         }
                         else

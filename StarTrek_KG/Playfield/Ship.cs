@@ -126,13 +126,21 @@ namespace StarTrek_KG.Playfield
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
-            Console.Write(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}]. ", (attacker.Sector.X), (attacker.Sector.Y));
+            Output.WriteLine(string.Format(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
 
             //TODO: Currently, ships can only be struck by Disruptor.  Modify so ship can take a hit from a photon
             //This could be as simple as setting an energy level for a photon, and renaming DisruptorShot to be something else..
 
+            //Output.WriteLine("-distance: " + distance );
+            //Output.WriteLine("-disruptorShot: " + Ship.DisruptorShot(distance));
+
+            //var beforeShieldEnergy = (Shields.For(map.Playership).Energy);
 
             Shields.For(map.Playership).Energy -= Ship.DisruptorShot(distance); //todo: pull values from config
+
+            //var afterShieldEnergy = (Shields.For(map.Playership).Energy);
+
+            //beforeShieldEnergy == afterShieldEnergy
 
             this.UpdateShipHealthStatus(map);
 
@@ -149,11 +157,11 @@ namespace StarTrek_KG.Playfield
             {
                 if (shieldsValueAfterHit == 0)
                 {
-                    Console.Write("Warning: Shields are Down.");
+                    Console.Write(" Shields are Down.");
                 }
                 else
                 {
-                    Console.Write("Shields dropped to {0}.", Shields.For(map.Playership).Energy);
+                    Console.Write(" Shields dropped to {0}.", Shields.For(map.Playership).Energy);
                 }
             }
         }
@@ -176,14 +184,31 @@ namespace StarTrek_KG.Playfield
                 //TODO: for the moment, this is our current behavior.  The opposing ship might not want to unload all phaser power into an enemy, as it will be wasted
                 Shields.For(this).Energy = 0; //for the benefit of the output message telling the user that they have no shields. )
 
-                bool tookDamage = this.Subsystems.TakeDamageIfAppropriate(boltStrength);
-                if (!tookDamage)
+                bool assignedDamage = this.Subsystems.TakeDamageIfAppropriate(boltStrength);
+                if (!assignedDamage)
                 {
                     //this means there was nothing left to damage.  Blow the ship up.
                     map.Playership.Energy = 0;
                     map.Playership.Destroyed = true;
                 }
-            }   
+                else
+                {
+                    map.Playership.Energy = map.Playership.Energy - (boltStrength * 3);
+
+                    if(map.Playership.Energy < 0)
+                    {
+                        map.Playership.Destroyed = true;
+                    }
+
+                    //todo: resource out the multiplier.
+
+                    //todo: write a test to verify this behavior.
+                }
+            }
+            else
+            {
+                Output.WriteLine(" No Damage from hit. ");
+            }
         }
 
         //todo: create a GetLastQuadrant & GetLastSector

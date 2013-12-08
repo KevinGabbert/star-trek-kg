@@ -57,12 +57,16 @@ namespace StarTrek_KG.Subsystem
             if (remainingSubsystems.Count > 0)
             {
                 var rand = new Random();
-                ISubsystem subSystemToDamage = remainingSubsystems[rand.Next(remainingSubsystems.Count)];
+                ISubsystem subSystemToDamage = remainingSubsystems[rand.Next(remainingSubsystems.Count - 1)];
                 subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
 
                 wasDamaged = true;
 
                 //Console.WriteLine(subSystemToDamage.GetType().ToString() + " Damaged");
+            }
+            else
+            {
+                //todo: destroy ship
             }
 
             return wasDamaged;
