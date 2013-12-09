@@ -55,10 +55,10 @@ namespace StarTrek_KG.Playfield
                     this.Initialize(setupOptions.SectorDefs); //Playership is set up here.
                 }
 
-                if (setupOptions.GenerateMap)
-                {
-                    //this.Quadrants.PopulateSectors(setupOptions.SectorDefs, this);
-                }
+                //if (setupOptions.GenerateMap)
+                //{
+                //    //this.Quadrants.PopulateSectors(setupOptions.SectorDefs, this);
+                //}
             }
         }
 

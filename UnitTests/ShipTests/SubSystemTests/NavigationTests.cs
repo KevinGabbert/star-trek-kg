@@ -27,7 +27,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testNavigation = new Navigation(new Map(new GameConfig
             {
                 Initialize = true,
-                GenerateMap = true,
+                //GenerateMap = true,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),

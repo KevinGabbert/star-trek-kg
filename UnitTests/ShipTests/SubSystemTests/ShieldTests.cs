@@ -26,7 +26,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testShields = new Shields(new Map(new GameConfig
             {
                 Initialize = true,
-                GenerateMap = true,
+                //GenerateMap = true,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
@@ -78,7 +78,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var mockedShields = new Mock<Shields>(new Map(new GameConfig
             {
                 Initialize = true,
-                GenerateMap = true,
+                //GenerateMap = true,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
