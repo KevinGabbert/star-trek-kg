@@ -30,5 +30,7 @@ namespace UnitTests.ShipTests.SectorTests
         //{
         //    throw new GameConfigException("Error setting up Sector.  Sector y > " + Constants.SECTOR_MAX.ToString());
         //}
+
+        //TODO: Test that enforces a single starbase per quadrant
     }
 }
