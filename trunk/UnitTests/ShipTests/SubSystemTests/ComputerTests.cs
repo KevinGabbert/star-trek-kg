@@ -22,15 +22,24 @@ namespace UnitTests.ShipTests.SubSystemTests
             Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
             Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
 
-            _testComputer = new Computer(new Map(new GameConfig
-                            {
-                                Initialize = true,
-                                GenerateMap = true,
-                                SectorDefs = new SectorDefs
-                                {
-                                    new SectorDef(new LocationDef(null, new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
-                                }
-                            })); 
+            var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0));
+
+            var sectorDefs = new SectorDefs
+                                 {
+                                     new SectorDef(locationDef, SectorItem.Friendly),
+                                     //todo: this needs to be in a random spo
+                                 };
+
+            var gameConfig = new GameConfig
+                                 {
+                                     Initialize = true,
+                                     GenerateMap = true,
+                                     SectorDefs = sectorDefs
+                                 };
+
+            var map = new Map(gameConfig);
+
+            _testComputer = new Computer(map); 
         }
 
         [TearDownAttribute]
