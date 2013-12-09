@@ -103,7 +103,7 @@ namespace StarTrek_KG
             Console.WriteLine();
             Console.WriteLine(StarTrekKGSettings.GetText("CSTimeRemaining"), map.timeRemaining);
             Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount());
-                //Map.GetAllHostiles(map).Count
+            //Map.GetAllHostiles(map).Count
             Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesInQuadrant"), currentQuadrant.GetHostiles().Count);
             Console.WriteLine(StarTrekKGSettings.GetText("CSStarbases"), map.starbases);
             Console.WriteLine(StarTrekKGSettings.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
@@ -301,7 +301,7 @@ namespace StarTrek_KG
 
         public static void WriteDebugLine(string stringToOutput)
         {
-            if(Constants.DEBUG_MODE)
+            if (Constants.DEBUG_MODE)
             {
                 Console.WriteLine(stringToOutput);
             }
@@ -348,7 +348,8 @@ namespace StarTrek_KG
 
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
-            Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"), (quadrant.GetHostiles().Count == 1 ? "" : "s"));
+            Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"),
+                              (quadrant.GetHostiles().Count == 1 ? "" : "s"));
 
             foreach (var hostile in quadrant.GetHostiles())
             {
@@ -381,10 +382,13 @@ namespace StarTrek_KG
 
         public static void DisplayPropertiesOf(object @object)
         {
-            var x = @object.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            foreach (PropertyInfo prop in x)
+            if (@object != null)
             {
-                Console.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
+                var objectPropInfos = @object.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                foreach (PropertyInfo prop in objectPropInfos)
+                {
+                    Console.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
+                }
             }
 
             //try
@@ -393,7 +397,7 @@ namespace StarTrek_KG
             //}
             //catch (Exception ex)
             //{
-                
+
             //    throw;
             //}
         }

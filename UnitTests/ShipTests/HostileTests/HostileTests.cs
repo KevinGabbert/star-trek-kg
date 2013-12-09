@@ -166,6 +166,8 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith0Friendlies()
         {
+            var game = new Game(); //this can make tests break so I throw it in for a check..
+
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
@@ -391,6 +393,12 @@ namespace UnitTests.ShipTests.HostileTests
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder2()
         {
             //**This test has an interesting error in it..
+
+            var game = new Game();
+
+            Assert.IsInstanceOf<Map>(game.Map);
+
+            StarTrekKGSettings.Get = null;
 
             _testMap = HostileTests.SetUp3Hostiles();
 

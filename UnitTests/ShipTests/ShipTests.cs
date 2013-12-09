@@ -19,8 +19,6 @@ namespace UnitTests.ShipTests
         /// <summary>
         /// The only point behind this test was to understand the limit.
         /// Apparently, currently using a hardcoded seed of 300, and a distanceDeprecationLevel of 11.3
-        /// ** This test will break once those values are pulled from config **
-        /// (lets hope that the config settings never get pulled *in* this function, as then the test will go very slow)
         /// </summary>
         [Test]
         public void DisruptorShot()
@@ -29,7 +27,7 @@ namespace UnitTests.ShipTests
             Assert.AreEqual(11.3, StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"));
             Assert.AreEqual(1.0, StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment"));
 
-            for (var i = 1; i < 100000; i++)
+            for (var i = 1; i < 1000; i++)
             {
                 var oneSector = Ship.DisruptorShot(1);
                 var twoSector = Ship.DisruptorShot(2);
