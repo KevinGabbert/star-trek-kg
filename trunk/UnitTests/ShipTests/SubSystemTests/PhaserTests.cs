@@ -26,7 +26,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
                                     {
                                         Initialize = true,
-                                        GenerateMap = true,
+                                        //GenerateMap = true,
                                         UseAppConfigSectorDefs = false,
                                         SectorDefs = new SectorDefs
                                                          {
@@ -59,7 +59,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                GenerateMap = true,
+                //GenerateMap = true,
                 UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {
@@ -86,7 +86,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                GenerateMap = true,
+                //GenerateMap = true,
                 UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {
@@ -115,7 +115,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                GenerateMap = true,
+                //GenerateMap = true,
                 UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {
@@ -145,7 +145,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                GenerateMap = true,
+                //GenerateMap = true,
                 UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {

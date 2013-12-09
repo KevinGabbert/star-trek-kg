@@ -65,7 +65,7 @@ namespace UnitTests.ShipTests.MovementTests
         {
             var x = new GameConfig
                         {
-                            GenerateMap = true,
+                            //GenerateMap = true,
                             Initialize = true,
                             UseAppConfigSectorDefs = false,
                             SectorDefs = new SectorDefs

@@ -33,7 +33,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var gameConfig = new GameConfig
                                  {
                                      Initialize = true,
-                                     GenerateMap = true,
+                                     //GenerateMap = true,
                                      SectorDefs = sectorDefs
                                  };
 
