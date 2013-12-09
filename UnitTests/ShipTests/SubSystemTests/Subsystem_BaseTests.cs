@@ -16,7 +16,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testComputer = new Computer(new Map(new GameConfig
                                    {
                                         Initialize = true,
-                                        GenerateMap = true
+                                        //GenerateMap = true
                                    })); 
         }
     }

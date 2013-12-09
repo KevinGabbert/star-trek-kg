@@ -17,7 +17,6 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-        //todo: get rid of that second, stupid parameter.
         public SectorDef(SectorItem sectorItem)
         {
             var randomCoordinate = new Coordinate((Utility.Random).Next(Constants.SECTOR_MAX),
@@ -25,7 +24,8 @@ namespace StarTrek_KG.Playfield
 
             this.Sector = new Sector(new LocationDef(randomCoordinate, randomCoordinate));
 
-            //populate QuadrantDef with default item here?
+            //todo: if this quadrant already has a starbase, then don't assign.
+            //check this.QuadrantDef.  If starbase exists, and sectorItem is a starbase, then assign empty instead.
             this.Item = sectorItem;
         }
 

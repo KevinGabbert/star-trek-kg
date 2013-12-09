@@ -36,5 +36,8 @@ namespace UnitTests.ShipTests.SectorTests
         //    //compare sectorXYs for each quadrant
         //}
 
+
+        //TODO: Test that enforces a single starbase per quadrant
+
     }
 }

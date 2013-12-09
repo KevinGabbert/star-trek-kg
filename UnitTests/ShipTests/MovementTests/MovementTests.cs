@@ -61,6 +61,10 @@ namespace UnitTests.ShipTests.MovementTests
             Constants.QUADRANT_MAX = 0;
         }
 
+
+        //todo: test feature.. Moving the ship requires an expenditure of energy
+        //this feature can be turned off by config setting
+
         private void reset()
         {
             var x = new GameConfig

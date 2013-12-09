@@ -8,7 +8,7 @@ namespace StarTrek_KG.Settings
     public class GameConfig 
     {
         public bool Initialize { get; set; }
-        public bool GenerateMap { get; set; }
+        //public bool GenerateMap { get; set; }
         public bool UseAppConfigSectorDefs { get; set; }
 
         private bool _addStars = true;
