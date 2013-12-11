@@ -71,7 +71,7 @@ namespace UnitTests.ShipTests.MovementTests
                         {
                             //GenerateMap = true,
                             Initialize = true,
-                            UseAppConfigSectorDefs = false,
+                            //UseAppConfigSectorDefs = false,
                             SectorDefs = new SectorDefs
                                                 {
                                                     new SectorDef(new LocationDef(new Coordinate(4, 4), new Coordinate(4, 4)), SectorItem.Friendly),

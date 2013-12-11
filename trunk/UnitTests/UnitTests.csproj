@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameTests\GameTests.cs" />
+    <Compile Include="ShipTests\AppSettingTests\AppSettingTests.cs" />
+    <Compile Include="ShipTests\AppSettingTests\AppSettingCounts.cs" />
     <Compile Include="ShipTests\GameTests.cs" />
     <Compile Include="ShipTests\HostileTests\HostileTests.cs" />
     <Compile Include="ShipTests\MapTests\DockingTests.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
@@ -44,16 +45,21 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
             this.SetupMapWith2Hostiles();
 
+            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount"); 
+
             //raise shields
-            Shields.For(_testMap.Playership).AddEnergy(2500, true); //hopefully a single hit wont be harder than this!
-            Assert.AreEqual(2500, Shields.For(_testMap.Playership).Energy, "Unexpected shield energy level"); //shields charged correctly // todo: do more tests on this in ShieldTests          
-            Assert.AreEqual(500, _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
+            Shields.For(_testMap.Playership).SetEnergy(2500); //hopefully a single hit wont be harder than this!
+            Assert.AreEqual(2500, Shields.For(_testMap.Playership).Energy, "Unexpected shield energy level"); //shields charged correctly // todo: do more tests on this in ShieldTests    
+
+            //Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
+
+            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
 
             _testMap.Quadrants.ALLHostilesAttack(_testMap);
 
             Assert.IsFalse(_testMap.Playership.Destroyed); 
             Assert.Less(Shields.For(_testMap.Playership).Energy, 2500);
-            Assert.AreEqual(_testMap.Playership.Energy, 500);
+            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _testMap.Playership.Energy, "expected no change to ship energy"); 
     
             //Assert that ship has taken 2 hits.
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
@@ -101,7 +107,7 @@ namespace UnitTests.ShipTests.HostileTests
         {
             this.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(3000, _testMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
+            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _testMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
         }
 
         [Ignore("This is a long running test intended to suss out a problem (which is now fixed)")]
@@ -125,7 +131,7 @@ namespace UnitTests.ShipTests.HostileTests
         {
             this.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(3000, _testMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
+            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount"); 
 
             _testMap.Quadrants.ALLHostilesAttack(_testMap);
 
@@ -160,7 +166,7 @@ namespace UnitTests.ShipTests.HostileTests
             //Ship has taken no damage.
             Assert.IsFalse(_testMap.Playership.Destroyed); 
             Assert.AreEqual(Shields.For(_testMap.Playership).Energy, 0); //never even needed to raise shields!
-            Assert.AreEqual(_testMap.Playership.Energy, 3000);      
+            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"));      
         }
 
         [Test]
@@ -172,7 +178,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs(),
                 AddStars = false
             }));
@@ -196,7 +202,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                                             {
                                                 new SectorDef(SectorItem.Friendly)
@@ -226,7 +232,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs()
             }));
 
@@ -255,7 +261,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                                             {
                                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.Hostile)
@@ -280,7 +286,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs()
             }));
 
@@ -298,22 +304,48 @@ namespace UnitTests.ShipTests.HostileTests
 
         //this method is here to test passing in 
         [Test]
-        public void MapWith3HostilesTheConfigWay()
+        public void MapWith3HostilesTheConfigWay_FailsIntermittently()
         {
-            _testMap = (new Map(new GameConfig
+            TestMap3Scenario();
+        }
+
+        [Test]
+        public void MapWith3HostilesTheConfigWay_FailsIntermittently_overAndOver()
+        {
+            for(int i = 0; i < 1000; i++)
             {
-                Initialize = true,
-                //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
-                SectorDefs = new SectorDefs
-                    {
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)), SectorItem.Hostile),
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.Hostile),
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.Hostile)
-                    },
-                AddStars = false
-            }));
+                var x = new Game();
+                Console.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% i: " + i);
+                TestMap3Scenario();
+            }
+        }
+
+        private void TestMap3Scenario()
+        {
+            var x = new Game();
+
+            _testMap = (new Map(new GameConfig
+                                    {
+                                        Initialize = true,
+                                        //GenerateMap = true,
+                                        //UseAppConfigSectorDefs = false,
+                                        SectorDefs = new SectorDefs
+                                                         {
+                                                             new SectorDef(
+                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
+                                                                 SectorItem.Friendly),
+                                                             new SectorDef(
+                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)),
+                                                                 SectorItem.Hostile),
+                                                             new SectorDef(
+                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)),
+                                                                 SectorItem.Hostile),
+                                                             new SectorDef(
+                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)),
+                                                                 SectorItem.Hostile)
+                                                         },
+                                        AddStars = false
+                                    }));
 
             Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);
 
@@ -350,7 +382,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 5)), SectorItem.Friendly),
@@ -432,7 +464,7 @@ namespace UnitTests.ShipTests.HostileTests
                                 {
                                     Initialize = true,
                                     //GenerateMap = true,
-                                    UseAppConfigSectorDefs = false,
+                                    //UseAppConfigSectorDefs = false,
                                     SectorDefs = new SectorDefs
                                                      {
                                                          new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.Friendly),
@@ -490,7 +522,7 @@ namespace UnitTests.ShipTests.HostileTests
                                    {
                                        Initialize = true,
                                        //GenerateMap = true,
-                                       UseAppConfigSectorDefs = false,
+                                       //UseAppConfigSectorDefs = false,
                                        SectorDefs = new SectorDefs
                                             {
                                                 new SectorDef(SectorItem.Friendly)
@@ -549,7 +581,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -566,7 +598,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -583,7 +615,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.Friendly),
@@ -600,7 +632,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -617,7 +649,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
@@ -634,7 +666,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.Friendly),
@@ -651,7 +683,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
@@ -668,7 +700,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.Friendly),
@@ -685,7 +717,7 @@ namespace UnitTests.ShipTests.HostileTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
