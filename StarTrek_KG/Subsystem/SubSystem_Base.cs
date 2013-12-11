@@ -98,14 +98,22 @@ namespace StarTrek_KG.Subsystem
         {
             if (adding)
             {
+                //todo: why add to both objects?? Are they not the same?
                 this.Energy += transfer;
                 this.Map.Playership.Energy -= transfer;
             }
             else
             {
+                //todo: why add to both objects?? Are they not the same?
                 this.Energy -=  transfer;
                 this.Map.Playership.Energy += transfer;
             }
+        }
+
+        public void SetEnergy(int transfer)
+        {
+            //todo: why add to both objects??
+            this.Energy = transfer;
         }
 
         public ISubsystem For(Ship ship)

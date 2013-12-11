@@ -299,7 +299,7 @@ namespace UnitTests.ShipTests.MapTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
@@ -398,7 +398,7 @@ namespace UnitTests.ShipTests.MapTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo

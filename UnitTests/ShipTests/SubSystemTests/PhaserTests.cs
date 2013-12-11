@@ -27,7 +27,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                     {
                                         Initialize = true,
                                         //GenerateMap = true,
-                                        UseAppConfigSectorDefs = false,
+                                        //UseAppConfigSectorDefs = false,
                                         SectorDefs = new SectorDefs
                                                          {
                                                              new SectorDef(
@@ -60,7 +60,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -68,7 +68,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }));
 
-            const double startingEnergy = 3000.0;
+            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");;
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
 
             const double testBoltEnergy = 89.6829;
@@ -87,7 +87,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -95,7 +95,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }));
 
-            const double startingEnergy = 3000.0;
+            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); 
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
 
             const double testBoltEnergy = 4000;
@@ -116,7 +116,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -124,7 +124,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }));
 
-            const double startingEnergy = 3000.0;
+            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); ;
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
 
             const double testBoltEnergy = -1;
@@ -146,7 +146,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             {
                 Initialize = true,
                 //GenerateMap = true,
-                UseAppConfigSectorDefs = false,
+                //UseAppConfigSectorDefs = false,
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -172,7 +172,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //todo: verify firing ship's starting energy.
 
-            const double startingEnergy = 3000.0;
+            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");
 
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
 

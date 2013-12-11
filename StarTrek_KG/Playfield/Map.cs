@@ -69,6 +69,8 @@ namespace StarTrek_KG.Playfield
             //This list should match baddie type that is created
             List<string> quadrantNames = StarTrekKGSettings.GetStarSystems();
 
+            //TODO: if there are less than 64 quadrant names then there will be problems..
+
             var names = new Stack<string>(quadrantNames.Shuffle());
 
             var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
@@ -241,6 +243,17 @@ namespace StarTrek_KG.Playfield
 
             this.SetupPlayershipQuadrant(playerShipDef);
 
+            this.SetupSubsystems();
+
+            this.Playership.Destroyed = false;
+        }
+
+        private void SetupSubsystems()
+        {
+            this.GetSubsystemSetupFromConfig();
+
+            //todo:  do we pull strings from config and then put a switch statement below to set up individual systems??
+
             this.SetupPlayershipNav();
             this.SetupPlayershipShields();
 
@@ -252,8 +265,23 @@ namespace StarTrek_KG.Playfield
             this.SetupPlayershipTorpedoes();
 
             Phasers.For(this.Playership).Damage = 0;
+        }
 
-            this.Playership.Destroyed = false;
+        private void GetSubsystemSetupFromConfig()
+        {
+            //TODO: Finish this
+
+            //var subsystemsToSetUp = new List<ISubsystem>();
+
+            ////pull desired subsystem Setup from App.Config
+
+            //foreach (var subsystem in appConfigSubSystem)
+            //{
+            //    //Set up SubSystem
+            //    subsystemsToSetUp.Add(new Shields(this));
+
+            //    //Might have to do a switch if we can't use reflection to create the objcet
+            //}
         }
 
         private void SetupPlayershipQuadrant(SectorDef playerShipDef)

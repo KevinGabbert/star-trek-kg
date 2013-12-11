@@ -70,24 +70,24 @@ namespace StarTrek_KG.Playfield
         }
 
         public void RepairEverything()
-        {     
-            this.Energy = 3000; //todo: pull from app.config "repairEnergy"
+        {
+            this.Energy = StarTrekKGSettings.GetSetting<int>("repairEnergy");
 
             //todo: starbases can upgrade energy maximums during game
-            
-            ShortRangeScan.For(this).Damage = 0;
-            LongRangeScan.For(this).Damage = 0;
-            Computer.For(this).Damage = 0;
-            Phasers.For(this).Damage = 0;
-            Shields.For(this).Energy = 0;
+
+            ShortRangeScan.For(this).Damage = 0;    //TODO: StarTrekKGSettings.GetSetting<int>("repairShortRangeScanDamage");
+            LongRangeScan.For(this).Damage = 0;     //TODO: StarTrekKGSettings.GetSetting<int>("repairLongRangeScanDamage");
+            Computer.For(this).Damage = 0;          //TODO: StarTrekKGSettings.GetSetting<int>("repairComputerDamage");
+            Phasers.For(this).Damage = 0;           //TODO: StarTrekKGSettings.GetSetting<int>("repairPhaserDamage");
+            Shields.For(this).Energy = 0;           //TODO: StarTrekKGSettings.GetSetting<int>("repairShieldEnergy");
 
             var torpedoes = Torpedoes.For(this);
-            torpedoes.Count = 10;
-            torpedoes.Damage = 0;
+            torpedoes.Count = 10;   //TODO: StarTrekKGSettings.GetSetting<int>("repairTorpedoes");
+            torpedoes.Damage = 0;   //TODO: StarTrekKGSettings.GetSetting<int>("repairTorpedoDamage");
 
             var starship = Navigation.For(this);
             starship.docked = true;
-            starship.Damage = 0;
+            starship.Damage = 0;    //TODO: StarTrekKGSettings.GetSetting<int>("repairDamage");
         }
 
         /// <summary>
@@ -111,10 +111,10 @@ namespace StarTrek_KG.Playfield
             //todo: remove this app setting (pass in as an argument?)
             var setting = StarTrekKGSettings.GetSetting<string>("Hostile");
 
-            return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy;
+            return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy; //TODO: resource this out
         }
           
-        ///interesting.  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
+        ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public bool AbsorbHitFrom(IShip attacker, Map map)
         {
