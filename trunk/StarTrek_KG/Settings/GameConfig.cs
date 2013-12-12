@@ -8,7 +8,6 @@ namespace StarTrek_KG.Settings
     public class GameConfig 
     {
         public bool Initialize { get; set; }
-        //public bool UseAppConfigSectorDefs { get; set; }
 
         private bool _addStars = true;
         public bool AddStars
@@ -21,10 +20,5 @@ namespace StarTrek_KG.Settings
         /// The plan here is to be able to start the game by throwing in all objects required for game with XY values
         /// </summary>
         public SectorDefs SectorDefs { get; set; } 
-
-        public GameConfig()
-        {
-            //this.UseAppConfigSectorDefs = true; //todo: resource this out
-        }
     }
 }

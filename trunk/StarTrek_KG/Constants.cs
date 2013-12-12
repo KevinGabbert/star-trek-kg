@@ -25,7 +25,8 @@ namespace StarTrek_KG
 
         public const int MOVEMENT_PRECISION = 1000;
 
-        public static List<String> MAP_DIRECTION = new List<String>(){ "n", "ne", "e", "se", "s", "sw", "w", "nw" };
+        //public static List<String> MAP_DIRECTION = new List<String>(){ "n", "ne", "e", "se", "s", "sw", "w", "nw" };
+        public static List<String> MAP_DIRECTION = new List<String>() { "1", "2", "3", "4", "5", "6", "7", "8" };
         public static bool DEBUG_MODE;
     }
 }

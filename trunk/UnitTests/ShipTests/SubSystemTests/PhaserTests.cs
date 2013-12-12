@@ -26,8 +26,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
                                     {
                                         Initialize = true,
-                                        //GenerateMap = true,
-                                        //UseAppConfigSectorDefs = false,
+                                        
+                                        
                                         SectorDefs = new SectorDefs
                                                          {
                                                              new SectorDef(
@@ -59,8 +59,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -86,8 +86,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -115,8 +115,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -145,8 +145,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
