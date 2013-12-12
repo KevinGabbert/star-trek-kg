@@ -50,6 +50,8 @@ namespace StarTrek_KG.Playfield
 
         private static void CheckForOutOfBounds(int value)
         {
+            //todo: we should not be hitting this in the game. User needs to be told that they hit the galactic barrier
+
             var boundsHigh = StarTrekKGSettings.GetSetting<int>("BoundsHigh");
             var boundsLow = StarTrekKGSettings.GetSetting<int>("BoundsLow");
 

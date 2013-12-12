@@ -137,7 +137,7 @@ namespace UnitTests.ShipTests.MapTests
         {
             _testMap = new Map(new GameConfig()
                         {
-                            //GenerateMap = true,
+                            
                             Initialize = true,
                             SectorDefs = new SectorDefs()
                         });
@@ -155,7 +155,7 @@ namespace UnitTests.ShipTests.MapTests
         {
             _testMap = new Map(new GameConfig()
             {
-                //GenerateMap = true,
+                
                 Initialize = true,
                 SectorDefs = new SectorDefs()
             });
@@ -170,7 +170,7 @@ namespace UnitTests.ShipTests.MapTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
+                
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
@@ -193,7 +193,7 @@ namespace UnitTests.ShipTests.MapTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
+                
                 SectorDefs = new SectorDefs
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
@@ -216,7 +216,7 @@ namespace UnitTests.ShipTests.MapTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
+                
                 SectorDefs = new SectorDefs(),
                 AddStars = false
             }));
@@ -236,7 +236,7 @@ namespace UnitTests.ShipTests.MapTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
+                
                 SectorDefs = new SectorDefs()
             }));
 
@@ -298,8 +298,8 @@ namespace UnitTests.ShipTests.MapTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
@@ -364,7 +364,7 @@ namespace UnitTests.ShipTests.MapTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
+                
                 SectorDefs = new SectorDefs
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
@@ -397,8 +397,8 @@ namespace UnitTests.ShipTests.MapTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo

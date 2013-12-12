@@ -113,6 +113,7 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public bool SublightObstacleCheck(Coordinate lastSector, Coordinate sector, Sectors activeSectors)
         {
+            //todo:  I think I destroyed a star and appeared in its place when navigating to a new quadrant.  (That or LRS is broken, or maybe it is working fine!)
             try
             {
                 var mySector = this.Map.Playership.Sector;
@@ -141,78 +142,84 @@ namespace StarTrek_KG.Playfield
         }
         private static int GetSectorDirection(string direction)
         {
+            //todo: yes, this looks silly at the moment.. resource this out
+
             // 4   5   6
-            //   `.:.'
-            // 3--<*>--7
-            //   .':`.
+            //   \ ↑ /  
+            //3 ← <*> → 7
+            //   / ↓ \  
             // 2   1   8
 
             var returnVal = 0;
 
             switch (direction)
             {
-                case "e":
+                case "7": //e
                     returnVal = 7;
                     break;
-                case "ne":
+                case "6": //ne
                     returnVal = 6;
                     break;
-                case "n":
+                case "5": //n
                     returnVal = 5;
                     break;
-                case "nw":
+                case "4": //nw
                     returnVal = 4;
                     break;
-                case "w":
+                case "3": //w
                     returnVal = 3;
-                    break;
-                case "sw":
+                    break; //sw
+                case "2":
                     returnVal = 2;
                     break;
-                case "s":
+                case "1": //s
                     returnVal = 1;
                     break;
-                case "se":
+                case "8": //se
                     returnVal = 8;
                     break;
             }
 
             return returnVal;
         }
+
         private static int GetQuadrantDirection(string direction)
         {
+            //this function exists to correct a directional disparity
+            //todo: correct this numerical disparity..
+
             // 6   7   8
-            //   `.:.'
-            // 5--<*>--1
-            //   .':`.
+            //   \ ↑ /  
+            //5 ← <*> → 1
+            //   / ↓ \  
             // 4   3   2
 
             var returnVal = 0;
 
             switch (direction)
             {
-                case "e":
+                case "7":
                     returnVal = 1;
                     break;
-                case "ne":
+                case "6":
                     returnVal = 2;
                     break;
-                case "n": //correct
+                case "5": //correct
                     returnVal = 3; 
                     break;
-                case "nw":
+                case "4":
                     returnVal = 4;
                     break;
-                case "w": //correct
+                case "3": //correct
                     returnVal = 5;
                     break;
-                case "sw":
+                case "2":
                     returnVal = 6;
                     break;
-                case "s": //correct?
+                case "1": //correct?
                     returnVal = 7;
                     break;
-                case "se":
+                case "8":
                     returnVal = 8;
                     break;
             }
@@ -278,7 +285,17 @@ namespace StarTrek_KG.Playfield
         //This prompt needs to be exposed to the user as an event
         public bool InvalidCourseCheck(out string direction)
         {
-            if (Command.PromptUser("Enter course (e,w,n,s): ", out direction))
+            var course = Environment.NewLine +
+                      " 4   5   6 " + Environment.NewLine +
+                     @"   \ ↑ /  " + Environment.NewLine +
+                      "3 ← <*> → 7" + Environment.NewLine +
+                     @"   / ↓ \  " + Environment.NewLine +
+                      " 2   1   8" + Environment.NewLine +
+                      Environment.NewLine +
+                      "Enter Course: ";
+
+
+            if (Command.PromptUser(course, out direction))
             {
                 if (!Constants.MAP_DIRECTION.Contains(direction))
                 {
@@ -290,4 +307,4 @@ namespace StarTrek_KG.Playfield
             return false;
         }
     }
-}
+} 

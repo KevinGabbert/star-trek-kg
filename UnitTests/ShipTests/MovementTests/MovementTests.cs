@@ -69,9 +69,9 @@ namespace UnitTests.ShipTests.MovementTests
         {
             var x = new GameConfig
                         {
-                            //GenerateMap = true,
+                            
                             Initialize = true,
-                            //UseAppConfigSectorDefs = false,
+                            
                             SectorDefs = new SectorDefs
                                                 {
                                                     new SectorDef(new LocationDef(new Coordinate(4, 4), new Coordinate(4, 4)), SectorItem.Friendly),
@@ -117,7 +117,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitGalacticBarrierNorth()
         {
-            this.Move_Quadrant("n", 5 * 8);
+            this.Move_Quadrant(((int)NavDirection.North).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
@@ -130,7 +130,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitGalacticBarrierSouth()
         {
-            this.Move_Quadrant("s", 5 * 8);
+            this.Move_Quadrant(((int)NavDirection.South).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
@@ -143,20 +143,22 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitGalacticBarrierEast()
         {
-            this.Move_Quadrant("e", 5 * 8);
+            this.Move_Quadrant(((int)NavDirection.East).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
             this.CheckQuadrantsAfterMovement(false);
 
-            Assert.AreEqual(7, _testMapNoObjects.Playership.GetQuadrant().X, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y, "(c)startingQuadrantY");
+            var endingQuad = _testMapNoObjects.Playership.GetQuadrant();
+
+            Assert.AreEqual(7, endingQuad.X, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, endingQuad.Y, "(c)startingQuadrantY");
         }
 
         [Test]
         public void HitGalacticBarrierWest()
         {
-            this.Move_Quadrant("w", 5 * 8);
+            this.Move_Quadrant(((int)NavDirection.West).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
@@ -178,7 +180,7 @@ namespace UnitTests.ShipTests.MovementTests
         {
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star;
 
-            this.Move_Sector("n", .1*8); 
+            this.Move_Sector(((int)NavDirection.North).ToString(), .1 * 8); 
 
             Assert.IsTrue(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
@@ -188,7 +190,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveSector_North()
         {
-            this.Move_Sector("n", .1*8);
+            this.Move_Sector(((int)NavDirection.North).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -200,7 +202,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveSector_NorthEast()
         {
-            this.Move_Sector("ne", .1*8);
+            this.Move_Sector(((int)NavDirection.NorthEast).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -212,7 +214,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveSector_East()
         {
-            this.Move_Sector("e", .1*8);
+            this.Move_Sector(((int)NavDirection.East).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -224,7 +226,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveSector_SouthEast()
         {
-            this.Move_Sector("se", .1*8);
+            this.Move_Sector(((int)NavDirection.SouthEast).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -236,7 +238,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveSector_South()
         {
-            this.Move_Sector("s", .1*8);
+            this.Move_Sector(((int)NavDirection.South).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -248,7 +250,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveSector_SouthWest()
         {
-            this.Move_Sector("sw", .1*8);
+            this.Move_Sector(((int)NavDirection.SouthWest).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -259,8 +261,8 @@ namespace UnitTests.ShipTests.MovementTests
 
         [Test]
         public void MoveSector_West()
-        {  
-            this.Move_Sector("w", .1*8);
+        {
+            this.Move_Sector(((int)NavDirection.West).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -272,7 +274,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveSector_NorthWest()
         {
-            this.Move_Sector("nw", .1*8);
+            this.Move_Sector(((int)NavDirection.NorthWest).ToString(), .1 * 8);
 
             this.CheckSectorsAfterMovement();
 
@@ -504,7 +506,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveQuadrant_East()
         {
-            this.Move_Quadrant("e", 1*8);
+            this.Move_Quadrant(((int)NavDirection.East).ToString(), 1*8);
 
             //TODO: verify that "Friendly" has been set back down on map after movement (because console app is showing
             //TODO: it dissappearing.) -- verify sector
@@ -513,14 +515,16 @@ namespace UnitTests.ShipTests.MovementTests
             //todo: moving forward .1 from the previous sector pops you in the middle of the next sector
             this.CheckQuadrantsAfterMovement(true);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X - 1, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y, "(c)startingQuadrantY");
+            var newQuadrant = _testMapNoObjects.Playership.GetQuadrant();
+
+            Assert.AreEqual(startingQuadrantX, newQuadrant.X - 1, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, newQuadrant.Y, "(c)startingQuadrantY");
         }
 
         [Test]
         public void MoveQuadrant_SouthEast()
         {
-            this.Move_Quadrant("se", 1*8);
+            this.Move_Quadrant(((int)NavDirection.SouthEast).ToString(), 1 * 8);
 
             this.CheckQuadrantsAfterMovement(true);
 
@@ -535,7 +539,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveQuadrant_South()
         {
-            this.Move_Quadrant("s", 1*8);
+            this.Move_Quadrant(((int)NavDirection.South).ToString(), 1 * 8);
 
             this.CheckQuadrantsAfterMovement(true);
 
@@ -546,7 +550,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveQuadrant_SouthWest()
         {
-            this.Move_Quadrant("sw", 1*8);
+            this.Move_Quadrant(((int)NavDirection.SouthWest).ToString(), 1 * 8);
 
             this.CheckQuadrantsAfterMovement(true);
 
@@ -564,7 +568,7 @@ namespace UnitTests.ShipTests.MovementTests
         {
             //todo: this test does not work when run by itself
 
-            this.Move_Quadrant("w", 1*8);
+            this.Move_Quadrant(((int)NavDirection.West).ToString(), 1 * 8);
 
             this.CheckQuadrantsAfterMovement(true);
 
@@ -575,7 +579,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveQuadrant_NorthWest()
         {
-            this.Move_Quadrant("nw", 1*8);
+            this.Move_Quadrant(((int)NavDirection.NorthWest).ToString(), 1 * 8);
 
             this.CheckQuadrantsAfterMovement(true);
 
@@ -590,7 +594,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveQuadrant_North()
         {
-            this.Move_Quadrant("n", 1*8);
+            this.Move_Quadrant(((int)NavDirection.North).ToString(), 1 * 8);
 
             this.CheckQuadrantsAfterMovement(true);
 
@@ -601,7 +605,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveQuadrant_NorthEast()
         {
-            this.Move_Quadrant("ne", 1*8);
+            this.Move_Quadrant(((int)NavDirection.NorthEast).ToString(), 1 * 8);
 
             this.CheckQuadrantsAfterMovement(true);
 

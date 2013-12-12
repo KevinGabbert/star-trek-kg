@@ -177,8 +177,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs(),
                 AddStars = false
             }));
@@ -201,8 +201,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                                             {
                                                 new SectorDef(SectorItem.Friendly)
@@ -231,8 +231,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs()
             }));
 
@@ -260,8 +260,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                                             {
                                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.Hostile)
@@ -285,8 +285,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs()
             }));
 
@@ -327,8 +327,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
                                     {
                                         Initialize = true,
-                                        //GenerateMap = true,
-                                        //UseAppConfigSectorDefs = false,
+                                        
+                                        
                                         SectorDefs = new SectorDefs
                                                          {
                                                              new SectorDef(
@@ -381,8 +381,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 5)), SectorItem.Friendly),
@@ -463,8 +463,8 @@ namespace UnitTests.ShipTests.HostileTests
             return (new Map(new GameConfig
                                 {
                                     Initialize = true,
-                                    //GenerateMap = true,
-                                    //UseAppConfigSectorDefs = false,
+                                    
+                                    
                                     SectorDefs = new SectorDefs
                                                      {
                                                          new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.Friendly),
@@ -521,8 +521,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
                                    {
                                        Initialize = true,
-                                       //GenerateMap = true,
-                                       //UseAppConfigSectorDefs = false,
+                                       
+                                       
                                        SectorDefs = new SectorDefs
                                             {
                                                 new SectorDef(SectorItem.Friendly)
@@ -556,7 +556,7 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
                                 {
                                     Initialize = true,
-                                    //GenerateMap = true,
+                                    
                                     SectorDefs = new SectorDefs
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
@@ -580,8 +580,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -597,8 +597,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -614,8 +614,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.Friendly),
@@ -631,8 +631,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
@@ -648,8 +648,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
@@ -665,8 +665,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.Friendly),
@@ -682,8 +682,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
@@ -699,8 +699,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.Friendly),
@@ -716,8 +716,8 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                //GenerateMap = true,
-                //UseAppConfigSectorDefs = false,
+                
+                
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
