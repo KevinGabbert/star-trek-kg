@@ -129,8 +129,7 @@ namespace StarTrek_KG.Subsystem
             double quadX;
             double quadY;
 
-            Console.WriteLine(this.Map.Playership.Name + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X),
-                              (thisShip.Quadrant.Y));
+            Output.WriteLine(string.Format(this.Map.Playership.Name + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
 
             if (!Command.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantX"), out quadX)
                 || quadX < (Constants.QUADRANT_MIN + 1) 
@@ -148,7 +147,7 @@ namespace StarTrek_KG.Subsystem
                     return;
                 }
 
-            Console.WriteLine();
+            Output.WriteLine("");
             var qx = ((int)(quadX)) - 1;
             var qy = ((int)(quadY)) - 1;
             if (qx == thisShip.Quadrant.X && qy == thisShip.Quadrant.Y)
@@ -165,7 +164,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("NavigationNotSetUp")); //todo: make this a custom exception
+                throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("NavigationNotSetUp")); //todo: reflect the name and refactor this to ISubsystem
             }
 
             return (Navigation)ship.Subsystems.Single(s => s.Type == SubsystemType.Navigation);

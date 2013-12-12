@@ -50,7 +50,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException("Ship not set up (ShortRangeScan). Add a Friendly to your GameConfig"); //todo: make this a custom exception
+                throw new GameConfigException("Ship not set up (ShortRangeScan)."); //todo: reflect the name and refactor this to ISubsystem
             }
 
             return (ShortRangeScan) ship.Subsystems.Single(s => s.Type == SubsystemType.ShortRangeScan);

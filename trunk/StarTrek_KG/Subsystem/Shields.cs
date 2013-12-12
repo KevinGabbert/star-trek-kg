@@ -60,9 +60,9 @@ namespace StarTrek_KG.Subsystem
             {
                 this.AddEnergy(transfer, adding);
 
-                Console.WriteLine("Shield strength is now {0}. Total Energy level is now {1}.",
+                Output.WriteLine(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                                   this.Energy,
-                                  Map.Playership.Energy);
+                                  Map.Playership.Energy));
             }
         }
 

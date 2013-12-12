@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -8,7 +7,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Torpedoes : SubSystem_Base, IMap //, IDestructionCheck
+    public class Torpedoes : SubSystem_Base, IMap 
     {
         #region Properties
 
@@ -48,8 +47,17 @@ namespace StarTrek_KG.Subsystem
                 this.Exhausted() || 
                 Quadrants.NoHostiles(map.Quadrants.GetHostiles())) return;
 
+            var firingDirection = Environment.NewLine +
+                                  " 4   5   6 " + Environment.NewLine +
+                                 @"   \ ↑ /  " + Environment.NewLine +
+                                  "3 ← <*> → 7" + Environment.NewLine +
+                                 @"   / ↓ \  " + Environment.NewLine +
+                                  " 2   1   8" + Environment.NewLine +
+                                  Environment.NewLine +
+                                  "Enter firing direction (1.0--9.0) ";
+
             double direction;
-            if (!Command.PromptUser("Enter firing direction (1.0--9.0): ", out direction)
+            if (!Command.PromptUser(firingDirection, out direction)
                 || direction < 1.0 
                 || direction > 9.0)
             {
@@ -79,7 +87,7 @@ namespace StarTrek_KG.Subsystem
                 var newY = (int) Math.Round(y);
                 if (lastX != newX || lastY != newY)
                 {
-                    Console.WriteLine("  [{0},{1}]", newX, newY);
+                    Output.WriteLine(string.Format("  [{0},{1}]", newX, newY));
                     lastX = newX;
                     lastY = newY;
                 }
@@ -129,14 +137,14 @@ namespace StarTrek_KG.Subsystem
                     //quadrant.Starbase = false;
                     //quadrant.Map.Sectors.Where(s => s.X == newX && s.Y == newY).Single().Item = SectorItem.Empty;
 
-                    Console.WriteLine(map.Playership.Name + " destroyed a Federation starbase at sector [{0},{1}]!",
-                                      newX, newY);
+                    Output.WriteLine(string.Format(map.Playership.Name + " destroyed a Federation starbase at sector [{0},{1}]!",
+                                      newX, newY));
                     return true;
 
                 case SectorItem.Star:
-                    Console.WriteLine(
+                    Output.WriteLine(string.Format(
                         "The torpedo was captured by a star's gravitational field at sector [{0},{1}].",
-                        newX, newY);
+                        newX, newY));
 
                     return true;
             }
@@ -158,7 +166,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Calculator(Map map)
         {
-            Console.WriteLine();
+            Output.WriteLine("");
             if (map.Quadrants.GetActive().GetHostiles().Count == 0)
             {
                 Output.WriteLine("There are no Hostile ships in this quadrant.");
@@ -170,9 +178,9 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var ship in map.Quadrants.GetHostiles())
             {
-                Console.WriteLine("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
+                Output.WriteLine(string.Format("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
                                   (ship.Sector.X), (ship.Sector.Y),
-                                  Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y));
+                                  Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y)));
             }
         }
 
@@ -180,7 +188,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException("Ship not set up (Torpedoes). Add a Friendly to your GameConfig"); //todo: make this a custom exception
+                throw new GameConfigException("Ship not set up (Torpedoes).");   //todo: reflect the name and refactor this to ISubsystem
             }
 
             return (Torpedoes)ship.Subsystems.Single(s => s.Type == SubsystemType.Torpedoes);

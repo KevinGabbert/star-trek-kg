@@ -11,6 +11,9 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG
 {
+    /// <summary>
+    /// todo: the goal here is to be able to save all output to a file for later printing..
+    /// </summary>
     public class Output
     {
         private int TotalHostiles { get; set; }

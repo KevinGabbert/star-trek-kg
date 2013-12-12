@@ -1,5 +1,7 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
 
@@ -7,15 +9,8 @@ namespace StarTrek_KG
 {
     public class Command
     {
-        public static readonly string[] ACTIVITY_PANEL = {
-                                                             "nav = Navigation",
-                                                             "srs = Short Range Scan",
-                                                             "lrs = Long Range Scan",
-                                                             "pha = Phaser Control",
-                                                             "tor = Photon Torpedo Control",
-                                                             "she = Shield Control",
-                                                             "com = Access Computer"
-                                                         };
+        public static List<string> ACTIVITY_PANEL = new List<string>();
+                                                         
         #region Properties
 
             public Map Map { get; set; }
@@ -24,6 +19,21 @@ namespace StarTrek_KG
 
         public Command(Map map)
         {
+            ACTIVITY_PANEL.Add("nav = Navigation");
+            ACTIVITY_PANEL.Add("srs = Short Range Scan");
+            ACTIVITY_PANEL.Add("lrs = Long Range Scan");
+            ACTIVITY_PANEL.Add("pha = Phaser Control");
+            ACTIVITY_PANEL.Add("tor = Photon Torpedo Control");
+            ACTIVITY_PANEL.Add("she = Shield Control");
+            ACTIVITY_PANEL.Add("com = Access Computer");
+
+            if(Constants.DEBUG_MODE)
+            {
+                ACTIVITY_PANEL.Add("");
+                ACTIVITY_PANEL.Add("----------------------");
+                ACTIVITY_PANEL.Add("dbg = Debug Test Mode");
+            }
+
             this.Map = map;
         }
 
@@ -90,32 +100,63 @@ namespace StarTrek_KG
 
                 case "she":
 
-                    if (Shields.For(this.Map.Playership).Damaged()) break;
-                    Output.PrintStrings(Shields.CONTROL_PANEL);
-
-                    Output.Prompt("Enter shield control command: ");
-                    var shieldsCommand = Console.ReadLine().Trim().ToLower();
-
-                    Shields.For(this.Map.Playership).MaxTransfer = this.Map.Playership.Energy; //todo: this does nothing!
-                    Shields.For(this.Map.Playership).Controls(shieldsCommand);
+                    if (ShieldMenu()) break;
                     break;
+
                 case "com":
 
-                    if (Computer.For(this.Map.Playership).Damaged()) break;
+                    if (ComputerMenu()) break;
+                    break;
 
-                    Output.PrintStrings(Computer.CONTROL_PANEL);
-                    Output.Prompt("Enter computer command: ");
-
-                    //todo: readline needs to be done using an event
-                    var computerCommand = Console.ReadLine().Trim().ToLower();
-
-                    Computer.For(this.Map.Playership).Controls(computerCommand);
+                case "dbg":
+                    if (DebugMenu()) break;
                     break;
 
                 default: //case "?":
                     Output.PrintPanel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
                     break;
             }
+        }
+
+        private bool DebugMenu()
+        {
+            if (Computer.For(this.Map.Playership).Damaged()) return true;
+
+            Output.PrintStrings(Debug.CONTROL_PANEL);
+            Output.Prompt("Enter Debug command: ");
+
+            //todo: readline needs to be done using an event
+            var debugCommand = Console.ReadLine().Trim().ToLower();
+
+            Debug.For(this.Map.Playership).Controls(debugCommand);
+            return false;
+        }
+
+        private bool ComputerMenu()
+        {
+            if (Computer.For(this.Map.Playership).Damaged()) return true;
+
+            Output.PrintStrings(Computer.CONTROL_PANEL);
+            Output.Prompt("Enter computer command: ");
+
+            //todo: readline needs to be done using an event
+            var computerCommand = Console.ReadLine().Trim().ToLower();
+
+            Computer.For(this.Map.Playership).Controls(computerCommand);
+            return false;
+        }
+
+        private bool ShieldMenu()
+        {
+            if (Shields.For(this.Map.Playership).Damaged()) return true;
+            Output.PrintStrings(Shields.CONTROL_PANEL);
+
+            Output.Prompt("Enter shield control command: ");
+            var shieldsCommand = Console.ReadLine().Trim().ToLower();
+
+            Shields.For(this.Map.Playership).MaxTransfer = this.Map.Playership.Energy; //todo: this does nothing!
+            Shields.For(this.Map.Playership).Controls(shieldsCommand);
+            return false;
         }
 
         public string GetPanelHead(string shipName)

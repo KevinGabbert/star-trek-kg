@@ -51,6 +51,18 @@ namespace StarTrek_KG.Playfield
             Game.MoveTimeForward(this.Map, new Coordinate(lastQuadX, lastQuadY), new Coordinate(playershipQuadrant.X, playershipQuadrant.Y));  
         }
 
+
+        /// <summary>
+        /// todo: do we need to modify this algorithm?
+        /// </summary>
+        /// <param name="distanceEntered"></param>
+        /// <param name="distance"></param>
+        /// <param name="numericDirection"></param>
+        /// <param name="vectorLocationX"></param>
+        /// <param name="vectorLocationY"></param>
+        /// <param name="playershipQuadrant"></param>
+        /// <param name="lastSector"></param>
+        /// <returns></returns>
         private bool TravelThroughSectors(double distanceEntered, double distance, int numericDirection, 
                                           ref double vectorLocationX, ref double vectorLocationY, 
                                           Quadrant playershipQuadrant, Coordinate lastSector)

@@ -76,10 +76,10 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException("Ship not set up (Computer). Add a Friendly to your GameConfig"); //todo: make this a custom exception
+                throw new GameConfigException("Ship not set up (Computer).");
             }
 
-            return (Computer)ship.Subsystems.Single(s => s.Type == SubsystemType.Computer);
+            return (Computer)ship.Subsystems.Single(s => s.Type == SubsystemType.Computer); //todo: reflect the name and refactor this to ISubsystem
         }
 
         //public string GenerateControlPanel()
