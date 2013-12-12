@@ -31,7 +31,7 @@ namespace StarTrek_KG
                 returnVal = true;
             }
 
-            Console.WriteLine();
+            Output.WriteLine("");
 
             return returnVal;
         }

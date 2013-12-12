@@ -157,11 +157,11 @@ namespace StarTrek_KG.Playfield
             {
                 if (shieldsValueAfterHit == 0)
                 {
-                    Console.Write(" Shields are Down.");
+                    Output.WriteSingleLine(" Shields are Down.");
                 }
                 else
                 {
-                    Console.Write(" Shields dropped to {0}.", Shields.For(map.Playership).Energy);
+                    Output.WriteSingleLine(string.Format(" Shields dropped to {0}.", Shields.For(map.Playership).Energy));
                 }
             }
         }

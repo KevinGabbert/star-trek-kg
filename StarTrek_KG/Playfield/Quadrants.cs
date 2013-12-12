@@ -183,7 +183,7 @@ namespace StarTrek_KG.Playfield
 
             this.RemoveShip(shipToRemove.Name);
 
-            Console.WriteLine("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed"));
+            Output.WriteLine(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed")));
         }
 
         //private static void DeleteShip(IShip shipToRemove, Map map)
@@ -242,10 +242,7 @@ namespace StarTrek_KG.Playfield
                     {
                         if (Navigation.For(map.Playership).docked)
                         {
-                            Console.WriteLine(
-                                map.Playership.Name +
-                                " hit by " + badGuy.Name + " at sector [{0},{1}].. No damage due to starbase shields.",
-                                (badGuy.Sector.X), (badGuy.Sector.Y));
+                            Output.WriteLine(string.Format(map.Playership.Name + " hit by " + badGuy.Name + " at sector [{0},{1}].. No damage due to starbase shields.", (badGuy.Sector.X), (badGuy.Sector.Y)));
                         }
                         else
                         {

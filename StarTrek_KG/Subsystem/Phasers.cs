@@ -118,6 +118,8 @@ namespace StarTrek_KG.Subsystem
 
         private static void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
         {
+            //todo: add more descriptive output messages depending on how much phaser energy absorbed by baddie
+
             var badGuyShields = Shields.For(badGuyShip);
             badGuyShields.Energy -= (int) deliveredEnergy;
             if (badGuyShields.Energy <= 0)
@@ -129,8 +131,8 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                Console.WriteLine("Hit " + badGuyShip.Name + " at sector [{0},{1}]. Hostile shield strength dropped to {2}.",
-                                  (badGuyShip.Sector.X), (badGuyShip.Sector.Y), badGuyShields.Energy);
+                Output.WriteLine(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. Hostile shield strength dropped to {2}.",
+                                  (badGuyShip.Sector.X), (badGuyShip.Sector.Y), badGuyShields.Energy));
             }
         }
 
