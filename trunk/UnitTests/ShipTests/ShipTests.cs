@@ -3,6 +3,7 @@ using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests
 {
@@ -30,11 +31,11 @@ namespace UnitTests.ShipTests
 
             for (var i = 1; i < 1000; i++)
             {
-                var oneSector = Ship.DisruptorShot(1);
-                var twoSector = Ship.DisruptorShot(2);
-                var fourSector = Ship.DisruptorShot(4);
-                var sevenSector = Ship.DisruptorShot(7);
-                var eightSector = Ship.DisruptorShot(8);
+                var oneSector = Disruptors.Shoot(1);
+                var twoSector = Disruptors.Shoot(2);
+                var fourSector = Disruptors.Shoot(4);
+                var sevenSector = Disruptors.Shoot(7);
+                var eightSector = Disruptors.Shoot(8);
 
                 Assert.Less(oneSector, 290, "iteration: " + i);
                 Assert.Less(twoSector, 247, "iteration: " + i);

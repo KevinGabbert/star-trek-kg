@@ -118,7 +118,7 @@ namespace StarTrek_KG.Subsystem
 
             if (baddiesHangingAround && stillInThisQuadrant)
             {
-                map.Quadrants.ALLHostilesAttack(map);
+                Game.ALLHostilesAttack(map);
             }
             else 
             {

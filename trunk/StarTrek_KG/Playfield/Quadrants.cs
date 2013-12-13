@@ -221,45 +221,9 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        /// <summary>
-        /// TODO: this needs to be changed.  after destruction, it appears to take several method returns to realize that we are dead.
-        /// </summary>
-        /// <returns></returns>
-        public bool ALLHostilesAttack(Map map)
-        {
-            //todo:rewrite this.
-            //this is called from torpedo control/phaser control, and navigation control
-
-            var activeQuadrant = map.Quadrants.GetActive();
-            var hostilesAttacking = activeQuadrant.GetHostiles();
-
-            //temporary
-            if (hostilesAttacking != null)//todo: remove this.
-            {
-                if (hostilesAttacking.Count > 0)
-                {
-                    foreach (var badGuy in hostilesAttacking)
-                    {
-                        if (Navigation.For(map.Playership).docked)
-                        {
-                            Output.Output.WriteLine(string.Format(map.Playership.Name + " hit by " + badGuy.Name + " at sector [{0},{1}].. No damage due to starbase shields.", (badGuy.Sector.X), (badGuy.Sector.Y)));
-                        }
-                        else
-                        {
-                            map.Playership.AbsorbHitFrom(badGuy, map);
-                        }
-                    }
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        //todo: refactor this?
         public bool NotFound(int x, int y)
         {
-            var notFound = this.Where(s => s.X == x && s.Y == y).Count() == 0;
+            var notFound = this.Count(s => s.X == x && s.Y == y) == 0;
             return notFound;
         }
 
