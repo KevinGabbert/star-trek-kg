@@ -124,8 +124,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(false);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X, "(c)startingQuadrantX");
-            Assert.AreEqual(0, _testMapNoObjects.Playership.GetQuadrant().Y, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X, "(c)startingQuadrantX");
+            Assert.AreEqual(0, playershipQuad.Y, "(c)startingQuadrantY");
         }
 
         [Test]
@@ -137,8 +138,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(false);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X, "(c)startingQuadrantX");
-            Assert.AreEqual(7, _testMapNoObjects.Playership.GetQuadrant().Y, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X, "(c)startingQuadrantX");
+            Assert.AreEqual(7, playershipQuad.Y, "(c)startingQuadrantY");
         }
 
         [Test]
@@ -165,8 +167,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(false);
 
-            Assert.AreEqual(0, _testMapNoObjects.Playership.GetQuadrant().X, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(0, playershipQuad.X, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y, "(c)startingQuadrantY");
         }
 
         [Ignore]
@@ -309,8 +312,10 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void Move_Sector(string direction, double distance)
         {
-            startingQuadrantX = _testMapNoObjects.Playership.GetQuadrant().X;
-            startingQuadrantY = _testMapNoObjects.Playership.GetQuadrant().Y;
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+
+            startingQuadrantX = playershipQuad.X;
+            startingQuadrantY = playershipQuad.Y;
 
             startingSectorX = _testMapNoObjects.Playership.Sector.X;
             startingSectorY = _testMapNoObjects.Playership.Sector.Y;
@@ -529,8 +534,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X - 1, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y - 1, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X - 1, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y - 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
             Assert.AreEqual(startingSectorX, _testMapNoObjects.Playership.Sector.X + 2, "_testMapNoObjects.Playership.Sector.X");
@@ -544,8 +550,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y - 1, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y - 1, "(c)startingQuadrantY");
         }
 
         [Test]
@@ -555,9 +562,11 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+
             //todo: why is this +- 2?
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X + 1, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y - 1, "(c)startingQuadrantY");
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X + 1, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y - 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
             Assert.AreEqual(startingSectorX, _testMapNoObjects.Playership.Sector.X - 2, "_testMapNoObjects.Playership.Sector.X");
@@ -573,8 +582,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X + 1, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X + 1, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y, "(c)startingQuadrantY");
         }
 
         [Test]
@@ -584,8 +594,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X + 1, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y + 1, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X + 1, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y + 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
             Assert.AreEqual(startingSectorX, _testMapNoObjects.Playership.Sector.X - 2, "_testMapNoObjects.Playership.Sector.X");
@@ -599,8 +610,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y + 1, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y + 1, "(c)startingQuadrantY");
         }
 
         [Test]
@@ -610,8 +622,9 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Playership.GetQuadrant().X - 1, "(c)startingQuadrantX");
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Playership.GetQuadrant().Y + 1, "(c)startingQuadrantY");
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            Assert.AreEqual(startingQuadrantX, playershipQuad.X - 1, "(c)startingQuadrantX");
+            Assert.AreEqual(startingQuadrantY, playershipQuad.Y + 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
             Assert.AreEqual(startingSectorX, _testMapNoObjects.Playership.Sector.X + 2, "_testMapNoObjects.Playership.Sector.X");
@@ -664,22 +677,24 @@ namespace UnitTests.ShipTests.MovementTests
         //todo: this needs to be refactored into a ship setup testfixture or something.
         private void CheckBeforeMovement()
         {
-            Assert.AreEqual(64, _testMapNoObjects.Quadrants.GetActive().Sectors.Count);
+            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
 
-            Assert.IsInstanceOf<Quadrant>(_testMapNoObjects.Quadrants.GetActive());
+            Assert.AreEqual(64, activeQuad.Sectors.Count);
 
-            Assert.AreEqual(startingQuadrantX, _testMapNoObjects.Quadrants.GetActive().X);
-            Assert.AreEqual(startingQuadrantY, _testMapNoObjects.Quadrants.GetActive().Y);
+            Assert.IsInstanceOf<Quadrant>(activeQuad);
+
+            Assert.AreEqual(startingQuadrantX, activeQuad.X);
+            Assert.AreEqual(startingQuadrantY, activeQuad.Y);
 
             //Check to see if Playership has been assigned to a sector in the active quadrant.
 
             //indirectly..
-            Assert.AreEqual(1, _testMapNoObjects.Quadrants.GetActive().Sectors.Count(s => s.Item == SectorItem.Friendly));
+            Assert.AreEqual(1, activeQuad.Sectors.Count(s => s.Item == SectorItem.Friendly));
 
             //directly.
-            Assert.AreEqual(SectorItem.Friendly, _testMapNoObjects.Quadrants.GetActive().Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X && s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X && s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
 
-            var x = (from Sector s in _testMapNoObjects.Quadrants.GetActive().Sectors
+            var x = (from Sector s in activeQuad.Sectors
                      where s.Item == SectorItem.Friendly
                      select s).Count();
 
@@ -694,6 +709,9 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void CheckQuadrantsAfterMovement(bool checkForGalacticBarrierHit)
         {
+            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
+
             Assert.AreEqual(64, _testMapNoObjects.Quadrants.Count); //I'd certainly hope that this hasnt changed..
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Blocked by Obstacle");
 
@@ -703,10 +721,10 @@ namespace UnitTests.ShipTests.MovementTests
             }
 
             //ensure there is still only 1 of original quadrant (used to address a bug early on)
-            Assert.IsInstanceOf<Quadrant>(_testMapNoObjects.Playership.GetQuadrant());
+            Assert.IsInstanceOf<Quadrant>(playershipQuad);
 
             //ship is in active sector
-            var found = Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors,
+            var found = Sector.Get(activeQuad.Sectors,
                                     _testMapNoObjects.Playership.Sector.X,
                                     _testMapNoObjects.Playership.Sector.Y);
 
@@ -717,32 +735,34 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(SectorItem.Empty, Sector.Get(startingQuadrant.Sectors, startingSectorX, startingSectorY).Item);
 
             //We moved from our original quadrant, right?
-            Assert.AreNotEqual(startingQuadrantX.ToString() + startingQuadrantY.ToString(), _testMapNoObjects.Playership.GetQuadrant().X +
-                                                                                            _testMapNoObjects.Playership.GetQuadrant().Y.ToString(), "Starting Quadrant");
+            Assert.AreNotEqual(startingQuadrantX.ToString() + startingQuadrantY.ToString(), activeQuad.X +
+                                                                                            activeQuad.Y.ToString(), "Starting Quadrant");
 
             //Friendly was set in new location
             //Playership current sector has the ship set in it 
-            Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Playership.GetQuadrant().Sectors, 
+            Assert.AreEqual(SectorItem.Friendly, Sector.Get(playershipQuad.Sectors, 
                                                             _testMapNoObjects.Playership.Sector.X, _testMapNoObjects.Playership.Sector.Y).Item);
 
             //is ship in expected location in new quadrant?
             ////indirectly..
-            var found2 = (_testMapNoObjects.Playership.GetQuadrant().Sectors.Where(s => s.Item == SectorItem.Friendly)).Count();
+            var found2 = (playershipQuad.Sectors.Where(s => s.Item == SectorItem.Friendly)).Count();
             Assert.AreEqual(1, found2, "expected to find 1 friendly, not " + found2 + ".   ");
 
             //directly
             //Verifying Sector. Look up sector by playership's coordinates. see if a friendly is there.
-            Assert.AreEqual(SectorItem.Friendly, _testMapNoObjects.Playership.GetQuadrant().Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X &&
+            Assert.AreEqual(SectorItem.Friendly, playershipQuad.Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X &&
                                                                                                                 s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
 
             //Check Ship Quadrant against active. (this really just tests the GetActive() function - this should be a separate test as well)
-            Assert.AreEqual(_testMapNoObjects.Playership.QuadrantDef.X, _testMapNoObjects.Quadrants.GetActive().X, "_testMapNoObjects.Playership.Quadrant.X");
-            Assert.AreEqual(_testMapNoObjects.Playership.QuadrantDef.Y, _testMapNoObjects.Quadrants.GetActive().Y, "_testMapNoObjects.Playership.Quadrant.Y");
+            Assert.AreEqual(_testMapNoObjects.Playership.QuadrantDef.X, activeQuad.X, "_testMapNoObjects.Playership.Quadrant.X");
+            Assert.AreEqual(_testMapNoObjects.Playership.QuadrantDef.Y, activeQuad.Y, "_testMapNoObjects.Playership.Quadrant.Y");
         }
 
         private void CheckSectorsAfterMovement()
         {
-            Assert.AreEqual(64, _testMapNoObjects.Quadrants.GetActive().Sectors.Count); //I'd certainly hope that this hasnt changed..
+            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
+
+            Assert.AreEqual(64, activeQuad.Sectors.Count); //I'd certainly hope that this hasnt changed..
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Blocked by Obstacle");
 
             //Ensure starting location is empty
@@ -756,17 +776,17 @@ namespace UnitTests.ShipTests.MovementTests
 
             //todo: this needs to be be flipped back. flip the increment variable in the test instead
             //originating sector is empty
-            Assert.AreEqual(SectorItem.Empty, Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, startingSectorX, startingSectorY).Item);
+            Assert.AreEqual(SectorItem.Empty, Sector.Get(activeQuad.Sectors, startingSectorX, startingSectorY).Item);
 
             //indirectly..
             var found = (_testMapNoObjects.Quadrants.GetActive().Sectors.Where(s => s.Item == SectorItem.Friendly)).Count();
             Assert.AreEqual(1, found, "expected to find 1 friendly, not " + found + ".   ");
 
             //Look up sector by playership's coordinates. see if a friendly is there.
-            Assert.AreEqual(SectorItem.Friendly, _testMapNoObjects.Quadrants.GetActive().Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X &&
-                                                                                                        s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X &&
+                                                                                s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
             //same thing.  uses sector.Get functionality to check.
-            Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, _testMapNoObjects.Playership.Sector.X, _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, Sector.Get(activeQuad.Sectors, _testMapNoObjects.Playership.Sector.X, _testMapNoObjects.Playership.Sector.Y).Item);
 
             Assert.AreEqual(startingQuadrantX, lastQuadX, "(c)startingQuadrantX");
             Assert.AreEqual(startingQuadrantY, lastQuadY, "(c)startingQuadrantY");
@@ -774,12 +794,14 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void ClearAllSectors()
         {
+            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
+
             //Clear everything. //Remember, when a map is set up, a ship is generated in a random location, and
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, i, j).Item = SectorItem.Empty;
+                    Sector.Get(activeQuad.Sectors, i, j).Item = SectorItem.Empty;
                 }
             }
         }
