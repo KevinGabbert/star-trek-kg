@@ -9,6 +9,8 @@
 
         #endregion
 
+
+        //todo: refactor this and coordinate
         public Vector()
         {
         }

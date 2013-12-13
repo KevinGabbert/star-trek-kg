@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
-namespace StarTrek_KG
+namespace StarTrek_KG.Output
 {
     /// <summary>
     /// todo: the goal here is to be able to save all output to a file for later printing..

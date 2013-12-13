@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -10,7 +11,7 @@ namespace StarTrek_KG.Subsystem
     //todo: make it so that a subsystem can be shut off at will
     //todo: subsystems use energy
     //todo: introduce the concept of damage control.  Repairs can be prioritized through a panel
-    public abstract class SubSystem_Base: System, ISubsystem
+    public abstract class SubSystem_Base: Actors.System, ISubsystem
     {
         #region Properties
 
@@ -60,7 +61,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public void TakeDamage()
         {          
-            this.Damage = 1 + (Utility.Random).Next(StarTrekKGSettings.GetSetting<int>("DamageSeed"));
+            this.Damage = 1 + (Utility.Utility.Random).Next(StarTrekKGSettings.GetSetting<int>("DamageSeed"));
 
             //todo: if number is small, then this.OutputMalfunctioningMessage.. else...
             this.OutputDamagedMessage();
@@ -86,7 +87,7 @@ namespace StarTrek_KG.Subsystem
 
         public int GetNext(int seed)
         {
-            return (Utility.Random).Next(seed);
+            return (Utility.Utility.Random).Next(seed);
         }
 
         public int TransferredFromUser()

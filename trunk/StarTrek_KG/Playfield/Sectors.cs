@@ -68,8 +68,8 @@ namespace StarTrek_KG.Playfield
 
         public static void SetupNewSector(SectorDef sectorDef, Sectors newSectors, Quadrants quadrants)
         {
-            var randomSectorX = (Utility.Random).Next(Constants.SECTOR_MAX);
-            var randomSectorY = (Utility.Random).Next(Constants.SECTOR_MAX);
+            var randomSectorX = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+            var randomSectorY = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
 
             if (newSectors.NotFound(randomSectorX, randomSectorY))
             {
@@ -92,8 +92,8 @@ namespace StarTrek_KG.Playfield
         {
             if (sectorDef.QuadrantDef == null)
             {
-                var randomQuadrantX = (Utility.Random).Next(Constants.SECTOR_MAX);
-                var randomQuadrantY = (Utility.Random).Next(Constants.SECTOR_MAX);
+                var randomQuadrantX = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+                var randomQuadrantY = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
 
                 if (quadrants.NotFound(randomQuadrantX, randomQuadrantY))
                 {

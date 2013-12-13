@@ -1,4 +1,6 @@
-﻿namespace StarTrek_KG.Playfield
+﻿using StarTrek_KG.Structs;
+
+namespace StarTrek_KG.Playfield
 {
     public class LocationDef
     {

@@ -4,9 +4,10 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
-namespace StarTrek_KG.Playfield
+namespace StarTrek_KG.Actors
 {
     //TODO: ship.Energy not decrementing after being hit
     public class Ship : ISystem, IShip
@@ -119,14 +120,14 @@ namespace StarTrek_KG.Playfield
         public bool AbsorbHitFrom(IShip attacker, Map map)
         {
             var ship = map.Playership.GetLocation();
-            var distance = Utility.Distance(ship.Sector.X, 
+            var distance = Utility.Utility.Distance(ship.Sector.X, 
                                         ship.Sector.Y,
                                         attacker.Sector.X,
                                         attacker.Sector.Y);
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
-            Output.WriteLine(string.Format(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
+            Output.Output.WriteLine(string.Format(map.Playership.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
 
             //TODO: Currently, ships can only be struck by Disruptor.  Modify so ship can take a hit from a photon
             //This could be as simple as setting an energy level for a photon, and renaming DisruptorShot to be something else..
@@ -157,11 +158,11 @@ namespace StarTrek_KG.Playfield
             {
                 if (shieldsValueAfterHit == 0)
                 {
-                    Output.WriteSingleLine(" Shields are Down.");
+                    Output.Output.WriteSingleLine(" Shields are Down.");
                 }
                 else
                 {
-                    Output.WriteSingleLine(string.Format(" Shields dropped to {0}.", Shields.For(map.Playership).Energy));
+                    Output.Output.WriteSingleLine(string.Format(" Shields dropped to {0}.", Shields.For(map.Playership).Energy));
                 }
             }
         }
@@ -207,7 +208,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                Output.WriteLine(" No Damage from hit. ");
+                Output.Output.WriteLine(" No Damage from hit. ");
             }
         }
 
@@ -252,7 +253,7 @@ namespace StarTrek_KG.Playfield
             var distanceDeprecationLevel = StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"); //todo: pull deprecationlevel from config
 
             var adjustedDisruptorEnergy = (StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment") - distance / distanceDeprecationLevel);
-            var deliveredEnergy = (int)(seed * (Utility.Random).NextDouble() * adjustedDisruptorEnergy);
+            var deliveredEnergy = (int)(seed * (Utility.Utility.Random).NextDouble() * adjustedDisruptorEnergy);
 
             return deliveredEnergy;
         }

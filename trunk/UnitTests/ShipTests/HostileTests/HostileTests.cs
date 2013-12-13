@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;

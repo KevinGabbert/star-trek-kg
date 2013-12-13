@@ -24,15 +24,15 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.WriteLine("Shield control is damaged. Repairs are underway.");
+            Output.Output.WriteLine("Shield control is damaged. Repairs are underway.");
         }
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("Shield control has been repaired.");
+            Output.Output.WriteLine("Shield control has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
-            Output.WriteLine("The Shields are malfunctioning.");
+            Output.Output.WriteLine("The Shields are malfunctioning.");
         }
 
         public override void Controls(string command)
@@ -50,7 +50,7 @@ namespace StarTrek_KG.Subsystem
                     this.MaxTransfer = this.Energy;
                     break;
                 default:
-                    Output.WriteLine("Invalid command.");
+                    Output.Output.WriteLine("Invalid command.");
                     return;
             }
 
@@ -60,7 +60,7 @@ namespace StarTrek_KG.Subsystem
             {
                 this.AddEnergy(transfer, adding);
 
-                Output.WriteLine(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
+                Output.Output.WriteLine(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                                   this.Energy,
                                   Map.Playership.Energy));
             }
@@ -76,7 +76,7 @@ namespace StarTrek_KG.Subsystem
             if (!readSuccess || tooLittle || tooMuch)
             {
                 //todo: tell the user if they are adding too much or too little energy
-                Output.WriteLine("Invalid amount of energy.");
+                Output.Output.WriteLine("Invalid amount of energy.");
                 return 0;
             }
             return (int)transfer;

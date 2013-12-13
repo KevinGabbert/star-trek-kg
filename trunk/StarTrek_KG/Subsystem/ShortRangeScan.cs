@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -18,11 +19,11 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.ShortRangeScanDamageMessage();
+            Output.Output.ShortRangeScanDamageMessage();
         }
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("Short range scanner has been repaired.");
+            Output.Output.WriteLine("Short range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -41,7 +42,7 @@ namespace StarTrek_KG.Subsystem
             var location = map.Playership.GetLocation();
             Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
 
-            (new Output(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"))).PrintSector(quadrant, map); 
+            (new Output.Output(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"))).PrintSector(quadrant, map); 
 
             quadrant.Scanned = true;
         }

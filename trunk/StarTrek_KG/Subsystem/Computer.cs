@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
@@ -26,15 +27,15 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.WriteLine("The main computer has been Damaged.");
+            Output.Output.WriteLine("The main computer has been Damaged.");
         }
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("The main computer has been repaired.");
+            Output.Output.WriteLine("The main computer has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
-            Output.WriteLine("The Main Computer is malfunctioning.");
+            Output.Output.WriteLine("The Main Computer is malfunctioning.");
         }
 
         public override void Controls(string command)
@@ -46,13 +47,13 @@ namespace StarTrek_KG.Subsystem
             switch (command.ToLower())
             {
                 case "rec":
-                    Output.PrintGalacticRecord(this.Map.Quadrants);
+                    Output.Output.PrintGalacticRecord(this.Map.Quadrants);
                     break;
                 case "sta":
 
                     //todo: get a list of all baddie names in quadrant
 
-                    Output.PrintCurrentStatus(this.Map, 
+                    Output.Output.PrintCurrentStatus(this.Map, 
                                               this.Damage, 
                                               starship,
                                               this.Map.Playership.GetQuadrant());
@@ -67,7 +68,7 @@ namespace StarTrek_KG.Subsystem
                     Navigation.For(this.Map.Playership).Calculator(this.Map);
                     break;
                 default:
-                    Output.WriteLine("Invalid computer command.");
+                    Output.Output.WriteLine("Invalid computer command.");
                     break;
             }
         }

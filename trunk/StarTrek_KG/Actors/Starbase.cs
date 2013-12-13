@@ -1,7 +1,8 @@
 ﻿using System;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Playfield;
 
-namespace StarTrek_KG.Playfield
+namespace StarTrek_KG.Actors
 {
     //TODO: Not Implemented Yet..
     public class Starbase : ISystem, IShip

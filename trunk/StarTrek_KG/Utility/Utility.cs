@@ -1,11 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using StarTrek_KG.Playfield;
 
-namespace StarTrek_KG
+namespace StarTrek_KG.Utility
 {
     public static class Utility
     {

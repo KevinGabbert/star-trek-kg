@@ -1,6 +1,6 @@
 ﻿using StarTrek_KG.Playfield;
 
-namespace StarTrek_KG
+namespace StarTrek_KG.Actors
 {
     public class System
     {

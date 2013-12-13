@@ -19,8 +19,8 @@ namespace StarTrek_KG.Playfield
 
         public SectorDef(SectorItem sectorItem)
         {
-            var randomCoordinate = new Coordinate((Utility.Random).Next(Constants.SECTOR_MAX),
-                                                  (Utility.Random).Next(Constants.SECTOR_MAX));
+            var randomCoordinate = new Coordinate((Utility.Utility.Random).Next(Constants.SECTOR_MAX),
+                                                  (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
 
             this.Sector = new Sector(new LocationDef(randomCoordinate, randomCoordinate));
 
