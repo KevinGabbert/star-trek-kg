@@ -40,7 +40,7 @@ namespace StarTrek_KG.Subsystem
                 Phasers.Execute(this.Map, energyToFire);
 
                 //any remaining bad guys now have the opportunity to fire back
-                this.Map.Quadrants.ALLHostilesAttack(this.Map);
+                Game.ALLHostilesAttack(this.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
             }
             else
             {

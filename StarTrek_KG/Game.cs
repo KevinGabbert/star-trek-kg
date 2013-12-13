@@ -4,6 +4,7 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
+using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG
 {
@@ -19,6 +20,9 @@ namespace StarTrek_KG
 
         #endregion
 
+        /// <summary>
+            /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
+        /// </summary>
         public Game()
         {
             //The config file is loaded here, and persisted through the rest of the game. 
@@ -246,6 +250,49 @@ namespace StarTrek_KG
 
             Constants.QUADRANT_MIN = 0;
             Constants.QUADRANT_MAX = 0;
+        }
+
+        /// <summary>
+        /// TODO: this needs to be changed.  after destruction, it appears to take several method returns to realize that we are dead.
+        /// </summary>
+        /// <returns></returns>
+        public static bool ALLHostilesAttack(Map map)
+        {
+            //todo:rewrite this.
+            //this is called from torpedo control/phaser control, and navigation control
+
+            var activeQuadrant = map.Quadrants.GetActive();
+            var hostilesAttacking = activeQuadrant.GetHostiles();
+
+            //temporary
+            if (hostilesAttacking != null)//todo: remove this.
+            {
+                if (hostilesAttacking.Count > 0)
+                {
+                    foreach (var badGuy in hostilesAttacking)
+                    {
+                        if (Navigation.For(map.Playership).docked)
+                        {
+                            StarTrek_KG.Output.Output.WriteLine(string.Format(map.Playership.Name + " hit by " + badGuy.Name + " at sector [{0},{1}].. No damage due to starbase shields.", (badGuy.Sector.X), (badGuy.Sector.Y)));
+                        }
+                        else
+                        {
+                            var ship = map.Playership.GetLocation();
+                            var distance = Utility.Utility.Distance(ship.Sector.X,
+                                                        ship.Sector.Y,
+                                                        badGuy.Sector.X,
+                                                        badGuy.Sector.Y);
+
+                            var attackingEnergy = Disruptors.Shoot(distance);
+
+                            map.Playership.AbsorbHitFrom(badGuy, map, attackingEnergy);
+                        }
+                    }
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

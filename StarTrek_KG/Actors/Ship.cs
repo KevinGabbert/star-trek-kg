@@ -117,13 +117,11 @@ namespace StarTrek_KG.Actors
           
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
-        public bool AbsorbHitFrom(IShip attacker, Map map)
+        public bool AbsorbHitFrom(IShip attacker, Map map, int attackingEnergy) //
         {
-            var ship = map.Playership.GetLocation();
-            var distance = Utility.Utility.Distance(ship.Sector.X, 
-                                        ship.Sector.Y,
-                                        attacker.Sector.X,
-                                        attacker.Sector.Y);
+            //todo: redo this function.  
+
+            //we want to pass in attackingEnergy, which basically means distance needs to be computed outside of this function
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
@@ -137,7 +135,7 @@ namespace StarTrek_KG.Actors
 
             //var beforeShieldEnergy = (Shields.For(map.Playership).Energy);
 
-            Shields.For(map.Playership).Energy -= Ship.DisruptorShot(distance); //todo: pull values from config
+            Shields.For(map.Playership).Energy -= attackingEnergy; 
 
             //var afterShieldEnergy = (Shields.For(map.Playership).Energy);
 
@@ -238,25 +236,5 @@ namespace StarTrek_KG.Actors
 
             return shipLocation;
         }
-
-        /// <summary>
-        /// This function represents the amount of energy fired by an opposing ship.
-        /// The value is a seeded random number that decreases by distance.
-        /// </summary>
-        /// <param name="distance"></param>
-        /// <returns></returns>
-        public static int DisruptorShot(double distance)
-        {
-            //todo: give ship a disruptor weapon type, enable it only on hostileType.Klingon.  delete this.
-
-            var seed = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed"); //todo: pull from config
-            var distanceDeprecationLevel = StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"); //todo: pull deprecationlevel from config
-
-            var adjustedDisruptorEnergy = (StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment") - distance / distanceDeprecationLevel);
-            var deliveredEnergy = (int)(seed * (Utility.Utility.Random).NextDouble() * adjustedDisruptorEnergy);
-
-            return deliveredEnergy;
-        }
-
     }
 }

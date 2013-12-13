@@ -114,7 +114,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (map.Quadrants.GetHostiles().Count > 0)
             {
-                map.Quadrants.ALLHostilesAttack(map);
+                Game.ALLHostilesAttack(map);
             }
         }
 

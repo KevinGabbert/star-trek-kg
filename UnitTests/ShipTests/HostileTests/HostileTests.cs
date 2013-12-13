@@ -56,7 +56,7 @@ namespace UnitTests.ShipTests.HostileTests
 
             Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            _testMap.Quadrants.ALLHostilesAttack(_testMap);
+            Game.ALLHostilesAttack(_testMap);
 
             Assert.IsFalse(_testMap.Playership.Destroyed); 
             Assert.Less(Shields.For(_testMap.Playership).Energy, 2500);
@@ -132,9 +132,9 @@ namespace UnitTests.ShipTests.HostileTests
         {
             this.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount"); 
+            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            _testMap.Quadrants.ALLHostilesAttack(_testMap);
+            Game.ALLHostilesAttack(_testMap);
 
             Assert.IsFalse(_testMap.Playership.Destroyed);
 
@@ -162,7 +162,7 @@ namespace UnitTests.ShipTests.HostileTests
             //cheating so we can cover this line
             Navigation.For(_testMap.Playership).docked = true;
 
-            _testMap.Quadrants.ALLHostilesAttack(_testMap);
+            Game.ALLHostilesAttack(_testMap);
 
             //Ship has taken no damage.
             Assert.IsFalse(_testMap.Playership.Destroyed); 
@@ -288,8 +288,6 @@ namespace UnitTests.ShipTests.HostileTests
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
-                
-                
                 SectorDefs = new SectorDefs()
             }));
 
@@ -383,6 +381,8 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder()
         {
+            var x = (new Game());
+
             _testMap = (new Map(new GameConfig
             {
                 Initialize = true,
@@ -431,6 +431,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder2()
         {
+            //fails intermittently..
             //**This test has an interesting error in it..
 
             var game = new Game();
@@ -491,6 +492,8 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder3()
         {
+            var x = (new Game());
+
             _testMap = HostileTests.SetUp3Hostiles();
 
             var activeQuad = _testMap.Quadrants.GetActive();
