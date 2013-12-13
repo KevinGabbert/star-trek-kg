@@ -74,22 +74,22 @@
     <Compile Include="Interfaces\IStar.cs" />
     <Compile Include="Interfaces\ISystem.cs" />
     <Compile Include="Interfaces\IWeapon.cs" />
-    <Compile Include="NonNullable.cs" />
-    <Compile Include="Playfield\BlackHole.cs" />
+    <Compile Include="Structs\NonNullable.cs" />
+    <Compile Include="Actors\BlackHole.cs" />
     <Compile Include="Playfield\Coordinate.cs" />
     <Compile Include="Playfield\Coordinates.cs" />
     <Compile Include="Enums\Allegiance.cs" />
     <Compile Include="Enums\SubsystemType.cs" />
     <Compile Include="Playfield\Location.cs" />
-    <Compile Include="Playfield\Movement.cs" />
+    <Compile Include="Actors\Movement.cs" />
     <Compile Include="Playfield\LocationDef.cs" />
     <Compile Include="Playfield\Quadrants.cs" />
     <Compile Include="Playfield\Sector.cs" />
     <Compile Include="Playfield\SectorDef.cs" />
     <Compile Include="Playfield\SectorDefs.cs" />
     <Compile Include="Playfield\Sectors.cs" />
-    <Compile Include="Playfield\Star.cs" />
-    <Compile Include="Playfield\Starbase.cs" />
+    <Compile Include="Actors\Star.cs" />
+    <Compile Include="Actors\Starbase.cs" />
     <Compile Include="Playfield\Vector.cs" />
     <Compile Include="Settings\GameConfig.cs" />
     <Compile Include="Subsystem\Computer.cs" />
@@ -100,8 +100,8 @@
     <Compile Include="Interfaces\IShip.cs" />
     <Compile Include="Interfaces\ISubsystem.cs" />
     <Compile Include="Playfield\Map.cs" />
-    <Compile Include="Output.cs" />
-    <Compile Include="Playfield\Ship.cs" />
+    <Compile Include="Output\Output.cs" />
+    <Compile Include="Actors\Ship.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Playfield\Quadrant.cs" />
     <Compile Include="Enums\SectorItem.cs" />
@@ -115,9 +115,9 @@
     <Compile Include="Subsystem\Subsystems.cs" />
     <Compile Include="Subsystem\SubSystem_Base.cs" />
     <Compile Include="Subsystem\Torpedoes.cs" />
-    <Compile Include="System.cs" />
-    <Compile Include="Utility.cs" />
-    <Compile Include="Warp.cs" />
+    <Compile Include="Actors\System.cs" />
+    <Compile Include="Utility\Utility.cs" />
+    <Compile Include="Actors\Warp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

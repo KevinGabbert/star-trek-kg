@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StarTrek_KG
+namespace StarTrek_KG.Structs
 {
     public struct NonNullable<T> where T : class
     {

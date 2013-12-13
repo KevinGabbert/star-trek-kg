@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -76,7 +77,7 @@ namespace StarTrek_KG.Playfield
 
         public Quadrant Create(Stack<string> names, out int nameIndex, bool addStars = true)
         {
-            nameIndex = (Utility.Random).Next(names.Count);
+            nameIndex = (Utility.Utility.Random).Next(names.Count);
 
             var newQuadrant = new Quadrant(this.Map, names);
             newQuadrant.Name = names.Pop();
@@ -92,7 +93,7 @@ namespace StarTrek_KG.Playfield
 
         public Quadrant Create(Map map, Stack<string> quadrantNames, Stack<String> baddieNames, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true)
         {
-            nameIndex = (Utility.Random).Next(quadrantNames.Count);
+            nameIndex = (Utility.Utility.Random).Next(quadrantNames.Count);
 
             this.Map = map;
             this.Name = quadrantNames.Pop();
@@ -189,7 +190,7 @@ namespace StarTrek_KG.Playfield
         public static void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, Map map)
         {
             var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
-            Output.WriteDebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
+            Output.Output.WriteDebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
 
             if(itemToPopulate == SectorItem.Hostile)
             {
@@ -209,17 +210,17 @@ namespace StarTrek_KG.Playfield
         {
             if (toSector == null)
             {
-                Output.WriteDebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
+                Output.Output.WriteDebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
                 throw new GameException("No Sector passed. cannot add to Quadrant: " + this.Name);
             }
 
             if (ship == null)
             {
-                Output.WriteDebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
+                Output.Output.WriteDebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
                 throw new GameException("No ship passed. cannot add to Quadrant: " + this.Name);
             }
 
-            Output.WriteDebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
+            Output.Output.WriteDebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
 
             var addToSector = this.GetSector(toSector) ?? toSector; //if we can't retrieve it, then it hasn't been created yet, so add to our new variable and the caller of this function can add it if they want
 
@@ -240,7 +241,7 @@ namespace StarTrek_KG.Playfield
             }
             catch(Exception ex)
             {
-                Output.WriteDebugLine("unable to add ship to sector " + toSector + ". " + ex.Message);
+                Output.Output.WriteDebugLine("unable to add ship to sector " + toSector + ". " + ex.Message);
                 throw new GameException("unable to add ship to sector " + toSector + ". " + ex.Message);
             }
         }
@@ -259,9 +260,9 @@ namespace StarTrek_KG.Playfield
             hostileShip.Sector.X = position.X; 
             hostileShip.Sector.Y = position.Y;
 
-            Shields.For(hostileShip).Energy = 300 + (Utility.Random).Next(200);
+            Shields.For(hostileShip).Energy = 300 + (Utility.Utility.Random).Next(200);
 
-            Output.WriteDebugLine("Created Ship: " + hostileShip.Name);
+            Output.Output.WriteDebugLine("Created Ship: " + hostileShip.Name);
 
             return hostileShip;
         }
@@ -333,7 +334,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                Output.WriteLine(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
+                Output.Output.WriteLine(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
                 return true;
             }
             return false;

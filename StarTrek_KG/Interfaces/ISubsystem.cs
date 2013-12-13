@@ -1,4 +1,5 @@
-﻿using StarTrek_KG.Enums;
+﻿using StarTrek_KG.Actors;
+using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Interfaces

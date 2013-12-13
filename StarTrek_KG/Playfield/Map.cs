@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -8,6 +9,7 @@ using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Playfield
 {
@@ -90,9 +92,9 @@ namespace StarTrek_KG.Playfield
             {
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
-                Output.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
-                Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
-                Output.WriteLine("");
+                Output.Output.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
+                Output.Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
+                Output.Output.WriteLine("");
             }
         }
 
@@ -150,13 +152,13 @@ namespace StarTrek_KG.Playfield
 
                     if (Constants.DEBUG_MODE)
                     {
-                        Output.WriteSingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
+                        Output.Output.WriteSingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
                         
-                        Output.DisplayPropertiesOf(newQuadrant);
+                        Output.Output.DisplayPropertiesOf(newQuadrant);
 
                         //TODO: each object within quadrant needs a .ToString()
 
-                        Output.WriteLine("");
+                        Output.Output.WriteLine("");
                     }
                 }
             }
@@ -171,8 +173,8 @@ namespace StarTrek_KG.Playfield
         {
             while (totalStarsInQuadrant > 0)
             {
-                var x = (Utility.Random).Next(Constants.SECTOR_MAX);
-                var y = (Utility.Random).Next(Constants.SECTOR_MAX);
+                var x = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+                var y = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
 
                 //todo: just pass in sector and get its item
                 var sector = quadrant.Sectors.Where(s => s.X == x && s.Y == y).Single();
@@ -209,10 +211,10 @@ namespace StarTrek_KG.Playfield
         {
             //this.Hostiles = new Hostiles(); //todo: create an initial size the same as hostilesToSetUp
 
-            this.hostilesToSetUp = StarTrekKGSettings.GetSetting<int>("totalHostiles") + (Utility.Random).Next(6);
-            this.Stardate = StarTrekKGSettings.GetSetting<int>("stardate") + (Utility.Random).Next(50);
-            this.timeRemaining = StarTrekKGSettings.GetSetting<int>("timeRemaining") + (Utility.Random).Next(10);
-            this.starbases = StarTrekKGSettings.GetSetting<int>("starbases") + (Utility.Random).Next(3);
+            this.hostilesToSetUp = StarTrekKGSettings.GetSetting<int>("totalHostiles") + (Utility.Utility.Random).Next(6);
+            this.Stardate = StarTrekKGSettings.GetSetting<int>("stardate") + (Utility.Utility.Random).Next(50);
+            this.timeRemaining = StarTrekKGSettings.GetSetting<int>("timeRemaining") + (Utility.Utility.Random).Next(10);
+            this.starbases = StarTrekKGSettings.GetSetting<int>("starbases") + (Utility.Utility.Random).Next(3);
 
             this.Text = StarTrekKGSettings.GetSetting<string>("CommandPrompt");
         }
@@ -220,7 +222,7 @@ namespace StarTrek_KG.Playfield
         //refactor these to a setup object
         private void SetUpPlayerShip(SectorDef playerShipDef)
         {
-            Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
+            Output.Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
             if (this.Quadrants == null)
@@ -288,8 +290,8 @@ namespace StarTrek_KG.Playfield
         {
             if (playerShipDef.QuadrantDef == null)
             {
-                playerShipDef.QuadrantDef = new Coordinate((Utility.Random).Next(Constants.SECTOR_MAX),
-                                                           (Utility.Random).Next(Constants.SECTOR_MAX));
+                playerShipDef.QuadrantDef = new Coordinate((Utility.Utility.Random).Next(Constants.SECTOR_MAX),
+                                                           (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
             }
 
             if(this.Quadrants.Count == 0)

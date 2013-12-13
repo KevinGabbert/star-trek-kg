@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -20,11 +21,11 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.LongRangeScanDamageMessage();
+            Output.Output.LongRangeScanDamageMessage();
         }
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("Long range scanner has been repaired.");
+            Output.Output.WriteLine("Long range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -43,7 +44,7 @@ namespace StarTrek_KG.Subsystem
             var sb = new StringBuilder();
             var myLocation = this.Map.Playership.GetLocation();
 
-            Output.WriteSingleLine("-------------------");
+            Output.Output.WriteSingleLine("-------------------");
 
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
             {
@@ -63,9 +64,9 @@ namespace StarTrek_KG.Subsystem
 
                 sb.Append("|");
 
-                Output.WriteLine(sb.ToString());
+                Output.Output.WriteLine(sb.ToString());
                 sb.Length = 0;
-                Output.WriteSingleLine("-------------------");
+                Output.Output.WriteSingleLine("-------------------");
             }
         }
 

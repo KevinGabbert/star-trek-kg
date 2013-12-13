@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -18,12 +19,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.WriteLine("Phasers are damaged. Repairs are underway.");
+            Output.Output.WriteLine("Phasers are damaged. Repairs are underway.");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.WriteLine("Phasers have been repaired.");
+            Output.Output.WriteLine("Phasers have been repaired.");
         }
 
         public override void OutputMalfunctioningMessage()
@@ -44,7 +45,7 @@ namespace StarTrek_KG.Subsystem
             else
             {
                 //Energy Check has failed
-                Output.WriteLine("Not enough Energy to fire Phasers");
+                Output.Output.WriteLine("Not enough Energy to fire Phasers");
             }
         }
 
@@ -58,21 +59,21 @@ namespace StarTrek_KG.Subsystem
 
             double phaserEnergy;
 
-            Output.WriteLine("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
+            Output.Output.WriteLine("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
 
             if (!Phasers.PromptUserForPhaserEnergy(map, out phaserEnergy))
             {
-                Output.WriteLine("Invalid energy level.");
+                Output.Output.WriteLine("Invalid energy level.");
                 return;
             }
-            Output.WriteLine("");
+            Output.Output.WriteLine("");
 
             this.Fire(phaserEnergy, shipFiringPhasers);
         }
 
         private static void Execute(Map map, double phaserEnergy)
         {
-            Output.WriteLine("Firing phasers..."); //todo: pull from config
+            Output.Output.WriteLine("Firing phasers..."); //todo: pull from config
 
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
@@ -110,7 +111,7 @@ namespace StarTrek_KG.Subsystem
         private static double ComputeDeliveredEnergy(Map map, double phaserEnergy, IShip badGuyShip)
         {
             var location = map.Playership.GetLocation();
-            var distance = Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
+            var distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
             var deliveredEnergy = phaserEnergy*(1.0 - distance/11.3);
 
             return deliveredEnergy;
@@ -131,7 +132,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                Output.WriteLine(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. Hostile shield strength dropped to {2}.",
+                Output.Output.WriteLine(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. Hostile shield strength dropped to {2}.",
                                   (badGuyShip.Sector.X), (badGuyShip.Sector.Y), badGuyShields.Energy));
             }
         }

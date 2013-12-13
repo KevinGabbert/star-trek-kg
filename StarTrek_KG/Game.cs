@@ -11,7 +11,7 @@ namespace StarTrek_KG
     {
         #region Properties
 
-            public Output Output { get; set; }
+            public Output.Output Output { get; set; }
             public Map Map { get; set; }
             public Command Command { get; set; }
 
@@ -29,7 +29,7 @@ namespace StarTrek_KG
             //These constants need to be localized to Game:
             Game.GetConstants();
 
-            this.Output = (new Output(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL));
+            this.Output = (new Output.Output(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL));
 
             var startConfig = (new GameConfig
                                    {
@@ -44,7 +44,7 @@ namespace StarTrek_KG
             if (this.HostileCheck(this.Map)) return;  //todo: unless we want to have a mode that allows it for some reason.
 
             //todo: why are we creating this Output() class a second time??
-            this.Output = new Output(this.Map.hostilesToSetUp, Map.timeRemaining, Map.starbases, Map.Stardate, Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL);
+            this.Output = new Output.Output(this.Map.hostilesToSetUp, Map.timeRemaining, Map.starbases, Map.Stardate, Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL);
         }
 
         private static void GetConstants()
@@ -53,7 +53,7 @@ namespace StarTrek_KG
 
             if (Constants.DEBUG_MODE)
             {
-                Output.WriteLine("// ---------------- Debug Mode ----------------");
+                StarTrek_KG.Output.Output.WriteLine("// ---------------- Debug Mode ----------------");
             }
 
             Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
@@ -141,7 +141,7 @@ namespace StarTrek_KG
         {
             if (map.Quadrants.GetHostiles().Count() < 1)
             {
-                Output.WriteLine("ERROR: --- No Hostiles have been set up.");
+                StarTrek_KG.Output.Output.WriteLine("ERROR: --- No Hostiles have been set up.");
 
                 //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
                 //todo: in that case, this function would not be called
@@ -172,11 +172,11 @@ namespace StarTrek_KG
         /// </summary>
         private void PrintOpeningScreen()
         {
-            Output.PrintAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
+            StarTrek_KG.Output.Output.PrintAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
             
-            Output.WriteResourceLine("UnderConstructionMessage");
-            Output.WriteResourceLine("UnderConstructionMessage2");
-            Output.WriteResourceLine("UnderConstructionMessage3");
+            StarTrek_KG.Output.Output.WriteResourceLine("UnderConstructionMessage");
+            StarTrek_KG.Output.Output.WriteResourceLine("UnderConstructionMessage2");
+            StarTrek_KG.Output.Output.WriteResourceLine("UnderConstructionMessage3");
 
             Output.PrintMission();
         }
@@ -188,7 +188,7 @@ namespace StarTrek_KG
         {
             if(gameOver)
             {
-                Output.WriteDebugLine("Game Over.");
+                StarTrek_KG.Output.Output.WriteDebugLine("Game Over.");
                 return;
             }
 
@@ -200,7 +200,7 @@ namespace StarTrek_KG
 
                 if (gameOver)
                 {
-                    Output.WriteDebugLine("Game Over.. Restarting.");
+                    StarTrek_KG.Output.Output.WriteDebugLine("Game Over.. Restarting.");
 
                     //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
                     this.Map.Initialize(this.Map.GameConfig.SectorDefs); //we gonna start over

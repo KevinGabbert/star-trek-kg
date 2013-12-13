@@ -1,7 +1,8 @@
 ﻿using System;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Playfield;
 
-namespace StarTrek_KG.Playfield
+namespace StarTrek_KG.Actors
 {
     public class Movement : System
     {
@@ -101,7 +102,7 @@ namespace StarTrek_KG.Playfield
                         if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
                         {
                             //vector_div is so you can get right up to an obstacle before hitting it.
-                            Output.WriteLine(this.Map.Playership.Name + " has stopped.");
+                            Output.Output.WriteLine(this.Map.Playership.Name + " has stopped.");
                             return true;
                         }
                     }
@@ -139,7 +140,7 @@ namespace StarTrek_KG.Playfield
                     //todo: move this to XXX label.  run tests.  should work.
                     Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.Friendly;
 
-                    Output.WriteLine("Detected an obstacle while navigating: " + currentItem.ToString() + " at sector: [" + sector.X + "," + sector.Y + "]");
+                    Output.Output.WriteLine("Detected an obstacle while navigating: " + currentItem.ToString() + " at sector: [" + sector.X + "," + sector.Y + "]");
                     this.BlockedByObstacle = true;
 
                     return true;
@@ -290,7 +291,7 @@ namespace StarTrek_KG.Playfield
             if (this.BlockedByGalacticBarrier)
             {
                 //todo: which one?  name it.
-                Output.WriteLine("Galactic Barrier hit. Navigation stopped.");
+                Output.Output.WriteLine("Galactic Barrier hit. Navigation stopped.");
             }
         }
 
@@ -311,7 +312,7 @@ namespace StarTrek_KG.Playfield
             {
                 if (!Constants.MAP_DIRECTION.Contains(direction))
                 {
-                    Output.WriteLine("Invalid course.");
+                    Output.Output.WriteLine("Invalid course.");
                     return true;
                 }
             }
