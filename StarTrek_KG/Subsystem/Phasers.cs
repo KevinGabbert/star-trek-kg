@@ -39,6 +39,8 @@ namespace StarTrek_KG.Subsystem
                 shipFiringPhasers.Energy = this.Map.Playership.Energy -= energyToFire;
                 Phasers.Execute(this.Map, energyToFire);
 
+                //todo: move to Game() object
+                //todo: move to Game() object
                 //any remaining bad guys now have the opportunity to fire back
                 Game.ALLHostilesAttack(this.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
             }
@@ -92,6 +94,7 @@ namespace StarTrek_KG.Subsystem
             return Command.PromptUser(String.Format("Enter phaser energy (1--{0}): ", map.Playership.Energy), out phaserEnergy);
         }
 
+        //todo: move to Utility() object
         private static bool EnergyCheckFail(double phaserEnergy, IShip firingShip)
         {
             return phaserEnergy < 1 || phaserEnergy > firingShip.Energy;
@@ -108,6 +111,7 @@ namespace StarTrek_KG.Subsystem
         //    return false;
         //}
 
+        //todo: move to Utility() object
         private static double ComputeDeliveredEnergy(Map map, double phaserEnergy, IShip badGuyShip)
         {
             var location = map.Playership.GetLocation();
@@ -117,6 +121,7 @@ namespace StarTrek_KG.Subsystem
             return deliveredEnergy;
         }
 
+        //todo: move to Game() object
         private static void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
         {
             //todo: add more descriptive output messages depending on how much phaser energy absorbed by baddie

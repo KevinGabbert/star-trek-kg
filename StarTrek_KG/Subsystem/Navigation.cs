@@ -100,16 +100,18 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
+        //todo: move to Game() object
         private void SuccessfulDockWithStarbase()
         {
             Output.Output.WriteResourceLine("DockingMessageLowerShields");
             Shields.For(this.Map.Playership).Damage = 0;
 
-            this.Map.Playership.RepairEverything();
+            this.Map.Playership.RepairEverything(); 
 
             Output.Output.DockSuccess(StarTrekKGSettings.GetSetting<string>("PlayerShip"));
         }
 
+        //todo: move to Game() object
         private void TakeAttackDamageOrRepair(Map map, int lastQuadY, int lastQuadX)
         {
             var thisShip = this.Map.Playership.GetLocation();

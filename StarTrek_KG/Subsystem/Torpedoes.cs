@@ -110,6 +110,7 @@ namespace StarTrek_KG.Subsystem
             Output.Output.WriteLine("Photon torpedo failed to hit anything.");
         }
 
+        //todo: refactor into to Game() object. one exists there
         private void AllHostilesAttack(Map map)
         {
             if (map.Quadrants.GetHostiles().Count > 0)
@@ -165,6 +166,7 @@ namespace StarTrek_KG.Subsystem
             return false;
         }
 
+        //todo: move to Utility() object
         public void Calculator(Map map)
         {
             Output.Output.WriteLine("");

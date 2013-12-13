@@ -4,13 +4,15 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
     //todo: make it so that a subsystem can be shut off at will
     //todo: subsystems use energy
     //todo: introduce the concept of damage control.  Repairs can be prioritized through a panel
+    /// <summary>
+    /// Subsystems exist to take damage.  any workflow activity needs to move out.
+    /// </summary>
     public abstract class SubSystem_Base: Actors.System, ISubsystem
     {
         #region Properties
@@ -27,7 +29,7 @@ namespace StarTrek_KG.Subsystem
 
         public virtual void Controls(string command)
         {
-            
+            //todo: can Prompt be moved out of here?
         }
 
         public virtual bool Repair()

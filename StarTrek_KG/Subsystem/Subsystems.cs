@@ -49,6 +49,7 @@ namespace StarTrek_KG.Subsystem
             return retVal;
         }
 
+        //todo: move to Game() object????
         public bool DamageRandomSubsystem()
         {
             bool wasDamaged = false;
