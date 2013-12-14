@@ -27,15 +27,15 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Output.WriteLine("The main computer has been Damaged.");
+            Output.Write.Line("The main computer has been Damaged.");
         }
         public override void OutputRepairedMessage()
         {
-            Output.Output.WriteLine("The main computer has been repaired.");
+            Output.Write.Line("The main computer has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
-            Output.Output.WriteLine("The Main Computer is malfunctioning.");
+            Output.Write.Line("The Main Computer is malfunctioning.");
         }
 
         public override void Controls(string command)
@@ -47,13 +47,13 @@ namespace StarTrek_KG.Subsystem
             switch (command.ToLower())
             {
                 case "rec":
-                    Output.Output.PrintGalacticRecord(this.Map.Quadrants);
+                    Output.Write.PrintGalacticRecord(this.Map.Quadrants);
                     break;
                 case "sta":
 
                     //todo: get a list of all baddie names in quadrant
 
-                    Output.Output.PrintCurrentStatus(this.Map, 
+                    Output.Write.PrintCurrentStatus(this.Map, 
                                               this.Damage, 
                                               starship,
                                               this.Map.Playership.GetQuadrant());
@@ -68,7 +68,7 @@ namespace StarTrek_KG.Subsystem
                     Navigation.For(this.Map.Playership).Calculator(this.Map);
                     break;
                 default:
-                    Output.Output.WriteLine("Invalid computer command.");
+                    Output.Write.Line("Invalid computer command.");
                     break;
             }
         }

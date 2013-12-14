@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 
@@ -8,6 +9,7 @@ namespace StarTrek_KG.Subsystem
 {
     public class Subsystems: List<ISubsystem>
     {
+
         public Subsystems(Playfield.Map map)
         {
             // TODO: Complete member initialization
@@ -22,6 +24,41 @@ namespace StarTrek_KG.Subsystem
                                      new Phasers(map)
                                   });
         }
+
+        //todo: create an indexer so we can look up a subsystem
+
+        public void FullRepair()
+        {
+            foreach (ISubsystem subsystem in this)
+            {
+                subsystem.FullRepair(); //TODO: make the priority level configurable
+
+                if(subsystem.Type == SubsystemType.Torpedoes)
+                {
+                    ((Torpedoes)subsystem).Count = 10;        //TODO: StarTrekKGSettings.GetSetting<int>("repairTorpedoes");
+                }
+
+                if (subsystem.Type == SubsystemType.Navigation)
+                {
+                    ((Navigation)subsystem).docked = true;        //TODO: StarTrekKGSettings.GetSetting<int>("repairDocked");
+                }
+            }
+
+            //todo: starbases can upgrade energy maximums during game
+        }
+
+        /// <summary>
+        /// repairs one item every time called
+        /// </summary>
+        /// <returns></returns>
+        public void PartialRepair()
+        {
+            foreach (var subsystem in this)
+            {
+                subsystem.PartialRepair(); //TODO: make the priority level configurable
+            }
+        }
+
         public bool TakeDamageIfAppropriate(int boltStrength)
         {
             bool retVal = false; 

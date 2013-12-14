@@ -92,9 +92,9 @@ namespace StarTrek_KG.Playfield
             {
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
-                Output.Output.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
-                Output.Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
-                Output.Output.WriteLine("");
+                Output.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
+                Output.Write.Line(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
+                Output.Write.Line("");
             }
         }
 
@@ -152,13 +152,13 @@ namespace StarTrek_KG.Playfield
 
                     if (Constants.DEBUG_MODE)
                     {
-                        Output.Output.WriteSingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
+                        Output.Write.SingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
                         
-                        Output.Output.DisplayPropertiesOf(newQuadrant);
+                        Output.Write.DisplayPropertiesOf(newQuadrant);
 
                         //TODO: each object within quadrant needs a .ToString()
 
-                        Output.Output.WriteLine("");
+                        Output.Write.Line("");
                     }
                 }
             }
@@ -222,7 +222,7 @@ namespace StarTrek_KG.Playfield
         //refactor these to a setup object
         private void SetUpPlayerShip(SectorDef playerShipDef)
         {
-            Output.Output.WriteLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
+            Output.Write.Line(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
             if (this.Quadrants == null)
@@ -299,7 +299,7 @@ namespace StarTrek_KG.Playfield
                 throw new ArgumentException(StarTrekKGSettings.GetSetting<string>("QuadrantsNotSetUp"));
             }
 
-            var m = this.Quadrants.Where(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y).Single();
+            var m = this.Quadrants.Single(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y);
             this.Playership.QuadrantDef = new Coordinate(m.X, m.Y);
             this.Playership.GetQuadrant().Active = true;
         }

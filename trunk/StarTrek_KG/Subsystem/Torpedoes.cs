@@ -24,12 +24,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Output.WriteLine("Photon torpedo control is damaged. Repairs are underway. ");
+            Output.Write.Line("Photon torpedo control is damaged. Repairs are underway. ");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.Output.WriteLine("Photon torpedo controls have been repaired. ");
+            Output.Write.Line("Photon torpedo controls have been repaired. ");
         }
 
         public override void OutputMalfunctioningMessage()
@@ -62,11 +62,11 @@ namespace StarTrek_KG.Subsystem
                 || direction < 1.0 
                 || direction > 9.0)
             {
-                Output.Output.WriteLine("Invalid direction.");
+                Output.Write.Line("Invalid direction.");
                 return;
             }
 
-            Output.Output.WriteLine("Photon torpedo fired...");
+            Output.Write.Line("Photon torpedo fired...");
             this.Count--;
 
             var angle = Utility.Utility.ComputeAngle(map, direction);
@@ -88,7 +88,7 @@ namespace StarTrek_KG.Subsystem
                 var newY = (int) Math.Round(y);
                 if (lastX != newX || lastY != newY)
                 {
-                    Output.Output.WriteLine(string.Format("  [{0},{1}]", newX, newY));
+                    Output.Write.Line(string.Format("  [{0},{1}]", newX, newY));
                     lastX = newX;
                     lastY = newY;
                 }
@@ -107,7 +107,7 @@ namespace StarTrek_KG.Subsystem
                 }
             }
 
-            Output.Output.WriteLine("Photon torpedo failed to hit anything.");
+            Output.Write.Line("Photon torpedo failed to hit anything.");
         }
 
         //todo: refactor into to Game() object. one exists there
@@ -139,12 +139,12 @@ namespace StarTrek_KG.Subsystem
                     //quadrant.Starbase = false;
                     //quadrant.Map.Sectors.Where(s => s.X == newX && s.Y == newY).Single().Item = SectorItem.Empty;
 
-                    Output.Output.WriteLine(string.Format(map.Playership.Name + " destroyed a Federation starbase at sector [{0},{1}]!",
+                    Output.Write.Line(string.Format(map.Playership.Name + " destroyed a Federation starbase at sector [{0},{1}]!",
                                       newX, newY));
                     return true;
 
                 case SectorItem.Star:
-                    Output.Output.WriteLine(string.Format(
+                    Output.Write.Line(string.Format(
                         "The torpedo was captured by a star's gravitational field at sector [{0},{1}].",
                         newX, newY));
 
@@ -160,7 +160,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Count == 0)
             {
-                Output.Output.WriteLine("Photon torpedoes exhausted.");
+                Output.Write.Line("Photon torpedoes exhausted.");
                 return true;
             }
             return false;
@@ -169,11 +169,11 @@ namespace StarTrek_KG.Subsystem
         //todo: move to Utility() object
         public void Calculator(Map map)
         {
-            Output.Output.WriteLine("");
+            Output.Write.Line("");
             if (map.Quadrants.GetActive().GetHostiles().Count == 0)
             {
-                Output.Output.WriteLine("There are no Hostile ships in this quadrant.");
-                Output.Output.WriteLine("");
+                Output.Write.Line("There are no Hostile ships in this quadrant.");
+                Output.Write.Line("");
                 return;
             }
 
@@ -181,7 +181,7 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var ship in map.Quadrants.GetHostiles())
             {
-                Output.Output.WriteLine(string.Format("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
+                Output.Write.Line(string.Format("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
                                   (ship.Sector.X), (ship.Sector.Y),
                                   Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y)));
             }

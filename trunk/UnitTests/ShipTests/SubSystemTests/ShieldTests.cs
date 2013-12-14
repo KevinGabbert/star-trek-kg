@@ -106,7 +106,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void Repair()
         {
             _testShields.Damage = 47;
-            var repaired = _testShields.Repair();
+            var repaired = _testShields.PartialRepair();
 
             Assert.IsTrue(repaired);
             Assert.AreEqual(46, _testShields.Damage);
@@ -116,7 +116,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void DamageRepaired()
         {
             _testShields.Damage = 1;
-            var repaired = _testShields.Repair();
+            var repaired = _testShields.PartialRepair();
 
             Assert.IsTrue(repaired);
             Assert.IsFalse(_testShields.Damaged());
@@ -126,7 +126,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void NoNeedForDamageRepair()
         {
             _testShields.Damage = 0;
-            var repaired = _testShields.Repair();
+            var repaired = _testShields.PartialRepair();
 
             Assert.IsFalse(repaired);
         }

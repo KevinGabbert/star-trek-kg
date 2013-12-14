@@ -190,7 +190,7 @@ namespace StarTrek_KG.Playfield
         public static void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, Map map)
         {
             var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
-            Output.Output.WriteDebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
+            Output.Write.DebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
 
             if(itemToPopulate == SectorItem.Hostile)
             {
@@ -210,17 +210,17 @@ namespace StarTrek_KG.Playfield
         {
             if (toSector == null)
             {
-                Output.Output.WriteDebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
+                Output.Write.DebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
                 throw new GameException("No Sector passed. cannot add to Quadrant: " + this.Name);
             }
 
             if (ship == null)
             {
-                Output.Output.WriteDebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
+                Output.Write.DebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
                 throw new GameException("No ship passed. cannot add to Quadrant: " + this.Name);
             }
 
-            Output.Output.WriteDebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
+            Output.Write.DebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
 
             var addToSector = this.GetSector(toSector) ?? toSector; //if we can't retrieve it, then it hasn't been created yet, so add to our new variable and the caller of this function can add it if they want
 
@@ -241,7 +241,7 @@ namespace StarTrek_KG.Playfield
             }
             catch(Exception ex)
             {
-                Output.Output.WriteDebugLine("unable to add ship to sector " + toSector + ". " + ex.Message);
+                Output.Write.DebugLine("unable to add ship to sector " + toSector + ". " + ex.Message);
                 throw new GameException("unable to add ship to sector " + toSector + ". " + ex.Message);
             }
         }
@@ -262,7 +262,7 @@ namespace StarTrek_KG.Playfield
 
             Shields.For(hostileShip).Energy = 300 + (Utility.Utility.Random).Next(200);
 
-            Output.Output.WriteDebugLine("Created Ship: " + hostileShip.Name);
+            Output.Write.DebugLine("Created Ship: " + hostileShip.Name);
 
             return hostileShip;
         }
@@ -334,7 +334,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                Output.Output.WriteLine(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
+                Output.Write.Line(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
                 return true;
             }
             return false;

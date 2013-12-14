@@ -22,7 +22,7 @@ namespace StarTrek_KG.Actors
             var energyRequired = (int)distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
-                Output.Output.WriteLine("Insufficient energy to travel that speed.");
+                Output.Write.Line("Insufficient energy to travel that speed.");
                 returnVal = false;
             }
             else
@@ -31,7 +31,7 @@ namespace StarTrek_KG.Actors
                 returnVal = true;
             }
 
-            Output.Output.WriteLine("");
+            Output.Write.Line("");
 
             return returnVal;
         }
@@ -41,7 +41,7 @@ namespace StarTrek_KG.Actors
                 || distance < 0.1 
                 || distance > maxWarpFactor)
             {
-                Output.Output.WriteLine("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
+                Output.Write.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
                 return true;
             }
             return false;
@@ -53,11 +53,11 @@ namespace StarTrek_KG.Actors
 
             if (success)
             {
-                Output.Output.WriteLine("Warp engines engaged.");
+                Output.Write.Line("Warp engines engaged.");
 
                 Navigation.For(map.Playership).Movement.Execute(direction, distance, distanceEntered, out lastQuadX, out lastQuadY);
 
-                Output.Output.WriteLine("Warp engines disengaged."); 
+                Output.Write.Line("Warp engines disengaged."); 
             }
             else
             {

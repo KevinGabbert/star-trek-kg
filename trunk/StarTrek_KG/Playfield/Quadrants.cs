@@ -71,7 +71,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                Output.Output.WriteLine("There are no Hostile ships in this quadrant.");
+                Output.Write.Line("There are no Hostile ships in this quadrant.");
                 return true;
             }
             return false;
@@ -183,7 +183,7 @@ namespace StarTrek_KG.Playfield
 
             this.RemoveShip(shipToRemove.Name);
 
-            Output.Output.WriteLine(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed")));
+            Output.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed")));
         }
 
         //private static void DeleteShip(IShip shipToRemove, Map map)

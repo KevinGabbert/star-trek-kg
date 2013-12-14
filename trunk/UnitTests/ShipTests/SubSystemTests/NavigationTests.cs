@@ -1,9 +1,7 @@
-﻿using Moq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
@@ -84,7 +82,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void Repair()
         {
             _testNavigation.Damage = 47;
-            var repaired = _testNavigation.Repair();
+            var repaired = _testNavigation.PartialRepair();
 
             Assert.IsTrue(repaired);
             Assert.AreEqual(46, _testNavigation.Damage);
@@ -94,7 +92,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void DamageRepaired()
         {
             _testNavigation.Damage = 1;
-            var repaired = _testNavigation.Repair();
+            var repaired = _testNavigation.PartialRepair();
 
             Assert.IsTrue(repaired);
             Assert.IsFalse(_testNavigation.Damaged());
@@ -104,7 +102,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void NoNeedForDamageRepair()
         {
             _testNavigation.Damage = 0;
-            var repaired = _testNavigation.Repair();
+            var repaired = _testNavigation.PartialRepair();
 
             Assert.IsFalse(repaired);
         }

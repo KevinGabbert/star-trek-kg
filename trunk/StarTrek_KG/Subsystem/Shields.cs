@@ -7,7 +7,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public  class Shields : SubSystem_Base
+    public class Shields : SubSystem_Base
     {
         public static readonly string[] CONTROL_PANEL = {
                                                     "--- > Shield Controls ----------------",
@@ -24,15 +24,15 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Output.WriteLine("Shield control is damaged. Repairs are underway.");
+            Output.Write.Line("Shield control is damaged. Repairs are underway.");
         }
         public override void OutputRepairedMessage()
         {
-            Output.Output.WriteLine("Shield control has been repaired.");
+            Output.Write.Line("Shield control has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
-            Output.Output.WriteLine("The Shields are malfunctioning.");
+            Output.Write.Line("The Shields are malfunctioning.");
         }
 
         public override void Controls(string command)
@@ -50,7 +50,7 @@ namespace StarTrek_KG.Subsystem
                     this.MaxTransfer = this.Energy;
                     break;
                 default:
-                    Output.Output.WriteLine("Invalid command.");
+                    Output.Write.Line("Invalid command.");
                     return;
             }
 
@@ -60,7 +60,7 @@ namespace StarTrek_KG.Subsystem
             {
                 this.AddEnergy(transfer, adding);
 
-                Output.Output.WriteLine(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
+                Output.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                                   this.Energy,
                                   Map.Playership.Energy));
             }
@@ -76,15 +76,15 @@ namespace StarTrek_KG.Subsystem
             if (!readSuccess || tooLittle || tooMuch)
             {
                 //todo: tell the user if they are adding too much or too little energy
-                Output.Output.WriteLine("Invalid amount of energy.");
+                Output.Write.Line("Invalid amount of energy.");
                 return 0;
             }
             return (int)transfer;
         }
 
-        public new static Shields For(IShip ship)
+        public static Shields For(IShip ship)
         {
-            if(ship== null)
+            if(ship == null)
             {
                 throw new GameConfigException("Ship not set up (shields). Add a Friendly to your GameConfig");
             }
