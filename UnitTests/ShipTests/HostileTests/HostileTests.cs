@@ -310,6 +310,7 @@ namespace UnitTests.ShipTests.HostileTests
             TestMap3Scenario();
         }
 
+        [Ignore]
         [Test]
         public void MapWith3HostilesTheConfigWay_FailsIntermittently_overAndOver()
         {

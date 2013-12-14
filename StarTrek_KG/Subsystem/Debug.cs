@@ -50,29 +50,29 @@ namespace StarTrek_KG.Subsystem
             {
                 case "dsrec":
                     //Output.PrintGalacticRecord(this.Map.Quadrants); 
-                    Output.Output.WriteLine("full galactic record with ship position as colored text, baddies as red");
-                    Output.Output.WriteLine("Not Implemented Yet");
+                    Output.Write.Line("full galactic record with ship position as colored text, baddies as red");
+                    Output.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dsnav":
                     //Navigation.For(this.Map.Playership).Controls(this.Map);
                     //ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
-                    Output.Output.WriteLine("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
-                    Output.Output.WriteLine("Not Implemented Yet");
+                    Output.Write.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
+                    Output.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dstor":
                     //Torpedoes.For(this.Map.Playership).Controls(this.Map);
                     //ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
-                    Output.Output.WriteLine("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
-                    Output.Output.WriteLine("Not Implemented Yet");
+                    Output.Write.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
+                    Output.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dqnav":
                     //Navigation.For(this.Map.Playership).Controls(this.Map);
                     //Output.PrintGalacticRecord(WithNavTrack); 
-                    Output.Output.WriteLine("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
-                    Output.Output.WriteLine("Not Implemented Yet");
+                    Output.Write.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
+                    Output.Write.Line("Not Implemented Yet");
                     break;
 
                 default:

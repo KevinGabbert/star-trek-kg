@@ -21,11 +21,11 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Output.LongRangeScanDamageMessage();
+            Output.Write.LongRangeScanDamageMessage();
         }
         public override void OutputRepairedMessage()
         {
-            Output.Output.WriteLine("Long range scanner has been repaired.");
+            Output.Write.Line("Long range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -44,7 +44,7 @@ namespace StarTrek_KG.Subsystem
             var sb = new StringBuilder();
             var myLocation = this.Map.Playership.GetLocation();
 
-            Output.Output.WriteSingleLine("-------------------");
+            Output.Write.SingleLine("-------------------");
 
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
             {
@@ -64,9 +64,9 @@ namespace StarTrek_KG.Subsystem
 
                 sb.Append("|");
 
-                Output.Output.WriteLine(sb.ToString());
+                Output.Write.Line(sb.ToString());
                 sb.Length = 0;
-                Output.Output.WriteSingleLine("-------------------");
+                Output.Write.SingleLine("-------------------");
             }
         }
 

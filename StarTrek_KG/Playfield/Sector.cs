@@ -23,7 +23,6 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-
         //todo: create a constructor overload that will let you create a sector without an associated quadrant
 
         public Sector(LocationDef location)
@@ -44,7 +43,7 @@ namespace StarTrek_KG.Playfield
         {
             var gotSectors = sectors.Where(s => s.X == sX && s.Y == sY).ToList();
 
-            if (gotSectors.Count() < 1)
+            if (!gotSectors.Any())
             {
                 throw new GameConfigException("Sector not found:  X: " + sX + " Y: " + sY + " Total Sectors: " + sectors.Count());
             }
@@ -63,7 +62,7 @@ namespace StarTrek_KG.Playfield
             var shipQuadrant = shipToGetFrom.GetQuadrant();
             var gotSectors = shipQuadrant.Sectors.Where(s => s.X == shipToGetFrom.Sector.X && s.Y == shipToGetFrom.Sector.Y).ToList();
 
-            if (gotSectors.Count() < 1)
+            if (!gotSectors.Any())
             {
                 throw new GameConfigException("Sector not found:  X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipQuadrant.Sectors.Count());
             }

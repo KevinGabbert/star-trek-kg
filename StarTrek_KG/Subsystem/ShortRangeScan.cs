@@ -19,11 +19,11 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Output.ShortRangeScanDamageMessage();
+            Output.Write.ShortRangeScanDamageMessage();
         }
         public override void OutputRepairedMessage()
         {
-            Output.Output.WriteLine("Short range scanner has been repaired.");
+            Output.Write.Line("Short range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -42,7 +42,7 @@ namespace StarTrek_KG.Subsystem
             var location = map.Playership.GetLocation();
             Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
 
-            (new Output.Output(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"))).PrintSector(quadrant, map); 
+            (new Output.Write(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"))).PrintSector(quadrant, map); 
 
             quadrant.Scanned = true;
         }

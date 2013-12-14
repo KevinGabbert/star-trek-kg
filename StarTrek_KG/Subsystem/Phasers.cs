@@ -19,12 +19,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Output.WriteLine("Phasers are damaged. Repairs are underway.");
+            Output.Write.Line("Phasers are damaged. Repairs are underway.");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.Output.WriteLine("Phasers have been repaired.");
+            Output.Write.Line("Phasers have been repaired.");
         }
 
         public override void OutputMalfunctioningMessage()
@@ -47,7 +47,7 @@ namespace StarTrek_KG.Subsystem
             else
             {
                 //Energy Check has failed
-                Output.Output.WriteLine("Not enough Energy to fire Phasers");
+                Output.Write.Line("Not enough Energy to fire Phasers");
             }
         }
 
@@ -61,21 +61,21 @@ namespace StarTrek_KG.Subsystem
 
             double phaserEnergy;
 
-            Output.Output.WriteLine("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
+            Output.Write.Line("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
 
             if (!Phasers.PromptUserForPhaserEnergy(map, out phaserEnergy))
             {
-                Output.Output.WriteLine("Invalid energy level.");
+                Output.Write.Line("Invalid energy level.");
                 return;
             }
-            Output.Output.WriteLine("");
+            Output.Write.Line("");
 
             this.Fire(phaserEnergy, shipFiringPhasers);
         }
 
         private static void Execute(Map map, double phaserEnergy)
         {
-            Output.Output.WriteLine("Firing phasers..."); //todo: pull from config
+            Output.Write.Line("Firing phasers..."); //todo: pull from config
 
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
@@ -137,7 +137,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                Output.Output.WriteLine(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. Hostile shield strength dropped to {2}.",
+                Output.Write.Line(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. Hostile shield strength dropped to {2}.",
                                   (badGuyShip.Sector.X), (badGuyShip.Sector.Y), badGuyShields.Energy));
             }
         }

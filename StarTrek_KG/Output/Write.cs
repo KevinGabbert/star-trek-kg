@@ -13,7 +13,7 @@ namespace StarTrek_KG.Output
     /// <summary>
     /// todo: the goal here is to be able to save all output to a file for later printing..
     /// </summary>
-    public class Output
+    public class Write
     {
         private int TotalHostiles { get; set; }
         private int TimeRemaining { get; set; }
@@ -23,13 +23,13 @@ namespace StarTrek_KG.Output
         private int ShieldsDownLevel { get; set; }
         private int LowEnergyLevel { get; set; }
 
-        public Output(int shieldsDownLevel, int lowEnergyLevel)
+        public Write(int shieldsDownLevel, int lowEnergyLevel)
         {
             this.ShieldsDownLevel = shieldsDownLevel;
             this.LowEnergyLevel = lowEnergyLevel;
         }
 
-        public Output(int totalHostiles, int timeRemaining, int starbases, int stardate, int shieldsDownLevel,
+        public Write(int totalHostiles, int timeRemaining, int starbases, int stardate, int shieldsDownLevel,
                       int lowEnergyLevel)
         {
             this.TotalHostiles = totalHostiles;
@@ -51,25 +51,25 @@ namespace StarTrek_KG.Output
 
         public static void DockSuccess(string shipName)
         {
-            WriteResourceLine(shipName, "SuccessfullDock");
+            ResourceLine(shipName, "SuccessfullDock");
         }
 
         public static void ComputerDamageMessage()
         {
-            WriteResource("ComputerDamaged");
-            WriteResourceLine("RepairsUnderway");
+            Resource("ComputerDamaged");
+            ResourceLine("RepairsUnderway");
         }
 
         public static void ShortRangeScanDamageMessage()
         {
-            WriteResource("SRSDamaged");
-            WriteResourceLine("RepairsUnderway");
+            Resource("SRSDamaged");
+            ResourceLine("RepairsUnderway");
         }
 
         public static void LongRangeScanDamageMessage()
         {
-            WriteResource("LRSDamaged");
-            WriteResourceLine("RepairsUnderway");
+            Resource("LRSDamaged");
+            ResourceLine("RepairsUnderway");
         }
 
         //missionResult needs to be an enum
@@ -96,7 +96,7 @@ namespace StarTrek_KG.Output
 
             //else - No status to report.  Game continues
 
-            WriteLine(missionEndResult);
+            Line(missionEndResult);
         }
 
         //output this as KeyValueCollection that the UI can display as it likes.
@@ -140,7 +140,7 @@ namespace StarTrek_KG.Output
         {
             Console.WriteLine();
             var sb = new StringBuilder();
-            WriteResourceLine("GalacticRecordLine");
+            ResourceLine("GalacticRecordLine");
             for (var quadrantLB = 0; quadrantLB < Constants.QUADRANT_MAX; quadrantLB++)
             {
                 for (var quadrantUB = 0; quadrantUB < Constants.QUADRANT_MAX; quadrantUB++)
@@ -162,7 +162,7 @@ namespace StarTrek_KG.Output
                 sb.Append("|");
                 Console.WriteLine(sb.ToString());
                 sb.Length = 0;
-                WriteResourceLine("GalacticRecordLine");
+                ResourceLine("GalacticRecordLine");
             }
             Console.WriteLine();
         }
@@ -263,7 +263,7 @@ namespace StarTrek_KG.Output
             sb.Length = 0;
         }
 
-        public static void PrintStrings(IEnumerable<string> strings)
+        public static void Strings(IEnumerable<string> strings)
         {
             foreach (var str in strings)
             {
@@ -272,16 +272,16 @@ namespace StarTrek_KG.Output
             Console.WriteLine();
         }
 
-        public static void PrintAppTitle()
+        public static void AppTitle()
         {
             const string appTitle = "AppTitle";
             for (int i = 1; i < 13; i++)
             {
-                WriteResource(appTitle + i);
+                Resource(appTitle + i);
             }
         }
 
-        public static void PrintPanel(string panelHead, IEnumerable<string> strings)
+        public static void Panel(string panelHead, IEnumerable<string> strings)
         {
             Console.WriteLine();
             Console.WriteLine(panelHead);
@@ -295,13 +295,13 @@ namespace StarTrek_KG.Output
             Console.WriteLine();
         }
 
-        public static void WriteLine(string stringToOutput)
+        public static void Line(string stringToOutput)
         {
             Console.WriteLine(stringToOutput);
             Console.WriteLine();
         }
 
-        public static void WriteDebugLine(string stringToOutput)
+        public static void DebugLine(string stringToOutput)
         {
             if (Constants.DEBUG_MODE)
             {
@@ -309,24 +309,24 @@ namespace StarTrek_KG.Output
             }
         }
 
-        public static void WriteResource(string text)
+        public static void Resource(string text)
         {
             Console.WriteLine(StarTrekKGSettings.GetText(text) + " ");
         }
 
-        public static void WriteResourceLine(string text)
+        public static void ResourceLine(string text)
         {
             Console.WriteLine(StarTrekKGSettings.GetText(text));
             Console.WriteLine();
         }
 
-        public static void WriteResourceLine(string prependText, string text)
+        public static void ResourceLine(string prependText, string text)
         {
             Console.WriteLine(prependText + " " + StarTrekKGSettings.GetText(text));
             Console.WriteLine();
         }
 
-        public static void WriteSingleLine(string stringToOutput)
+        public static void SingleLine(string stringToOutput)
         {
             Console.WriteLine(stringToOutput);
         }
@@ -344,7 +344,7 @@ namespace StarTrek_KG.Output
             }
             else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
             {
-                WriteResourceLine("LowEnergyLevel");
+                Write.ResourceLine("LowEnergyLevel");
             }
         }
 
@@ -362,7 +362,7 @@ namespace StarTrek_KG.Output
 
             if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
             {
-                WriteResourceLine("ShieldsDown");
+                ResourceLine("ShieldsDown");
             }
         }
 

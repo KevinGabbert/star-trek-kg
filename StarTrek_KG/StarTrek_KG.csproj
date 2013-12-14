@@ -100,7 +100,7 @@
     <Compile Include="Interfaces\IShip.cs" />
     <Compile Include="Interfaces\ISubsystem.cs" />
     <Compile Include="Playfield\Map.cs" />
-    <Compile Include="Output\Output.cs" />
+    <Compile Include="Output\Write.cs" />
     <Compile Include="Actors\Ship.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Playfield\Quadrant.cs" />

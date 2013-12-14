@@ -32,7 +32,7 @@ namespace StarTrek_KG.Subsystem
             //todo: can Prompt be moved out of here?
         }
 
-        public virtual bool Repair()
+        public virtual bool PartialRepair()
         {
             if (this.Damage > 0)
             {
@@ -45,6 +45,12 @@ namespace StarTrek_KG.Subsystem
                 return true;
             }
             return false;
+        }
+
+        public virtual void FullRepair()
+        {
+            this.Damage = 0; //TODO: StarTrekKGSettings.GetSetting<int>("this.name");
+            this.OutputRepairedMessage();
         }
 
         public bool Damaged()

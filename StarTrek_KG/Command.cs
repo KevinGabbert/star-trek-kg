@@ -113,7 +113,7 @@ namespace StarTrek_KG
                     break;
 
                 default: //case "?":
-                    Output.Output.PrintPanel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
+                    Output.Write.Panel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
                     break;
             }
         }
@@ -122,8 +122,8 @@ namespace StarTrek_KG
         {
             if (Computer.For(this.Map.Playership).Damaged()) return true;
 
-            Output.Output.PrintStrings(Debug.CONTROL_PANEL);
-            Output.Output.Prompt("Enter Debug command: ");
+            Output.Write.Strings(Debug.CONTROL_PANEL);
+            Output.Write.Prompt("Enter Debug command: ");
 
             //todo: readline needs to be done using an event
             var debugCommand = Console.ReadLine().Trim().ToLower();
@@ -136,8 +136,8 @@ namespace StarTrek_KG
         {
             if (Computer.For(this.Map.Playership).Damaged()) return true;
 
-            Output.Output.PrintStrings(Computer.CONTROL_PANEL);
-            Output.Output.Prompt("Enter computer command: ");
+            Output.Write.Strings(Computer.CONTROL_PANEL);
+            Output.Write.Prompt("Enter computer command: ");
 
             //todo: readline needs to be done using an event
             var computerCommand = Console.ReadLine().Trim().ToLower();
@@ -149,9 +149,9 @@ namespace StarTrek_KG
         private bool ShieldMenu()
         {
             if (Shields.For(this.Map.Playership).Damaged()) return true;
-            Output.Output.PrintStrings(Shields.CONTROL_PANEL);
+            Output.Write.Strings(Shields.CONTROL_PANEL);
 
-            Output.Output.Prompt("Enter shield control command: ");
+            Output.Write.Prompt("Enter shield control command: ");
             var shieldsCommand = Console.ReadLine().Trim().ToLower();
 
             Shields.For(this.Map.Playership).MaxTransfer = this.Map.Playership.Energy; //todo: this does nothing!
@@ -168,7 +168,7 @@ namespace StarTrek_KG
         {
             try
             {
-                Output.Output.WriteSingleLine(promptMessage);
+                Output.Write.SingleLine(promptMessage);
 
                 value = Double.Parse(Console.ReadLine());
 

@@ -134,6 +134,8 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test(Description = "Fails when run with Fixture")]
         public void GetStarbaseInfoFromScanner2()
         {
+            var game = new Game();
+
             _testLRSMap = new Map(new GameConfig
             {
                 Initialize = true,
@@ -141,6 +143,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                     {
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
+
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Starbase),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 3)), SectorItem.Starbase),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 4)), SectorItem.Starbase),
