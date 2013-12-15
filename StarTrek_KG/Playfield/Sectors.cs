@@ -87,7 +87,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                Console.WriteLine("Sector already Set up: " + sectorDef.Sector.X + "," + sectorDef.Sector.Y);
+                //Console.WriteLine("Sector already Set up: " + sectorDef.Sector.X + "," + sectorDef.Sector.Y);
                 goto StartOver;
             }
         }
