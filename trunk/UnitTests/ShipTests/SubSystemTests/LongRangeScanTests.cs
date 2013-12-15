@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -46,32 +47,78 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             Constants.QUADRANT_MIN = 0;
             Constants.QUADRANT_MAX = 0;
+
+            _testLRSMap = null;
+        }
+
+        [Ignore]
+        [Test]
+        public void GetStarInfoFromScannerFailsWithRepeatOnly()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Console.Write("-");
+                this.CheckStarsInQuadrant();
+            }
         }
 
         [Test]
         public void GetStarInfoFromScanner()
         {
+            this.CheckStarsWithScanner();
+            this.CheckStarsInQuadrant();
+        }
+
+        private void CheckStarsInQuadrant()
+        {
+            _testLRSMap = new Map(new GameConfig
+                                      {
+                                          Initialize = true,
+                                          AddStars = false,
+                                          SectorDefs = new SectorDefs
+                                                    {
+                                                        new SectorDef(
+                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 4)),
+                                                            SectorItem.Star),
+                                                        new SectorDef(
+                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
+                                                            SectorItem.Star),
+                                                    }
+                                      });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+
+            Quadrant quadrant = Quadrants.Get(_testLRSMap, 0, 0);
+            int starCount = quadrant.GetStarCount();
+            Assert.AreEqual(2, starCount);
+        }
+
+        private void CheckStarsWithScanner()
+        {
             _testLRSMap = new Map(new GameConfig
             {
                 Initialize = true,
+                AddStars = false,
                 SectorDefs = new SectorDefs
-                    {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 4)), SectorItem.Star),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 5)), SectorItem.Star),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Star)
-                    },
-                AddStars = false
+                                                    {
+                                                        new SectorDef(
+                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 4)),
+                                                            SectorItem.Star),
+                                                        new SectorDef(
+                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
+                                                            SectorItem.Star),
+                                                    }
             });
 
             _testLongRangeScanner = new LongRangeScan(_testLRSMap);
 
-            var starbaseCount = 0;
-            var starCount = 0;
-            var hostileCount = 0;
-            LongRangeScan.GetMapInfoForScanner(_testLRSMap, 0, 0, out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            int starbaseCount;
+            int starCount;
+            int hostileCount;
+            LongRangeScan.GetMapInfoForScanner(_testLRSMap, 0, 0, out hostileCount, out starbaseCount, out starCount);
+            //pulls count from Quadrant object
 
-            Assert.AreEqual(3, starCount);
+            Assert.AreEqual(2, starCount);
         }
 
         [Test]
@@ -83,6 +130,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
+
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Hostile)
                     },

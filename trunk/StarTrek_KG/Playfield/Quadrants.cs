@@ -5,7 +5,6 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Playfield
 {
@@ -41,7 +40,7 @@ namespace StarTrek_KG.Playfield
             try
             {
                 //todo: change this back to retval
-                retVal = quadrants.Where(q => q.X == quadrantX && q.Y == quadrantY).Single();
+                retVal = quadrants.Single(q => q.X == quadrantX && q.Y == quadrantY);
             }
             catch(InvalidOperationException ex)
             {
@@ -58,7 +57,7 @@ namespace StarTrek_KG.Playfield
         {
             var activeQuadrants = this.Map.Quadrants.Where(q => q.Active).ToList();
 
-            if(activeQuadrants.Count() < 1)
+            if(!activeQuadrants.Any())
             {
                 throw new GameConfigException("No Quadrant has been set Active - This would happen if there are no friendlies on the map.");
             }
@@ -267,6 +266,5 @@ namespace StarTrek_KG.Playfield
         //{
         //    return quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly || sector.Item == SectorItem.Hostile);
         //}
-
     }
 }

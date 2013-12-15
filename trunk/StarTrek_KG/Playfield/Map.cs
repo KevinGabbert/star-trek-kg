@@ -71,16 +71,22 @@ namespace StarTrek_KG.Playfield
             //This list should match baddie type that is created
             List<string> quadrantNames = StarTrekKGSettings.GetStarSystems();
 
+            Output.Write.DebugLine("Got Starsystems");
+
             //TODO: if there are less than 64 quadrant names then there will be problems..
 
             var names = new Stack<string>(quadrantNames.Shuffle());
 
             var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
 
+            Output.Write.DebugLine("Got Baddies");
+
             var baddieNames = new Stack<string>(klingonShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
             this.InitializeQuadrantsWithBaddies(names, baddieNames, sectorDefs);
+
+            Output.Write.DebugLine("Intialized quadrants with Baddies");
 
             if (sectorDefs != null)
             {
@@ -136,6 +142,8 @@ namespace StarTrek_KG.Playfield
 
             //Friendlies are added separately
             var itemsToPopulate = sectorDefs.ToSectors(this.Quadrants).Where(i => i.Item != SectorItem.Friendly).ToList();
+
+            Console.WriteLine("ItemsToPopulate: " + itemsToPopulate.Count + " Quadrants: " + this.Quadrants.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
 
@@ -177,7 +185,7 @@ namespace StarTrek_KG.Playfield
                 var y = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
 
                 //todo: just pass in sector and get its item
-                var sector = quadrant.Sectors.Where(s => s.X == x && s.Y == y).Single();
+                var sector = quadrant.Sectors.Single(s => s.X == x && s.Y == y);
                 var sectorEmpty = sector.Item == SectorItem.Empty;
 
                 if (sectorEmpty)
@@ -193,16 +201,16 @@ namespace StarTrek_KG.Playfield
             return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
         }
 
-        private static List<Sector> GetQuadrantObjects(int starbases, int hostilesToSetUp)
-        {
-            var quadrantObjects = new List<Sector>();
+        //private static List<Sector> GetQuadrantObjects(int starbases, int hostilesToSetUp)
+        //{
+        //    var quadrantObjects = new List<Sector>();
 
-            //get stars for quadrant and subtract from parameter (will be subtracted when this is hit next?)
-            //newQuadrant.Stars = 1 + (Utility.Random).Next(Constants.SECTOR_MAX);
-            //get hostiles for quadrant and subtract from big list
-            //get starbase T/F and subtract from big list
-            return quadrantObjects;
-        }
+        //    //get stars for quadrant and subtract from parameter (will be subtracted when this is hit next?)
+        //    //newQuadrant.Stars = 1 + (Utility.Random).Next(Constants.SECTOR_MAX);
+        //    //get hostiles for quadrant and subtract from big list
+        //    //get starbase T/F and subtract from big list
+        //    return quadrantObjects;
+        //}
 
         /// <summary>
         /// This will eventually be moved into each individual object
@@ -217,6 +225,11 @@ namespace StarTrek_KG.Playfield
             this.starbases = StarTrekKGSettings.GetSetting<int>("starbases") + (Utility.Utility.Random).Next(3);
 
             this.Text = StarTrekKGSettings.GetSetting<string>("CommandPrompt");
+
+            Output.Write.DebugLine("HostilesToSetUp: " + hostilesToSetUp);
+            Output.Write.DebugLine("Stardate: " + Stardate);
+            Output.Write.DebugLine("timeRemaining: " + hostilesToSetUp);
+            Output.Write.DebugLine("starbases: " + hostilesToSetUp);
         }
 
         //refactor these to a setup object
