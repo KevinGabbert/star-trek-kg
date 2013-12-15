@@ -94,6 +94,7 @@ namespace StarTrek_KG.Playfield
 
         private static void SetupRandomQuadrantDef(SectorDef sectorDef, Quadrants quadrants)
         {
+            StartOverQ:
             if (sectorDef.QuadrantDef == null)
             {
                 var randomQuadrantX = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
@@ -102,6 +103,11 @@ namespace StarTrek_KG.Playfield
                 if (quadrants.NotFound(randomQuadrantX, randomQuadrantY))
                 {
                     sectorDef.QuadrantDef = new Coordinate(randomQuadrantX, randomQuadrantY);
+                }
+                else
+                {
+                    //we got a duplicate random number.  This quadrant is already set up.
+                    goto StartOverQ; //todo: rewrite function to remove goto
                 }
             }
         }
