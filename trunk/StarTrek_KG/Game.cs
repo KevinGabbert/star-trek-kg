@@ -8,6 +8,26 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG
 {
+    //Notes on a play through 12-14-13:
+
+    //- when shields are 0, and you want to subtract, amount of energy shows as (1--0).  Need an error message that says you can't subtract energy
+    //- Galactic map broken
+    //- Torpedoes don't work (can't verify)
+    //- stardates are not incrementing
+    //- why can I only go warp 3??
+    //- last hostile does not show up on SRS Scanner
+    //- Some Prompts accept entry on the next line instead of the same
+
+    //test...
+
+    //ship in bottom right of sector tries to go direction 4 (nw) and it does not get across sector.
+
+    //- why are there always 5 stars in each quadrant??
+    //WANTS
+    //- I want to know how many stardates I have left.
+    //- ability to save game to resume later
+    //- a rank issued at the end of the game
+
     public class Game: IDisposable
     {
         #region Properties

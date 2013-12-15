@@ -143,7 +143,7 @@ namespace StarTrek_KG.Playfield
             //Friendlies are added separately
             var itemsToPopulate = sectorDefs.ToSectors(this.Quadrants).Where(i => i.Item != SectorItem.Friendly).ToList();
 
-            Console.WriteLine("ItemsToPopulate: " + itemsToPopulate.Count + " Quadrants: " + this.Quadrants.Count);
+            //Console.WriteLine("ItemsToPopulate: " + itemsToPopulate.Count + " Quadrants: " + this.Quadrants.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
 
@@ -235,7 +235,7 @@ namespace StarTrek_KG.Playfield
         //refactor these to a setup object
         private void SetUpPlayerShip(SectorDef playerShipDef)
         {
-            Output.Write.Line(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
+            Output.Write.DebugLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
             if (this.Quadrants == null)
