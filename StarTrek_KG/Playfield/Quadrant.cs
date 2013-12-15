@@ -83,8 +83,6 @@ namespace StarTrek_KG.Playfield
             newQuadrant.Name = names.Pop();
 
             //fix: error here:
-            var itemsInQuadrant = new List<Sector>();
-
             //fix: sectors are not being created for all quadrants
             Quadrant.InitializeSectors(newQuadrant, new List<Sector>(), names, this.Map, addStars);
 
@@ -445,14 +443,14 @@ namespace StarTrek_KG.Playfield
             return Sectors.Count(sector => sector.Item == SectorItem.Starbase);
         }
 
-        internal int GetStarCount()
+        public int GetStarCount()
         {
             return Sectors.Count(sector => sector.Item == SectorItem.Star);
         }
 
         public Sector GetSector(Coordinate coordinate)
         {
-            return this.Sectors.Where(sector => sector.X == coordinate.X && sector.Y == coordinate.Y).FirstOrDefault();
+            return this.Sectors.FirstOrDefault(sector => sector.X == coordinate.X && sector.Y == coordinate.Y);
         }
     }
 }

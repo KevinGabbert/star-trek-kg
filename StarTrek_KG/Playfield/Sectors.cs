@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -68,6 +69,9 @@ namespace StarTrek_KG.Playfield
 
         public static void SetupNewSector(SectorDef sectorDef, Sectors newSectors, Quadrants quadrants)
         {
+            //todo: rewrite this function to get rid of GOTO
+
+            StartOver:
             var randomSectorX = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
             var randomSectorY = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
 
@@ -75,17 +79,17 @@ namespace StarTrek_KG.Playfield
             {
                 Sectors.SetupRandomQuadrantDef(sectorDef, quadrants);
 
-                var locationDef = new LocationDef(sectorDef.QuadrantDef,
-                                                  new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
+                var locationDef = new LocationDef(sectorDef.QuadrantDef, new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
                 var newSector = new Sector(locationDef);
                 newSector.Item = sectorDef.Item;
 
                 newSectors.Add(newSector);    
             }
-            //else
-            //{
-            //    //throw new GameException("Can't set up sector at " + sectorDef.Sector.X + "," + sectorDef.Sector.Y + ". Sector already set up.");
-            //}
+            else
+            {
+                Console.WriteLine("Sector already Set up: " + sectorDef.Sector.X + "," + sectorDef.Sector.Y);
+                goto StartOver;
+            }
         }
 
         private static void SetupRandomQuadrantDef(SectorDef sectorDef, Quadrants quadrants)
