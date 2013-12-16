@@ -134,6 +134,7 @@ namespace StarTrek_KG.Output
             {
                 sb.Append(suffix);
             }
+
             Console.WriteLine(sb.ToString());
             sb.Length = 0;
         }
