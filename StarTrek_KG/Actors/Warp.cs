@@ -53,8 +53,6 @@ namespace StarTrek_KG.Actors
 
             if (success)
             {
-                Output.Write.Line("Warp engines engaged.");
-
                 Navigation.For(map.Playership).Movement.Execute(direction, distance, distanceEntered, out lastQuadX, out lastQuadY);
 
                 Output.Write.Line("Warp engines disengaged."); 
