@@ -42,7 +42,8 @@ namespace StarTrek_KG.Subsystem
             var location = map.Playership.GetLocation();
             Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
 
-            (new Output.Write(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"))).PrintSector(quadrant, map); 
+            var write = (new Output.PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel")));
+            write.Print(quadrant, map); 
 
             quadrant.Scanned = true;
         }

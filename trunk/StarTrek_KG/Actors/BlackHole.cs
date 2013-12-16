@@ -19,17 +19,14 @@ namespace StarTrek_KG.Actors
             throw new global::System.NotImplementedException();
         }
 
-
-        global::System.Type ISectorObject.Type
+        public string Name
         {
-            get
-            {
-                throw new global::System.NotImplementedException();
-            }
-            set
-            {
-                throw new global::System.NotImplementedException();
-            }
+            get { throw new global::System.NotImplementedException(); }
+        }
+
+        public int Gravity
+        {
+            get { throw new global::System.NotImplementedException(); }
         }
     }
 }

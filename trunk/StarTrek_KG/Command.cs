@@ -95,21 +95,21 @@ namespace StarTrek_KG
                     break;
 
                 case "tor": 
-                    Torpedoes.For(this.Map.Playership).Controls(this.Map);
+                    Torpedoes.For(this.Map.Playership).Controls();
                     break;
 
                 case "she":
 
-                    if (ShieldMenu()) break;
+                    if (this.ShieldMenu()) break;
                     break;
 
                 case "com":
 
-                    if (ComputerMenu()) break;
+                    if (this.ComputerMenu()) break;
                     break;
 
                 case "dbg":
-                    if (DebugMenu()) break;
+                    if (this.DebugMenu()) break;
                     break;
 
                 default: //case "?":
@@ -168,7 +168,7 @@ namespace StarTrek_KG
         {
             try
             {
-                Output.Write.SingleLine(promptMessage);
+                Output.Write.Prompt(promptMessage);
 
                 value = Double.Parse(Console.ReadLine());
 

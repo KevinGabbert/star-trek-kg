@@ -24,7 +24,15 @@ namespace StarTrek_KG.Subsystem
                                                     "dgrec = Galactic Record With Ship's position",
                                                     "dsnav = visual of NAV Track in an SRS window",
                                                     "dstor = Torpedo Track in an SRS window", //if this becomes a feature, then baddie needs to be replaced by explosion.  find a cool Unicode Character for it..
-                                                    "dqnav = NAV Track in a Galactic Map window" 
+                                                    "dqnav = NAV Track in a Galactic Map window",
+                                                    "----- = -------------------------------------",
+                                                    "dqinb = Insert non-firing baddie into current quardrant",
+                                                    "dqifb = Insert firing baddie into current quardrant",
+                                                    "dqisb = Insert starbase into current quardrant",
+                                                    "dqpph = Playership takes a random energy level phaser hit",
+                                                    "dqpth = Playership takes a torpedo hit",
+                                                    "dqpdh = Playership takes a random energy level disruptor hit",
+                                                    "dqmbb = move baddie around sector"
                                                 };
 
         public override void OutputDamagedMessage()

@@ -1,8 +1,9 @@
 ﻿
 namespace StarTrek_KG.Interfaces
 {
-    public interface IStar: ISectorObject
+    public interface IStar
     {
-        //int Gravity { get; }
+        string Name { get; }
+        int Gravity { get; }
     }
 }
