@@ -68,7 +68,7 @@ namespace StarTrek_KG.Subsystem
         /// The amount of damage is random from within the seed defined in app.config
         /// </summary>
         public void TakeDamage()
-        {          
+        {
             this.Damage = 1 + (Utility.Utility.Random).Next(StarTrekKGSettings.GetSetting<int>("DamageSeed"));
 
             //todo: if number is small, then this.OutputMalfunctioningMessage.. else...

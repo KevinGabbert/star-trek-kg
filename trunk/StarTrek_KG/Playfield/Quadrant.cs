@@ -129,7 +129,7 @@ namespace StarTrek_KG.Playfield
             if(addStars)
             {
                 //Randomly throw stars in
-                starsToAdd = Map.AddStars(quadrant, (new Random(Convert.ToInt32(DateTime.Today.Millisecond + DateTime.Today.Minute))).Next(Constants.SECTOR_MAX)); 
+                starsToAdd = Map.AddStars(quadrant, (Utility.Utility.Random).Next(Constants.SECTOR_MAX)); 
             }
 
             //This is possible only in the test harness, as app code currently does not call this function with a null

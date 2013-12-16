@@ -46,47 +46,43 @@ namespace StarTrek_KG.Output
             Console.WriteLine("");
             Console.WriteLine(StarTrekKGSettings.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
 
-            ShowSectorRow(sb, 0, this.GetRowIndicator(0, map), quadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 1, this.GetRowIndicator(1, map), quadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 2, this.GetRowIndicator(2, map), quadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 3, this.GetRowIndicator(3, map), quadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 4, this.GetRowIndicator(4, map), quadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 5, this.GetRowIndicator(5, map), quadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 6, this.GetRowIndicator(6, map), quadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 7, this.GetRowIndicator(7, map), quadrant.Sectors, totalHostiles);
+            for (int i = 0; i < 8; i++ )
+            {
+                PrintSector.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles);
+            }
 
             Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
         private string GetRowIndicator(int row, Map map)
         {
-            string retVal = "";
+            string retVal = " ";
 
             switch (row)
             {
                 case 0:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSQuadrantIndicator"), Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y));
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSQuadrantIndicator"), Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y));
                     break;
                 case 1:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSSectorIndicator"), Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y));
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSSectorIndicator"), Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y));
                     break;
                 case 2:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSStardateIndicator"), map.Stardate);
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSStardateIndicator"), map.Stardate);
                     break;
                 case 3:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
                     break;
                 case 4:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSConditionIndicator"), this.Condition);
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSConditionIndicator"), this.Condition);
                     break;
                 case 5:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSEnergyIndicator"), map.Playership.Energy);
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSEnergyIndicator"), map.Playership.Energy);
                     break;
                 case 6:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
                     break;
                 case 7:
-                    retVal = String.Format(StarTrekKGSettings.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
+                    retVal += String.Format(StarTrekKGSettings.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
                     break;
             }
 
