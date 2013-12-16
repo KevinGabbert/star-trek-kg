@@ -12,7 +12,7 @@ namespace StarTrek_KG.Utility
 
         public static IList<T> Shuffle<T>(this IList<T> list)
         {
-            var rng = new Random();
+            var rng = StarTrek_KG.Utility.Utility.Random;
             int n = list.Count;
             while (n > 1)
             {
@@ -86,7 +86,7 @@ namespace StarTrek_KG.Utility
             var angle = -(Math.PI * (direction - 1.0) / 4.0);
             if ((Random).Next(3) == 0)
             {
-                angle += ((1.0 - 2.0 * (Random).NextDouble()) * Math.PI * 2.0) * 0.03;
+                angle += ((1.0 - 2.0 * (Utility.Random).NextDouble()) * Math.PI * 2.0) * 0.03;
             }
             return angle;
         }

@@ -94,7 +94,7 @@ namespace StarTrek_KG.Subsystem
 
             if (remainingSubsystems.Count > 0)
             {
-                var rand = new Random();
+                var rand = Utility.Utility.Random;
                 ISubsystem subSystemToDamage = remainingSubsystems[rand.Next(remainingSubsystems.Count - 1)];
                 subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
 
