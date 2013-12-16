@@ -39,14 +39,14 @@ namespace StarTrek_KG.Subsystem
 
         public override void Controls(string command)
         {
-            this.Controls(this.Map);
+            this.Controls();
         }
 
-        public void Controls(Map map)
+        public void Controls()
         {
             if (this.Damaged() || 
                 this.Exhausted() || 
-                Quadrants.NoHostiles(map.Quadrants.GetHostiles())) return;
+                Quadrants.NoHostiles(this.Map.Quadrants.GetHostiles())) return;
 
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
@@ -69,9 +69,9 @@ namespace StarTrek_KG.Subsystem
             Output.Write.Line("Photon torpedo fired...");
             this.Count--;
 
-            var angle = Utility.Utility.ComputeAngle(map, direction);
+            var angle = Utility.Utility.ComputeAngle(this.Map, direction);
 
-            Location location = map.Playership.GetLocation();
+            Location location = this.Map.Playership.GetLocation();
 
             double x = location.Quadrant.X;
             double y = location.Quadrant.Y;
@@ -94,29 +94,21 @@ namespace StarTrek_KG.Subsystem
                 }
 
                 //todo: query map.quadrants for ship
+                
+                var hostilesInQuadrant = this.Map.Quadrants.GetActive().GetHostiles();
+                var hostilesInSector = this.Map.Quadrants.GetActive().GetHostiles().Where(hostileShip =>
+                                                                                          hostileShip.Sector.X == newX &&
+                                                                                          hostileShip.Sector.Y == newY);
 
-                var hostilesInSector = map.Quadrants.GetActive().GetHostiles().Where(ship => 
-                                                                             ship.Sector.X == newX && 
-                                                                             ship.Sector.Y == newY);
-
-                if (Map.DestroyedBaddies(map, hostilesInSector) || 
-                   (Torpedoes.HitSomethingElse(map, vx, vy, location, newY, newX, ref x, ref y)))
+                if (Map.DestroyedBaddies(this.Map, hostilesInSector) || 
+                   (Torpedoes.HitSomethingElse(this.Map, vx, vy, location, newY, newX, ref x, ref y)))
                 {
-                    this.AllHostilesAttack(map);
+                    Game.ALLHostilesAttack(this.Map);
                     return;
                 }
             }
 
             Output.Write.Line("Photon torpedo failed to hit anything.");
-        }
-
-        //todo: refactor into to Game() object. one exists there
-        private void AllHostilesAttack(Map map)
-        {
-            if (map.Quadrants.GetHostiles().Count > 0)
-            {
-                Game.ALLHostilesAttack(map);
-            }
         }
 
         private static bool HitSomethingElse(Map map, double vx, double vy, 
@@ -129,7 +121,7 @@ namespace StarTrek_KG.Subsystem
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
             Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
-            Sector qLocation = quadrant.Sectors.Where(s => s.X == newX && s.Y == newY).Single();
+            Sector qLocation = quadrant.Sectors.Single(s => s.X == newX && s.Y == newY);
 
             switch (qLocation.Item)
             {

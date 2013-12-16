@@ -305,7 +305,7 @@ namespace UnitTests.ShipTests.HostileTests
 
         //this method is here to test passing in 
         [Test]
-        public void MapWith3HostilesTheConfigWay_FailsIntermittently()
+        public void MapWith3HostilesTheConfigWay()
         {
             TestMap3Scenario();
         }
@@ -327,27 +327,26 @@ namespace UnitTests.ShipTests.HostileTests
             var x = new Game();
 
             _testMap = (new Map(new GameConfig
-                                    {
-                                        Initialize = true,
-                                        
-                                        
-                                        SectorDefs = new SectorDefs
-                                                         {
-                                                             new SectorDef(
-                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
-                                                                 SectorItem.Friendly),
-                                                             new SectorDef(
-                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)),
-                                                                 SectorItem.Hostile),
-                                                             new SectorDef(
-                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)),
-                                                                 SectorItem.Hostile),
-                                                             new SectorDef(
-                                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)),
-                                                                 SectorItem.Hostile)
-                                                         },
-                                        AddStars = false
-                                    }));
+                {
+                    Initialize = true,
+        
+                    SectorDefs = new SectorDefs
+                                        {
+                                            new SectorDef(
+                                                new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
+                                                SectorItem.Friendly),
+                                            new SectorDef(
+                                                new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)),
+                                                SectorItem.Hostile),
+                                            new SectorDef(
+                                                new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)),
+                                                SectorItem.Hostile),
+                                            new SectorDef(
+                                                new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)),
+                                                SectorItem.Hostile)
+                                        },
+                    AddStars = false
+                }));
 
             var activeQuad = _testMap.Quadrants.GetActive();
 
@@ -359,6 +358,7 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(SectorItem.Friendly, activeQuadrant.Sectors[17].Item);
             Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[22].Item);
             Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[23].Item);
+
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[24].Item);
 
             Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[36].Item);

@@ -20,27 +20,6 @@ namespace StarTrek_KG.Output
         private int Starbases { get; set; }
         private int Stardate { get; set; }
 
-        private int ShieldsDownLevel { get; set; }
-        private int LowEnergyLevel { get; set; }
-
-        public Write(int shieldsDownLevel, int lowEnergyLevel)
-        {
-            this.ShieldsDownLevel = shieldsDownLevel;
-            this.LowEnergyLevel = lowEnergyLevel;
-        }
-
-        public Write(int totalHostiles, int timeRemaining, int starbases, int stardate, int shieldsDownLevel,
-                      int lowEnergyLevel)
-        {
-            this.TotalHostiles = totalHostiles;
-            this.TimeRemaining = timeRemaining;
-            this.Starbases = starbases;
-            this.Stardate = stardate;
-
-            this.ShieldsDownLevel = shieldsDownLevel;
-            this.LowEnergyLevel = lowEnergyLevel;
-        }
-
         //TODO:  Have Game expose and raise an output event
         //Have UI subscribe to it.
 
@@ -48,6 +27,19 @@ namespace StarTrek_KG.Output
         //goal is to output message that a UI can read
         //all *print* mnemonics will be changed to Output
         //UI needs to read this text and display it how it wants
+
+        public Write()
+        {
+
+        }
+
+        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining)
+        {
+            this.TotalHostiles = totalHostiles;
+            this.Starbases = starbases;
+            this.Stardate = stardate;
+            this.TimeRemaining = timeRemaining;
+        }
 
         public static void DockSuccess(string shipName)
         {
@@ -130,8 +122,7 @@ namespace StarTrek_KG.Output
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            Console.WriteLine(StarTrekKGSettings.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining,
-                              this.Starbases);
+            Console.WriteLine(StarTrekKGSettings.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
             Console.WriteLine();
         }
 
@@ -165,102 +156,6 @@ namespace StarTrek_KG.Output
                 ResourceLine("GalacticRecordLine");
             }
             Console.WriteLine();
-        }
-
-        public void PrintSector(Quadrant quadrant, Map map)
-        {
-            var condition = this.GetCurrentCondition(quadrant, map);
-
-            Location myLocation = map.Playership.GetLocation();
-            int totalHostiles = map.Quadrants.GetHostileCount();
-            bool docked = Navigation.For(map.Playership).docked;
-
-            CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
-            this.OutputWarnings(quadrant, map, docked);
-        }
-
-        private static void CreateViewScreen(Quadrant quadrant,
-                                             Map map,
-                                             int totalHostiles,
-                                             string condition,
-                                             Location location,
-                                             bool docked)
-        {
-            var sb = new StringBuilder();
-            var activeQuadrant = map.Quadrants.GetActive();
-
-            Console.WriteLine(StarTrekKGSettings.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
-
-            ShowSectorRow(sb, 0,
-                          String.Format(StarTrekKGSettings.GetText("SRSQuadrantIndicator"), location.Quadrant.X,
-                                        location.Quadrant.Y), activeQuadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 1,
-                          String.Format(StarTrekKGSettings.GetText("SRSSectorIndicator"), location.Sector.X,
-                                        location.Sector.Y), activeQuadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 2, String.Format(StarTrekKGSettings.GetText("SRSStardateIndicator"), map.Stardate),
-                          activeQuadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 3,
-                          String.Format(StarTrekKGSettings.GetText("SRSTimeRemainingIndicator"), map.timeRemaining),
-                          activeQuadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 4, String.Format(StarTrekKGSettings.GetText("SRSConditionIndicator"), condition),
-                          activeQuadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 5, String.Format(StarTrekKGSettings.GetText("SRSEnergyIndicator"), map.Playership.Energy),
-                          activeQuadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 6,
-                          String.Format(StarTrekKGSettings.GetText("SRSShieldsIndicator"),
-                                        Shields.For(map.Playership).Energy), activeQuadrant.Sectors, totalHostiles);
-            ShowSectorRow(sb, 7,
-                          String.Format(StarTrekKGSettings.GetText("SRSTorpedoesIndicator"),
-                                        Torpedoes.For(map.Playership).Count), activeQuadrant.Sectors, totalHostiles);
-
-            Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
-        }
-
-        private static void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles)
-        {
-            for (var column = 0; column < Constants.SECTOR_MAX; column++)
-            {
-                var item = Sector.Get(sectors, row, column).Item;
-                switch (item)
-                {
-                    case SectorItem.Empty:
-                        sb.Append(Constants.EMPTY);
-                        break;
-                    case SectorItem.Friendly:
-                        sb.Append(Constants.ENTERPRISE);
-                        break;
-                    case SectorItem.Hostile:
-
-                        //bug can be viewed (and even tested here)
-                        //if last hostile was destroyed, it wontbe removed from array.
-
-                        //todo: resolve if issue
-                        //if (this.game.Map.Hostiles.Count < 1)
-                        //{
-                        //    Console.WriteLine("bug. hostile not removed from display.");
-                        //}
-
-                        if (totalHostiles < 1)
-                        {
-                            Console.WriteLine("bug. hostile not removed from display.");
-                        }
-
-                        sb.Append(Constants.HOSTILE);
-                        break;
-                    case SectorItem.Star:
-                        sb.Append(Constants.STAR);
-                        break;
-                    case SectorItem.Starbase:
-                        sb.Append(Constants.STARBASE);
-                        break;
-                }
-            }
-            if (suffix != null)
-            {
-                sb.Append(suffix);
-            }
-            Console.WriteLine(sb.ToString());
-            sb.Length = 0;
         }
 
         public static void Strings(IEnumerable<string> strings)
@@ -336,52 +231,6 @@ namespace StarTrek_KG.Output
             Console.Write(stringToOutput);
         }
 
-        private void OutputWarnings(Quadrant quadrant, Map map, bool docked)
-        {
-            if (quadrant.GetHostiles().Count > 0)
-            {
-                this.ScanHostile(quadrant, map, docked);
-            }
-            else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
-            {
-                Write.ResourceLine("LowEnergyLevel");
-            }
-        }
-
-        private void ScanHostile(Quadrant quadrant, Map map, bool docked)
-        {
-            Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"),
-                              (quadrant.GetHostiles().Count == 1 ? "" : "s"));
-
-            foreach (var hostile in quadrant.GetHostiles())
-            {
-                Console.WriteLine(StarTrekKGSettings.GetText("IDHostile"), hostile.Name);
-            }
-
-            Console.WriteLine("");
-
-            if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
-            {
-                ResourceLine("ShieldsDown");
-            }
-        }
-
-        private string GetCurrentCondition(Quadrant quadrant, Map map)
-        {
-            var condition = "GREEN";
-
-            if (quadrant.GetHostiles().Count > 0)
-            {
-                condition = "RED";
-            }
-            else if (map.Playership.Energy < this.LowEnergyLevel)
-            {
-                condition = "YELLOW";
-            }
-
-            return condition;
-        }
-
         public static void DisplayPropertiesOf(object @object)
         {
             if (@object != null)
@@ -403,6 +252,53 @@ namespace StarTrek_KG.Output
             //    throw;
             //}
         }
+
+        //public void PrintSector(Quadrant quadrant, Map map)
+        //{
+        //    var condition = this.GetCurrentCondition(quadrant, map);
+
+        //    Location myLocation = map.Playership.GetLocation();
+        //    int totalHostiles = map.Quadrants.GetHostileCount();
+        //    bool docked = Navigation.For(map.Playership).docked;
+
+        //    Output.PrintSector.CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
+        //    this.OutputWarnings(quadrant, map, docked);
+        //}
+
+        //private string GetRowIndicator(int row, Map map)
+        //{
+        //    string retVal = "";
+
+        //    switch (row)
+        //    {
+        //        case 0:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSQuadrantIndicator"), location.Quadrant.X, location.Quadrant.Y);
+        //            break;
+        //        case 1:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSSectorIndicator"), location.Sector.X, location.Sector.Y);
+        //            break;
+        //        case 2:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSStardateIndicator"), map.Stardate);
+        //            break;
+        //        case 3:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
+        //            break;
+        //        case 4:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSConditionIndicator"), condition);
+        //            break;
+        //        case 5:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSEnergyIndicator"), map.Playership.Energy);
+        //            break;
+        //        case 6:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
+        //            break;
+        //        case 7:
+        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
+        //            break;
+        //    }
+
+        //    return retVal;
+        //}
     }
 }
 

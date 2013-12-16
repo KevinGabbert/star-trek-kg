@@ -11,18 +11,12 @@ namespace StarTrek_KG.Actors
             get { throw new global::System.NotImplementedException(); }
         }
 
-        public Type Type
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public Type Type { get; set; }
 
         public int Mass { get; set; }
+
+        public string Name { get; set; } //todo: pulled from a list of star names
+
+        public int Gravity { get; set; }
     }
 }
