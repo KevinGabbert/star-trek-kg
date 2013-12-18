@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
 
@@ -149,7 +148,25 @@ namespace StarTrek_KG
         private bool ShieldMenu()
         {
             if (Shields.For(this.Map.Playership).Damaged()) return true;
-            Output.Write.Strings(Shields.CONTROL_PANEL);
+
+            Shields.SHIELD_PANEL = new List<string>();
+            Shields.SHIELD_PANEL.Add(Environment.NewLine);
+
+            var currentShieldEnergy = Shields.For(this.Map.Playership).Energy;
+
+            if (currentShieldEnergy > 0)
+            {
+                Shields.SHIELD_PANEL.Add("--- > Shield Control: -- <CURRENTLY AT: " + currentShieldEnergy + "> --");
+                Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
+                Shields.SHIELD_PANEL.Add("sub = Subtract energy from shields.");
+            }
+            else
+            {
+                Shields.SHIELD_PANEL.Add("--- > Shield Control: -- <DOWN> --");
+                Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
+            }
+
+            Output.Write.Strings(Shields.SHIELD_PANEL);
 
             Output.Write.Prompt("Enter shield control command: ");
             var shieldsCommand = Console.ReadLine().Trim().ToLower();
