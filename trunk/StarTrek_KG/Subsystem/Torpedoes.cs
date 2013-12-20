@@ -136,8 +136,11 @@ namespace StarTrek_KG.Subsystem
                     return true;
 
                 case SectorItem.Star:
+
+                    var star = ((Star) qLocation.Object);
+
                     Output.Write.Line(string.Format(
-                        "The torpedo was captured by a star's gravitational field at sector [{0},{1}].",
+                        "The torpedo was captured by the gravitational field of star: " + star.Name + " at sector [{0},{1}].",
                         newX, newY));
 
                     return true;

@@ -10,5 +10,6 @@ namespace StarTrek_KG.Interfaces
         //int Mass { get; } //useful for stars or black holes
 
         Type Type { get; set; }
+
     }
 }

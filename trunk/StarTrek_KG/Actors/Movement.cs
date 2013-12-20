@@ -1,5 +1,6 @@
 ﻿using System;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Actors
@@ -131,6 +132,7 @@ namespace StarTrek_KG.Actors
             {
                 var mySector = this.Map.Playership.Sector;
                 var currentItem = Sector.Get(activeSectors, sector.X, sector.Y).Item;
+                var currentObject = Sector.Get(activeSectors, sector.X, sector.Y).Object;
 
                 if (currentItem != SectorItem.Empty)
                 {
@@ -140,7 +142,8 @@ namespace StarTrek_KG.Actors
                     //todo: move this to XXX label.  run tests.  should work.
                     Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.Friendly;
 
-                    Output.Write.Line("Detected an obstacle while navigating: " + currentItem.ToString() + " at sector: [" + sector.X + "," + sector.Y + "]");
+                    Movement.IdentifyObstacle(sector, currentObject, currentItem);
+
                     this.BlockedByObstacle = true;
 
                     return true;
@@ -153,6 +156,29 @@ namespace StarTrek_KG.Actors
 
             return false;
         }
+
+        private static void IdentifyObstacle(Coordinate sector, ISectorObject currentObject, SectorItem currentItem)
+        {
+            switch (currentItem)
+            {
+                case SectorItem.Star:
+                    var star = (Star) currentObject;
+                    Output.Write.Line("Star: " + star.Name + " encountered while navigating at sector: [" + sector.X + "," +
+                                      sector.Y + "]");
+                    break;
+
+                case SectorItem.Hostile:
+                    var hostile = (Ship) currentObject;
+                    Output.Write.Line("Ship: " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
+                                      sector.Y + "]");
+                    break;
+
+                default:
+                    Output.Write.Line("Detected an obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    break;
+            }
+        }
+
         private static int GetSectorDirection(string direction)
         {
             //todo: yes, this looks silly at the moment.. resource this out
