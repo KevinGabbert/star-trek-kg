@@ -165,7 +165,7 @@ namespace StarTrek_KG.Playfield
                 {
                     if (itemsToPopulate.Count > 0)
                     {
-                        Sector sectorToPopulate = itemsToPopulate.Where(i => i.X == x && i.Y == y).SingleOrDefault();
+                        Sector sectorToPopulate = itemsToPopulate.SingleOrDefault(i => i.X == x && i.Y == y);
                         sectorItemToPopulate = sectorToPopulate == null ? SectorItem.Empty : sectorToPopulate.Item;
 
                         //todo: plop item down on map
@@ -247,7 +247,7 @@ namespace StarTrek_KG.Playfield
         public void RemoveShip(IShip ship)
         {
             //staple ship to sector passed.
-            Sector sectorToAdd = this.Sectors.Where(s => s.X == ship.Sector.X && s.Y == ship.Sector.Y).Single();
+            Sector sectorToAdd = this.Sectors.Single(s => s.X == ship.Sector.X && s.Y == ship.Sector.Y);
             sectorToAdd.Object = ship;
         }
 
@@ -271,7 +271,6 @@ namespace StarTrek_KG.Playfield
 
             quadrant.Sectors.Add(sector);
         }
-
 
         //Loop for each Hostile and starbase.  Each go around pops a hostile
         //(up to 3) into a random sector.  Same thing with Starbase, but the limit

@@ -91,6 +91,40 @@ namespace StarTrek_KG.Utility
             return angle;
         }
 
+        public static string GetRandomGreekLetter()
+        {
+            var greekLetters = new List<string>();
+            greekLetters.Add("");
+            greekLetters.Add("");
+            greekLetters.Add("");
+            greekLetters.Add("ALPHA");
+            greekLetters.Add("BETA");
+            greekLetters.Add("GAMMA");
+            greekLetters.Add("DELTA");
+            greekLetters.Add("EPSILON");
+            greekLetters.Add("ZETA");
+            greekLetters.Add("ETA");
+            greekLetters.Add("THETA");
+            greekLetters.Add("IOTA");
+            greekLetters.Add("KAPPA");
+            greekLetters.Add("LAMBDA");
+            greekLetters.Add("MU");
+            greekLetters.Add("NU");
+            greekLetters.Add("XI");
+            greekLetters.Add("OMICRON");
+            greekLetters.Add("PI");
+            greekLetters.Add("RHO");
+            greekLetters.Add("SIGMA");
+            greekLetters.Add("TAU");
+            greekLetters.Add("UPSILON");
+            greekLetters.Add("PHI");
+            greekLetters.Add("CHI");
+            greekLetters.Add("PSI");
+            greekLetters.Add("OMEGA");
+
+            return greekLetters.Shuffle().Shuffle()[0];
+        }
+
         //starbase position info (there needs to be a starbase object)
         public static int starbaseX;
         public static int starbaseY;
@@ -211,3 +245,33 @@ namespace StarTrek_KG.Utility
         }
     }
 }
+
+
+
+//ALPHA	        α	&#945;	&#x03B1	&alpha;
+//BETA	        β	&#946;	&#x03B2	&beta;
+//GAMMA	        γ	&#947;	&#x03B3	&gamma;
+//DELTA	        δ	&#948;	&#x03B4	&delta;
+//EPSILON	    ε	&#949;	&#x03B5	&epsilon;
+//ZETA	        ζ	&#950;	&#x03B6	&zeta;
+//ETA	        η	&#951;	&#x03B7	&eta;
+//THETA	        θ	&#952;	&#x03B8	&theta;
+//IOTA	        ι	&#953;	&#x03B9	&iota;
+//KAPPA	        κ	&#954;	&#x03BA	&kappa;
+//LAMBDA	    λ	&#955;	&#x03BB	&lambda;
+//MU	        μ	&#956;	&#x03BC	&mu;
+//NU	        ν	&#957;	&#x03BD	&nu;
+//XI	        ξ	&#958;	&#x03BE	&xi;
+//OMICRON	    ο	&#959;	&#x03BF	&omicron;
+//PI	        π	&#960;	&#x03C0	&pi;
+//RHO	        ρ	&#961;	&#x03C1	&rho;
+//FINAL SIGMA	ς	&#962;	&#x03C2	 
+//SIGMA	        σ	&#963;	&#x03C3	&sigma;
+//TAU	        τ	&#964;	&#x03C4	&tau;
+//UPSILON	    υ	&#965;	&#x03C5	&upsilon;
+//PHI	        φ	&#966;	&#x03C6	&phi;
+//CHI	        χ	&#967;	&#x03C7	&chi;
+//PSI	        ψ	&#968;	&#x03C8	&psi;
+//OMEGA	        ω	&#969;	&#x03C9	&omega;
+
+//αβγδεζηθικλμνξοπρςστυφχψω

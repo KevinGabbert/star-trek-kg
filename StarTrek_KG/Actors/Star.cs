@@ -6,6 +6,11 @@ namespace StarTrek_KG.Actors
 {
     public class Star : IStar
     {
+        public Star()
+        {
+            this.Type = this.GetType();
+        }
+
         public Sector Sector
         {
             get { throw new global::System.NotImplementedException(); }
