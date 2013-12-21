@@ -71,6 +71,7 @@
     <Compile Include="ShipTests\SubSystemTests\Subsystem_Base_Tests.cs" />
     <Compile Include="ShipTests\WarpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UtilityTests\UtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StarTrek_KG\StarTrek_KG.csproj">

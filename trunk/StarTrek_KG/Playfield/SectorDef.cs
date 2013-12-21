@@ -19,10 +19,7 @@ namespace StarTrek_KG.Playfield
 
         public SectorDef(SectorItem sectorItem)
         {
-            var randomCoordinate = new Coordinate((Utility.Utility.Random).Next(Constants.SECTOR_MAX),
-                                                  (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
-
-            this.Sector = new Sector(new LocationDef(randomCoordinate, randomCoordinate));
+            this.Sector = new Sector(new LocationDef(Coordinate.GetRandom(), Coordinate.GetRandom()));
 
             //todo: if this quadrant already has a starbase, then don't assign.
             //check this.QuadrantDef.  If starbase exists, and sectorItem is a starbase, then assign empty instead.

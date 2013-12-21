@@ -4,6 +4,7 @@ namespace StarTrek_KG.Enums
     public enum SubsystemType
     {
         Nothing = 0,
+        Debug = 1,
         Computer = 4,
         Shields = 5,
         Navigation = 6,

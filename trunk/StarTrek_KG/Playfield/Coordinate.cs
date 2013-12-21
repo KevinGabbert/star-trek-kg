@@ -48,6 +48,12 @@ namespace StarTrek_KG.Playfield
             return coordinate;
         }
 
+        public static Coordinate GetRandom()
+        {
+            return new Coordinate((Utility.Utility.Random).Next(Constants.SECTOR_MAX),
+                                  (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
+        }
+
         private static void CheckForOutOfBounds(int value)
         {
             //todo: we should not be hitting this in the game. User needs to be told that they hit the galactic barrier

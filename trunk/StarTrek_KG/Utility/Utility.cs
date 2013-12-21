@@ -135,7 +135,6 @@ namespace StarTrek_KG.Utility
             }
         }
 
-
         //starbase position info (there needs to be a starbase object)
         public static int starbaseX;
         public static int starbaseY;

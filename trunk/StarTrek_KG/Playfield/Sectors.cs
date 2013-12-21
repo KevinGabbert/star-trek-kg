@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -12,7 +11,7 @@ namespace StarTrek_KG.Playfield
         {
             var sectorFound = sectors.Where(si => si.X == x && si.Y == y).ToList();
             
-            if (sectorFound.Count() == 0)
+            if (!sectorFound.Any())
             {
                 throw new GameException("Sector not found: X: " + x + " Y: " + y + " SectorCount: " + sectors.Count);
             }
@@ -24,7 +23,7 @@ namespace StarTrek_KG.Playfield
         {
             var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
 
-            if (gotSectors.Count() < 1)
+            if (!gotSectors.Any())
             {
                 throw new GameConfigException("Sector not found:  X: " + coordinate.X + " Y: " + coordinate.Y + " Total Sectors: " + " Total Sectors: " + gotSectors.Count());
             }
@@ -60,10 +59,11 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        //todo: refactor this?
-        public bool NotFound(int x, int y)
+        //todo: refactor this against Quadrant.NotFound()
+
+        public bool NotFound(Coordinate coordinate)
         {
-            var notFound = this.Where(s => s.X == x && s.Y == y).Count() == 0;
+            var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
             return notFound;
         }
 
@@ -72,10 +72,9 @@ namespace StarTrek_KG.Playfield
             //todo: rewrite this function to get rid of GOTO
 
             StartOver:
-            var randomSectorX = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
-            var randomSectorY = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+            var randomSector = Coordinate.GetRandom();
 
-            if (newSectors.NotFound(randomSectorX, randomSectorY))
+            if (newSectors.NotFound(randomSector))
             {
                 Sectors.SetupRandomQuadrantDef(sectorDef, quadrants);
 
@@ -97,12 +96,11 @@ namespace StarTrek_KG.Playfield
             StartOverQ:
             if (sectorDef.QuadrantDef == null)
             {
-                var randomQuadrantX = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
-                var randomQuadrantY = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+                var randomQuadrant = Coordinate.GetRandom();
 
-                if (quadrants.NotFound(randomQuadrantX, randomQuadrantY))
+                if (quadrants.NotFound(randomQuadrant))
                 {
-                    sectorDef.QuadrantDef = new Coordinate(randomQuadrantX, randomQuadrantY);
+                    sectorDef.QuadrantDef = randomQuadrant;
                 }
                 else
                 {

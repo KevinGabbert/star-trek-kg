@@ -119,8 +119,6 @@ namespace StarTrek_KG
 
         private bool DebugMenu()
         {
-            if (Computer.For(this.Map.Playership).Damaged()) return true;
-
             Output.Write.Strings(Debug.CONTROL_PANEL);
             Output.Write.Prompt("Enter Debug command: ");
 
