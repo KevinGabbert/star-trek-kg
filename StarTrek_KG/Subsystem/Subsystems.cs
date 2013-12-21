@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 
@@ -15,6 +13,7 @@ namespace StarTrek_KG.Subsystem
             // TODO: Complete member initialization
 
             this.AddRange(new List<ISubsystem>(){
+                                     new Debug(map),
                                      new Shields(map) { Energy = 0 },
                                      new Computer(map),
                                      new Navigation(map),

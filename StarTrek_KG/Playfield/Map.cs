@@ -181,12 +181,32 @@ namespace StarTrek_KG.Playfield
         {
             Utility.Utility.ResetGreekLetterStack();
 
+            Map.CurrentStarName(quadrant, totalStarsInQuadrant);
+
+            return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
+        }
+
+        public static Sector AddStar(Quadrant quadrant)
+        {
+            Utility.Utility.ResetGreekLetterStack();
+
+            const int totalStarsInQuadrant = 1;
+
+            var currentStarName = CurrentStarName(quadrant, totalStarsInQuadrant);
+
+            return quadrant.Sectors.Single(s => s.Item == SectorItem.Star && ((Star)s.Object).Name == currentStarName);
+        }
+
+        private static string CurrentStarName(Quadrant quadrant, int totalStarsInQuadrant)
+        {
+            string currentStarName = "";
+
             while (totalStarsInQuadrant > 0)
             {
                 var x = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
                 var y = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
 
-                //todo: just pass in sector and get its item
+                //todo: just pass in coordinate and get its item
                 var sector = quadrant.Sectors.Single(s => s.X == x && s.Y == y);
                 var sectorEmpty = sector.Item == SectorItem.Empty;
 
@@ -195,7 +215,9 @@ namespace StarTrek_KG.Playfield
                     if (totalStarsInQuadrant > 0)
                     {
                         var newStar = new Star();
-                        newStar.Name = quadrant.Name.ToUpper() + " " + Utility.Utility.RandomGreekLetter.Pop();
+                        currentStarName = quadrant.Name.ToUpper() + " " + Utility.Utility.RandomGreekLetter.Pop();
+
+                        newStar.Name = currentStarName;
                         sector.Item = SectorItem.Star;
 
                         sector.Object = newStar;
@@ -203,8 +225,7 @@ namespace StarTrek_KG.Playfield
                     }
                 }
             }
-
-            return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
+            return currentStarName;
         }
 
         //private static List<Sector> GetQuadrantObjects(int starbases, int hostilesToSetUp)
@@ -309,8 +330,7 @@ namespace StarTrek_KG.Playfield
         {
             if (playerShipDef.QuadrantDef == null)
             {
-                playerShipDef.QuadrantDef = new Coordinate((Utility.Utility.Random).Next(Constants.SECTOR_MAX),
-                                                           (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
+                playerShipDef.QuadrantDef = Coordinate.GetRandom();
             }
 
             if(this.Quadrants.Count == 0)

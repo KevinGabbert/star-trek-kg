@@ -218,9 +218,15 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public bool NotFound(int x, int y)
+        //public bool NotFound(int x, int y)
+        //{
+        //    var notFound = this.Count(s => s.X == x && s.Y == y) == 0;
+        //    return notFound;
+        //}
+
+        public bool NotFound(Coordinate coordinate)
         {
-            var notFound = this.Count(s => s.X == x && s.Y == y) == 0;
+            var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
             return notFound;
         }
 
