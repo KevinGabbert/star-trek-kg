@@ -179,7 +179,8 @@ namespace StarTrek_KG.Playfield
 
         public static IEnumerable<Sector> AddStars(Quadrant quadrant, int totalStarsInQuadrant)
         {
-            int i = 0;
+            Utility.Utility.ResetGreekLetterStack();
+
             while (totalStarsInQuadrant > 0)
             {
                 var x = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
@@ -193,9 +194,8 @@ namespace StarTrek_KG.Playfield
                 {
                     if (totalStarsInQuadrant > 0)
                     {
-                        i++;
                         var newStar = new Star();
-                        newStar.Name = quadrant.Name + " " + Utility.Utility.GetRandomGreekLetter() + " " + i;
+                        newStar.Name = quadrant.Name.ToUpper() + " " + Utility.Utility.RandomGreekLetter.Pop();
                         sector.Item = SectorItem.Star;
 
                         sector.Object = newStar;

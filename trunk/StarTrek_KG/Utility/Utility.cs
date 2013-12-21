@@ -8,10 +8,13 @@ namespace StarTrek_KG.Utility
 {
     public static class Utility
     {
+        public static Stack<string> RandomGreekLetter; 
         public static Random Random = new Random(Guid.NewGuid().GetHashCode());
 
         public static IList<T> Shuffle<T>(this IList<T> list)
         {
+            Random = new Random(Guid.NewGuid().GetHashCode());
+
             var rng = StarTrek_KG.Utility.Utility.Random;
             int n = list.Count;
             while (n > 1)
@@ -91,7 +94,7 @@ namespace StarTrek_KG.Utility
             return angle;
         }
 
-        public static string GetRandomGreekLetter()
+        public static void ResetGreekLetterStack()
         {
             var greekLetters = new List<string>();
             greekLetters.Add("");
@@ -122,8 +125,16 @@ namespace StarTrek_KG.Utility
             greekLetters.Add("PSI");
             greekLetters.Add("OMEGA");
 
-            return greekLetters.Shuffle().Shuffle()[0];
+            greekLetters = greekLetters.Shuffle().Shuffle().ToList();
+
+            RandomGreekLetter = new Stack<string>();
+
+            foreach (var greekLetter in greekLetters)
+            {
+                RandomGreekLetter.Push(greekLetter);
+            }
         }
+
 
         //starbase position info (there needs to be a starbase object)
         public static int starbaseX;
