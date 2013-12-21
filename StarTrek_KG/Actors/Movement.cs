@@ -163,13 +163,13 @@ namespace StarTrek_KG.Actors
             {
                 case SectorItem.Star:
                     var star = (Star) currentObject;
-                    Output.Write.Line("Star: " + star.Name + " encountered while navigating at sector: [" + sector.X + "," +
+                    Output.Write.Line("Stellar body " + star.Name.ToUpper() + " encountered while navigating at sector: [" + sector.X + "," +
                                       sector.Y + "]");
                     break;
 
                 case SectorItem.Hostile:
                     var hostile = (Ship) currentObject;
-                    Output.Write.Line("Ship: " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
+                    Output.Write.Line("Ship " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
                                       sector.Y + "]");
                     break;
 

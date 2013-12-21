@@ -178,8 +178,6 @@ namespace StarTrek_KG.Playfield
                 throw new GameConfigException("ship has no location. ");
             }
 
-            //Quadrants.DeleteShip(shipToRemove, map);
-
             this.RemoveShip(shipToRemove.Name);
 
             Output.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed")));
