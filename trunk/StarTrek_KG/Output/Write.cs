@@ -213,7 +213,7 @@ namespace StarTrek_KG.Output
                     break;
 
                 case 5:
-                    Write.DrawAppTitleItem("D7Front", 9);
+                    Write.DrawAppTitleItem("D7Front", 7);
                     break;
 
                 case 6:
@@ -236,6 +236,8 @@ namespace StarTrek_KG.Output
                     Write.DrawAppTitleItem("EnterpriseD", 9);
                     break;
             }
+
+            Write.Resource("AppTitleSpace");
         }
 
         private static void DrawAppTitleItem(string itemName, int endingLine)
