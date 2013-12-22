@@ -171,6 +171,8 @@ namespace StarTrek_KG.Output
         {
             int randomVal = Utility.Utility.Random.Next(3);
 
+            Write.Resource("AppTitleSpace");
+
             switch (randomVal)
             {
                 case 0:
@@ -189,7 +191,7 @@ namespace StarTrek_KG.Output
             Write.Resource("AppTitleSpace");
 
             Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
-            randomVal = Utility.Utility.Random.Next(10);
+            randomVal = Utility.Utility.Random.Next(9);
             switch (randomVal)
             {
                 case 0:
@@ -205,34 +207,30 @@ namespace StarTrek_KG.Output
                     break;
 
                 case 3:
-                    Write.DrawAppTitleItem("Saratoga", 7);
-                    break;
-
-                case 4:
                     Write.DrawAppTitleItem("Reliant", 8);
                     break;
 
-                case 5:
-                    Write.DrawAppTitleItem("D7Front", 7);
+                case 4:
+                    Write.DrawAppTitleItem("D7Front", 6);
                     break;
 
-                case 6:
+                case 5:
                     Write.DrawAppTitleItem("KTingaSide", 9);
                     break;
 
-                case 7:
+                case 6:
                     Write.DrawAppTitleItem("DreadnaughtSide", 9);
                     break;
 
-                case 8:
+                case 7:
                     Write.DrawAppTitleItem("Excelsior", 9);
                     break;
 
-                case 9:
+                case 8:
                     Write.DrawAppTitleItem("EnterpriseB", 9);
                     break;
 
-                case 10:
+                case 9:
                     Write.DrawAppTitleItem("EnterpriseD", 9);
                     break;
             }
