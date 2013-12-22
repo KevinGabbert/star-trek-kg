@@ -177,25 +177,21 @@ namespace StarTrek_KG.Output
                     Write.DrawAppTitleItem("Classic", 7);
                     break;
 
-                case 1:
-                    Write.DrawAppTitleItem("Movie", 7);
-                    break;
-
                 case 2:
                     Write.DrawAppTitleItem("TNG", 7);
+                    break;
+
+                default:
+                    Write.DrawAppTitleItem("Movie", 7);
                     break;
             }
 
             Write.Resource("AppTitleSpace");
 
             Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
-            randomVal = Utility.Utility.Random.Next(9);
+            randomVal = Utility.Utility.Random.Next(11);
             switch (randomVal)
             {
-                case 0:
-                    Write.DrawAppTitleItem("EnterpriseSmall", 7);
-                    break;
-
                 case 1:
                     Write.DrawAppTitleItem("ExcelsiorSmall", 8);
                     break;
@@ -225,11 +221,19 @@ namespace StarTrek_KG.Output
                     break;
 
                 case 8:
-                    Write.DrawAppTitleItem("EnterpriseB", 9);
+                    Write.DrawAppTitleItem("EnterpriseB", 10);
                     break;
 
                 case 9:
                     Write.DrawAppTitleItem("EnterpriseD", 9);
+                    break;
+
+                case 10:
+                    Write.DrawAppTitleItem("EnterpriseD2", 7);
+                    break;
+
+                default:
+                    Write.DrawAppTitleItem("EnterpriseSmall", 6);
                     break;
             }
 
