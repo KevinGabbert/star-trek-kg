@@ -171,8 +171,6 @@ namespace StarTrek_KG.Output
         {
             int randomVal = Utility.Utility.Random.Next(3);
 
-            Write.Resource("AppTitleSpace");
-
             switch (randomVal)
             {
                 case 0:
