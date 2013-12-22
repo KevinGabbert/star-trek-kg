@@ -170,9 +170,36 @@ namespace StarTrek_KG.Output
         public static void AppTitle()
         {
             const string appTitle = "AppTitle";
-            for (int i = 1; i < 13; i++)
+            for (int i = 1; i < 7; i++)
             {
-                Resource(appTitle + i);
+                Write.Resource(appTitle + i);
+            }
+
+            int randomVal = Utility.Utility.Random.Next(3);
+
+            switch (randomVal)
+            {
+                case 0:
+                    Write.DrawAppTitleShip("EnterpriseSmall", 7);
+                    break;
+
+                case 1:
+                    Write.DrawAppTitleShip("ExcelsiorSmall", 8);
+                    break;
+                
+                case 2:
+                    Write.DrawAppTitleShip("DaedalusSmall", 8);
+                    break;
+            }
+
+            Write.Resource("AppTitleSpace");
+        }
+
+        private static void DrawAppTitleShip(string shipName, int endingLine)
+        {
+            for (int i = 1; i < endingLine; i++)
+            {
+                Write.Resource("AppTitle" + shipName + i);
             }
         }
 
