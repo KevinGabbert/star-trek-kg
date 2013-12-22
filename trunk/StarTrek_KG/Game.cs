@@ -183,7 +183,6 @@ namespace StarTrek_KG
             
             StarTrek_KG.Output.Write.ResourceLine("UnderConstructionMessage");
             StarTrek_KG.Output.Write.ResourceLine("UnderConstructionMessage2");
-            StarTrek_KG.Output.Write.ResourceLine("UnderConstructionMessage3");
 
             Output.PrintMission();
         }
