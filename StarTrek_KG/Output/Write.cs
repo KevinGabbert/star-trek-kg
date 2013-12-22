@@ -169,37 +169,80 @@ namespace StarTrek_KG.Output
 
         public static void AppTitle()
         {
-            const string appTitle = "AppTitle";
-            for (int i = 1; i < 7; i++)
-            {
-                Write.Resource(appTitle + i);
-            }
-
             int randomVal = Utility.Utility.Random.Next(3);
 
             switch (randomVal)
             {
                 case 0:
-                    Write.DrawAppTitleShip("EnterpriseSmall", 7);
+                    Write.DrawAppTitleItem("Classic", 7);
                     break;
 
                 case 1:
-                    Write.DrawAppTitleShip("ExcelsiorSmall", 8);
+                    Write.DrawAppTitleItem("Movie", 7);
                     break;
-                
+
                 case 2:
-                    Write.DrawAppTitleShip("DaedalusSmall", 8);
+                    Write.DrawAppTitleItem("TNG", 7);
                     break;
             }
 
             Write.Resource("AppTitleSpace");
+
+            Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
+            randomVal = Utility.Utility.Random.Next(10);
+            switch (randomVal)
+            {
+                case 0:
+                    Write.DrawAppTitleItem("EnterpriseSmall", 7);
+                    break;
+
+                case 1:
+                    Write.DrawAppTitleItem("ExcelsiorSmall", 8);
+                    break;
+                
+                case 2:
+                    Write.DrawAppTitleItem("DaedalusSmall", 8);
+                    break;
+
+                case 3:
+                    Write.DrawAppTitleItem("Saratoga", 7);
+                    break;
+
+                case 4:
+                    Write.DrawAppTitleItem("Reliant", 8);
+                    break;
+
+                case 5:
+                    Write.DrawAppTitleItem("D7Front", 9);
+                    break;
+
+                case 6:
+                    Write.DrawAppTitleItem("KTingaSide", 9);
+                    break;
+
+                case 7:
+                    Write.DrawAppTitleItem("DreadnaughtSide", 9);
+                    break;
+
+                case 8:
+                    Write.DrawAppTitleItem("Excelsior", 9);
+                    break;
+
+                case 9:
+                    Write.DrawAppTitleItem("EnterpriseB", 9);
+                    break;
+
+                case 10:
+                    Write.DrawAppTitleItem("EnterpriseD", 9);
+                    break;
+            }
         }
 
-        private static void DrawAppTitleShip(string shipName, int endingLine)
+        private static void DrawAppTitleItem(string itemName, int endingLine)
         {
             for (int i = 1; i < endingLine; i++)
             {
-                Write.Resource("AppTitle" + shipName + i);
+                Write.Resource("AppTitle" + itemName + i);
             }
         }
 
