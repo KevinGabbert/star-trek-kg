@@ -189,7 +189,7 @@ namespace StarTrek_KG.Output
             Write.Resource("AppTitleSpace");
 
             Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
-            randomVal = Utility.Utility.Random.Next(11);
+            randomVal = Utility.Utility.Random.Next(20);
             switch (randomVal)
             {
                 case 1:
@@ -232,8 +232,16 @@ namespace StarTrek_KG.Output
                     Write.DrawAppTitleItem("EnterpriseD2", 7);
                     break;
 
+                case 11:
+                    Write.DrawAppTitleItem("BattlecruiserSmall", 6);
+                    break;
+
+                case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19: //stacking the odds in favor of the 2 ships... :D
+                    Write.DrawAppTitleItem("2ShipsSmall", 7);
+                    break;
+
                 default:
-                    Write.DrawAppTitleItem("EnterpriseSmall", 6);
+                    Write.DrawAppTitleItem("2ShipsSmall", 7);
                     break;
             }
 

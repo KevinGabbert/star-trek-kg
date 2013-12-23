@@ -22,6 +22,8 @@ namespace StarTrek_KG.Actors
 
         public string Name { get; set; } //todo: pulled from a list of star names
 
+        public string Designation { get; set; } //So we can find dupes
+
         public int Gravity { get; set; }
     }
 }

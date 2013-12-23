@@ -97,9 +97,6 @@ namespace StarTrek_KG.Utility
         public static void ResetGreekLetterStack()
         {
             var greekLetters = new List<string>();
-            greekLetters.Add("");
-            greekLetters.Add("");
-            greekLetters.Add("");
             greekLetters.Add("ALPHA");
             greekLetters.Add("BETA");
             greekLetters.Add("GAMMA");

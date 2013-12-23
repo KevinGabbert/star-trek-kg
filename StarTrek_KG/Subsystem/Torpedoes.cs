@@ -131,7 +131,7 @@ namespace StarTrek_KG.Subsystem
                     //quadrant.Starbase = false;
                     //quadrant.Map.Sectors.Where(s => s.X == newX && s.Y == newY).Single().Item = SectorItem.Empty;
 
-                    Output.Write.Line(string.Format(map.Playership.Name + " destroyed a Federation starbase at sector [{0},{1}]!",
+                    Output.Write.Line(string.Format("A Federation starbase at sector [{0},{1}] has been destroyed!",
                                       newX, newY));
                     return true;
 

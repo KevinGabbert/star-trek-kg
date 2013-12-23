@@ -4,6 +4,7 @@ using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
@@ -59,7 +60,7 @@ namespace StarTrek_KG.Subsystem
 
                     LongRangeScan.GetMapInfoForScanner(map, quadrantX, quadrantY, out hostileCount, out starbaseCount, out starCount);
 
-                    sb.Append(String.Format("{0}{1}{2} ", hostileCount, starbaseCount, starCount));
+                    sb.Append(String.Format("{0}{1}{2} ", hostileCount.FormatForLRS(), starbaseCount.FormatForLRS(), starCount.FormatForLRS()));
                 }
 
                 sb.Append("|");

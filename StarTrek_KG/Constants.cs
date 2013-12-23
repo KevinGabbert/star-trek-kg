@@ -6,7 +6,7 @@ namespace StarTrek_KG
     public class Constants
     {
         public const string EMPTY = "   ";
-        public const string ENTERPRISE = "<*>";
+        public const string PLAYERSHIP = "<*>";
         public const string HOSTILE = "+++";
         public const string STARBASE = ">!<";
         public const string STAR = " * ";

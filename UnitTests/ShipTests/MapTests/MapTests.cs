@@ -61,6 +61,14 @@ namespace UnitTests.ShipTests.MapTests
             this.VerifyInitializeSettings();
         }
 
+        [Ignore]
+        [Test]
+        public void CreateTooManyStars()
+        {
+                //Todo: test this
+        }
+
+
         [Test]
         public void InitializeQuadrants()
         {
