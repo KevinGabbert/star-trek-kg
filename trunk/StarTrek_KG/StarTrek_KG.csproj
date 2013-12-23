@@ -69,6 +69,7 @@
     <Compile Include="Enums\NavDirection.cs" />
     <Compile Include="Exceptions\GameConfigException.cs" />
     <Compile Include="Exceptions\GameException.cs" />
+    <Compile Include="Extensions\intExtensions.cs" />
     <Compile Include="Extensions\SectorDefExtensions.cs" />
     <Compile Include="Interfaces\ISectorObject.cs" />
     <Compile Include="Interfaces\IStar.cs" />

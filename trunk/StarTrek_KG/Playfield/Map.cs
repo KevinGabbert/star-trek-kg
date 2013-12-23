@@ -181,7 +181,7 @@ namespace StarTrek_KG.Playfield
         {
             Utility.Utility.ResetGreekLetterStack();
 
-            Map.CurrentStarName(quadrant, totalStarsInQuadrant);
+            Map.CreateStar(quadrant, totalStarsInQuadrant);
 
             return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
         }
@@ -192,12 +192,12 @@ namespace StarTrek_KG.Playfield
 
             const int totalStarsInQuadrant = 1;
 
-            var currentStarName = CurrentStarName(quadrant, totalStarsInQuadrant);
+            var currentStarName = Map.CreateStar(quadrant, totalStarsInQuadrant);
 
             return quadrant.Sectors.Single(s => s.Item == SectorItem.Star && ((Star)s.Object).Name == currentStarName);
         }
 
-        private static string CurrentStarName(Quadrant quadrant, int totalStarsInQuadrant)
+        private static string CreateStar(Quadrant quadrant, int totalStarsInQuadrant)
         {
             string currentStarName = "";
 
@@ -215,13 +215,39 @@ namespace StarTrek_KG.Playfield
                     if (totalStarsInQuadrant > 0)
                     {
                         var newStar = new Star();
-                        currentStarName = quadrant.Name.ToUpper() + " " + Utility.Utility.RandomGreekLetter.Pop();
+                        bool foundStarName = false;
 
-                        newStar.Name = currentStarName;
-                        sector.Item = SectorItem.Star;
+                        int counter = 0;
+                        while (!foundStarName)
+                        {
+                            //There's a practical max of 9 stars before LRS is broken, so we shouldn't see this while happening more than 9 times for a new star
+                            //unless one is adding stars via debug mode..
+                            counter++;
+                            var newNameLetter = Utility.Utility.RandomGreekLetter.Pop();
 
-                        sector.Object = newStar;
-                        totalStarsInQuadrant--;
+                            var starsInQuadrant = quadrant.Sectors.Where( s => s.Object != null && s.Object.Type.Name == "Star").ToList();
+                            var allStarsDontHaveNewDesignation = starsInQuadrant.All(s => ((Star) s.Object).Designation != newNameLetter);
+
+                            if (allStarsDontHaveNewDesignation)
+                            {
+                                foundStarName = true;
+                                currentStarName = quadrant.Name.ToUpper() + " " + newNameLetter;
+
+                                newStar.Name = currentStarName;
+                                newStar.Designation = newNameLetter;
+                                sector.Item = SectorItem.Star;
+
+                                sector.Object = newStar;
+                                totalStarsInQuadrant--;
+                            }
+
+                            //Assuming we are using the greek alphabet for star names, we don't want to create a lockup.
+                            if(counter > 25)
+                            {
+                               Output.Write.Line("Too Many Stars.  Sorry.  Not gonna create more.");
+                               foundStarName = true;
+                            }
+                        }
                     }
                 }
             }

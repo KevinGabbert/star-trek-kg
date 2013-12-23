@@ -100,7 +100,7 @@ namespace StarTrek_KG.Output
                         sb.Append(Constants.EMPTY);
                         break;
                     case SectorItem.Friendly:
-                        sb.Append(Constants.ENTERPRISE);
+                        sb.Append(Constants.PLAYERSHIP);
                         break;
                     case SectorItem.Hostile:
 

@@ -136,7 +136,7 @@ namespace StarTrek_KG.Subsystem
             double quadX;
             double quadY;
 
-            Output.Write.Line(string.Format(this.Map.Playership.Name + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
+            Output.Write.Line(string.Format("Your Ship" + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
 
             if (!Command.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantX"), out quadX)
                 || quadX < (Constants.QUADRANT_MIN + 1) 
@@ -159,7 +159,7 @@ namespace StarTrek_KG.Subsystem
             var qy = ((int)(quadY)) - 1;
             if (qx == thisShip.Quadrant.X && qy == thisShip.Quadrant.Y)
             {
-                Output.Write.Line(StarTrekKGSettings.GetSetting<string>("TheCurrentLocation") + this.Map.Playership.Name + ".");
+                Output.Write.Line(StarTrekKGSettings.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 

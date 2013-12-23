@@ -81,9 +81,6 @@ namespace StarTrek_KG.Actors
 
             for (var unit = 0; unit < Constants.MOVEMENT_PRECISION; unit++)
             {
-                //todo: we might need to switch back to this line in the loop if quadrants are off
-                //var activeSectors = this.Map.Quadrants.GetActive().Sectors;
-
                 vectorLocationX += vector.X;
                 vectorLocationY += vector.Y;
 
@@ -91,7 +88,6 @@ namespace StarTrek_KG.Actors
                 int quadY = ((int) Math.Round(vectorLocationY)) / 8;
 
                 //todo: this line causes galactic barrier out of bounds error? (becuase tries to assign 8 to X)
-                //var quad = new Coordinate(quadX, quadY);
 
                 if (quadX == playershipQuadrant.X && quadY == playershipQuadrant.Y)
                 {
@@ -103,7 +99,7 @@ namespace StarTrek_KG.Actors
                         if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
                         {
                             //vector_div is so you can get right up to an obstacle before hitting it.
-                            Output.Write.Line(this.Map.Playership.Name + " has stopped.");
+                            Output.Write.Line("All Stop.");
                             return true;
                         }
                     }

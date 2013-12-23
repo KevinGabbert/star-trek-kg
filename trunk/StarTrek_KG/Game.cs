@@ -223,7 +223,7 @@ namespace StarTrek_KG
         /// <returns></returns>
         private bool NewTurn()
         {
-            this.Command.Prompt(this.Map.Playership.Name);
+            this.Command.Prompt("Your Ship");
                 //move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
                 ////Map.GetAllHostiles(this.Map).Count
 
@@ -275,7 +275,7 @@ namespace StarTrek_KG
                     {
                         if (Navigation.For(map.Playership).docked)
                         {
-                            StarTrek_KG.Output.Write.Line(String.Format(map.Playership.Name + " hit by " + badGuy.Name + " at sector [{0},{1}].. No damage due to starbase shields.", (badGuy.Sector.X), (badGuy.Sector.Y)));
+                            StarTrek_KG.Output.Write.Line(String.Format("Your Ship has been hit by " + badGuy.Name + " at sector [{0},{1}]. No damage due to starbase shields.", (badGuy.Sector.X), (badGuy.Sector.Y)));
                         }
                         else
                         {
