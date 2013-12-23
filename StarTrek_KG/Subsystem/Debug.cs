@@ -40,8 +40,9 @@ namespace StarTrek_KG.Subsystem
                                                     "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
-        public Debug(Map map)
+        public Debug(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Debug; //this is required if you want this system to be able to be looked up
             this.Damage = 0;
@@ -73,21 +74,21 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "dsnav":
-                    //Navigation.For(this.Map.Playership).Controls(this.Map);
-                    //ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
+                    //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
+                    //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
                     Output.Write.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
                     Output.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dstor":
-                    //Torpedoes.For(this.Map.Playership).Controls(this.Map);
-                    //ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
+                    //Torpedoes.For(this.ShipConnectedTo).Controls(this.Map);
+                    //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
                     Output.Write.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
                     Output.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dqnav":
-                    //Navigation.For(this.Map.Playership).Controls(this.Map);
+                    //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
                     //Output.PrintGalacticRecord(WithNavTrack); 
                     Output.Write.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
                     Output.Write.Line("Not Implemented Yet");
@@ -108,6 +109,7 @@ namespace StarTrek_KG.Subsystem
 
                     this.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
+                    //todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
                     Output.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
                     Output.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + hostileShip.Shields().Energy + " ");
                     break;

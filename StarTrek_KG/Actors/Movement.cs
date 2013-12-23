@@ -11,15 +11,16 @@ namespace StarTrek_KG.Actors
         public bool BlockedByObstacle { get; set; }
         public bool BlockedByGalacticBarrier { get; set; }
 
-        public Movement(Map map)
+        public Movement(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
         }
 
         public void Execute(string direction, double distance, double distanceEntered, out int lastQuadX, out int lastQuadY)
         {
-            Sector playerShipSector = this.Map.Playership.Sector;
-            Quadrant playershipQuadrant = this.Map.Playership.GetQuadrant();
+            Sector playerShipSector = this.ShipConnectedTo.Sector;
+            Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
 
             lastQuadY = playershipQuadrant.Y;
             lastQuadX = playershipQuadrant.X;
@@ -37,7 +38,7 @@ namespace StarTrek_KG.Actors
             var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
 
             //Clear Old Sector
-            Sector.GetFrom(this.Map.Playership).Item = SectorItem.Empty;
+            Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;
 
             if (this.TravelThroughSectors(distanceEntered, distance, numericDirection, ref vectorLocationX, ref vectorLocationY, playershipQuadrant, lastSector)) goto EndNavigation;
 
@@ -126,7 +127,7 @@ namespace StarTrek_KG.Actors
             //todo:  I think I destroyed a star and appeared in its place when navigating to a new quadrant.  (That or LRS is broken, or maybe it is working fine!)
             try
             {
-                var mySector = this.Map.Playership.Sector;
+                var mySector = this.ShipConnectedTo.Sector;
                 var currentItem = Sector.Get(activeSectors, sector.X, sector.Y).Item;
                 var currentObject = Sector.Get(activeSectors, sector.X, sector.Y).Object;
 
@@ -264,8 +265,8 @@ namespace StarTrek_KG.Actors
 
         private void SetShipLocation(double x, double y)
         {
-            var shipSector = this.Map.Playership.Sector;
-            var shipQuadrant = this.Map.Playership.QuadrantDef;
+            var shipSector = this.ShipConnectedTo.Sector;
+            var shipQuadrant = this.ShipConnectedTo.QuadrantDef;
 
             shipSector.X = ((int)Math.Round(x)) % 8;
             shipSector.Y = ((int)Math.Round(y)) % 8;
@@ -276,7 +277,7 @@ namespace StarTrek_KG.Actors
             shipQuadrant.X = quadX;
             shipQuadrant.Y = quadY;
 
-            this.Map.Playership.GetQuadrant().Active = true;
+            this.ShipConnectedTo.GetQuadrant().Active = true;
             Map.SetFriendly(this.Map); //sets friendly in Active Quadrant  
         }
 

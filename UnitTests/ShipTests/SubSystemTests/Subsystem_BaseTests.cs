@@ -13,11 +13,13 @@ namespace UnitTests.ShipTests.SubSystemTests
         [SetUp]
         public void Setup()
         {
-            _testComputer = new Computer(new Map(new GameConfig
-                                   {
-                                        Initialize = true,
-                                        //GenerateMap = true
-                                   })); 
+            var map = new Map(new GameConfig
+                                  {
+                                      Initialize = true,
+                                      //GenerateMap = true
+                                  });
+
+            _testComputer = new Computer(map, map.Playership); 
         }
     }
 }

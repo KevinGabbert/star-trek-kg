@@ -109,13 +109,13 @@ namespace StarTrek_KG.Subsystem
             {
                 //todo: why add to both objects?? Are they not the same?
                 this.Energy += transfer;
-                this.Map.Playership.Energy -= transfer;
+                this.ShipConnectedTo.Energy -= transfer;
             }
             else
             {
                 //todo: why add to both objects?? Are they not the same?
                 this.Energy -=  transfer;
-                this.Map.Playership.Energy += transfer;
+                this.ShipConnectedTo.Energy += transfer;
             }
         }
 

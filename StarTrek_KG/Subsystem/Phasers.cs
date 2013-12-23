@@ -11,8 +11,9 @@ namespace StarTrek_KG.Subsystem
 {
     public class Phasers : SubSystem_Base, IMap, IWeapon
     {
-        public Phasers(Map map)
+        public Phasers(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Phasers;
         }
@@ -36,7 +37,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (!EnergyCheckFail(energyToFire, shipFiringPhasers))
             {
-                shipFiringPhasers.Energy = this.Map.Playership.Energy -= energyToFire;
+                shipFiringPhasers.Energy = this.ShipConnectedTo.Energy -= energyToFire;
                 Phasers.Execute(this.Map, energyToFire);
 
                 //todo: move to Game() object
@@ -82,7 +83,7 @@ namespace StarTrek_KG.Subsystem
             var destroyedShips = new List<IShip>();
             foreach (var badGuyShip in map.Quadrants.GetActive().GetHostiles())
             {
-                double deliveredEnergy = ComputeDeliveredEnergy(map, phaserEnergy, badGuyShip);
+                double deliveredEnergy = ComputeDeliveredEnergy(map.Playership.GetLocation(), phaserEnergy, badGuyShip);
                 Phasers.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
 
@@ -112,16 +113,15 @@ namespace StarTrek_KG.Subsystem
         //}
 
         //todo: move to Utility() object
-        private static double ComputeDeliveredEnergy(Map map, double phaserEnergy, IShip badGuyShip)
+        private static double ComputeDeliveredEnergy(Location location, double phaserEnergy, ISectorObject target)
         {
-            var location = map.Playership.GetLocation();
-            var distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
+            var distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, target.Sector.X, target.Sector.Y);
             var deliveredEnergy = phaserEnergy*(1.0 - distance/11.3);
 
             return deliveredEnergy;
         }
 
-        //todo: move to Game() object
+        //todo: move to badguy.DamageControl() object
         private static void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
         {
             //todo: add more descriptive output messages depending on how much phaser energy absorbed by baddie

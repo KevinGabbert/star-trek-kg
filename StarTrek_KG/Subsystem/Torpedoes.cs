@@ -16,8 +16,9 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Map map)
+        public Torpedoes(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Torpedoes;
         }
@@ -71,7 +72,7 @@ namespace StarTrek_KG.Subsystem
 
             var angle = Utility.Utility.ComputeAngle(this.Map, direction);
 
-            Location location = this.Map.Playership.GetLocation();
+            Location location = this.ShipConnectedTo.GetLocation();
 
             double x = location.Quadrant.X;
             double y = location.Quadrant.Y;
@@ -172,7 +173,7 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            Location location = map.Playership.GetLocation(); 
+            Location location = this.ShipConnectedTo.GetLocation(); 
 
             foreach (var ship in map.Quadrants.GetHostiles())
             {

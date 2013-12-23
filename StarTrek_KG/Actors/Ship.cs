@@ -45,7 +45,7 @@ namespace StarTrek_KG.Actors
             this.Name = name;
             this.QuadrantDef = position.QuadrantDef;
             
-            this.Subsystems = new Subsystems(map);
+            this.Subsystems = new Subsystems(map, map.Playership);
 
             //todo: support the shieldEnergy config setting.
             //If there is a config setting, use it.  otherwise, 0

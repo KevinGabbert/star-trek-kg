@@ -82,7 +82,7 @@ namespace UnitTests.ShipTests.MovementTests
                         };
 
             _testMapNoObjects = new Map(x);
-            _testMovement = new Movement(_testMapNoObjects);
+            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership);
             _testMovement.BlockedByObstacle = false;
 
             #region "Manually set ship. todo: write test to ensure that this method works too"
@@ -659,7 +659,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void TravelAlongCourse_BugVerification()
         {
-            var testMovement = new Movement(_testMapNoObjects);
+            var testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership);
 
             double x = 31.5084577259018;
             double y = 31.5084577259018;
