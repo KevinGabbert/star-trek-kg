@@ -11,8 +11,9 @@ namespace StarTrek_KG.Subsystem
 {
     public class ShortRangeScan : SubSystem_Base, IMap
     {
-        public ShortRangeScan(Map map)
+        public ShortRangeScan(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.ShortRangeScan;
         }
@@ -39,7 +40,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (Damaged()) return;
 
-            var location = map.Playership.GetLocation();
+            var location = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
 
             var write = (new Output.PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel")));

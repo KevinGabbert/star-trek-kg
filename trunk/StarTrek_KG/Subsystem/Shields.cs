@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -12,8 +13,9 @@ namespace StarTrek_KG.Subsystem
     {
         public static List<string> SHIELD_PANEL = new List<string>();
 
-        public Shields(Map map)
+        public Shields(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Shields;
             this.Damage = 0;
@@ -73,7 +75,7 @@ namespace StarTrek_KG.Subsystem
 
                 Output.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                                                 this.Energy,
-                                                Map.Playership.Energy));
+                                                this.ShipConnectedTo));
             }
 
             EndControls:

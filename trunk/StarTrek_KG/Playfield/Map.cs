@@ -324,15 +324,19 @@ namespace StarTrek_KG.Playfield
 
             this.SetupPlayershipNav();
             this.SetupPlayershipShields();
-
-            ShortRangeScan.For(this.Playership).Damage = 0;
-            LongRangeScan.For(this.Playership).Damage = 0;
-
-            Computer.For(this.Playership).Damage = 0;
-
             this.SetupPlayershipTorpedoes();
 
+            ShortRangeScan.For(this.Playership).Damage = 0;
+            ShortRangeScan.For(this.Playership).ShipConnectedTo = this.Playership;
+
+            LongRangeScan.For(this.Playership).Damage = 0;
+            LongRangeScan.For(this.Playership).ShipConnectedTo = this.Playership;
+
+            Computer.For(this.Playership).Damage = 0;
+            Computer.For(this.Playership).ShipConnectedTo = this.Playership;
+
             Phasers.For(this.Playership).Damage = 0;
+            Phasers.For(this.Playership).ShipConnectedTo = this.Playership;
         }
 
         private void GetSubsystemSetupFromConfig()
@@ -371,12 +375,16 @@ namespace StarTrek_KG.Playfield
         private void SetupPlayershipTorpedoes()
         {
             var torpedoes = Torpedoes.For(this.Playership);
+
+            torpedoes.ShipConnectedTo = this.Playership;
             torpedoes.Count = StarTrekKGSettings.GetSetting<int>("photonTorpedoes");
             torpedoes.Damage = 0;
         }
         private void SetupPlayershipShields()
         {
             var starshipShields = Shields.For(this.Playership);
+
+            starshipShields.ShipConnectedTo = this.Playership;
             starshipShields.Energy = 0;
             starshipShields.Damage = 0;
         }
@@ -384,6 +392,8 @@ namespace StarTrek_KG.Playfield
         {
             var starshipNAV = Navigation.For(this.Playership);
 
+            starshipNAV.ShipConnectedTo = this.Playership;
+            starshipNAV.Movement.ShipConnectedTo = this.Playership;
             starshipNAV.Damage = 0;
             starshipNAV.MaxWarpFactor = StarTrekKGSettings.GetSetting<int>("MaxWarpFactor");
             starshipNAV.docked = false;
@@ -488,9 +498,9 @@ namespace StarTrek_KG.Playfield
 
 
         //}
-        public void StarbaseCalculator()
+        public void StarbaseCalculator(Ship shipConnectedTo)
         {
-            var location = Navigation.For(this.Playership);
+            var location = Navigation.For(shipConnectedTo);
             //if (StarTrek_KG.Quadrants.Get(this, location.quadrantX, location.quadrantY).Starbase)
             //{
             //    Console.WriteLine("Starbase in sector [{0},{1}].", (starbaseX + 1), (starbaseY + 1));

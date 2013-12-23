@@ -2,6 +2,7 @@
 using System.Linq;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -255,6 +256,7 @@ namespace StarTrek_KG
         }
 
         /// <summary>
+        /// At the end of each turn, if a hostile is in the same sector with Playership, it will attack.  If there are 37, then all 37 will..
         /// TODO: this needs to be changed.  after destruction, it appears to take several method returns to realize that we are dead.
         /// </summary>
         /// <returns></returns>
@@ -266,40 +268,58 @@ namespace StarTrek_KG
             var activeQuadrant = map.Quadrants.GetActive();
             var hostilesAttacking = activeQuadrant.GetHostiles();
 
-            //temporary
             if (hostilesAttacking != null)//todo: remove this.
             {
                 if (hostilesAttacking.Count > 0)
                 {
                     foreach (var badGuy in hostilesAttacking)
                     {
-                        if (Navigation.For(map.Playership).docked)
-                        {
-                            StarTrek_KG.Output.Write.Line(String.Format("Your Ship has been hit by " + badGuy.Name + " at sector [{0},{1}]. No damage due to starbase shields.", (badGuy.Sector.X), (badGuy.Sector.Y)));
-                        }
-                        else
-                        {
-                            var ship = map.Playership.GetLocation();
-                            var distance = Utility.Utility.Distance(ship.Sector.X,
-                                                        ship.Sector.Y,
-                                                        badGuy.Sector.X,
-                                                        badGuy.Sector.Y);
-
-                            var attackingEnergy = Disruptors.Shoot(distance);
-
-                            var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
-
-                            map.Playership.AbsorbHitFrom(badGuy, attackingEnergy);
-
-                            ReportShieldsStatus(map, shieldsValueBeforeHit);
-
-                        }
+                        Game.HostileAttacks(map, badGuy);
                     }
                     return true;
                 }
             }
 
             return false;
+        }
+
+        private static void HostileAttacks(Map map, IShip badGuy)
+        {
+            if (Navigation.For(map.Playership).docked)
+            {
+                Game.AttackDockedPlayership(badGuy);
+            }
+            else
+            {
+                Game.AttackNonDockedPlayership(map, badGuy);
+            }
+        }
+
+        private static void AttackNonDockedPlayership(Map map, IShip badGuy)
+        {
+            var playerShipLocation = map.Playership.GetLocation();
+            var distance = Utility.Utility.Distance(playerShipLocation.Sector.X,
+                                                    playerShipLocation.Sector.Y,
+                                                    badGuy.Sector.X,
+                                                    badGuy.Sector.Y);
+
+
+            //Todo: this should be Disruptors.For(badGuy).Shoot()
+            var attackingEnergy = Disruptors.Shoot(distance);
+
+            var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
+
+            map.Playership.AbsorbHitFrom(badGuy, attackingEnergy);
+
+            Game.ReportShieldsStatus(map, shieldsValueBeforeHit);
+        }
+
+        private static void AttackDockedPlayership(IShip badGuy)
+        {
+            StarTrek_KG.Output.Write.Line(
+                String.Format(
+                    "Your Ship has been hit by " + badGuy.Name + " at sector [{0},{1}]. No damage due to starbase shields.",
+                    (badGuy.Sector.X), (badGuy.Sector.Y)));
         }
 
 

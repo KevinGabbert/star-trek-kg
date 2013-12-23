@@ -14,8 +14,9 @@ namespace StarTrek_KG.Subsystem
     //todo: fix hostiles and starbases and stars to test fully
     public class LongRangeScan : SubSystem_Base, IMap
     {
-        public LongRangeScan(Map map)
+        public LongRangeScan(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.LongRangeScan;
         }
@@ -43,7 +44,7 @@ namespace StarTrek_KG.Subsystem
             if (Damaged()) return;
 
             var sb = new StringBuilder();
-            var myLocation = this.Map.Playership.GetLocation();
+            var myLocation = this.ShipConnectedTo.GetLocation();
 
             Output.Write.SingleLine("-------------------");
 

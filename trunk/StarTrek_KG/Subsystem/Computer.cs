@@ -18,9 +18,10 @@ namespace StarTrek_KG.Subsystem
                                                     "nav = Navigation Calculator"
                                                 };
 
-        public Computer(Map map)
+        public Computer(Map map, Ship shipConnectedTo)
         {
             this.Map = map;
+            this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Computer;
             this.Damage = 0;
         }
@@ -42,7 +43,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (Damaged()) return;
 
-            var starship = this.Map.Playership;
+            var starship = this.ShipConnectedTo;
 
             switch (command.ToLower())
             {
@@ -56,16 +57,16 @@ namespace StarTrek_KG.Subsystem
                     Output.Write.PrintCurrentStatus(this.Map, 
                                               this.Damage, 
                                               starship,
-                                              this.Map.Playership.GetQuadrant());
+                                              this.ShipConnectedTo.GetQuadrant());
                     break;
                 case "tor":
-                    Torpedoes.For(this.Map.Playership).Calculator(this.Map);
+                    Torpedoes.For(this.ShipConnectedTo).Calculator(this.Map);
                     break;
                 case "bas":
-                    this.Map.StarbaseCalculator(); 
+                    this.Map.StarbaseCalculator(this.ShipConnectedTo); 
                     break;
                 case "nav":
-                    Navigation.For(this.Map.Playership).Calculator(this.Map);
+                    Navigation.For(this.ShipConnectedTo).Calculator(this.Map);
                     break;
                 default:
                     Output.Write.Line("Invalid computer command.");

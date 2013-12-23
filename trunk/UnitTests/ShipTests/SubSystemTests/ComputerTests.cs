@@ -39,7 +39,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var map = new Map(gameConfig);
 
-            _testComputer = new Computer(map); 
+            _testComputer = new Computer(map, map.Playership); 
         }
 
         [TearDownAttribute]

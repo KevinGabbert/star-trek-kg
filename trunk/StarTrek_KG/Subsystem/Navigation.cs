@@ -21,13 +21,14 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Navigation(Map map)
+        public Navigation(Map map, Ship shipConnectedTo)
         {
+            this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Navigation;
 
             this.Warp = new Warp();
-            this.Movement = new Movement(map);
+            this.Movement = new Movement(map, shipConnectedTo);
         }
 
         public override void OutputDamagedMessage()
@@ -80,14 +81,14 @@ namespace StarTrek_KG.Subsystem
 
             this.RepairOrTakeDamage(lastQuadX, lastQuadY);//,currentPosition
 
-            ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
+            ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
 
             //todo: upon arriving in quadrant, all damaged controls need to be enumerated
         }
 
         private void RepairOrTakeDamage(int lastQuadX, int lastQuadY) //, Sectors sectors
         {
-            Location thisShip = this.Map.Playership.GetLocation();
+            Location thisShip = this.ShipConnectedTo.GetLocation();
 
             docked = this.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Map.Quadrants.GetActive().Sectors);
             if (docked)
@@ -104,9 +105,9 @@ namespace StarTrek_KG.Subsystem
         private void SuccessfulDockWithStarbase()
         {
             Output.Write.ResourceLine("DockingMessageLowerShields");
-            Shields.For(this.Map.Playership).Damage = 0;
+            Shields.For(this.ShipConnectedTo).Damage = 0;
 
-            this.Map.Playership.RepairEverything(); 
+            this.ShipConnectedTo.RepairEverything(); 
 
             Output.Write.DockSuccess(StarTrekKGSettings.GetSetting<string>("PlayerShip"));
         }
@@ -114,7 +115,7 @@ namespace StarTrek_KG.Subsystem
         //todo: move to Game() object
         private void TakeAttackDamageOrRepair(Map map, int lastQuadY, int lastQuadX)
         {
-            var thisShip = this.Map.Playership.GetLocation();
+            var thisShip = this.ShipConnectedTo.GetLocation();
             var baddiesHangingAround =
                 Quadrants.Get(map, thisShip.Quadrant.X, thisShip.Quadrant.Y).GetHostiles().Count > 0;
             var stillInThisQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
@@ -125,13 +126,13 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                map.Playership.Subsystems.PartialRepair();
+                this.ShipConnectedTo.Subsystems.PartialRepair();
             }
         }
 
         public void Calculator(Map map)
         {
-            var thisShip = this.Map.Playership.GetLocation();
+            var thisShip = this.ShipConnectedTo.GetLocation();
 
             double quadX;
             double quadY;

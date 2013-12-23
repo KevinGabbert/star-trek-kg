@@ -35,7 +35,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                           AddStars = false
                                       });
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
             Assert.AreEqual(SubsystemType.LongRangeScan, _testLongRangeScanner.Type);
         }
 
@@ -86,7 +86,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                     }
                                       });
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
 
             Quadrant quadrant = Quadrants.Get(_testLRSMap, 0, 0);
             int starCount = quadrant.GetStarCount();
@@ -110,7 +110,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                     }
             });
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
 
             int starbaseCount;
             int starCount;
@@ -137,7 +137,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             });
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
 
             var starbaseCount = 0;
             var starCount = 0;
@@ -167,7 +167,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                     AddStars = false
             });
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
 
             var starbaseCount = 0;
             var starCount = 0;

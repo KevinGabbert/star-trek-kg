@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 
@@ -8,19 +9,19 @@ namespace StarTrek_KG.Subsystem
     public class Subsystems: List<ISubsystem>
     {
 
-        public Subsystems(Playfield.Map map)
+        public Subsystems(Playfield.Map map, Ship shipConnectedTo)
         {
             // TODO: Complete member initialization
 
             this.AddRange(new List<ISubsystem>(){
-                                     new Debug(map),
-                                     new Shields(map) { Energy = 0 },
-                                     new Computer(map),
-                                     new Navigation(map),
-                                     new ShortRangeScan(map),
-                                     new LongRangeScan(map),
-                                     new Torpedoes(map),
-                                     new Phasers(map)
+                                     new Debug(map, shipConnectedTo),
+                                     new Shields(map, shipConnectedTo) { Energy = 0 },
+                                     new Computer(map, shipConnectedTo),
+                                     new Navigation(map, shipConnectedTo),
+                                     new ShortRangeScan(map, shipConnectedTo),
+                                     new LongRangeScan(map, shipConnectedTo),
+                                     new Torpedoes(map, shipConnectedTo),
+                                     new Phasers(map, shipConnectedTo)
                                   });
         }
 
