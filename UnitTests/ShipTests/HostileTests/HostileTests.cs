@@ -125,7 +125,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void ALLHostilesAttack_ShipUndocked_NoShields()
         {
-            AttackAndCheck();
+            this.AttackAndCheck();
         }
 
         private void AttackAndCheck()

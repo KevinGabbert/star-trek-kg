@@ -2,6 +2,7 @@
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Subsystem
@@ -95,12 +96,16 @@ namespace StarTrek_KG.Subsystem
             if (remainingSubsystems.Count > 0)
             {
                 var rand = Utility.Utility.Random;
-                ISubsystem subSystemToDamage = remainingSubsystems[rand.Next(remainingSubsystems.Count - 1)];
-                subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
+                ISubsystem subSystemToDamage = null;
 
-                wasDamaged = true;
+               while (subSystemToDamage == null || subSystemToDamage.Type == SubsystemType.Debug)
+               {
+                    subSystemToDamage = remainingSubsystems[rand.Next(remainingSubsystems.Count - 1)];
+               }
 
-                //Console.WriteLine(subSystemToDamage.GetType().ToString() + " Damaged");
+               subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
+
+               wasDamaged = true;
             }
             else
             {
