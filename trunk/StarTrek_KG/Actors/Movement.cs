@@ -321,15 +321,7 @@ namespace StarTrek_KG.Actors
         //This prompt needs to be exposed to the user as an event
         public bool InvalidCourseCheck(out string direction)
         {
-            var course = Environment.NewLine +
-                      " 4   5   6 " + Environment.NewLine +
-                     @"   \ ↑ /  " + Environment.NewLine +
-                      "3 ← <*> → 7" + Environment.NewLine +
-                     @"   / ↓ \  " + Environment.NewLine +
-                      " 2   1   8" + Environment.NewLine +
-                      Environment.NewLine +
-                      "Enter Course: ";
-
+            var course = Output.Draw.Course() + "Enter Course: ";
 
             if (Command.PromptUser(course, out direction))
             {
