@@ -1,5 +1,6 @@
 ﻿using System;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
@@ -40,18 +41,30 @@ namespace StarTrek_KG.Actors
             //Clear Old Sector
             Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;
 
-            if (this.TravelThroughSectors(distanceEntered, distance, numericDirection, ref vectorLocationX, ref vectorLocationY, playershipQuadrant, lastSector)) goto EndNavigation;
+            Quadrant newLocation = null;
+
+            if (this.TravelThroughSectors(distanceEntered, 
+                                          distance, 
+                                          numericDirection, 
+                                          ref vectorLocationX, 
+                                          ref vectorLocationY, 
+                                          playershipQuadrant, 
+                                          lastSector))
+            {
+                newLocation = playershipQuadrant; //We are staying in the same quadrant
+                goto EndNavigation;
+            }
 
             this.CheckForGalacticBarrier(ref vectorLocationX, ref vectorLocationY);
 
             //todo: if quadrant hasnt changed because ship cant move off map, then output a message that the galactic barrier has been hit
 
             //todo: Map Friendly was set in obstacle check (move that here)
-            this.SetShipLocation(vectorLocationX, vectorLocationY);//Set new Sector
+            newLocation = this.SetShipLocation(vectorLocationX, vectorLocationY);//Set new Sector
 
         EndNavigation:
 
-            Game.MoveTimeForward(this.Map, new Coordinate(lastQuadX, lastQuadY), new Coordinate(playershipQuadrant.X, playershipQuadrant.Y));  
+            Game.MoveTimeForward(this.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
         }
 
 
@@ -263,7 +276,7 @@ namespace StarTrek_KG.Actors
             return returnVal;
         }
 
-        private void SetShipLocation(double x, double y)
+        private Quadrant SetShipLocation(double x, double y)
         {
             var shipSector = this.ShipConnectedTo.Sector;
             var shipQuadrant = this.ShipConnectedTo.QuadrantDef;
@@ -277,8 +290,18 @@ namespace StarTrek_KG.Actors
             shipQuadrant.X = quadX;
             shipQuadrant.Y = quadY;
 
-            this.ShipConnectedTo.GetQuadrant().Active = true;
+            Quadrant newActiveQuadrant = this.ShipConnectedTo.GetQuadrant();
+
+            if (newActiveQuadrant == null)
+            {
+                throw new GameException("No quadrant to make active");
+            }
+
+            newActiveQuadrant.Active = true;
+
             Map.SetFriendly(this.Map); //sets friendly in Active Quadrant  
+
+            return newActiveQuadrant; //contains the newly set sector in it
         }
 
         //todo: put these values in app.config

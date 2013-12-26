@@ -27,20 +27,20 @@ namespace StarTrek_KG.Playfield
 
         //todo: query quadrants for number of hostiles (change quadrants to a collection!) and get rid of "totalHostiles variable)
 
-        public static Quadrant Get(Map map, int quadrantX, int quadrantY)
+        public static Quadrant Get(Map map, Coordinate quadrant)
         {
-            var i = map.Quadrants.Where(q => q.X == quadrantX && q.Y == quadrantY);
+            var i = map.Quadrants.Where(q => q.X == quadrant.X && q.Y == quadrant.Y);
             return i.Single();
         }
 
-        public static Quadrant Get(List<Quadrant> quadrants, int quadrantX, int quadrantY)
+        public static Quadrant Get(List<Quadrant> quadrants, Coordinate quadrant)
         {
             Quadrant retVal = null;
 
             try
             {
                 //todo: change this back to retval
-                retVal = quadrants.Single(q => q.X == quadrantX && q.Y == quadrantY);
+                retVal = quadrants.Single(q => q.X == quadrant.X && q.Y == quadrant.Y);
             }
             catch(InvalidOperationException ex)
             {
