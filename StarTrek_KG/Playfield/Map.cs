@@ -540,8 +540,11 @@ namespace StarTrek_KG.Playfield
             //to have multiple friendlies, as is the eventual plan.
 
             Map.RemoveAllFriendlies(map);
-            Sector.Get(map.Quadrants.GetActive().Sectors, map.Playership.Sector.X,
-                       map.Playership.Sector.Y).Item = SectorItem.Friendly;
+
+            var activeQuadrant = map.Quadrants.GetActive();
+
+            var newActiveSector = Sector.Get(activeQuadrant.Sectors, map.Playership.Sector.X, map.Playership.Sector.Y);
+            newActiveSector.Item = SectorItem.Friendly;
         }
 
         public override string ToString()

@@ -116,8 +116,7 @@ namespace StarTrek_KG.Subsystem
         private void TakeAttackDamageOrRepair(Map map, int lastQuadY, int lastQuadX)
         {
             var thisShip = this.ShipConnectedTo.GetLocation();
-            var baddiesHangingAround =
-                Quadrants.Get(map, thisShip.Quadrant.X, thisShip.Quadrant.Y).GetHostiles().Count > 0;
+            var baddiesHangingAround = Quadrants.Get(map, thisShip.Quadrant).GetHostiles().Count > 0;
             var stillInThisQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
 
             if (baddiesHangingAround && stillInThisQuadrant)

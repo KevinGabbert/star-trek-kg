@@ -121,7 +121,7 @@ namespace StarTrek_KG.Subsystem
         {
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
-            Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
+            Quadrant quadrant = Quadrants.Get(map, location.Quadrant);
             Sector qLocation = quadrant.Sectors.Single(s => s.X == newX && s.Y == newY);
 
             switch (qLocation.Item)

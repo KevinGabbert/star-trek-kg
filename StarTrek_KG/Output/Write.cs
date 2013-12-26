@@ -141,7 +141,7 @@ namespace StarTrek_KG.Output
                     string starCount = "*";
                     string hostileCount = "*";
 
-                    var quadrant = Playfield.Quadrants.Get(Quadrants, quadrantLB, quadrantUB);
+                    var quadrant = Playfield.Quadrants.Get(Quadrants, new Coordinate(quadrantLB, quadrantUB));
                     if (quadrant.Scanned)
                     {
                         starbaseCount = quadrant.GetStarbaseCount().ToString();

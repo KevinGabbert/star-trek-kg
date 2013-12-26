@@ -41,7 +41,7 @@ namespace StarTrek_KG.Subsystem
             if (Damaged()) return;
 
             var location = this.ShipConnectedTo.GetLocation();
-            Quadrant quadrant = Quadrants.Get(map, location.Quadrant.X, location.Quadrant.Y);
+            Quadrant quadrant = Quadrants.Get(map, location.Quadrant);
 
             var write = (new Output.PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel")));
             write.Print(quadrant, map); 

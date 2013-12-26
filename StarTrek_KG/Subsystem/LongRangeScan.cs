@@ -59,7 +59,9 @@ namespace StarTrek_KG.Subsystem
                     int starCount;
                     int hostileCount;
 
-                    LongRangeScan.GetMapInfoForScanner(map, quadrantX, quadrantY, out hostileCount, out starbaseCount, out starCount);
+                    var quadrantToScan = new Coordinate(quadrantX, quadrantY);
+
+                    LongRangeScan.GetMapInfoForScanner(map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
 
                     sb.Append(String.Format("{0}{1}{2} ", hostileCount.FormatForLRS(), starbaseCount.FormatForLRS(), starCount.FormatForLRS()));
                 }
@@ -72,7 +74,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public static int GetMapInfoForScanner(Map map, int quadrantX, int quadrantY,
+        public static int GetMapInfoForScanner(Map map, Coordinate quadrant,
                                                         out int hostileCount,
                                                         out int starbaseCount,
                                                         out int starCount)
@@ -81,17 +83,18 @@ namespace StarTrek_KG.Subsystem
             starbaseCount = 0;
             starCount = 0;
 
-            if (quadrantY >= 0 &&
-                quadrantX >= 0 &&
-                quadrantY < Constants.QUADRANT_MAX &&
-                quadrantX < Constants.QUADRANT_MAX)
+            if (quadrant.Y >= 0 &&
+                quadrant.X >= 0 &&
+                quadrant.Y < Constants.QUADRANT_MAX &&
+                quadrant.X < Constants.QUADRANT_MAX)
             {
-                Quadrant quadrant = Quadrants.Get(map, quadrantX, quadrantY);
-                quadrant.Scanned = true;
+                Quadrant quadrantToScan = Quadrants.Get(map, quadrant);
 
-                hostileCount = quadrant.GetHostiles().Count;
-                starbaseCount = quadrant.GetStarbaseCount();
-                starCount = quadrant.GetStarCount();
+                hostileCount = quadrantToScan.GetHostiles().Count;
+                starbaseCount = quadrantToScan.GetStarbaseCount();
+                starCount = quadrantToScan.GetStarCount();
+
+                quadrantToScan.Scanned = true;
             }
             return hostileCount;
         }
