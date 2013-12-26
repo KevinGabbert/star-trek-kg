@@ -13,7 +13,6 @@ namespace StarTrek_KG.Actors
             get { throw new global::System.NotImplementedException(); }
         }
 
-
         public global::System.Type Type()
         {
             throw new global::System.NotImplementedException();
@@ -28,7 +27,6 @@ namespace StarTrek_KG.Actors
         {
             get { throw new global::System.NotImplementedException(); }
         }
-
 
         global::System.Type ISectorObject.Type
         {

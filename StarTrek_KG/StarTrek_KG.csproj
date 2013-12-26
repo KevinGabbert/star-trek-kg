@@ -75,6 +75,7 @@
     <Compile Include="Interfaces\IStar.cs" />
     <Compile Include="Interfaces\ISystem.cs" />
     <Compile Include="Interfaces\IWeapon.cs" />
+    <Compile Include="Output\Draw.cs" />
     <Compile Include="Output\PrintSector.cs" />
     <Compile Include="Structs\NonNullable.cs" />
     <Compile Include="Actors\BlackHole.cs" />

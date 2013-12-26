@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
-using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
@@ -131,23 +130,26 @@ namespace StarTrek_KG.Output
         {
             Console.WriteLine();
             var sb = new StringBuilder();
-            ResourceLine("GalacticRecordLine");
+            Write.ResourceLine("GalacticRecordLine");
+
             for (var quadrantLB = 0; quadrantLB < Constants.QUADRANT_MAX; quadrantLB++)
             {
                 for (var quadrantUB = 0; quadrantUB < Constants.QUADRANT_MAX; quadrantUB++)
                 {
-                    sb.Append("| ");
-                    const int starbaseCount = 0;
-                    const int starCount = -1;
+                    sb.Append("|");
+                    string starbaseCount = "*";
+                    string starCount = "*";
+                    string hostileCount = "*";
 
                     var quadrant = Playfield.Quadrants.Get(Quadrants, quadrantLB, quadrantUB);
                     if (quadrant.Scanned)
                     {
-                        //starbaseCount = quadrant.Starbase ? 1 : 0;
-                        //starCount = quadrant.Stars;
+                        starbaseCount = quadrant.GetStarbaseCount().ToString();
+                        starCount = quadrant.GetStarCount().ToString();
+                        hostileCount = quadrant.GetHostiles().Count.ToString();
                     }
 
-                    sb.Append(String.Format("{0}{1}{2} ", quadrant.GetHostiles().Count, starbaseCount, starCount));
+                    sb.Append(String.Format("{0}{1}{2}", hostileCount, starbaseCount, starCount));
                 }
 
                 sb.Append("|");
@@ -165,95 +167,6 @@ namespace StarTrek_KG.Output
                 Console.WriteLine(str);
             }
             Console.WriteLine();
-        }
-
-        public static void AppTitle()
-        {
-            int randomVal = Utility.Utility.Random.Next(3);
-
-            switch (randomVal)
-            {
-                case 0:
-                    Write.DrawAppTitleItem("Classic", 7);
-                    break;
-
-                case 2:
-                    Write.DrawAppTitleItem("TNG", 7);
-                    break;
-
-                default:
-                    Write.DrawAppTitleItem("Movie", 7);
-                    break;
-            }
-
-            Write.Resource("AppTitleSpace");
-
-            Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
-            randomVal = Utility.Utility.Random.Next(20);
-            switch (randomVal)
-            {
-                case 1:
-                    Write.DrawAppTitleItem("ExcelsiorSmall", 8);
-                    break;
-                
-                case 2:
-                    Write.DrawAppTitleItem("DaedalusSmall", 8);
-                    break;
-
-                case 3:
-                    Write.DrawAppTitleItem("Reliant", 8);
-                    break;
-
-                case 4:
-                    Write.DrawAppTitleItem("D7Front", 6);
-                    break;
-
-                case 5:
-                    Write.DrawAppTitleItem("KTingaSide", 9);
-                    break;
-
-                case 6:
-                    Write.DrawAppTitleItem("DreadnaughtSide", 9);
-                    break;
-
-                case 7:
-                    Write.DrawAppTitleItem("Excelsior", 9);
-                    break;
-
-                case 8:
-                    Write.DrawAppTitleItem("EnterpriseB", 10);
-                    break;
-
-                case 9:
-                    Write.DrawAppTitleItem("EnterpriseD", 9);
-                    break;
-
-                case 10:
-                    Write.DrawAppTitleItem("EnterpriseD2", 7);
-                    break;
-
-                case 11:
-                    Write.DrawAppTitleItem("BattlecruiserSmall", 6);
-                    break;
-
-                case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19: //stacking the odds in favor of the 2 ships... :D
-                    Write.DrawAppTitleItem("2ShipsSmall", 7);
-                    break;
-
-                default:
-                    Write.DrawAppTitleItem("2ShipsSmall", 7);
-                    break;
-            }
-
-            Write.Resource("AppTitleSpace");
-        }
-
-        private static void DrawAppTitleItem(string itemName, int endingLine)
-        {
-            for (int i = 1; i < endingLine; i++)
-            {
-                Write.Resource("AppTitle" + itemName + i);
-            }
         }
 
         public static void Panel(string panelHead, IEnumerable<string> strings)
