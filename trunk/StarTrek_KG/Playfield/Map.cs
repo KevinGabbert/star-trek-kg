@@ -147,6 +147,11 @@ namespace StarTrek_KG.Playfield
             
             //todo: this can be done with a single loop populating a list of XYs
 
+            this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulate);
+        }
+
+        private void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate)
+        {
             for (var quadrantX = 0; quadrantX < Constants.QUADRANT_MAX; quadrantX++) //todo: app.config
             {
                 for (var quadrantY = 0; quadrantY < Constants.QUADRANT_MAX; quadrantY++)
@@ -155,13 +160,14 @@ namespace StarTrek_KG.Playfield
                     var newQuadrant = new Quadrant();
                     var quadrantXY = new Coordinate(quadrantX, quadrantY);
 
-                    newQuadrant.Create(this, names, baddieNames, quadrantXY, out index, itemsToPopulate, this.GameConfig.AddStars);
+                    newQuadrant.Create(this, names, baddieNames, quadrantXY, out index, itemsToPopulate,
+                                       this.GameConfig.AddStars);
                     this.Quadrants.Add(newQuadrant);
 
                     if (Constants.DEBUG_MODE)
                     {
                         Output.Write.SingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
-                        
+
                         Output.Write.DisplayPropertiesOf(newQuadrant);
 
                         //TODO: each object within quadrant needs a .ToString()

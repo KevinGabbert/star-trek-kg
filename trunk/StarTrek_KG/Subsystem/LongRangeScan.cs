@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
@@ -55,11 +56,11 @@ namespace StarTrek_KG.Subsystem
                     sb.Append("| ");
 
                     //todo: turn these into props.
-                    int starbaseCount;
-                    int starCount;
-                    int hostileCount;
+                    int starbaseCount = -1;
+                    int starCount = -1;
+                    int hostileCount = -1;
 
-                    var quadrantToScan = new Coordinate(quadrantX, quadrantY);
+                    var quadrantToScan = SetQuadrantToScan(quadrantY, quadrantX, myLocation);
 
                     LongRangeScan.GetMapInfoForScanner(map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
 
@@ -72,6 +73,33 @@ namespace StarTrek_KG.Subsystem
                 sb.Length = 0;
                 Output.Write.SingleLine("-------------------");
             }
+        }
+
+
+        //todo: fix this
+        private static Coordinate SetQuadrantToScan(int quadrantY, int quadrantX, Location myLocation)
+        {
+            Coordinate quadrantToScan;
+
+            var boundsHigh = StarTrekKGSettings.GetSetting<int>("BoundsHigh");
+            var boundsLow = StarTrekKGSettings.GetSetting<int>("BoundsLow");
+
+            if ((myLocation.Quadrant.X > boundsHigh) || myLocation.Quadrant.X - 1 < boundsLow)
+            {
+                quadrantToScan = new Coordinate(quadrantX, quadrantY);
+            }
+            else
+            {
+                if (myLocation.Quadrant.X + 1 > boundsHigh)
+                {
+                    quadrantToScan = new Coordinate(quadrantX - 1, quadrantY);
+                }
+                else
+                {
+                    quadrantToScan = new Coordinate(quadrantX, quadrantY);
+                }
+            }
+            return quadrantToScan;
         }
 
         public static int GetMapInfoForScanner(Map map, Coordinate quadrant,
