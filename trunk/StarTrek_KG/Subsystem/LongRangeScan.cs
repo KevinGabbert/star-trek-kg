@@ -60,9 +60,11 @@ namespace StarTrek_KG.Subsystem
                     int starCount = -1;
                     int hostileCount = -1;
 
-                    var quadrantToScan = SetQuadrantToScan(quadrantY, quadrantX, myLocation);
-
-                    LongRangeScan.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+                    if (!OutOfBounds(quadrantY, quadrantX))
+                    {
+                        Coordinate quadrantToScan = SetQuadrantToScan(quadrantY, quadrantX, myLocation);
+                        LongRangeScan.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+                    }
 
                     sb.Append(String.Format("{0}{1}{2} ", hostileCount.FormatForLRS(), starbaseCount.FormatForLRS(), starCount.FormatForLRS()));
                 }
@@ -75,30 +77,47 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
+        private static bool OutOfBounds(int quadrantY, int quadrantX)
+        {
+            return quadrantX < 0 || quadrantY < 0 || quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX;
+        }
 
         //todo: fix this
         private static Coordinate SetQuadrantToScan(int quadrantY, int quadrantX, Location myLocation)
         {
-            Coordinate quadrantToScan;
+            var max = StarTrekKGSettings.GetSetting<int>("QuadrantMax") - 1;
+            var min = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
 
-            var boundsHigh = StarTrekKGSettings.GetSetting<int>("BoundsHigh");
-            var boundsLow = StarTrekKGSettings.GetSetting<int>("BoundsLow");
+            int divinedQuadX = quadrantX;
+            int divinedQuadY = quadrantY;
 
-            if ((myLocation.Quadrant.X > boundsHigh) || myLocation.Quadrant.X - 1 < boundsLow)
+            if (quadrantX - 1 < min)
             {
-                quadrantToScan = new Coordinate(quadrantX, quadrantY);
+                divinedQuadX = min;
             }
-            else
+
+            if ((quadrantX > max))
             {
-                if (myLocation.Quadrant.X + 1 > boundsHigh)
-                {
-                    quadrantToScan = new Coordinate(quadrantX - 1, quadrantY);
-                }
-                else
-                {
-                    quadrantToScan = new Coordinate(quadrantX, quadrantY);
-                }
+                divinedQuadX = max;
             }
+
+            if (quadrantX + 1 > max)
+            {
+                divinedQuadX = max;
+            }
+
+            if (quadrantY - 1 < min)
+            {
+                divinedQuadY = min;
+            }
+
+            if ((quadrantY > max))
+            {
+                divinedQuadY = max;
+            }
+
+            var quadrantToScan = new Coordinate(divinedQuadX, divinedQuadY);
+
             return quadrantToScan;
         }
 

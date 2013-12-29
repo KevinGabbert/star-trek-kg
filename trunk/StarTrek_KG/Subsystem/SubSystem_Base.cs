@@ -50,6 +50,8 @@ namespace StarTrek_KG.Subsystem
         public virtual void FullRepair()
         {
             this.Damage = 0; //TODO: StarTrekKGSettings.GetSetting<int>("this.name");
+
+            //todo: if this system is not debug, then repair
             this.OutputRepairedMessage();
         }
 

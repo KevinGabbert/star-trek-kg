@@ -3,6 +3,7 @@ using C = System.Console;
 
 namespace StarTrek_KG.Subsystem
 {
+    //todo: mock this out for tests.
     public class Console
     {
         public void Write(string text)
