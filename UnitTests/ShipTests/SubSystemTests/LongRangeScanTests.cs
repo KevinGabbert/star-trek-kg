@@ -57,7 +57,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             for (int i = 0; i < 100; i++)
             {
-                Console.Write("-");
+                Command.Console.Write("-");
                 this.CheckStarsInQuadrant();
             }
         }
@@ -120,6 +120,28 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             Assert.AreEqual(2, starCount);
         }
+
+
+        [Test]
+        public void GetInfoFromScanner()
+        {
+            _testLRSMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
+
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Hostile)
+                    },
+                AddStars = false
+            });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
+            _testLongRangeScanner.Controls();
+        }
+
 
         [Test]
         public void GetHostileInfoFromScanner()
@@ -229,7 +251,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void ControlsDamaged()
         {
             _testLongRangeScanner.Damage = 47;
-            _testLongRangeScanner.Controls(_testLRSMap);
+            _testLongRangeScanner.Controls();
             Assert.IsTrue(_testLongRangeScanner.Damaged());
         }
     }

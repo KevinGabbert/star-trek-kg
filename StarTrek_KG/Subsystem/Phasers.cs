@@ -52,10 +52,10 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public void Controls(Map map, IShip shipFiringPhasers)
+        public void Controls(IShip shipFiringPhasers)
         {
             if (this.Damaged()) return;
-            if (Quadrants.NoHostiles(map.Quadrants.GetActive().GetHostiles()))
+            if (Quadrants.NoHostiles(this.Map.Quadrants.GetActive().GetHostiles()))
             {
                 return;
             }
@@ -64,7 +64,7 @@ namespace StarTrek_KG.Subsystem
 
             Output.Write.Line("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
 
-            if (!Phasers.PromptUserForPhaserEnergy(map, out phaserEnergy))
+            if (!Phasers.PromptUserForPhaserEnergy(this.Map, out phaserEnergy))
             {
                 Output.Write.Line("Invalid energy level.");
                 return;

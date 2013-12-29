@@ -40,7 +40,7 @@ namespace StarTrek_KG.Subsystem
             throw new NotImplementedException();
         }
 
-        public void Controls(Map map)
+        public void Controls()
         {
             if (Damaged()) return;
 
@@ -62,7 +62,7 @@ namespace StarTrek_KG.Subsystem
 
                     var quadrantToScan = SetQuadrantToScan(quadrantY, quadrantX, myLocation);
 
-                    LongRangeScan.GetMapInfoForScanner(map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+                    LongRangeScan.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
 
                     sb.Append(String.Format("{0}{1}{2} ", hostileCount.FormatForLRS(), starbaseCount.FormatForLRS(), starCount.FormatForLRS()));
                 }
