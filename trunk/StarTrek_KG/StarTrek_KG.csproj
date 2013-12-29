@@ -108,6 +108,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Playfield\Quadrant.cs" />
     <Compile Include="Enums\SectorItem.cs" />
+    <Compile Include="Subsystem\Console.cs" />
     <Compile Include="Subsystem\Debug.cs" />
     <Compile Include="Subsystem\Disruptors.cs" />
     <Compile Include="Subsystem\LongRangeScan.cs" />

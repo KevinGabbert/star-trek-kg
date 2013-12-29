@@ -43,15 +43,15 @@ namespace StarTrek_KG.Output
             this.Condition = condition;
             this.Location = location;
 
-            Console.WriteLine("");
-            Console.WriteLine(StarTrekKGSettings.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
+            Command.Console.WriteLine("");
+            Command.Console.WriteLine(StarTrekKGSettings.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
 
             for (int i = 0; i < 8; i++ )
             {
                 PrintSector.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles);
             }
 
-            Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
+            Command.Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
         private string GetRowIndicator(int row, Map map)
@@ -117,7 +117,7 @@ namespace StarTrek_KG.Output
 
                         if (totalHostiles < 1)
                         {
-                            Console.WriteLine("bug. hostile not removed from display.");
+                            Command.Console.WriteLine("bug. hostile not removed from display.");
                         }
 
                         sb.Append(Constants.HOSTILE);
@@ -135,7 +135,7 @@ namespace StarTrek_KG.Output
                 sb.Append(suffix);
             }
 
-            Console.WriteLine(sb.ToString());
+            Command.Console.WriteLine(sb.ToString());
             sb.Length = 0;
         }
 
@@ -169,15 +169,15 @@ namespace StarTrek_KG.Output
 
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
-            Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"),
+            Command.Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"),
                               (quadrant.GetHostiles().Count == 1 ? "" : "s"));
 
             foreach (var hostile in quadrant.GetHostiles())
             {
-                Console.WriteLine(StarTrekKGSettings.GetText("IDHostile"), hostile.Name);
+                Command.Console.WriteLine(StarTrekKGSettings.GetText("IDHostile"), hostile.Name);
             }
 
-            Console.WriteLine("");
+            Command.Console.WriteLine("");
 
             if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
             {

@@ -317,7 +317,7 @@ namespace UnitTests.ShipTests.HostileTests
             for(int i = 0; i < 1000; i++)
             {
                 var x = new Game();
-                Console.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% i: " + i);
+                Command.Console.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% i: " + i);
                 TestMap3Scenario();
             }
         }

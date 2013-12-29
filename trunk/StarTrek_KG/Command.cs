@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
+using Con = StarTrek_KG.Subsystem.Console;
 
 namespace StarTrek_KG
 {
@@ -13,6 +14,7 @@ namespace StarTrek_KG
         #region Properties
 
             public Map Map { get; set; }
+            public static Con Console { get; set; }
 
         #endregion
 
@@ -34,6 +36,7 @@ namespace StarTrek_KG
             }
 
             this.Map = map;
+            Command.Console = new Con();
         }
 
         #region Event Handlers
@@ -70,9 +73,9 @@ namespace StarTrek_KG
 
         public void Prompt(string shipName)
         {
-            Console.Write(this.Map.Text);
+            Command.Console.Write(this.Map.Text);
 
-            var readLine = Console.ReadLine();
+            var readLine = Command.Console.ReadLine();
             if (readLine == null) return;
 
             var command = readLine.Trim().ToLower();
@@ -83,14 +86,14 @@ namespace StarTrek_KG
                     break;
 
                 case "srs": 
-                    ShortRangeScan.For(this.Map.Playership).Controls(this.Map);
+                    ShortRangeScan.For(this.Map.Playership).Controls();
                     break;
 
                 case "lrs": 
-                    LongRangeScan.For(this.Map.Playership).Controls(this.Map);
+                    LongRangeScan.For(this.Map.Playership).Controls();
                     break;
 
-                case "pha": Phasers.For(this.Map.Playership).Controls(this.Map, this.Map.Playership);
+                case "pha": Phasers.For(this.Map.Playership).Controls(this.Map.Playership);
                     break;
 
                 case "tor": 
@@ -185,7 +188,7 @@ namespace StarTrek_KG
             {
                 Output.Write.Prompt(promptMessage);
 
-                value = Double.Parse(Console.ReadLine());
+                value = Double.Parse(Command.Console.ReadLine());
 
                 return true;
             }
@@ -203,9 +206,9 @@ namespace StarTrek_KG
 
             try
             {
-                Console.Write(promptMessage);
+                Command.Console.Write(promptMessage);
 
-                var readLine = Console.ReadLine();
+                var readLine = Command.Console.ReadLine();
                 if (readLine != null) value = readLine.ToLower();
 
                 return true;

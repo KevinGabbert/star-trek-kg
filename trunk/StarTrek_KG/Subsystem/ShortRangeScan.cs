@@ -36,15 +36,15 @@ namespace StarTrek_KG.Subsystem
             throw new NotImplementedException();
         }
 
-        public void Controls(Map map)
+        public void Controls()
         {
             if (Damaged()) return;
 
             var location = this.ShipConnectedTo.GetLocation();
-            Quadrant quadrant = Quadrants.Get(map, location.Quadrant);
+            Quadrant quadrant = Quadrants.Get(this.Map, location.Quadrant);
 
             var write = (new Output.PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel")));
-            write.Print(quadrant, map); 
+            write.Print(quadrant, this.Map); 
 
             quadrant.Scanned = true;
         }
