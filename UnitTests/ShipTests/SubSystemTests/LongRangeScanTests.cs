@@ -123,23 +123,60 @@ namespace UnitTests.ShipTests.SubSystemTests
 
 
         [Test]
-        public void GetInfoFromScanner()
+        public void GetInfoFromScanner00()
         {
             _testLRSMap = new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
-
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Hostile)
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                     },
                 AddStars = false
             });
 
             _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
             _testLongRangeScanner.Controls();
+
+            //todo: mock Write, Pass it in, and test its Output
+        }
+
+        [Test]
+        public void GetInfoFromScanner44()
+        {
+            _testLRSMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)
+                    },
+                AddStars = false
+            });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
+            _testLongRangeScanner.Controls();
+
+            //todo: mock Write, Pass it in, and test its Output
+        }
+
+        [Test]
+        public void GetInfoFromScannerMaxMax()
+        {
+            _testLRSMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                SectorDefs = new SectorDefs
+                    {
+                        new SectorDef(new LocationDef(new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1), new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1)), SectorItem.Friendly)
+                    },
+                AddStars = false
+            });
+
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership);
+            _testLongRangeScanner.Controls();
+
+            //todo: mock Write, Pass it in, and test its Output
         }
 
 

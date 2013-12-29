@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
-using Con = StarTrek_KG.Subsystem.Console;
+using KGConsole = StarTrek_KG.Subsystem.Console;
 
 namespace StarTrek_KG
 {
@@ -14,7 +14,17 @@ namespace StarTrek_KG
         #region Properties
 
             public Map Map { get; set; }
-            public static Con Console { get; set; }
+
+            //todo: make this non-static so we can test this class..
+
+            private static KGConsole _console;
+
+            public static KGConsole Console
+            {
+                get { return _console ?? (_console = new KGConsole()); }
+                set { _console = value; }
+            }
+
 
         #endregion
 
@@ -36,7 +46,6 @@ namespace StarTrek_KG
             }
 
             this.Map = map;
-            Command.Console = new Con();
         }
 
         #region Event Handlers
