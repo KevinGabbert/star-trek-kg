@@ -36,7 +36,7 @@ namespace StarTrek_KG.Output
         private static void RandomPicture()
         {
             Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
-            int randomVal = Utility.Utility.Random.Next(120);
+            int randomVal = Utility.Utility.Random.Next(150);
             switch (randomVal)
             {
                 case 1:
@@ -75,8 +75,20 @@ namespace StarTrek_KG.Output
                     Draw.AppTitleItem("EnterpriseD", 9);
                     break;
 
+                case 10:
+                    Draw.AppTitleItem("AkulaSmall", 7);
+                    break;
+
                 case 11:
                     Draw.AppTitleItem("BattlecruiserSmall", 6);
+                    break;
+
+                case 12:
+                    Draw.AppTitleItem("SaladinSmall", 6);
+                    break;
+
+                case 13:
+                    Draw.AppTitleItem("EagleSmall", 6);
                     break;
 
                 default:
