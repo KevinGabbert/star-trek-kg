@@ -24,7 +24,8 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write.LongRangeScanDamageMessage();
+            Output.Write.Resource("LRSDamaged");
+            Output.Write.Resource("RepairsUnderway");
         }
         public override void OutputRepairedMessage()
         {
@@ -53,7 +54,7 @@ namespace StarTrek_KG.Subsystem
             {
                 for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
                 {
-                    sb.Append("| ");
+                    sb.Append(Constants.SCAN_SECTOR_DIVIDER + " ");
 
                     //todo: turn these into props.
                     int starbaseCount = -1;
@@ -69,9 +70,9 @@ namespace StarTrek_KG.Subsystem
                     sb.Append(String.Format("{0}{1}{2} ", hostileCount.FormatForLRS(), starbaseCount.FormatForLRS(), starCount.FormatForLRS()));
                 }
 
-                sb.Append("|");
+                sb.Append(Constants.SCAN_SECTOR_DIVIDER);
 
-                Output.Write.Line(sb.ToString());
+                Output.Write.SingleLine(sb.ToString());
                 sb.Length = 0;
                 Output.Write.SingleLine("-------------------");
             }

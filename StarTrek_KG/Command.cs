@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using StarTrek_KG.Output;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
 using KGConsole = StarTrek_KG.Subsystem.Console;
@@ -124,7 +125,7 @@ namespace StarTrek_KG
                     break;
 
                 default: //case "?":
-                    Output.Write.Panel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
+                    Draw.Panel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
                     break;
             }
         }

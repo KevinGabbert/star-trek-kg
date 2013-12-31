@@ -55,7 +55,8 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputRepairedMessage()
         {
-            throw new NotImplementedException();
+            //todo: don't call this. throws exception when this subsystem is not damaged
+            //throw new NotImplementedException();
         }
 
         public override void OutputMalfunctioningMessage()
