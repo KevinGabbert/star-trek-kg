@@ -20,7 +20,8 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write.ShortRangeScanDamageMessage();
+            Output.Write.Resource("SRSDamaged");
+            Output.Write.Resource("RepairsUnderway");
         }
         public override void OutputRepairedMessage()
         {

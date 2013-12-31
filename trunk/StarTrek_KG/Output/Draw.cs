@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace StarTrek_KG.Output
 {
@@ -14,21 +12,21 @@ namespace StarTrek_KG.Output
             switch (randomVal)
             {
                 case 0:
-                    Draw.AppTitleItem("Classic", 7);
+                    AppTitleItem("Classic", 7);
                     break;
 
                 case 2:
-                    Draw.AppTitleItem("TNG", 7);
+                    AppTitleItem("TNG", 7);
                     break;
 
                 default:
-                    Draw.AppTitleItem("Movie", 7);
+                    AppTitleItem("Movie", 7);
                     break;
             }
 
             Write.Resource("AppTitleSpace");
 
-            Draw.RandomPicture();
+            RandomPicture();
 
             Write.Resource("AppTitleSpace");
         }
@@ -40,59 +38,59 @@ namespace StarTrek_KG.Output
             switch (randomVal)
             {
                 case 1:
-                    Draw.AppTitleItem("ExcelsiorSmall", 8);
+                    AppTitleItem("ExcelsiorSmall", 8);
                     break;
 
                 case 2:
-                    Draw.AppTitleItem("DaedalusSmall", 8);
+                    AppTitleItem("DaedalusSmall", 8);
                     break;
 
                 case 3:
-                    Draw.AppTitleItem("Reliant", 8);
+                    AppTitleItem("Reliant", 8);
                     break;
 
                 case 4:
-                    Draw.AppTitleItem("D7Front", 6);
+                    AppTitleItem("D7Front", 6);
                     break;
 
                 case 5:
-                    Draw.AppTitleItem("KTingaSide", 9);
+                    AppTitleItem("KTingaSide", 9);
                     break;
 
                 case 6:
-                    Draw.AppTitleItem("DreadnaughtSide", 9);
+                    AppTitleItem("DreadnaughtSide", 9);
                     break;
 
                 case 7:
-                    Draw.AppTitleItem("Excelsior", 9);
+                    AppTitleItem("Excelsior", 9);
                     break;
 
                 case 8:
-                    Draw.AppTitleItem("EnterpriseB", 10);
+                    AppTitleItem("EnterpriseB", 10);
                     break;
 
                 case 9:
-                    Draw.AppTitleItem("EnterpriseD", 9);
+                    AppTitleItem("EnterpriseD", 9);
                     break;
 
                 case 10:
-                    Draw.AppTitleItem("AkulaSmall", 7);
+                    AppTitleItem("AkulaSmall", 7);
                     break;
 
                 case 11:
-                    Draw.AppTitleItem("BattlecruiserSmall", 6);
+                    AppTitleItem("BattlecruiserSmall", 6);
                     break;
 
                 case 12:
-                    Draw.AppTitleItem("SaladinSmall", 6);
+                    AppTitleItem("SaladinSmall", 6);
                     break;
 
                 case 13:
-                    Draw.AppTitleItem("EagleSmall", 6);
+                    AppTitleItem("EagleSmall", 6);
                     break;
 
                 default:
-                    Draw.AppTitleItem("2ShipsSmall", 7);
+                    AppTitleItem("2ShipsSmall", 7);
                     break;
             }
         }
@@ -114,6 +112,20 @@ namespace StarTrek_KG.Output
                    @"   / ↓ \  " + Environment.NewLine +
                    " 2   1   8" + Environment.NewLine +
                    Environment.NewLine;
+        }
+
+        public static void Panel(string panelHead, IEnumerable<string> strings)
+        {
+            Command.Console.WriteLine();
+            Command.Console.WriteLine(panelHead);
+            Command.Console.WriteLine();
+
+            foreach (var str in strings)
+            {
+                Command.Console.WriteLine(str);
+            }
+
+            Command.Console.WriteLine();
         }
     }
 }
