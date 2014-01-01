@@ -8,7 +8,7 @@ using StarTrek_KG.Settings;
 namespace UnitTests.ShipTests.MapTests
 {
     [TestFixture]
-    public class DockingTests
+    public class DockingLocationTests
     {
         //Todo: docking energy tests
 
@@ -17,11 +17,7 @@ namespace UnitTests.ShipTests.MapTests
         [SetUp]
         public void Setup()
         {
-            Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
-
-            Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
+            TestRunner.GetTestConstants();
 
             _testMapNoObjects = (new Map(new GameConfig
             {
