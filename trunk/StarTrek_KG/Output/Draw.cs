@@ -38,7 +38,7 @@ namespace StarTrek_KG.Output
             switch (randomVal)
             {
                 case 1:
-                    AppTitleItem("ExcelsiorSmall", 8);
+                    AppTitleItem("ExcelsiorMedium", 8);
                     break;
 
                 case 2:
@@ -54,23 +54,23 @@ namespace StarTrek_KG.Output
                     break;
 
                 case 5:
-                    AppTitleItem("KTingaSide", 9);
+                    AppTitleItem("D-10-", 6);
                     break;
 
                 case 6:
-                    AppTitleItem("DreadnaughtSide", 9);
+                    AppTitleItem("D-4-", 7);
                     break;
 
                 case 7:
-                    AppTitleItem("Excelsior", 9);
+                    AppTitleItem("D-11-", 6);
                     break;
 
                 case 8:
-                    AppTitleItem("EnterpriseB", 10);
+                    AppTitleItem("D-18-", 6);
                     break;
 
                 case 9:
-                    AppTitleItem("EnterpriseD", 9);
+                    AppTitleItem("D-27-", 7);
                     break;
 
                 case 10:
@@ -87,6 +87,22 @@ namespace StarTrek_KG.Output
 
                 case 13:
                     AppTitleItem("EagleSmall", 6);
+                    break;
+
+                case 14:
+                    AppTitleItem("DreadnaughtSide", 9);
+                    break;
+
+                case 15:
+                    AppTitleItem("Enterprise-BSmall", 6);
+                    break;
+
+                case 16:
+                    AppTitleItem("ExcelsiorSmall", 6);
+                    break;
+
+                case 17:
+                    AppTitleItem("RomulanBOP", 7);
                     break;
 
                 default:
