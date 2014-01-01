@@ -24,11 +24,7 @@ namespace UnitTests.ShipTests.MapTests
              Assert.IsInstanceOf(typeof(Map), _testMap);
             //todo: call VerifyGlobalInfoSettings
 
-            Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
-
-            Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
+             TestRunner.GetTestConstants();
         }
 
         [TearDown]

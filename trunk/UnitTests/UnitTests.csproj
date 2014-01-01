@@ -52,10 +52,12 @@
     <Compile Include="ShipTests\AppSettingTests\AppSettingCounts.cs" />
     <Compile Include="ShipTests\GameTests.cs" />
     <Compile Include="ShipTests\HostileTests\HostileTests.cs" />
-    <Compile Include="ShipTests\MapTests\DockingTests.cs" />
+    <Compile Include="ShipTests\MapTests\DockingLocationTests.cs" />
     <Compile Include="ShipTests\MapTests\MapTests.cs" />
     <Compile Include="ShipTests\MovementTests\MovementTests.cs" />
     <Compile Include="ShipTests\OutputTests.cs" />
+    <Compile Include="ShipTests\StarbaseTests\DockingTests.cs" />
+    <Compile Include="ShipTests\StarbaseTests\Starbase_Tests.cs" />
     <Compile Include="ShipTests\SubSystemTests\DamageTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\PhaserTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\PhotonTests.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="ShipTests\SubSystemTests\Subsystem_Base_Tests.cs" />
     <Compile Include="ShipTests\WarpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestRunner.cs" />
     <Compile Include="UtilityTests\UtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
