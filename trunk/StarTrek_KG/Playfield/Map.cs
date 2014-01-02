@@ -506,22 +506,29 @@ namespace StarTrek_KG.Playfield
         //}
         public void StarbaseCalculator(Ship shipConnectedTo)
         {
-            //var location = Navigation.For(shipConnectedTo);
+            //var navigation = Navigation.For(shipConnectedTo);
 
-            //var thisQuadrant = shipConnectedTo.GetQuadrant();
+            var mySector = shipConnectedTo.Sector;
 
-            //if (StarTrek_KG.Quadrants.Get(this, location.quadrantX, location.quadrantY).Starbase)
-            //{
-            //    Console.WriteLine("Starbase in sector [{0},{1}].", (starbaseX + 1), (starbaseY + 1));
-            //    Console.WriteLine("Direction: {0:#.##}", Map.ComputeDirection(location.sectorX, location.sectorY, starbaseX, starbaseY));
-            //    Console.WriteLine("Distance:  {0:##.##}", Distance(location.sectorX, location.sectorY, starbaseX, starbaseY) / Constants.SECTOR_MAX);
-            //}
-            //else
-            //{
-            //    Output.Write("There are no starbases in this quadrant.");
-            //}
+            var thisQuadrant = shipConnectedTo.GetQuadrant();
 
-            Output.Write.Line("Starbase Calculator not Supported Yet. Sorry.");
+            var starbasesInSector = thisQuadrant.Sectors.Where(s => s.Item == SectorItem.Starbase).ToList();
+
+            if (starbasesInSector.Any())
+            {
+                foreach (var starbase in starbasesInSector)
+                {
+                    Output.Write.Line("-----------------");
+                    Output.Write.Line(string.Format("Starbase in sector [{0},{1}].", (starbase.X + 1), (starbase.Y + 1)));
+
+                    Output.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y)));
+                    Output.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y) / Constants.SECTOR_MAX));
+                }
+            }
+            else
+            {
+                Output.Write.Line("There are no starbases in this quadrant.");
+            }
         }
 
         /// <summary>

@@ -31,7 +31,9 @@ namespace StarTrek_KG.Actors
             //hack: bandaid fix. inelegant code
             //todo: Fix the mathematical need for a different numerical direction for sectors and quadrants.
             //todo: GetSectorDirection() and GetQuadrantDirection() need to return the same numbers
-            int numericDirection = distanceEntered < 1 ? Movement.GetSectorDirection(direction) : Movement.GetQuadrantDirection(direction);
+            var movementDirection = Convert.ToDouble(direction);
+
+            double numericDirection = distanceEntered < 1 ? movementDirection : Movement.GetQuadrantDirection(direction);
 
             double vectorLocationX = playershipQuadrant.X * 8 + playerShipSector.X;
             double vectorLocationY = playershipQuadrant.Y * 8 + playerShipSector.Y;
@@ -79,7 +81,7 @@ namespace StarTrek_KG.Actors
         /// <param name="playershipQuadrant"></param>
         /// <param name="lastSector"></param>
         /// <returns></returns>
-        private bool TravelThroughSectors(double distanceEntered, double distance, int numericDirection, 
+        private bool TravelThroughSectors(double distanceEntered, double distance, double numericDirection, 
                                           ref double vectorLocationX, ref double vectorLocationY, 
                                           Quadrant playershipQuadrant, Coordinate lastSector)
         {
@@ -187,49 +189,6 @@ namespace StarTrek_KG.Actors
                     Output.Write.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
             }
-        }
-
-        private static int GetSectorDirection(string direction)
-        {
-            //todo: yes, this looks silly at the moment.. resource this out
-
-            // 4   5   6
-            //   \ ↑ /  
-            //3 ← <*> → 7
-            //   / ↓ \  
-            // 2   1   8
-
-            var returnVal = 0;
-
-            switch (direction)
-            {
-                case "7": //e
-                    returnVal = 7;
-                    break;
-                case "6": //ne
-                    returnVal = 6;
-                    break;
-                case "5": //n
-                    returnVal = 5;
-                    break;
-                case "4": //nw
-                    returnVal = 4;
-                    break;
-                case "3": //w
-                    returnVal = 3;
-                    break; //sw
-                case "2":
-                    returnVal = 2;
-                    break;
-                case "1": //s
-                    returnVal = 1;
-                    break;
-                case "8": //se
-                    returnVal = 8;
-                    break;
-            }
-
-            return returnVal;
         }
 
         private static int GetQuadrantDirection(string direction)
@@ -345,15 +304,24 @@ namespace StarTrek_KG.Actors
         public bool InvalidCourseCheck(out string direction)
         {
             var course = Output.Draw.Course() + "Enter Course: ";
+            string userDirection = "0";
 
-            if (Command.PromptUser(course, out direction))
+            if (Command.PromptUser(course, out userDirection))
             {
-                if (!Constants.MAP_DIRECTION.Contains(direction))
-                {
-                    Output.Write.Line("Invalid course.");
-                    return true;
-                }
+
+                //todo: check to see if is numeric
+                //todo: check to see if number is higher than 8
+
+                //if (!Constants.MAP_DIRECTION.Contains(userDirection))
+                //{
+                //    Output.Write.Line("Invalid course.");
+                //    return true;
+                //}
+
+                //todo: convert to double
             }
+
+            direction = userDirection;
 
             return false;
         }
