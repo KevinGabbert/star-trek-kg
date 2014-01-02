@@ -153,19 +153,33 @@ namespace StarTrek_KG.Subsystem
                 case SectorItem.Starbase:
                     map.starbases--;
 
-                    //quadrant.Starbase = false;
-                    //quadrant.Map.Sectors.Where(s => s.X == newX && s.Y == newY).Single().Item = SectorItem.Empty;
+                    qLocation.Object = null;
+                    qLocation.Item = SectorItem.Empty;
 
+                    //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
                     Output.Write.Line(string.Format("A Federation starbase at sector [{0},{1}] has been destroyed!",
                                                     newX, newY));
+
+                    //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
+                    //todo: a concerted effort of 4? torpedoes will destroy an unshielded starbase.
+                    //todo: however, you'd better hit the comms subsystem to prevent an emergency message, then shoot the log bouy
+                    //todo: it sends out or other starbases will know of your crime.
+
                     return true;
 
                 case SectorItem.Star:
 
                     var star = ((Star) qLocation.Object);
 
+                    var starName = "UNKNOWN";
+
+                    if(star != null)
+                    {
+                        starName = star.Name;
+                    }
+
                     Output.Write.Line(string.Format(
-                        "The torpedo was captured by the gravitational field of star: " + star.Name +
+                        "The torpedo was captured by the gravitational field of star: " + starName +
                         " at sector [{0},{1}].",
                         newX, newY));
 

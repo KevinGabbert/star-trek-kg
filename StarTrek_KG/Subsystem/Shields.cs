@@ -78,8 +78,7 @@ namespace StarTrek_KG.Subsystem
                                                 this.ShipConnectedTo.Energy));
             }
 
-            EndControls:
-            ;
+            EndControls:;
         }
 
         public new int TransferredFromUser()
