@@ -205,16 +205,20 @@ namespace StarTrek_KG.Subsystem
         public void Calculator(Map map)
         {
             Output.Write.Line("");
-            if (map.Quadrants.GetActive().GetHostiles().Count == 0)
+
+            var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
+            var thisQuadrantHostiles = thisQuadrant.GetHostiles();
+
+            if (thisQuadrantHostiles.Count == 0)
             {
                 Output.Write.Line("There are no Hostile ships in this quadrant.");
                 Output.Write.Line("");
                 return;
             }
 
-            Location location = this.ShipConnectedTo.GetLocation(); 
+            Location location = this.ShipConnectedTo.GetLocation();
 
-            foreach (var ship in map.Quadrants.GetHostiles())
+            foreach (var ship in thisQuadrantHostiles)
             {
                 Output.Write.Line(string.Format("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
                                   (ship.Sector.X), (ship.Sector.Y),
