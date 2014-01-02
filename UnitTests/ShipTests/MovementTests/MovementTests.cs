@@ -345,7 +345,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
-            this.Move_Quadrant("e", 1 * 8);
+            this.Move_Quadrant("7", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
@@ -369,7 +369,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
-            this.Move_Quadrant("w", 1 * 8);
+            this.Move_Quadrant("3", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -390,7 +390,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
-            this.Move_Quadrant("n", 1 * 8);
+            this.Move_Quadrant("5", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -411,7 +411,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
-            this.Move_Quadrant("s", 1 * 8);
+            this.Move_Quadrant("1", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -432,7 +432,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
-            this.Move_Quadrant("ne", 1 * 8);
+            this.Move_Quadrant("6", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -453,7 +453,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
-            this.Move_Quadrant("nw", 1 * 8);
+            this.Move_Quadrant("4", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -474,7 +474,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
-            this.Move_Quadrant("sw", 1 * 8);
+            this.Move_Quadrant("2", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -495,7 +495,7 @@ namespace UnitTests.ShipTests.MovementTests
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
             Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
-            this.Move_Quadrant("se", 1 * 8);
+            this.Move_Quadrant("8", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }

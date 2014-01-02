@@ -67,7 +67,6 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Movement.InvalidCourseCheck(out direction)) return;
 
-
             //todo: I'd like to check this sooner than *after* we start moving.  I have always disliked this behavior in the game
             if (this.Warp.InvalidWarpFactorCheck(this.MaxWarpFactor, out distance)) return;
 
@@ -76,17 +75,14 @@ namespace StarTrek_KG.Subsystem
 
             if (!Warp.EngageWarp(direction, distance, out lastQuadY, out lastQuadX, this.Map)) return;
 
-            //var lastPosition = Quadrants.Get(this.Map, lastQuadX, lastQuadY);
-            //Sectors currentPosition = this.Map.GetCurrentSectors();  //fixme
-
-            this.RepairOrTakeDamage(lastQuadX, lastQuadY);//,currentPosition
+            this.RepairOrTakeDamage(lastQuadX, lastQuadY);
 
             ShortRangeScan.For(this.ShipConnectedTo).Controls();
 
             //todo: upon arriving in quadrant, all damaged controls need to be enumerated
         }
 
-        private void RepairOrTakeDamage(int lastQuadX, int lastQuadY) //, Sectors sectors
+        private void RepairOrTakeDamage(int lastQuadX, int lastQuadY) 
         {
             Location thisShip = this.ShipConnectedTo.GetLocation();
 
