@@ -183,7 +183,6 @@ namespace StarTrek_KG
             StarTrek_KG.Output.Draw.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
             
             StarTrek_KG.Output.Write.ResourceLine("UnderConstructionMessage");
-            StarTrek_KG.Output.Write.ResourceLine("UnderConstructionMessage2");
 
             Output.PrintMission();
         }
