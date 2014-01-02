@@ -23,6 +23,7 @@ namespace StarTrek_KG.Subsystem
                                                     " ",
                                                     "--- > Debug/New Feature Test Mode ------------------------------------",
                                                     "  ",
+                                                    "dbgm = Toggle Debug Mode",
                                                     "drec = Galactic Record With Ship's position",
                                                     "dnav = visual of NAV Track in an SRS window",
                                                     "dtor = Torpedo Track in an SRS window", //if this becomes a feature, then baddie needs to be replaced by explosion.  find a cool Unicode Character for it..
@@ -119,6 +120,11 @@ namespace StarTrek_KG.Subsystem
                     var sectorWithNewStar = Map.AddStar(this.Map.Quadrants.GetActive());
                     Output.Write.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
                     Output.Write.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
+                    break;
+
+                case "dbgm":
+                    Constants.DEBUG_MODE = !Constants.DEBUG_MODE;
+                    Output.Write.Line("Debug Mode set to: " + Constants.DEBUG_MODE + ".  This will clear on app restart.");
                     break;
 
                 default:
