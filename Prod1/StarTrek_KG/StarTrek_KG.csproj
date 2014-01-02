@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{30C526F7-3E84-4EFC-ABCB-EFD4423AB236}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StarTrek_KG</RootNamespace>
+    <AssemblyName>StarTrek_KG</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Command.cs" />
+    <Compile Include="Config\Collections\Factions.cs" />
+    <Compile Include="Config\Collections\NameAllegiances.cs" />
+    <Compile Include="Config\Collections\FactionShips.cs" />
+    <Compile Include="Config\Elements\FactionElement.cs" />
+    <Compile Include="Config\Collections\Names.cs" />
+    <Compile Include="Config\Collections\NameValues.cs" />
+    <Compile Include="Config\Elements\NameElement.cs" />
+    <Compile Include="Config\Elements\NameAllegianceElement.cs" />
+    <Compile Include="Config\Elements\NameValueElement.cs" />
+    <Compile Include="Config\StarTrekKGSettings.cs" />
+    <Compile Include="Enums\NavDirection.cs" />
+    <Compile Include="Exceptions\GameConfigException.cs" />
+    <Compile Include="Exceptions\GameException.cs" />
+    <Compile Include="Extensions\intExtensions.cs" />
+    <Compile Include="Extensions\SectorDefExtensions.cs" />
+    <Compile Include="Interfaces\ISectorObject.cs" />
+    <Compile Include="Interfaces\IStar.cs" />
+    <Compile Include="Interfaces\ISystem.cs" />
+    <Compile Include="Interfaces\IWeapon.cs" />
+    <Compile Include="Output\Draw.cs" />
+    <Compile Include="Output\PrintSector.cs" />
+    <Compile Include="Structs\NonNullable.cs" />
+    <Compile Include="Actors\BlackHole.cs" />
+    <Compile Include="Playfield\Coordinate.cs" />
+    <Compile Include="Playfield\Coordinates.cs" />
+    <Compile Include="Enums\Allegiance.cs" />
+    <Compile Include="Enums\SubsystemType.cs" />
+    <Compile Include="Playfield\Location.cs" />
+    <Compile Include="Actors\Movement.cs" />
+    <Compile Include="Playfield\LocationDef.cs" />
+    <Compile Include="Playfield\Quadrants.cs" />
+    <Compile Include="Playfield\Sector.cs" />
+    <Compile Include="Playfield\SectorDef.cs" />
+    <Compile Include="Playfield\SectorDefs.cs" />
+    <Compile Include="Playfield\Sectors.cs" />
+    <Compile Include="Actors\Star.cs" />
+    <Compile Include="Actors\Starbase.cs" />
+    <Compile Include="Playfield\Vector.cs" />
+    <Compile Include="Settings\GameConfig.cs" />
+    <Compile Include="Subsystem\Computer.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Interfaces\IDestructionCheck.cs" />
+    <Compile Include="Interfaces\IMap.cs" />
+    <Compile Include="Interfaces\IShip.cs" />
+    <Compile Include="Interfaces\ISubsystem.cs" />
+    <Compile Include="Playfield\Map.cs" />
+    <Compile Include="Output\Write.cs" />
+    <Compile Include="Actors\Ship.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Playfield\Quadrant.cs" />
+    <Compile Include="Enums\SectorItem.cs" />
+    <Compile Include="Subsystem\Console.cs" />
+    <Compile Include="Subsystem\Debug.cs" />
+    <Compile Include="Subsystem\Disruptors.cs" />
+    <Compile Include="Subsystem\LongRangeScan.cs" />
+    <Compile Include="Subsystem\Navigation.cs" />
+    <Compile Include="Subsystem\Phasers.cs" />
+    <Compile Include="Subsystem\Shields.cs" />
+    <Compile Include="Subsystem\ShortRangeScan.cs" />
+    <Compile Include="Subsystem\Subsystems.cs" />
+    <Compile Include="Subsystem\SubSystem_Base.cs" />
+    <Compile Include="Subsystem\Torpedoes.cs" />
+    <Compile Include="Actors\System.cs" />
+    <Compile Include="Utility\Utility.cs" />
+    <Compile Include="Actors\Warp.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Types\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\ASCII Repository.txt" />
+    <Content Include="Content\Enterprise.gif" />
+    <Content Include="Content\Enterprise.txt" />
+    <Content Include="Content\Enterprise2.txt" />
+    <Content Include="Content\Klingon Ship Names.txt" />
+    <Content Include="Content\trek4a.jpg" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
