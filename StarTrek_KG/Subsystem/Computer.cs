@@ -55,6 +55,7 @@ namespace StarTrek_KG.Subsystem
                 case "rec":
                     Computer.For(this.ShipConnectedTo).PrintGalacticRecord(this.Map.Quadrants);
                     break;
+
                 case "sta":
 
                     //todo: get a list of all baddie names in quadrant
@@ -64,15 +65,19 @@ namespace StarTrek_KG.Subsystem
                                               starship,
                                               this.ShipConnectedTo.GetQuadrant());
                     break;
+
                 case "tor":
                     Torpedoes.For(this.ShipConnectedTo).Calculator(this.Map);
                     break;
+
                 case "bas":
                     this.Map.StarbaseCalculator(this.ShipConnectedTo); 
                     break;
+
                 case "nav":
                     Navigation.For(this.ShipConnectedTo).Calculator(this.Map);
                     break;
+
                 default:
                     Write.Line("Invalid computer command.");
                     break;

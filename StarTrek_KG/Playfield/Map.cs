@@ -506,7 +506,10 @@ namespace StarTrek_KG.Playfield
         //}
         public void StarbaseCalculator(Ship shipConnectedTo)
         {
-            var location = Navigation.For(shipConnectedTo);
+            //var location = Navigation.For(shipConnectedTo);
+
+            //var thisQuadrant = shipConnectedTo.GetQuadrant();
+
             //if (StarTrek_KG.Quadrants.Get(this, location.quadrantX, location.quadrantY).Starbase)
             //{
             //    Console.WriteLine("Starbase in sector [{0},{1}].", (starbaseX + 1), (starbaseY + 1));
@@ -517,6 +520,8 @@ namespace StarTrek_KG.Playfield
             //{
             //    Output.Write("There are no starbases in this quadrant.");
             //}
+
+            Output.Write.Line("Starbase Calculator not Supported Yet. Sorry.");
         }
 
         /// <summary>
