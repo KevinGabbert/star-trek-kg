@@ -75,7 +75,7 @@ namespace StarTrek_KG.Subsystem
 
                 Output.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                                                 this.Energy,
-                                                this.ShipConnectedTo));
+                                                this.ShipConnectedTo.Energy));
             }
 
             EndControls:
