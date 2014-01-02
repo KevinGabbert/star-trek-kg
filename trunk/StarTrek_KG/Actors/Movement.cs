@@ -184,7 +184,7 @@ namespace StarTrek_KG.Actors
                     break;
 
                 default:
-                    Output.Write.Line("Detected an obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    Output.Write.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
             }
         }

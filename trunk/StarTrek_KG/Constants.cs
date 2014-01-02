@@ -10,9 +10,12 @@ namespace StarTrek_KG
         public const string HOSTILE = "+++";
         public const string STARBASE = ">!<";
         public const string STAR = " * ";
+        public const string DEBUG_MARKER = " X ";
+
+        public const string NULL_MARKER = "!!"; //you shouldn't see this ever rendered.  if it is, then the game has an issue
 
         //--------------------------------------
-        public const string ALLY = "<++>";
+        public const string ALLY = "<++>"; //todo: future feature
 
         public const string SCAN_SECTOR_DIVIDER = "|";
 
@@ -31,5 +34,7 @@ namespace StarTrek_KG
 
         public static List<String> MAP_DIRECTION = new List<String>() { "1", "2", "3", "4", "5", "6", "7", "8" };
         public static bool DEBUG_MODE;
+
+
     }
 }
