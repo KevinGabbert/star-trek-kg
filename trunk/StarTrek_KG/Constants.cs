@@ -19,7 +19,6 @@ namespace StarTrek_KG
 
         public const string SCAN_SECTOR_DIVIDER = "|";
 
-
         //Make these part of the Map Object.  There should be only 1 map instance.. right?
         public static int SECTOR_MIN; 
         public static int SECTOR_MAX; 
@@ -34,7 +33,6 @@ namespace StarTrek_KG
 
         public static List<String> MAP_DIRECTION = new List<String>() { "1", "2", "3", "4", "5", "6", "7", "8" };
         public static bool DEBUG_MODE;
-
 
     }
 }
