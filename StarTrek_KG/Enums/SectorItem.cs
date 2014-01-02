@@ -7,6 +7,7 @@ namespace StarTrek_KG.Enums
         Star,
         Hostile, //make this go away
         Friendly, //playership
-        Starbase
+        Starbase,
+        Debug
     };
 }

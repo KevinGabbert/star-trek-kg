@@ -47,6 +47,8 @@ namespace StarTrek_KG.Subsystem
             var write = (new Output.PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel")));
             write.Print(quadrant, this.Map); 
 
+            quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
+
             quadrant.Scanned = true;
         }
 

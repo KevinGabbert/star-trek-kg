@@ -74,8 +74,8 @@ namespace StarTrek_KG.Subsystem
 
             Location location = this.ShipConnectedTo.GetLocation();
 
-            double x = location.Quadrant.X;
-            double y = location.Quadrant.Y;
+            double x = location.Sector.X;
+            double y = location.Sector.Y;
 
             var vx = Math.Cos(angle)/20;
             var vy = Math.Sin(angle)/20;
@@ -94,12 +94,17 @@ namespace StarTrek_KG.Subsystem
                     lastY = newY;
                 }
 
+                DebugTorpedoTrack(newX, newY, location);
+
+
+
                 //todo: query map.quadrants for ship
-                
-                var hostilesInQuadrant = this.Map.Quadrants.GetActive().GetHostiles();
-                var hostilesInSector = this.Map.Quadrants.GetActive().GetHostiles().Where(hostileShip =>
-                                                                                          hostileShip.Sector.X == newX &&
-                                                                                          hostileShip.Sector.Y == newY);
+
+                var thisQuadrant = this.Map.Quadrants.GetActive();
+                var hostilesInQuadrant = thisQuadrant.GetHostiles();
+                var hostilesInSector = hostilesInQuadrant.Where(hostileShip =>
+                                                                hostileShip.Sector.X == newX &&
+                                                                hostileShip.Sector.Y == newY);
 
                 if (Map.DestroyedBaddies(this.Map, hostilesInSector) || 
                    (Torpedoes.HitSomethingElse(this.Map, vx, vy, location, newY, newX, ref x, ref y)))
@@ -110,6 +115,25 @@ namespace StarTrek_KG.Subsystem
             }
 
             Output.Write.Line("Photon torpedo failed to hit anything.");
+        }
+
+        private void DebugTorpedoTrack(int newX, int newY, Location location)
+        {
+            if (Constants.DEBUG_MODE)
+            {
+                Quadrant quadrant = Quadrants.Get(this.Map, location.Quadrant);
+                Sector qLocation = quadrant.Sectors.Single(s => s.X == newX && s.Y == newY);
+
+                if (qLocation.Item == null)
+                {
+                    Output.Write.DebugLine("NULL SECTOR");
+                }
+
+                if (qLocation.Item == SectorItem.Empty)
+                {
+                    qLocation.Item = SectorItem.Debug;
+                };
+            }
         }
 
         private static bool HitSomethingElse(Map map, double vx, double vy, 
@@ -133,7 +157,7 @@ namespace StarTrek_KG.Subsystem
                     //quadrant.Map.Sectors.Where(s => s.X == newX && s.Y == newY).Single().Item = SectorItem.Empty;
 
                     Output.Write.Line(string.Format("A Federation starbase at sector [{0},{1}] has been destroyed!",
-                                      newX, newY));
+                                                    newX, newY));
                     return true;
 
                 case SectorItem.Star:
@@ -141,7 +165,8 @@ namespace StarTrek_KG.Subsystem
                     var star = ((Star) qLocation.Object);
 
                     Output.Write.Line(string.Format(
-                        "The torpedo was captured by the gravitational field of star: " + star.Name + " at sector [{0},{1}].",
+                        "The torpedo was captured by the gravitational field of star: " + star.Name +
+                        " at sector [{0},{1}].",
                         newX, newY));
 
                     return true;

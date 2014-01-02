@@ -99,9 +99,11 @@ namespace StarTrek_KG.Output
                     case SectorItem.Empty:
                         sb.Append(Constants.EMPTY);
                         break;
+
                     case SectorItem.Friendly:
                         sb.Append(Constants.PLAYERSHIP);
                         break;
+
                     case SectorItem.Hostile:
 
                         //bug can be viewed (and even tested here)
@@ -122,11 +124,21 @@ namespace StarTrek_KG.Output
 
                         sb.Append(Constants.HOSTILE);
                         break;
+
                     case SectorItem.Star:
                         sb.Append(Constants.STAR);
                         break;
+
                     case SectorItem.Starbase:
                         sb.Append(Constants.STARBASE);
+                        break;
+
+                    case SectorItem.Debug:
+                        sb.Append(Constants.DEBUG_MARKER);
+                        break;
+
+                    default:
+                        sb.Append(Constants.NULL_MARKER);
                         break;
                 }
             }

@@ -437,6 +437,28 @@ namespace StarTrek_KG.Playfield
             }
         }
 
+        /// <summary>
+        /// goes through each sector in this quadrant and clears item requested
+        /// </summary>
+        /// <returns></returns>
+        public void ClearSectorsWithItem(SectorItem item)
+        {
+            if (this.Sectors != null)
+            {
+                var sectorsWithItem = this.Sectors.Where(sector => sector.Item == item);
+                foreach (var sector in sectorsWithItem )
+                {
+                    sector.Item = SectorItem.Empty;
+                    sector.Object = null;
+                }
+            }
+            else
+            {
+                throw new GameException(StarTrekKGSettings.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
+            }
+        }
+
+
         internal int GetStarbaseCount()
         {
             return Sectors.Count(sector => sector.Item == SectorItem.Starbase);
