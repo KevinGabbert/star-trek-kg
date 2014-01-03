@@ -6,6 +6,7 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
@@ -67,21 +68,8 @@ namespace StarTrek_KG.Subsystem
                         LongRangeScan.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
                     }
 
-                    if (renderingMyLocation)
-                    {
-                        Output.Write.HighlightTextBW(true);
-                    }
-
-                    Output.Write.WithNoEndCR(hostileCount.FormatForLRS());
-                    Output.Write.WithNoEndCR(starbaseCount.FormatForLRS());
-                    Output.Write.WithNoEndCR(starCount.FormatForLRS());
-                    
-                    if (renderingMyLocation)
-                    {
-                        Output.Write.HighlightTextBW(false);
-                    }
-
-                    Output.Write.WithNoEndCR(" ");
+                    Draw.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                    Write.WithNoEndCR(" ");
                 }
 
                 Output.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);

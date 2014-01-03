@@ -122,34 +122,41 @@ namespace StarTrek_KG.Subsystem
         public void PrintGalacticRecord(List<Quadrant> Quadrants)
         {
             Command.Console.WriteLine();
-            var sb = new StringBuilder();
             Write.ResourceSingleLine("GalacticRecordLine");
+
+            var myLocation = this.ShipConnectedTo.GetLocation();
 
             for (var quadrantLB = 0; quadrantLB < Constants.QUADRANT_MAX; quadrantLB++)
             {
                 for (var quadrantUB = 0; quadrantUB < Constants.QUADRANT_MAX; quadrantUB++)
                 {
-                    sb.Append(Constants.SCAN_SECTOR_DIVIDER);
-                    string starbaseCount = "*";
-                    string starCount = "*";
-                    string hostileCount = "*";
+                    Output.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER);
+                    int starbaseCount = -1;
+                    int starCount = -1;
+                    int hostileCount = -1;
 
                     var quadrant = Playfield.Quadrants.Get(Quadrants, new Coordinate(quadrantUB, quadrantLB));
                     if (quadrant.Scanned)
                     {
-                        starbaseCount = quadrant.GetStarbaseCount().ToString();
-                        starCount = quadrant.GetStarCount().ToString();
-                        hostileCount = quadrant.GetHostiles().Count.ToString();
+                        starbaseCount = quadrant.GetStarbaseCount();
+                        starCount = quadrant.GetStarCount();
+                        hostileCount = quadrant.GetHostiles().Count();
                     }
 
-                    sb.Append(String.Format("{0}{1}{2}", hostileCount, starbaseCount, starCount));
+                    bool renderingMyLocation = false;
+                    
+                    if(myLocation.Quadrant.Scanned)
+                    {
+                        renderingMyLocation = myLocation.Quadrant.X == quadrantUB && myLocation.Quadrant.Y == quadrantLB;
+                    }
+
+                    Draw.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
                 }
 
-                sb.Append(Constants.SCAN_SECTOR_DIVIDER);
-                Write.SingleLine(sb.ToString());
-                sb.Length = 0;
+                Output.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
                 Write.ResourceSingleLine("GalacticRecordLine");
             }
+
             Command.Console.WriteLine();
         }
 
