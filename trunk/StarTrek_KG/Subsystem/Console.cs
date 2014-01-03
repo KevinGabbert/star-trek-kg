@@ -40,5 +40,19 @@ namespace StarTrek_KG.Subsystem
         {
             return C.ReadLine();
         }
+
+        public void HighlightTextBW(bool on)
+        {
+            if (on)
+            {
+                C.ForegroundColor = ConsoleColor.Black;
+                C.BackgroundColor = ConsoleColor.White;
+            }
+            else
+            {
+                C.ForegroundColor = ConsoleColor.White;
+                C.BackgroundColor = ConsoleColor.Black;
+            }
+        }
     }
 }

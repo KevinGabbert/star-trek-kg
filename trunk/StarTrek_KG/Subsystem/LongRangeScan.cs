@@ -4,7 +4,6 @@ using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -45,7 +44,6 @@ namespace StarTrek_KG.Subsystem
         {
             if (Damaged()) return;
 
-            var sb = new StringBuilder();
             var myLocation = this.ShipConnectedTo.GetLocation();
 
             Output.Write.SingleLine("-------------------");
@@ -54,7 +52,9 @@ namespace StarTrek_KG.Subsystem
             {
                 for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
                 {
-                    sb.Append(Constants.SCAN_SECTOR_DIVIDER + " ");
+                    Output.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER + " ");
+
+                    var renderingMyLocation = myLocation.Quadrant.X == quadrantX && myLocation.Quadrant.Y == quadrantY;
 
                     //todo: turn these into props.
                     int starbaseCount = -1;
@@ -67,13 +67,24 @@ namespace StarTrek_KG.Subsystem
                         LongRangeScan.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
                     }
 
-                    sb.Append(String.Format("{0}{1}{2} ", hostileCount.FormatForLRS(), starbaseCount.FormatForLRS(), starCount.FormatForLRS()));
+                    if (renderingMyLocation)
+                    {
+                        Output.Write.HighlightTextBW(true);
+                    }
+
+                    Output.Write.WithNoEndCR(hostileCount.FormatForLRS());
+                    Output.Write.WithNoEndCR(starbaseCount.FormatForLRS());
+                    Output.Write.WithNoEndCR(starCount.FormatForLRS());
+                    
+                    if (renderingMyLocation)
+                    {
+                        Output.Write.HighlightTextBW(false);
+                    }
+
+                    Output.Write.WithNoEndCR(" ");
                 }
 
-                sb.Append(Constants.SCAN_SECTOR_DIVIDER);
-
-                Output.Write.SingleLine(sb.ToString());
-                sb.Length = 0;
+                Output.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
                 Output.Write.SingleLine("-------------------");
             }
         }

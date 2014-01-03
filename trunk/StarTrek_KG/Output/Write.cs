@@ -83,6 +83,11 @@ namespace StarTrek_KG.Output
             Command.Console.WriteLine();
         }
 
+        public static void HighlightTextBW(bool on)
+        {
+            Command.Console.HighlightTextBW(on);
+        }
+
         public static void Line(string stringToOutput)
         {
             Command.Console.WriteLine(stringToOutput);
@@ -124,7 +129,7 @@ namespace StarTrek_KG.Output
             Command.Console.WriteLine(stringToOutput);
         }
 
-        public static void Prompt(string stringToOutput)
+        public static void WithNoEndCR(string stringToOutput)
         {
             Command.Console.Write(stringToOutput);
         }
