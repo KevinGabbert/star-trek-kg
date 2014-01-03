@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using StarTrek_KG.Extensions;
 
 namespace StarTrek_KG.Output
 {
@@ -142,6 +143,23 @@ namespace StarTrek_KG.Output
             }
 
             Command.Console.WriteLine();
+        }
+
+        public static void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
+        {
+            if (renderingMyLocation)
+            {
+                Write.HighlightTextBW(true);
+            }
+
+            Write.WithNoEndCR(hostileCount.FormatForLRS());
+            Write.WithNoEndCR(starbaseCount.FormatForLRS());
+            Write.WithNoEndCR(starCount.FormatForLRS());
+
+            if (renderingMyLocation)
+            {
+                Write.HighlightTextBW(false);
+            }
         }
     }
 }
