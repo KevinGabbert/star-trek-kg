@@ -185,6 +185,11 @@ namespace StarTrek_KG.Actors
                                       sector.Y + "]");
                     break;
 
+                    
+                case SectorItem.Starbase:
+                    Output.Write.Line("Starbase encountered while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    break;
+
                 default:
                     Output.Write.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;

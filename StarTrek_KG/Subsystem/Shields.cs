@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -71,7 +72,35 @@ namespace StarTrek_KG.Subsystem
 
             if (transfer > 0)
             {
-                this.AddEnergy(transfer, adding);
+
+                if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
+                {
+                    Output.Write.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
+                    goto EndControls;
+                }
+
+                var maxEnergy = (Convert.ToInt32(StarTrekKGSettings.GetSetting<string>("SHIELDS_MAX")));
+                var totalEnergy = (this.Energy + transfer);
+
+                if (adding && (totalEnergy > maxEnergy))
+                {
+                    if (adding && (totalEnergy > maxEnergy))
+                    {
+                        //todo: write code to add the difference if they exceed. There is no reason to make people type twice
+
+                        Output.Write.Line("Energy to transfer exceeds Shield Max capability.. No Change");
+                        goto EndControls;
+                    }
+
+                    if (totalEnergy <= maxEnergy || !adding)
+                    {
+                        this.AddEnergy(totalEnergy, adding); //todo: add limit on ship energy level 
+                    } 
+                }
+                else
+                {
+                    this.AddEnergy(transfer, adding);
+                }
 
                 Output.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                                                 this.Energy,
