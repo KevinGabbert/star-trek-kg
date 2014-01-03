@@ -22,6 +22,7 @@ namespace StarTrek_KG.Subsystem
         {
             Output.Write.Resource("SRSDamaged");
             Output.Write.Resource("RepairsUnderway");
+            Output.Write.Line("Hint: You can use some computer functions to navigate without SRS"); //todo: can we make hints dismissable?
         }
         public override void OutputRepairedMessage()
         {
