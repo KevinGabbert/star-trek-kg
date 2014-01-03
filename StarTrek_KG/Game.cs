@@ -28,6 +28,9 @@ namespace StarTrek_KG
         /// </summary>
         public Game()
         {
+            //Set initial color scheme
+            StarTrek_KG.Output.Write.HighlightTextBW(false);
+
             //The config file is loaded here, and persisted through the rest of the game. 
             //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
             //might try to reload the file. #NotInThisVersion

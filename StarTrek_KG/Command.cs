@@ -133,7 +133,7 @@ namespace StarTrek_KG
         private bool DebugMenu()
         {
             Output.Write.Strings(Debug.CONTROL_PANEL);
-            Output.Write.Prompt("Enter Debug command: ");
+            Output.Write.WithNoEndCR("Enter Debug command: ");
 
             //todo: readline needs to be done using an event
             var debugCommand = Console.ReadLine().Trim().ToLower();
@@ -147,7 +147,7 @@ namespace StarTrek_KG
             if (Computer.For(this.Map.Playership).Damaged()) return true;
 
             Output.Write.Strings(Computer.CONTROL_PANEL);
-            Output.Write.Prompt("Enter computer command: ");
+            Output.Write.WithNoEndCR("Enter computer command: ");
 
             //todo: readline needs to be done using an event
             var computerCommand = Console.ReadLine().Trim().ToLower();
@@ -179,7 +179,7 @@ namespace StarTrek_KG
 
             Output.Write.Strings(Shields.SHIELD_PANEL);
 
-            Output.Write.Prompt("Enter shield control command: ");
+            Output.Write.WithNoEndCR("Enter shield control command: ");
             var shieldsCommand = Console.ReadLine().Trim().ToLower();
 
             Shields.For(this.Map.Playership).MaxTransfer = this.Map.Playership.Energy; //todo: this does nothing!
@@ -196,7 +196,7 @@ namespace StarTrek_KG
         {
             try
             {
-                Output.Write.Prompt(promptMessage);
+                Output.Write.WithNoEndCR(promptMessage);
 
                 value = Double.Parse(Command.Console.ReadLine());
 
