@@ -147,11 +147,20 @@ namespace StarTrek_KG.Subsystem
             return hostileCount;
         }
 
+        public void Debug_Scan_All_Quadrants(bool setScanned)
+        {
+            foreach (var quadrant in this.Map.Quadrants)
+            {
+                quadrant.Scanned = true; 
+            }
+        }
+
         public new static LongRangeScan For(Ship ship)
         {
             if (ship == null)
             {
-                throw new GameConfigException("Ship not set up (LongRangeScan)."); //todo: reflect the name and refactor this to ISubsystem
+                Output.Write.Line("Ship not set up (LongRangeScan)."); //todo: reflect the name and refactor this to ISubsystem
+                return null;
             }
 
             return (LongRangeScan) ship.Subsystems.Single(s => s.Type == SubsystemType.LongRangeScan);

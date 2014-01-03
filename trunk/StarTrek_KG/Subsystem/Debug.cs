@@ -24,6 +24,7 @@ namespace StarTrek_KG.Subsystem
                                                     "--- > Debug/New Feature Test Mode ------------------------------------",
                                                     "  ",
                                                     "dbgm = Toggle Debug Mode",
+                                                    "dlrs = Scan All Quadrants in Galaxy",
                                                     "drec = Galactic Record With Ship's position",
                                                     "dnav = visual of NAV Track in an SRS window",
                                                     "dtor = Torpedo Track in an SRS window", //if this becomes a feature, then baddie needs to be replaced by explosion.  find a cool Unicode Character for it..
@@ -125,6 +126,11 @@ namespace StarTrek_KG.Subsystem
                 case "dbgm":
                     Constants.DEBUG_MODE = !Constants.DEBUG_MODE;
                     Output.Write.Line("Debug Mode set to: " + Constants.DEBUG_MODE + ".  This will clear on app restart.");
+                    break;
+
+                case "dlrs":
+                    LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Quadrants(Constants.DEBUG_MODE);
+                    Output.Write.Line("All Quadrants set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
                     break;
 
                 default:
