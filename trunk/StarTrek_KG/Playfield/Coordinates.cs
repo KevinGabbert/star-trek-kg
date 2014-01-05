@@ -7,7 +7,7 @@ namespace StarTrek_KG.Playfield
     {
         public Coordinate Get(int qX, int qY)
         {
-            return this.Where(s => s.X == qX && s.Y == qY).Single();
+            return this.Single(s => s.X == qX && s.Y == qY);
         }
     }
 }

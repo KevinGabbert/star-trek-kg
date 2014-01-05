@@ -77,6 +77,7 @@
     <Compile Include="Interfaces\IWeapon.cs" />
     <Compile Include="Output\Draw.cs" />
     <Compile Include="Output\PrintSector.cs" />
+    <Compile Include="Playfield\TorpedoCoordinate.cs" />
     <Compile Include="Structs\NonNullable.cs" />
     <Compile Include="Actors\BlackHole.cs" />
     <Compile Include="Playfield\Coordinate.cs" />

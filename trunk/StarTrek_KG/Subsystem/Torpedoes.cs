@@ -72,80 +72,95 @@ namespace StarTrek_KG.Subsystem
 
             var angle = Utility.Utility.ComputeAngle(this.Map, direction);
 
-            Location location = this.ShipConnectedTo.GetLocation();
+            Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
+            Quadrant quadrant = Quadrants.Get(this.Map, torpedoStartingLocation.Quadrant);
 
-            double x = location.Sector.X;
-            double y = location.Sector.Y;
+            var torpedoLocation = new FiringCoordinate(torpedoStartingLocation.Sector);
+            var weaponAngle = new FiringCoordinate(Math.Cos(angle) / 20, Math.Sin(angle) / 20);
 
-            var vx = Math.Cos(angle)/20;
-            var vy = Math.Sin(angle)/20;
-            int lastX = -1, lastY = -1;
-            while (x >= 0 && 
-                   y >= 0 && 
-                   Math.Round(x) < Constants.SECTOR_MAX && 
-                   Math.Round(y) < Constants.SECTOR_MAX)
+            int lastSector_X = -1;
+            int lastSector_Y = -1;
+
+            while (torpedoLocation.X >= 0 &&
+                   torpedoLocation.Y >= 0 &&
+                   Math.Round(torpedoLocation.X) < Constants.SECTOR_MAX &&
+                   Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX)
             {
-                var newX = (int) Math.Round(x);
-                var newY = (int) Math.Round(y);
-                if (lastX != newX || lastY != newY)
+                var sectorToCheck = new Coordinate((int)Math.Round(torpedoLocation.X), (int)Math.Round(torpedoLocation.Y));
+
+                if (lastSector_X != sectorToCheck.X || lastSector_Y != sectorToCheck.Y)
                 {
-                    Output.Write.Line(string.Format("  [{0},{1}]", newX, newY));
-                    lastX = newX;
-                    lastY = newY;
+                    Output.Write.Line(string.Format("  [{0},{1}]", sectorToCheck.X, sectorToCheck.Y));
+                    lastSector_X = sectorToCheck.X;
+                    lastSector_Y = sectorToCheck.Y;
                 }
 
-                DebugTorpedoTrack(newX, newY, location);
+                this.DebugTorpedoTrack(sectorToCheck.X, sectorToCheck.Y, quadrant);
 
-
-
-                //todo: query map.quadrants for ship
-
-                var thisQuadrant = this.Map.Quadrants.GetActive();
-                var hostilesInQuadrant = thisQuadrant.GetHostiles();
-                var hostilesInSector = hostilesInQuadrant.Where(hostileShip =>
-                                                                hostileShip.Sector.X == newX &&
-                                                                hostileShip.Sector.Y == newY);
-
-                if (Map.DestroyedBaddies(this.Map, hostilesInSector) || 
-                   (Torpedoes.HitSomethingElse(this.Map, vx, vy, location, newY, newX, ref x, ref y)))
+                if (this.HitSomethingInSector(quadrant, sectorToCheck.Y, sectorToCheck.X))
                 {
-                    Game.ALLHostilesAttack(this.Map);
                     return;
                 }
+
+                torpedoLocation.X += weaponAngle.X;
+                torpedoLocation.Y += weaponAngle.Y;
             }
 
             Output.Write.Line("Photon torpedo failed to hit anything.");
         }
 
-        private void DebugTorpedoTrack(int newX, int newY, Location location)
+        private bool HitSomethingInSector(Quadrant quadrant, int newY, int newX)
+        {
+            if (this.HitHostile(newY, newX))
+            {
+                Game.ALLHostilesAttack(this.Map);
+                return true;
+            }
+
+            if (Torpedoes.HitSomethingElse(this.Map, quadrant, newY, newX))
+            {
+                Game.ALLHostilesAttack(this.Map);
+                return true;
+            }
+            return false;
+        }
+
+        private bool HitHostile(int newY, int newX)
+        {
+            var thisQuadrant = this.Map.Quadrants.GetActive();
+            var hostilesInQuadrant = thisQuadrant.GetHostiles();
+            IShip hostileInSector = hostilesInQuadrant.SingleOrDefault(hostileShip => hostileShip.Sector.X == newX &&
+                                                                                      hostileShip.Sector.Y == newY);
+
+            if (hostileInSector != null)
+            {
+                Map.RemoveTargetFromSector(this.Map, hostileInSector);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void DebugTorpedoTrack(int newX, int newY, Quadrant quadrant)
         {
             if (Constants.DEBUG_MODE)
             {
-                Quadrant quadrant = Quadrants.Get(this.Map, location.Quadrant);
                 Sector qLocation = quadrant.Sectors.Single(s => s.X == newX && s.Y == newY);
-
-                if (qLocation.Item == null)
-                {
-                    Output.Write.DebugLine("NULL SECTOR");
-                }
 
                 if (qLocation.Item == SectorItem.Empty)
                 {
                     qLocation.Item = SectorItem.Debug;
-                };
+                }
             }
         }
 
-        private static bool HitSomethingElse(Map map, double vx, double vy, 
-                                              Location location, 
+        private static bool HitSomethingElse(Map map,
+                                              Quadrant quadrant, 
                                               int newY, 
-                                              int newX,
-                                              ref double x,
-                                              ref double y)
+                                              int newX)
         {
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
-            Quadrant quadrant = Quadrants.Get(map, location.Quadrant);
             Sector qLocation = quadrant.Sectors.Single(s => s.X == newX && s.Y == newY);
 
             switch (qLocation.Item)
@@ -186,8 +201,6 @@ namespace StarTrek_KG.Subsystem
                     return true;
             }
 
-            x += vx;
-            y += vy;
             return false;
         }
 

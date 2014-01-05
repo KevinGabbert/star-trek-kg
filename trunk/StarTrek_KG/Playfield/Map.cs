@@ -483,16 +483,9 @@ namespace StarTrek_KG.Playfield
             map.Quadrants.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
         }
 
-        public static bool DestroyedBaddies(Map map, IEnumerable<IShip> query)
+        public static void RemoveTargetFromSector(Map map, IShip ship)
         {
-            foreach (var ship in query)
-            {
-                map.Quadrants.Remove(ship, map);
-
-                return true;
-            }
-
-            return false;
+            map.Quadrants.Remove(ship, map);
         }
 
         //todo: finish this
