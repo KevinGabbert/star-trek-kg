@@ -78,16 +78,31 @@ namespace StarTrek_KG.Subsystem
             var torpedoLocation = new FiringCoordinate(torpedoStartingLocation.Sector);
             var weaponAngle = new FiringCoordinate(Math.Cos(angle) / 20, Math.Sin(angle) / 20);
 
+
+            //TODO: WRITE SOME TORPEDO TESTS!
+
+            //todo: add in a constructor to turn off coordinate bounds checking for this object only
+            //either that, or come up with a null location so that the first WHILE will work
+            //var torpedoLastSector = new Coordinate(-1, -1); 
             int lastSector_X = -1;
             int lastSector_Y = -1;
 
+            //var sectorToCheck = new Coordinate();
+
+            //todo: condense WHILE to be a function of Coordinate
+            //todo: eliminate the twice rounding of torpedo location, as the same value is evaluated twice
+            //todo: the rounding can happen once in a variable, and then referred to twice (see note below)
             while (torpedoLocation.X >= 0 &&
                    torpedoLocation.Y >= 0 &&
                    Math.Round(torpedoLocation.X) < Constants.SECTOR_MAX &&
                    Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX)
             {
+
+                //todo: eliminate the rounding here
+                //todo: we don't need to create a NEW object here, do we? how about just replacing the prop values?
                 var sectorToCheck = new Coordinate((int)Math.Round(torpedoLocation.X), (int)Math.Round(torpedoLocation.Y));
 
+                //todo: Condense into function of Coordinate
                 if (lastSector_X != sectorToCheck.X || lastSector_Y != sectorToCheck.Y)
                 {
                     Output.Write.Line(string.Format("  [{0},{1}]", sectorToCheck.X, sectorToCheck.Y));
@@ -95,13 +110,17 @@ namespace StarTrek_KG.Subsystem
                     lastSector_Y = sectorToCheck.Y;
                 }
 
+                //todo: pass Location object
                 this.DebugTorpedoTrack(sectorToCheck.X, sectorToCheck.Y, quadrant);
 
+                //todo: pass location object
                 if (this.HitSomethingInSector(quadrant, sectorToCheck.Y, sectorToCheck.X))
                 {
                     return;
                 }
 
+                //todo: condense into function of coordinate  (.Increment())
+                //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
                 torpedoLocation.X += weaponAngle.X;
                 torpedoLocation.Y += weaponAngle.Y;
             }
