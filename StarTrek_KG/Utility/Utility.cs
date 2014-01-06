@@ -87,10 +87,12 @@ namespace StarTrek_KG.Utility
         public static double ComputeAngle(Map map, double direction) // todo: can this be refactored with nav computeangle?
         {
             var angle = -(Math.PI * (direction - 1.0) / 4.0);
+
             if ((Random).Next(3) == 0)
             {
                 angle += ((1.0 - 2.0 * (Utility.Random).NextDouble()) * Math.PI * 2.0) * 0.03;
             }
+
             return angle;
         }
 
@@ -131,25 +133,6 @@ namespace StarTrek_KG.Utility
                 RandomGreekLetter.Push(greekLetter);
             }
         }
-
-        ////starbase position info (there needs to be a starbase object)
-        //public static int starbaseX;
-        //public static int starbaseY;
-
-        //public void StarbaseCalculator()
-        //{
-        //    var location = Navigation.For(this.Playership);
-        //    //if (StarTrek_KG.Quadrants.Get(this, location.quadrantX, location.quadrantY).Starbase)
-        //    //{
-        //    //    Console.WriteLine("Starbase in sector [{0},{1}].", (starbaseX + 1), (starbaseY + 1));
-        //    //    Console.WriteLine("Direction: {0:#.##}", Map.ComputeDirection(location.sectorX, location.sectorY, starbaseX, starbaseY));
-        //    //    Console.WriteLine("Distance:  {0:##.##}", Distance(location.sectorX, location.sectorY, starbaseX, starbaseY) / Constants.SECTOR_MAX);
-        //    //}
-        //    //else
-        //    //{
-        //    //    Output.Write("There are no starbases in this quadrant.");
-        //    //}
-        //}
     }
 
 
@@ -203,10 +186,9 @@ namespace StarTrek_KG.Utility
                 else
                 {
                     // not generic, get the property value and make the recursive call
-                    object value;
                     try
                     {
-                        value = pi.GetValue(o, null);
+                        object value = pi.GetValue(o, null);
 
                         // all values returned from the recursive call get 
                         // rolled up into the list created in this call.

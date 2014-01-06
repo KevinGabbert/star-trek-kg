@@ -85,13 +85,13 @@ namespace StarTrek_KG.Actors
                                           ref double vectorLocationX, ref double vectorLocationY, 
                                           Quadrant playershipQuadrant, Coordinate lastSector)
         {
+            //todo: can this be refactored with Utility.ComputeAngle()?
             double angle = -(Math.PI * (numericDirection - 1.0) / 4.0);
 
-            var distanceX = (distance*Math.Cos(angle));
-            var distanceY = (distance*Math.Sin(angle));
+            var distanceVector = new VectorCoordinate(distance * Math.Cos(angle), distance * Math.Sin(angle));
 
-            var vector = new Vector(distanceX / Constants.MOVEMENT_PRECISION,
-                                    distanceY / Constants.MOVEMENT_PRECISION);
+            var vector = new Vector(distanceVector.X / Constants.MOVEMENT_PRECISION,
+                                    distanceVector.Y / Constants.MOVEMENT_PRECISION);
 
             var activeSectors = playershipQuadrant.Sectors;
 
