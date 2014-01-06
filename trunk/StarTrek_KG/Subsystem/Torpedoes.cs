@@ -75,53 +75,63 @@ namespace StarTrek_KG.Subsystem
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Map, torpedoStartingLocation.Quadrant);
 
-            var torpedoLocation = new FiringCoordinate(torpedoStartingLocation.Sector);
-            var weaponAngle = new FiringCoordinate(Math.Cos(angle) / 20, Math.Sin(angle) / 20);
+            var currentLocation = new WeaponCoordinate(torpedoStartingLocation.Sector);
+            var torpedoVector = new WeaponCoordinate(Math.Cos(angle) / 20, Math.Sin(angle) / 20);
 
             //TODO: WRITE SOME TORPEDO TESTS!
 
             //todo: add in a constructor to turn off coordinate bounds checking for this object only
             //either that, or come up with a null location so that the first WHILE will work
-            var torpedoLastSector = new Coordinate(-1, -1, false); 
+            var lastPosition = new Coordinate(-1, -1, false); 
 
-            //var sectorToCheck = new Coordinate();
+            var newLocation = new Location();
+            newLocation.Quadrant = quadrant;
+            newLocation.Sector = new Sector();
 
             //todo: condense WHILE to be a function of Coordinate
             //todo: eliminate the twice rounding of torpedo location, as the same value is evaluated twice
             //todo: the rounding can happen once in a variable, and then referred to twice (see note below)
-            while (Torpedoes.IsInQuadrant(torpedoLocation))
+            while (Torpedoes.IsInQuadrant(currentLocation))
             {
-                //todo: eliminate the rounding here
-                //todo: we don't need to create a NEW object here, do we? how about just replacing the prop values?
-                var sectorToCheck = new Coordinate((int)Math.Round(torpedoLocation.X), (int)Math.Round(torpedoLocation.Y));
-
-                //todo: Condense into function of Coordinate
-                if (torpedoLastSector.X != sectorToCheck.X || torpedoLastSector.Y != sectorToCheck.Y)
-                {
-                    Output.Write.Line(string.Format("  [{0},{1}]", sectorToCheck.X, sectorToCheck.Y));
-                    torpedoLastSector.X = sectorToCheck.X;
-                    torpedoLastSector.Y = sectorToCheck.Y;
-                }
-
-                //todo: pass Location object
-                this.DebugTorpedoTrack(sectorToCheck.X, sectorToCheck.Y, quadrant);
-
-                //todo: pass location object
-                if (this.HitSomethingInSector(quadrant, sectorToCheck.Y, sectorToCheck.X))
+                //Increment to next Sector
+                if (this.HitSomething(currentLocation, lastPosition, newLocation, torpedoVector))
                 {
                     return;
                 }
-
-                //todo: condense into function of coordinate  (.Increment())
-                //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
-                torpedoLocation.X += weaponAngle.X;
-                torpedoLocation.Y += weaponAngle.Y;
             }
 
             Output.Write.Line("Photon torpedo failed to hit anything.");
         }
 
-        private static bool IsInQuadrant(FiringCoordinate torpedoLocation)
+        private bool HitSomething(WeaponCoordinate currentLocation, Coordinate lastPosition, Location newLocation, WeaponCoordinate torpedoVector)
+        {
+            newLocation.Sector.IncrementBy(currentLocation);
+
+            //todo: Condense into function of Coordinate
+            if (Torpedoes.LastPositionAintNewPosition(newLocation, lastPosition))
+            {
+                Output.Write.Line(string.Format("  [{0},{1}]", newLocation.Sector.X, newLocation.Sector.Y));
+                lastPosition.Update(newLocation);
+            }
+
+            Torpedoes.DebugTrack(newLocation);
+
+            if (this.HitSomething(newLocation))
+            {
+                return true;
+            }
+
+            //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
+            currentLocation.IncrementBy(torpedoVector);
+            return false;
+        }
+
+        private static bool LastPositionAintNewPosition(Location newTorpedoLocation, Coordinate torpedoLastPosition)
+        {
+            return torpedoLastPosition.X != newTorpedoLocation.Sector.X || torpedoLastPosition.Y != newTorpedoLocation.Sector.Y;
+        }
+
+        private static bool IsInQuadrant(WeaponCoordinate torpedoLocation)
         {
             return torpedoLocation.X >= Constants.SECTOR_MIN &&
                    torpedoLocation.Y >= Constants.SECTOR_MIN &&
@@ -129,15 +139,15 @@ namespace StarTrek_KG.Subsystem
                    Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX;
         }
 
-        private bool HitSomethingInSector(Quadrant quadrant, int newY, int newX)
+        private bool HitSomething(Location location)
         {
-            if (this.HitHostile(newY, newX))
+            if (this.HitHostile(location.Sector.Y, location.Sector.X))
             {
                 Game.ALLHostilesAttack(this.Map);
                 return true;
             }
 
-            if (Torpedoes.HitSomethingElse(this.Map, quadrant, newY, newX))
+            if (Torpedoes.HitSomethingElse(this.Map, location.Quadrant, location.Sector.Y, location.Sector.X))
             {
                 Game.ALLHostilesAttack(this.Map);
                 return true;
@@ -161,11 +171,11 @@ namespace StarTrek_KG.Subsystem
             return false;
         }
 
-        private void DebugTorpedoTrack(int newX, int newY, Quadrant quadrant)
+        private static void DebugTrack(Location newLocation)
         {
             if (Constants.DEBUG_MODE)
             {
-                Sector qLocation = quadrant.Sectors.Single(s => s.X == newX && s.Y == newY);
+                Sector qLocation = newLocation.Quadrant.Sectors.Single(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y);
 
                 if (qLocation.Item == SectorItem.Empty)
                 {

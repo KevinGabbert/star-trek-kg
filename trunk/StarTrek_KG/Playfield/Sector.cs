@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -11,6 +12,14 @@ namespace StarTrek_KG.Playfield
     /// </summary>
     public class Sector: Coordinate //todo: this should be called SectorItems (or quadrantItems)
     {
+        public static Sector FromCoordinate(Coordinate coordinateToConvert)
+        {
+            var newSector = new Sector();
+            newSector.X = coordinateToConvert.X;
+            newSector.Y = coordinateToConvert.Y;
+
+            return newSector;
+        }
 
         #region Properties
 
@@ -24,6 +33,11 @@ namespace StarTrek_KG.Playfield
         #endregion
 
         //todo: create a constructor overload that will let you create a sector without an associated quadrant
+
+        public Sector()
+        {
+            
+        }
 
         public Sector(LocationDef location)
         {
@@ -87,6 +101,12 @@ namespace StarTrek_KG.Playfield
         public override string ToString()
         {
             return "Sector: " + this.X + ", " + this.Y;
+        }
+
+        internal void IncrementBy(WeaponCoordinate coordinate)
+        {
+            this.X = (int)Math.Round(coordinate.X);
+            this.Y = (int)Math.Round(coordinate.Y);
         }
     }
 }
