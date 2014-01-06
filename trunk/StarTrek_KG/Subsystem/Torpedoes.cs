@@ -75,8 +75,8 @@ namespace StarTrek_KG.Subsystem
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Map, torpedoStartingLocation.Quadrant);
 
-            var currentLocation = new WeaponCoordinate(torpedoStartingLocation.Sector);
-            var torpedoVector = new WeaponCoordinate(Math.Cos(angle) / 20, Math.Sin(angle) / 20);
+            var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
+            var torpedoVector = new VectorCoordinate(Math.Cos(angle) / 20, Math.Sin(angle) / 20);
 
             //TODO: WRITE SOME TORPEDO TESTS!
 
@@ -103,7 +103,7 @@ namespace StarTrek_KG.Subsystem
             Output.Write.Line("Photon torpedo failed to hit anything.");
         }
 
-        private bool HitSomething(WeaponCoordinate currentLocation, Coordinate lastPosition, Location newLocation, WeaponCoordinate torpedoVector)
+        private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation, VectorCoordinate torpedoVector)
         {
             newLocation.Sector.IncrementBy(currentLocation);
 
@@ -131,7 +131,7 @@ namespace StarTrek_KG.Subsystem
             return torpedoLastPosition.X != newTorpedoLocation.Sector.X || torpedoLastPosition.Y != newTorpedoLocation.Sector.Y;
         }
 
-        private static bool IsInQuadrant(WeaponCoordinate torpedoLocation)
+        private static bool IsInQuadrant(VectorCoordinate torpedoLocation)
         {
             return torpedoLocation.X >= Constants.SECTOR_MIN &&
                    torpedoLocation.Y >= Constants.SECTOR_MIN &&

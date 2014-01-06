@@ -103,7 +103,7 @@ namespace StarTrek_KG.Playfield
             return "Sector: " + this.X + ", " + this.Y;
         }
 
-        internal void IncrementBy(WeaponCoordinate coordinate)
+        internal void IncrementBy(VectorCoordinate coordinate)
         {
             this.X = (int)Math.Round(coordinate.X);
             this.Y = (int)Math.Round(coordinate.Y);
