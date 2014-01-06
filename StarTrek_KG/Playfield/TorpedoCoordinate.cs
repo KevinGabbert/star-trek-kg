@@ -1,6 +1,8 @@
-﻿namespace StarTrek_KG.Playfield
+﻿using System;
+
+namespace StarTrek_KG.Playfield
 {
-    public class FiringCoordinate
+    public class WeaponCoordinate
     {
        #region Properties
 
@@ -27,17 +29,17 @@
 
         #endregion
 
-        public FiringCoordinate()
+        public WeaponCoordinate()
         {
         }
 
-        public FiringCoordinate(Coordinate xy)
+        public WeaponCoordinate(Coordinate xy)
         {
             this.X = xy.X;
             this.Y = xy.Y;
         }
 
-        public FiringCoordinate(double x, double y)
+        public WeaponCoordinate(double x, double y)
         {
             this.X = x;
             this.Y = y;
@@ -46,6 +48,12 @@
         public override string ToString()
         {
             return "Coordinate: " + this.X + ", " + this.Y;
+        }
+
+        internal void IncrementBy(WeaponCoordinate vector)
+        {
+            this.X += vector.X;
+            this.Y += vector.Y;
         }
     }
 }
