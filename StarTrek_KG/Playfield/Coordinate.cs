@@ -5,6 +5,8 @@ namespace StarTrek_KG.Playfield
 {
     public class Coordinate
     {
+        private readonly bool _enforceBoundsChecking = true;
+
         #region Properties
 
         private int _x;
@@ -13,7 +15,10 @@ namespace StarTrek_KG.Playfield
             get { return _x; }
             set
             {
-                Coordinate.CheckForOutOfBounds(value);
+                if (this._enforceBoundsChecking)
+                {
+                    Coordinate.CheckForOutOfBounds(value);
+                }
                 _x = value;
             }
         }
@@ -25,7 +30,10 @@ namespace StarTrek_KG.Playfield
             get { return _y; }
             set
             {
-                Coordinate.CheckForOutOfBounds(value);
+                if (this._enforceBoundsChecking)
+                {
+                    Coordinate.CheckForOutOfBounds(value);
+                }
                 _y = value;
             }
         }
@@ -36,8 +44,9 @@ namespace StarTrek_KG.Playfield
         {
         }
 
-        public Coordinate(int x, int y)
+        public Coordinate(int x, int y, bool enforceBoundsChecking = true)
         {
+            _enforceBoundsChecking = enforceBoundsChecking;
             this.X = x;
             this.Y = y;
         }
