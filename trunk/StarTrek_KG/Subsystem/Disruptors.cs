@@ -6,7 +6,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Disruptors : SubSystem_Base, IMap, IBeamWeapon
+    public class Disruptors : SubSystem_Base, IMap
     {
         public Disruptors(Ship shipConnectedTo)
         {
@@ -28,32 +28,9 @@ namespace StarTrek_KG.Subsystem
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// This function represents the amount of energy fired by an opposing ship.
-        /// The value is a seeded random number that decreases by distance.
-        /// </summary>
-        /// <param name="disruptorEnergy"> </param>
-        /// <param name="distance"></param>
-        /// <returns></returns>
-        public double Shoot(double energyToPowerWeapon, double distance)
-        {
-            //todo: give ship a disruptor weapon type, enable it only on hostileType.Klingon.  delete this.
-            //todo: energyToPowerWeapon not used, but it will need to have power passed from ShipConnectTo's Energy
-
-            var seed = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed"); //todo: pull from config
-            var distanceDeprecationLevel = StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"); //todo: pull deprecationlevel from config
-
-            var adjustedDisruptorEnergy = (StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment") - distance / distanceDeprecationLevel);
-            var deliveredEnergy = (int)(seed * (Utility.Utility.Random).NextDouble() * adjustedDisruptorEnergy);
-
-            return deliveredEnergy;
-        }
-
-
-
         //todo: Under Construction
         //This will be the first subsystem that will 
-        public int Shoot(Location targetLocation) //Playership.GetLocation();
+        public int Execute(Location targetLocation) //Playership.GetLocation();
         {
             IShip thisShip = this.ShipConnectedTo;
 
@@ -72,14 +49,18 @@ namespace StarTrek_KG.Subsystem
             //later versions can have this ship eventually get boarded, fixed, and working
             //skip whats below
 
-            //var attackingEnergy = Disruptors.For(thisShip).Shoot(distance);
 
-            //var shieldsValueBeforeHit = Shields.For(thisShip).Energy;
+            //var seedEnergyToPowerWeapon = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed") *
+            //                              (Utility.Utility.Random).NextDouble();
 
-            //target.AbsorbHitFrom(this, attackingEnergy);
+            ////Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()
+            ////todo: the -1 should be the ship energy you want to allocate
+            //var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
 
+            //var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
-            //whoever called this function might need to tell this info to the user
+            //map.Playership.AbsorbHitFrom(badGuy, attackingEnergy);
+
             //Game.ReportShieldsStatus(map, shieldsValueBeforeHit);
 
             return 0;

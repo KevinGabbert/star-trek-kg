@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using StarTrek_KG.Config;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Utility
@@ -95,6 +96,22 @@ namespace StarTrek_KG.Utility
             }
 
             return angle;
+        }
+
+        public static double ComputeBeamWeaponIntensity(double energyToPowerWeapon, double energyAdjustment, double distance, double deprecationRate)
+        {
+            return energyToPowerWeapon*(energyAdjustment - distance/deprecationRate);
+        }
+
+        //todo: move to Utility() object
+        public static double ShootBeamWeapon(double energyToPowerWeapon, double distance, string deprecationRateConfigKey, string energyAdjustmentConfigKey)
+        {
+            double deprecationRate = StarTrekKGSettings.GetSetting<double>(deprecationRateConfigKey);
+            double energyAdjustment = StarTrekKGSettings.GetSetting<double>(energyAdjustmentConfigKey);
+
+            double deliveredEnergy = StarTrek_KG.Utility.Utility.ComputeBeamWeaponIntensity(energyToPowerWeapon, energyAdjustment, distance, deprecationRate);
+
+            return deliveredEnergy;
         }
 
         public static void ResetGreekLetterStack()

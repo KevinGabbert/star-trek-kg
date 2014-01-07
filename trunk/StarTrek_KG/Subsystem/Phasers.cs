@@ -10,7 +10,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Phasers : SubSystem_Base, IMap, IBeamWeapon
+    public class Phasers : SubSystem_Base, IMap
     {
         public Phasers(Map map, Ship shipConnectedTo)
         {
@@ -88,7 +88,7 @@ namespace StarTrek_KG.Subsystem
 
                 double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
 
-                double deliveredEnergy = Phasers.For(this.ShipConnectedTo).Shoot(phaserEnergy, distance);
+                double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate", "PhaserEnergyAdjustment");
 
                 Phasers.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
@@ -118,17 +118,6 @@ namespace StarTrek_KG.Subsystem
         //    return false;
         //}
 
-        //todo: move to Utility() object
-        public double Shoot(double energyToPowerWeapon, double distance)
-        {
-            double phaserDeprecationRate = StarTrekKGSettings.GetSetting<double>("PhaserShotDeprecationRate");
-            double phaserEnergyAdjustment = StarTrekKGSettings.GetSetting<double>("PhaserEnergyAdjustment");
-
-            double deliveredEnergy = energyToPowerWeapon * (phaserEnergyAdjustment - distance / phaserDeprecationRate);
-
-            return deliveredEnergy;
-        }
-
         //todo: move to badguy.DamageControl() object
         private static void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
         {
@@ -145,7 +134,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                Output.Write.Line(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. Hostile shield strength dropped to {2}.",
+                Output.Write.Line(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. " + badGuyShip.Name + " shield strength down to {2}.",
                                   (badGuyShip.Sector.X), (badGuyShip.Sector.Y), badGuyShields.Energy));
             }
         }
