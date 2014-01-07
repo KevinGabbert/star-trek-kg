@@ -305,10 +305,12 @@ namespace StarTrek_KG
                                                     badGuy.Sector.X,
                                                     badGuy.Sector.Y);
 
+            var seedEnergyToPowerWeapon = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed")*
+                                          (Utility.Utility.Random).NextDouble();
 
             //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()
             //todo: the -1 should be the ship energy you want to allocate
-            var attackingEnergy = (int)(new Disruptors(null)).Shoot(-1, distance); 
+            var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment"); 
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 

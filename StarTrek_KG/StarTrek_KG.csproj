@@ -74,7 +74,6 @@
     <Compile Include="Interfaces\ISectorObject.cs" />
     <Compile Include="Interfaces\IStar.cs" />
     <Compile Include="Interfaces\ISystem.cs" />
-    <Compile Include="Interfaces\IWeapon.cs" />
     <Compile Include="Output\Draw.cs" />
     <Compile Include="Output\PrintSector.cs" />
     <Compile Include="Playfield\TorpedoCoordinate.cs" />

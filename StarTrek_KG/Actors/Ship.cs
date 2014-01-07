@@ -78,7 +78,6 @@ namespace StarTrek_KG.Actors
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public void AbsorbHitFrom(IShip attacker, int attackingEnergy) //
         {
-            //
             Output.Write.Line(string.Format(this.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
 
             var shields = this.Shields();
@@ -108,7 +107,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                Output.Write.Line(" No Damage from hit. ");
+                Output.Write.Line("No Structural Damage from hit.");
             }
         }
 

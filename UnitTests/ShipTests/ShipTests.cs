@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Config;
-using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests
 {
@@ -26,15 +25,13 @@ namespace UnitTests.ShipTests
             Assert.AreEqual(11.3, StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"));
             Assert.AreEqual(1.0, StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment"));
 
-            var disruptors = new Disruptors(null);
-
             for (var i = 1; i < 1000; i++)
             {
-                var oneSector = disruptors.Shoot(-1, 1);
-                var twoSector = disruptors.Shoot(-1, 2);
-                var fourSector = disruptors.Shoot(-1, 4);
-                var sevenSector = disruptors.Shoot(-1, 7);
-                var eightSector = disruptors.Shoot(-1, 8);
+                var oneSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 1, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
+                var twoSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 2, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
+                var fourSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 4, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
+                var sevenSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 7, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
+                var eightSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 8, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
 
                 Assert.Less(oneSector, 290, "iteration: " + i);
                 Assert.Less(twoSector, 247, "iteration: " + i);
