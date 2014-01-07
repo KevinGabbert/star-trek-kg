@@ -45,6 +45,7 @@ namespace StarTrek_KG.Actors
 
             Quadrant newLocation = null;
 
+            //todo: why the refs? why not copy the variables?
             if (this.TravelThroughSectors(distanceEntered, 
                                           distance, 
                                           numericDirection, 
@@ -57,11 +58,16 @@ namespace StarTrek_KG.Actors
                 goto EndNavigation;
             }
 
+            //ref'd because it corrects bad values
+            //todo: why can't this be another variable?
+            //todo: why can't this be computed before TravelThroughSectors? (because apparently we want the ship to stop at it)
+            //todo: *should* we compute beforehand?
             this.CheckForGalacticBarrier(ref vectorLocationX, ref vectorLocationY);
 
             //todo: if quadrant hasnt changed because ship cant move off map, then output a message that the galactic barrier has been hit
 
             //todo: Map Friendly was set in obstacle check (move that here)
+            //todo: use Location object
             newLocation = this.SetShipLocation(vectorLocationX, vectorLocationY);//Set new Sector
 
         EndNavigation:

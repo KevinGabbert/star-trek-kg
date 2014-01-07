@@ -87,7 +87,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             Assert.AreEqual(1, newQuadrant.X);
             Assert.AreEqual(1, newQuadrant.Y);
             Assert.AreEqual(true, newQuadrant.Empty);
-            Assert.AreEqual("Aaamazzara", newQuadrant.Name);
+            Assert.AreEqual("Ariel", newQuadrant.Name);
         }
 
         //When implemented:

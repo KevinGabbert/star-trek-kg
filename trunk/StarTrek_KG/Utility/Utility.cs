@@ -30,6 +30,7 @@ namespace StarTrek_KG.Utility
         }
 
         //calculates distance traveled mostly to be able to have a value for diagonal distance, as straight line calculation doesnt need all this effort.
+        //todo: modify this to take location
         public static double Distance(double startX, double startY, double destinationX, double destinationY)
         {
             var distanceTraveledX = destinationX - startX;

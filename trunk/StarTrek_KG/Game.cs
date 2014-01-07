@@ -306,8 +306,9 @@ namespace StarTrek_KG
                                                     badGuy.Sector.Y);
 
 
-            //Todo: this should be Disruptors.For(badGuy).Shoot()
-            var attackingEnergy = Disruptors.Shoot(distance);
+            //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()
+            //todo: the -1 should be the ship energy you want to allocate
+            var attackingEnergy = (int)(new Disruptors(null)).Shoot(-1, distance); 
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 

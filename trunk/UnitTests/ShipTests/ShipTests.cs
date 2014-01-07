@@ -26,13 +26,15 @@ namespace UnitTests.ShipTests
             Assert.AreEqual(11.3, StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"));
             Assert.AreEqual(1.0, StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment"));
 
+            var disruptors = new Disruptors(null);
+
             for (var i = 1; i < 1000; i++)
             {
-                var oneSector = Disruptors.Shoot(1);
-                var twoSector = Disruptors.Shoot(2);
-                var fourSector = Disruptors.Shoot(4);
-                var sevenSector = Disruptors.Shoot(7);
-                var eightSector = Disruptors.Shoot(8);
+                var oneSector = disruptors.Shoot(-1, 1);
+                var twoSector = disruptors.Shoot(-1, 2);
+                var fourSector = disruptors.Shoot(-1, 4);
+                var sevenSector = disruptors.Shoot(-1, 7);
+                var eightSector = disruptors.Shoot(-1, 8);
 
                 Assert.Less(oneSector, 290, "iteration: " + i);
                 Assert.Less(twoSector, 247, "iteration: " + i);
