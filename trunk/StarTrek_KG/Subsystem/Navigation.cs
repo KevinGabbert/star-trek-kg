@@ -63,9 +63,12 @@ namespace StarTrek_KG.Subsystem
             }
 
             double distance;
-            string direction;
+            double direction;
 
-            if (this.Movement.InvalidCourseCheck(out direction)) return;
+            if (this.Movement.InvalidCourseCheck(out direction))
+            {
+                return;
+            }
 
             //todo: I'd like to check this sooner than *after* we start moving.  I have always disliked this behavior in the game
             if (this.Warp.InvalidWarpFactorCheck(this.MaxWarpFactor, out distance)) return;
@@ -73,7 +76,10 @@ namespace StarTrek_KG.Subsystem
             int lastQuadY;
             int lastQuadX;
 
-            if (!Warp.EngageWarp(direction, distance, out lastQuadY, out lastQuadX, this.Map)) return;
+            if (!Warp.EngageWarp(direction, distance, out lastQuadY, out lastQuadX, this.Map))
+            {
+                return;
+            }
 
             this.RepairOrTakeDamage(lastQuadX, lastQuadY);
 
