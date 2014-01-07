@@ -1,6 +1,7 @@
 ﻿using System;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
@@ -18,7 +19,7 @@ namespace StarTrek_KG.Actors
             this.Map = map;
         }
 
-        public void Execute(string direction, double distance, double distanceEntered, out int lastQuadX, out int lastQuadY)
+        public void Execute(double direction, double distance, double distanceEntered, out int lastQuadX, out int lastQuadY)
         {
             Sector playerShipSector = this.ShipConnectedTo.Sector;
             Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
@@ -31,9 +32,8 @@ namespace StarTrek_KG.Actors
             //hack: bandaid fix. inelegant code
             //todo: Fix the mathematical need for a different numerical direction for sectors and quadrants.
             //todo: GetSectorDirection() and GetQuadrantDirection() need to return the same numbers
-            var movementDirection = Convert.ToDouble(direction);
 
-            double numericDirection = distanceEntered < 1 ? movementDirection : Movement.GetQuadrantDirection(direction);
+            double numericDirection = distanceEntered < 1 ? direction : Movement.GetQuadrantDirection(direction);
 
             double vectorLocationX = playershipQuadrant.X * 8 + playerShipSector.X;
             double vectorLocationY = playershipQuadrant.Y * 8 + playerShipSector.Y;
@@ -202,48 +202,20 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        private static int GetQuadrantDirection(string direction)
+        private static double GetQuadrantDirection(double direction)
         {
+            //Quadrants are currently shifted from sector directions by 2 positions.
             //this function exists to correct a directional disparity
             //todo: correct this numerical disparity..
 
+            //How quadrants are coded
             // 6   7   8
             //   \ ↑ /  
             //5 ← <*> → 1
             //   / ↓ \  
             // 4   3   2
 
-            var returnVal = 0;
-
-            switch (direction)
-            {
-                case "7":
-                    returnVal = 1;
-                    break;
-                case "6":
-                    returnVal = 2;
-                    break;
-                case "5": //correct
-                    returnVal = 3; 
-                    break;
-                case "4":
-                    returnVal = 4;
-                    break;
-                case "3": //correct
-                    returnVal = 5;
-                    break;
-                case "2":
-                    returnVal = 6;
-                    break;
-                case "1": //correct?
-                    returnVal = 7;
-                    break;
-                case "8":
-                    returnVal = 8;
-                    break;
-            }
-
-            return returnVal;
+            return -direction + 8;
         }
 
         private Quadrant SetShipLocation(double x, double y)
@@ -312,27 +284,36 @@ namespace StarTrek_KG.Actors
         }
 
         //This prompt needs to be exposed to the user as an event
-        public bool InvalidCourseCheck(out string direction)
+        public bool InvalidCourseCheck(out double direction)
         {
             var course = Output.Draw.Course() + "Enter Course: ";
-            string userDirection = "0";
+            string userDirection;
 
             if (Command.PromptUser(course, out userDirection))
             {
 
-                //todo: check to see if is numeric
                 //todo: check to see if number is higher than 8
 
-                //if (!Constants.MAP_DIRECTION.Contains(userDirection))
-                //{
-                //    Output.Write.Line("Invalid course.");
-                //    return true;
-                //}
+                if (!userDirection.IsNumeric())
+                {
+                    Output.Write.Line("Invalid course.");
+                    direction = 0;
+                     
+                    return true;
+                }
 
-                //todo: convert to double
+                var directionToCheck = Convert.ToDouble(userDirection);
+
+                if (directionToCheck > 8.9 || directionToCheck < 0)
+                {
+                    Output.Write.Line("Invalid course...");
+                    direction = 0;
+
+                    return true;
+                }
             }
 
-            direction = userDirection;
+            direction = Convert.ToDouble(userDirection);
 
             return false;
         }

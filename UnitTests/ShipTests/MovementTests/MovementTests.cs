@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -321,7 +322,7 @@ namespace UnitTests.ShipTests.MovementTests
                                                                        _testMovement.Map.Playership.Sector.Y).Item;
             Assert.AreEqual(SectorItem.Friendly, sectorItem);
 
-            _testMovement.Execute(direction, distance, distance/8, out _lastQuadX, out _lastQuadY);
+            _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
 
             //EnergySubtracted changes an entered value of .1 to .8
             //todo: measure time passed
@@ -669,7 +670,7 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void Move_Quadrant(string direction, double distance)
         {
-            _testMovement.Execute(direction, distance, distance, out _lastQuadX, out _lastQuadY);
+            _testMovement.Execute(Convert.ToInt32(direction), distance, distance, out _lastQuadX, out _lastQuadY);
         }
 
         //todo: this needs to be refactored into a ship setup testfixture or something.
