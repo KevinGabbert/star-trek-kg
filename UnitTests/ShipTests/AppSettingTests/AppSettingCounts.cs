@@ -19,21 +19,21 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfSettings()
         {
-            Assert.AreEqual(61, StarTrekKGSettings.Get.GameSettings.Count);
+            Assert.AreEqual(64, StarTrekKGSettings.Get.GameSettings.Count);
         }
 
         [Test]
         public void CountOfSettingstarSystems()
         {
 
-            Assert.AreEqual(80, StarTrekKGSettings.Get.StarSystems.Count);
+            Assert.AreEqual(79, StarTrekKGSettings.Get.StarSystems.Count);
         }
 
         [Test]
         public void CountOfFactions()
         {
 
-            Assert.AreEqual(3, StarTrekKGSettings.Get.Factions.Count);
+            Assert.AreEqual(4, StarTrekKGSettings.Get.Factions.Count);
         }
 
 
@@ -41,7 +41,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         public void CountOfConsoleText()
         {
 
-            Assert.AreEqual(64, StarTrekKGSettings.Get.ConsoleText.Count);
+            Assert.AreEqual(211, StarTrekKGSettings.Get.ConsoleText.Count);
         }
     }
 }

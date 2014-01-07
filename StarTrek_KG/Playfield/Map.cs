@@ -497,6 +497,8 @@ namespace StarTrek_KG.Playfield
 
 
         //}
+
+        //todo: this should be part of the computer object
         public void StarbaseCalculator(Ship shipConnectedTo)
         {
             //var navigation = Navigation.For(shipConnectedTo);

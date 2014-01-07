@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -9,7 +10,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Phasers : SubSystem_Base, IMap, IWeapon
+    public class Phasers : SubSystem_Base, IMap, IBeamWeapon
     {
         public Phasers(Map map, Ship shipConnectedTo)
         {
@@ -38,7 +39,7 @@ namespace StarTrek_KG.Subsystem
             if (!EnergyCheckFail(energyToFire, shipFiringPhasers))
             {
                 shipFiringPhasers.Energy = this.ShipConnectedTo.Energy -= energyToFire;
-                Phasers.Execute(this.Map, energyToFire);
+                Phasers.For(this.ShipConnectedTo).Execute(this.Map, energyToFire);
 
                 //todo: move to Game() object
                 //todo: move to Game() object
@@ -74,7 +75,7 @@ namespace StarTrek_KG.Subsystem
             this.Fire(phaserEnergy, shipFiringPhasers);
         }
 
-        private static void Execute(Map map, double phaserEnergy)
+        private void Execute(Map map, double phaserEnergy)
         {
             Output.Write.Line("Firing phasers..."); //todo: pull from config
 
@@ -83,7 +84,12 @@ namespace StarTrek_KG.Subsystem
             var destroyedShips = new List<IShip>();
             foreach (var badGuyShip in map.Quadrants.GetActive().GetHostiles())
             {
-                double deliveredEnergy = ComputeDeliveredEnergy(map.Playership.GetLocation(), phaserEnergy, badGuyShip);
+                Location location = map.Playership.GetLocation();
+
+                double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
+
+                double deliveredEnergy = Phasers.For(this.ShipConnectedTo).Shoot(phaserEnergy, distance);
+
                 Phasers.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
 
@@ -113,10 +119,12 @@ namespace StarTrek_KG.Subsystem
         //}
 
         //todo: move to Utility() object
-        private static double ComputeDeliveredEnergy(Location location, double phaserEnergy, ISectorObject target)
+        public double Shoot(double energyToPowerWeapon, double distance)
         {
-            var distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, target.Sector.X, target.Sector.Y);
-            var deliveredEnergy = phaserEnergy*(1.0 - distance/11.3);
+            double phaserDeprecationRate = StarTrekKGSettings.GetSetting<double>("PhaserShotDeprecationRate");
+            double phaserEnergyAdjustment = StarTrekKGSettings.GetSetting<double>("PhaserEnergyAdjustment");
+
+            double deliveredEnergy = energyToPowerWeapon * (phaserEnergyAdjustment - distance / phaserDeprecationRate);
 
             return deliveredEnergy;
         }

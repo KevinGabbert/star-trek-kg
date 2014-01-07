@@ -6,7 +6,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Disruptors : SubSystem_Base, IMap, IWeapon
+    public class Disruptors : SubSystem_Base, IMap, IBeamWeapon
     {
         public Disruptors(Ship shipConnectedTo)
         {
@@ -32,11 +32,13 @@ namespace StarTrek_KG.Subsystem
         /// This function represents the amount of energy fired by an opposing ship.
         /// The value is a seeded random number that decreases by distance.
         /// </summary>
+        /// <param name="disruptorEnergy"> </param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public static int Shoot(double distance)
+        public double Shoot(double energyToPowerWeapon, double distance)
         {
             //todo: give ship a disruptor weapon type, enable it only on hostileType.Klingon.  delete this.
+            //todo: energyToPowerWeapon not used, but it will need to have power passed from ShipConnectTo's Energy
 
             var seed = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed"); //todo: pull from config
             var distanceDeprecationLevel = StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"); //todo: pull deprecationlevel from config
