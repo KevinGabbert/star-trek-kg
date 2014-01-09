@@ -1,41 +1,25 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
-using StarTrek_KG.Config;
-using StarTrek_KG.Enums;
-using StarTrek_KG.Playfield;
-using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
     public class NavigationTests
     {
-        private Navigation _testNavigation;
+        private readonly Test_Setup _setup = new Test_Setup();
 
         [SetUp]
         public void Setup()
         {
             TestRunner.GetTestConstants();
 
-            var map = new Map(new GameConfig
-                                  {
-                                      Initialize = true,
+            _setup.SetupMapWith1Hostile();
 
-                                      SectorDefs = new SectorDefs
-                                                       {
-                                                           new SectorDef(
-                                                               new LocationDef(new Coordinate(0, 0),
-                                                                               new Coordinate(0, 0)),
-                                                               SectorItem.Friendly),
-                                                           new SectorDef(
-                                                               new LocationDef(new Coordinate(0, 0),
-                                                                               new Coordinate(0, 1)), SectorItem.Hostile),
-                                                       }
-                                  });
-
-            _testNavigation = new Navigation(map, map.Playership); 
+            _setup.TestNavigation = new Navigation(_setup.TestMap, _setup.TestMap.Playership); 
         }
+
 
         [TearDown]
         public void TearDown()
@@ -52,10 +36,10 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void ControlsDamaged()
         {
-            _testNavigation.MaxWarpFactor = 8;
-            _testNavigation.Damage = 47;
-            _testNavigation.Controls("AHHHHHHHH");
-            Assert.IsTrue(_testNavigation.Damaged());
+            _setup.TestNavigation.MaxWarpFactor = 8;
+            _setup.TestNavigation.Damage = 47;
+            _setup.TestNavigation.Controls("AHHHHHHHH");
+            Assert.IsTrue(_setup.TestNavigation.Damaged());
         }
 
         /// <summary>
@@ -65,12 +49,12 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void WarpDriveDamaged()
         {
-            _testNavigation.MaxWarpFactor = 8;
-            _testNavigation.Damage = 47;
-            _testNavigation.Controls("AHHHHHHHH");
+            _setup.TestNavigation.MaxWarpFactor = 8;
+            _setup.TestNavigation.Damage = 47;
+            _setup.TestNavigation.Controls("AHHHHHHHH");
 
-            Assert.Less(_testNavigation.MaxWarpFactor, 8);
-            Assert.Greater(_testNavigation.MaxWarpFactor, 0);
+            Assert.Less(_setup.TestNavigation.MaxWarpFactor, 8);
+            Assert.Greater(_setup.TestNavigation.MaxWarpFactor, 0);
         }
 
         //For this test to work, InvalidCourseCheck needs to be mocked
@@ -78,34 +62,34 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void ControlsInvalid()
         {
-            _testNavigation.Controls("XXXXX");
+            _setup.TestNavigation.Controls("XXXXX");
         }
 
         [Test]
         public void Repair()
         {
-            _testNavigation.Damage = 47;
-            var repaired = _testNavigation.PartialRepair();
+            _setup.TestNavigation.Damage = 47;
+            var repaired = _setup.TestNavigation.PartialRepair();
 
             Assert.IsTrue(repaired);
-            Assert.AreEqual(46, _testNavigation.Damage);
+            Assert.AreEqual(46, _setup.TestNavigation.Damage);
         }
 
         [Test]
         public void DamageRepaired()
         {
-            _testNavigation.Damage = 1;
-            var repaired = _testNavigation.PartialRepair();
+            _setup.TestNavigation.Damage = 1;
+            var repaired = _setup.TestNavigation.PartialRepair();
 
             Assert.IsTrue(repaired);
-            Assert.IsFalse(_testNavigation.Damaged());
+            Assert.IsFalse(_setup.TestNavigation.Damaged());
         }
 
         [Test]
         public void NoNeedForDamageRepair()
         {
-            _testNavigation.Damage = 0;
-            var repaired = _testNavigation.PartialRepair();
+            _setup.TestNavigation.Damage = 0;
+            var repaired = _setup.TestNavigation.PartialRepair();
 
             Assert.IsFalse(repaired);
         }
@@ -113,15 +97,15 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void Damaged()
         {
-            _testNavigation.Damage = 47;
-            Assert.IsTrue(_testNavigation.Damaged());
+            _setup.TestNavigation.Damage = 47;
+            Assert.IsTrue(_setup.TestNavigation.Damaged());
         }
 
         [Test]
         public void NotDamaged()
         {
-            _testNavigation.Damage = 0;
-            Assert.IsFalse(_testNavigation.Damaged());
+            _setup.TestNavigation.Damage = 0;
+            Assert.IsFalse(_setup.TestNavigation.Damaged());
         }
     }
 }
