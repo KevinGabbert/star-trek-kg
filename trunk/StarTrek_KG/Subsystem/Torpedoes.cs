@@ -67,22 +67,27 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            Output.Write.Line("Photon torpedo fired...");
-            this.Count--;
+            Shoot(direction);
+        }
 
+        public void Shoot(double direction)
+        {
             var angle = Utility.Utility.ComputeAngle(this.Map, direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Map, torpedoStartingLocation.Quadrant);
 
             var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
-            var torpedoVector = new VectorCoordinate(Math.Cos(angle) / 20, Math.Sin(angle) / 20);
+            var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
+
+            Output.Write.Line("Photon torpedo fired...");
+            this.Count--;
 
             //TODO: WRITE SOME TORPEDO TESTS!
 
             //todo: add in a constructor to turn off coordinate bounds checking for this object only
             //either that, or come up with a null location so that the first WHILE will work
-            var lastPosition = new Coordinate(-1, -1, false); 
+            var lastPosition = new Coordinate(-1, -1, false);
 
             var newLocation = new Location();
             newLocation.Quadrant = quadrant;
