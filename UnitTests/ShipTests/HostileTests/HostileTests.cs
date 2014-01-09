@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
@@ -9,29 +8,14 @@ using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.HostileTests
 {
     [TestFixture]
     public class HostileTests
     {
-        private Map _testMap; 
-
-        [SetUp]
-        public void SetUp()
-        {
-            TestRunner.GetTestConstants();
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Constants.SECTOR_MIN = 0;
-            Constants.SECTOR_MAX = 0;
-
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
-        }
+        private readonly Test_Setup setup = new Test_Setup();
 
         [Test]
         public void ALLHostilesAttack_ShipUndocked_WithShields()
@@ -40,23 +24,23 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: This test does not run alone.  what do the other tests set up that this needs?  why don't thea other tests tear down their stuff?
 
             //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
-            this.SetupMapWith2Hostiles();
+            setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount"); 
+            Assert.AreEqual(setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount"); 
 
             //raise shields
-            Shields.For(_testMap.Playership).SetEnergy(2500); //hopefully a single hit wont be harder than this!
-            Assert.AreEqual(2500, Shields.For(_testMap.Playership).Energy, "Unexpected shield energy level"); //shields charged correctly // todo: do more tests on this in ShieldTests    
+            Shields.For(setup.TestMap.Playership).SetEnergy(2500); //hopefully a single hit wont be harder than this!
+            Assert.AreEqual(2500, Shields.For(setup.TestMap.Playership).Energy, "Unexpected shield energy level"); //shields charged correctly // todo: do more tests on this in ShieldTests    
 
             //Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
 
-            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
+            Assert.AreEqual(setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            Game.ALLHostilesAttack(_testMap);
+            Game.ALLHostilesAttack(setup.TestMap);
 
-            Assert.IsFalse(_testMap.Playership.Destroyed); 
-            Assert.Less(Shields.For(_testMap.Playership).Energy, 2500);
-            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _testMap.Playership.Energy, "expected no change to ship energy"); 
+            Assert.IsFalse(setup.TestMap.Playership.Destroyed);
+            Assert.Less(Shields.For(setup.TestMap.Playership).Energy, 2500);
+            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), setup.TestMap.Playership.Energy, "expected no change to ship energy"); 
     
             //Assert that ship has taken 2 hits.
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
@@ -102,9 +86,9 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void ShipUndocked_NoShields_CheckEnergy()
         {
-            this.SetupMapWith2Hostiles();
+            setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _testMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
+            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), setup.TestMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
         }
 
         [Ignore("This is a long running test intended to suss out a problem (which is now fixed)")]
@@ -126,13 +110,13 @@ namespace UnitTests.ShipTests.HostileTests
 
         private void AttackAndCheck()
         {
-            this.SetupMapWith2Hostiles();
+            setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
+            Assert.AreEqual(setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            Game.ALLHostilesAttack(_testMap);
+            Game.ALLHostilesAttack(setup.TestMap);
 
-            Assert.IsFalse(_testMap.Playership.Destroyed);
+            Assert.IsFalse(setup.TestMap.Playership.Destroyed);
 
             //var shipEnergy = _testMap.Playership.Energy;
             //var shipShields = Shields.For(_testMap.Playership).Energy;
@@ -147,23 +131,23 @@ namespace UnitTests.ShipTests.HostileTests
             //}
 
             //Normally, 2 *different* subsystems should have been taken out, however, on a rare occasion, a hit will result in no damage.
-            Assert.GreaterOrEqual(_testMap.Playership.Subsystems.Count(s => s.Damaged()), 1);
+            Assert.GreaterOrEqual(setup.TestMap.Playership.Subsystems.Count(s => s.Damaged()), 1);
         }
 
         [Test]
         public void ALLHostilesAttack_ShipDocked()
         {
-            this.SetupMapWith2Hostiles();
+            setup.SetupMapWith2Hostiles();
 
             //cheating so we can cover this line
-            Navigation.For(_testMap.Playership).docked = true;
+            Navigation.For(setup.TestMap.Playership).docked = true;
 
-            Game.ALLHostilesAttack(_testMap);
+            Game.ALLHostilesAttack(setup.TestMap);
 
             //Ship has taken no damage.
-            Assert.IsFalse(_testMap.Playership.Destroyed); 
-            Assert.AreEqual(Shields.For(_testMap.Playership).Energy, 0); //never even needed to raise shields!
-            Assert.AreEqual(_testMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"));      
+            Assert.IsFalse(setup.TestMap.Playership.Destroyed);
+            Assert.AreEqual(Shields.For(setup.TestMap.Playership).Energy, 0); //never even needed to raise shields!
+            Assert.AreEqual(setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"));      
         }
 
         [Test]
@@ -171,21 +155,21 @@ namespace UnitTests.ShipTests.HostileTests
         {
             var game = new Game(); //this can make tests break so I throw it in for a check..
 
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs(),
                 AddStars = false
             }));
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
 
             Assert.AreEqual(64, activeQuad.Sectors.Count);
-            Assert.AreEqual(0, _testMap.Quadrants.GetHostileCount()); //no hostiles
-            Assert.AreEqual(null, _testMap.Playership); //no friendly
+            Assert.AreEqual(0, setup.TestMap.Quadrants.GetHostileCount()); //no hostiles
+            Assert.AreEqual(null, setup.TestMap.Playership); //no friendly
             
             //just empty sectors
-            foreach (var sector in _testMap.Quadrants.SelectMany(quadrant => quadrant.Sectors))
+            foreach (var sector in setup.TestMap.Quadrants.SelectMany(quadrant => quadrant.Sectors))
             {
                 Assert.AreEqual(SectorItem.Empty, sector.Item);
             }
@@ -195,7 +179,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith1Friendly()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -206,13 +190,13 @@ namespace UnitTests.ShipTests.HostileTests
                                             }
             }));
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
 
             Assert.AreEqual(64, activeQuad.Sectors.Count);
 
             //Playership's quadrant has been set correctly..
-            Assert.AreEqual(_testMap.Playership.QuadrantDef.X, activeQuad.X);
-            Assert.AreEqual(_testMap.Playership.QuadrantDef.Y, activeQuad.Y);
+            Assert.AreEqual(setup.TestMap.Playership.QuadrantDef.X, activeQuad.X);
+            Assert.AreEqual(setup.TestMap.Playership.QuadrantDef.Y, activeQuad.Y);
 
             //Check to see if Playership has been assigned to a sector in the active quadrant.
 
@@ -220,14 +204,14 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(1, activeQuad.Sectors.Count(s => s.Item == SectorItem.Friendly));
 
             //directly.
-            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == _testMap.Playership.Sector.X && s.Y == _testMap.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == setup.TestMap.Playership.Sector.X && s.Y == setup.TestMap.Playership.Sector.Y).Item);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
         [Test]
         public void MapWith1Hostile()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -239,24 +223,24 @@ namespace UnitTests.ShipTests.HostileTests
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship("ship1", _testMap, new Sector(locationDef));
+            var hostileShip = new Ship("ship1", setup.TestMap, new Sector(locationDef));
 
-            _testMap.Quadrants[0].AddShip(hostileShip, _testMap.Quadrants[0].Sectors.Get(new Coordinate(1,7)));
+            setup.TestMap.Quadrants[0].AddShip(hostileShip, setup.TestMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
 
-            var hostiles = _testMap.Quadrants.GetHostiles();
+            var hostiles = setup.TestMap.Quadrants.GetHostiles();
             Assert.AreEqual(1, hostiles.Count);
 
-            var firstHostile = _testMap.Quadrants.GetHostiles()[0];
+            var firstHostile = setup.TestMap.Quadrants.GetHostiles()[0];
             Assert.AreEqual("Sector: 1, 7", firstHostile.Sector.ToString());
 
-            Assert.AreEqual(1, _testMap.Quadrants.GetHostiles()[0].Sector.X);
-            Assert.AreEqual(7, _testMap.Quadrants.GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(1, setup.TestMap.Quadrants.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(7, setup.TestMap.Quadrants.GetHostiles()[0].Sector.Y);
         }
 
         [Test]
         public void MapWith1HostileAlternate()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -267,7 +251,7 @@ namespace UnitTests.ShipTests.HostileTests
                                             }
             }));
 
-            var hostiles = _testMap.Quadrants.GetHostiles();
+            var hostiles = setup.TestMap.Quadrants.GetHostiles();
             Assert.AreEqual(1, hostiles.Count);
 
             var firstHostile = hostiles[0];
@@ -281,7 +265,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void Remove1Hostile()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs()
@@ -290,13 +274,13 @@ namespace UnitTests.ShipTests.HostileTests
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship("ship1", _testMap, new Sector(locationDef));
+            var hostileShip = new Ship("ship1", setup.TestMap, new Sector(locationDef));
 
-            _testMap.Quadrants[0].AddShip(hostileShip, _testMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
+            setup.TestMap.Quadrants[0].AddShip(hostileShip, setup.TestMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
 
-            _testMap.Quadrants.RemoveShip(hostileShip.Name);
+            setup.TestMap.Quadrants.RemoveShip(hostileShip.Name);
 
-            Assert.AreEqual(0, _testMap.Quadrants.GetHostiles().Count);
+            Assert.AreEqual(0, setup.TestMap.Quadrants.GetHostiles().Count);
         }
 
         //this method is here to test passing in 
@@ -322,7 +306,7 @@ namespace UnitTests.ShipTests.HostileTests
         {
             var x = new Game();
 
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
                 {
                     Initialize = true,
         
@@ -344,12 +328,12 @@ namespace UnitTests.ShipTests.HostileTests
                     AddStars = false
                 }));
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
 
             Assert.AreEqual(64, activeQuad.Sectors.Count);
 
             //todo: why active? are hostiles in the same sector?
-            var activeQuadrant = _testMap.Quadrants.GetActive();
+            var activeQuadrant = setup.TestMap.Quadrants.GetActive();
 
             Assert.AreEqual(SectorItem.Friendly, activeQuadrant.Sectors[17].Item);
             Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[22].Item);
@@ -380,7 +364,7 @@ namespace UnitTests.ShipTests.HostileTests
         {
             var x = (new Game());
 
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -395,7 +379,7 @@ namespace UnitTests.ShipTests.HostileTests
                 AddStars = false
             }));
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
 
             Assert.AreEqual(64, activeQuad.Sectors.Count);
 
@@ -437,9 +421,9 @@ namespace UnitTests.ShipTests.HostileTests
 
             StarTrekKGSettings.Get = null;
 
-            _testMap = HostileTests.SetUp3Hostiles();
+            setup.TestMap = HostileTests.SetUp3Hostiles();
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
 
             Assert.AreEqual(64, activeQuad.Sectors.Count);
 
@@ -491,9 +475,9 @@ namespace UnitTests.ShipTests.HostileTests
         {
             var x = (new Game());
 
-            _testMap = HostileTests.SetUp3Hostiles();
+            setup.TestMap = HostileTests.SetUp3Hostiles();
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
             Assert.AreEqual(64, activeQuad.Sectors.Count);
 
             //todo: why active? are hostiles in the same sector?
@@ -509,9 +493,9 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder4()
         {
-            _testMap = HostileTests.SetUp3Hostiles();
+            setup.TestMap = HostileTests.SetUp3Hostiles();
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = activeQuad;
 
@@ -529,7 +513,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith2HostilesAnotherWay()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
                                    {
                                        Initialize = true,
                                        
@@ -540,17 +524,17 @@ namespace UnitTests.ShipTests.HostileTests
                                             }
                                    }));
 
-            var activeQuad = _testMap.Quadrants.GetActive();
+            var activeQuad = setup.TestMap.Quadrants.GetActive();
             var activeQuadrant = activeQuad;
 
             //add a ship
-            var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 7))));
-            var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 6))));
+            var hostileShip = new Ship("ship1", setup.TestMap, new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 7))));
+            var hostileShip2 = new Ship("ship2", setup.TestMap, new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 6))));
 
             activeQuadrant.AddShip(hostileShip, hostileShip.Sector);
             activeQuadrant.AddShip(hostileShip2, hostileShip2.Sector);
 
-            var activeQuadrantAfterAdding = _testMap.Quadrants.GetActive();
+            var activeQuadrantAfterAdding = setup.TestMap.Quadrants.GetActive();
             var hostiles = activeQuadrantAfterAdding.GetHostiles();
 
             Assert.AreEqual(2, hostiles.Count);
@@ -562,35 +546,13 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(7, hostiles[1].Sector.Y);
         }
 
-
-        private void SetupMapWith2Hostiles()
-        {
-            _testMap = (new Map(new GameConfig
-                                {
-                                    Initialize = true,
-                                    
-                                    SectorDefs = new SectorDefs
-                                    {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
-                                    }
-                                }));
-
-            //add a ship
-            var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
-            var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))));
-
-            var activeQuad = _testMap.Quadrants.GetActive();
-            activeQuad.AddShip(hostileShip, hostileShip.Sector);
-            activeQuad.AddShip(hostileShip2, hostileShip2.Sector);
-        }
-
         #region OutOfBounds
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -607,7 +569,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile2()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -624,7 +586,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile3()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -641,7 +603,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile4()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -658,7 +620,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile5()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -675,7 +637,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile6()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -692,7 +654,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile7()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -709,7 +671,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile8()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -726,7 +688,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile9()
         {
-            _testMap = (new Map(new GameConfig
+            setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
