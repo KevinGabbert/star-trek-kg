@@ -141,17 +141,21 @@ namespace StarTrek_KG.Playfield
             this.Quadrants = new Quadrants(this);
 
             //Friendlies are added separately
-            var itemsToPopulate = sectorDefs.ToSectors(this.Quadrants).Where(i => i.Item != SectorItem.Friendly).ToList();
+            List<Sector> itemsToPopulateThatAreNotFriendlies = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.Friendly).ToList();
 
-            //Console.WriteLine("ItemsToPopulate: " + itemsToPopulate.Count + " Quadrants: " + this.Quadrants.Count);
+            Output.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotFriendlies.Count + " Quadrants: " + this.Quadrants.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
-
-            this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulate);
+            this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulateThatAreNotFriendlies);
         }
 
         private void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate)
         {
+            if (Constants.QUADRANT_MAX == 0)
+            {
+                throw new GameException("No quadrants to set up.  QUADRANT_MAX set to Zero");
+            }
+
             for (var quadrantX = 0; quadrantX < Constants.QUADRANT_MAX; quadrantX++) //todo: app.config
             {
                 for (var quadrantY = 0; quadrantY < Constants.QUADRANT_MAX; quadrantY++)
