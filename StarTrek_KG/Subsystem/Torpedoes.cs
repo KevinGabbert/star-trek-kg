@@ -72,6 +72,12 @@ namespace StarTrek_KG.Subsystem
 
         public void Shoot(double direction)
         {
+            if(this.Count < 1)
+            {
+                Output.Write.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
+                return;
+            }
+
             var angle = Utility.Utility.ComputeAngle(this.Map, direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
@@ -99,24 +105,34 @@ namespace StarTrek_KG.Subsystem
             while (Torpedoes.IsInQuadrant(currentLocation))
             {
                 //Increment to next Sector
-                if (this.HitSomething(currentLocation, lastPosition, newLocation, torpedoVector))
+                if (this.HitSomething(currentLocation, lastPosition, newLocation))
                 {
                     return;
                 }
+
+                //Keep going.. because we haven't hit anything yet
+
+                //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
+                currentLocation.IncrementBy(torpedoVector);
             }
 
             Output.Write.Line("Photon torpedo failed to hit anything.");
         }
 
-        private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation, VectorCoordinate torpedoVector)
+        private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation)
         {
             newLocation.Sector.IncrementBy(currentLocation);
 
             //todo: Condense into function of Coordinate
             if (Torpedoes.LastPositionAintNewPosition(newLocation, lastPosition))
             {
+                Output.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
                 Output.Write.Line(string.Format("  [{0},{1}]", newLocation.Sector.X, newLocation.Sector.Y));
                 lastPosition.Update(newLocation);
+            }
+            else
+            {
+                //throw new GameException("!!!!!!!");
             }
 
             Torpedoes.DebugTrack(newLocation);
@@ -126,8 +142,6 @@ namespace StarTrek_KG.Subsystem
                 return true;
             }
 
-            //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
-            currentLocation.IncrementBy(torpedoVector);
             return false;
         }
 
@@ -138,8 +152,8 @@ namespace StarTrek_KG.Subsystem
 
         private static bool IsInQuadrant(VectorCoordinate torpedoLocation)
         {
-            return torpedoLocation.X >= Constants.SECTOR_MIN &&
-                   torpedoLocation.Y >= Constants.SECTOR_MIN &&
+            return (torpedoLocation.X >= Constants.SECTOR_MIN ||
+                   torpedoLocation.Y >= Constants.SECTOR_MIN) &&
                    Math.Round(torpedoLocation.X) < Constants.SECTOR_MAX &&
                    Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX;
         }
@@ -148,12 +162,14 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.HitHostile(location.Sector.Y, location.Sector.X))
             {
+                //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
                 Game.ALLHostilesAttack(this.Map);
                 return true;
             }
 
             if (Torpedoes.HitSomethingElse(this.Map, location.Quadrant, location.Sector.Y, location.Sector.X))
             {
+                //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
                 Game.ALLHostilesAttack(this.Map);
                 return true;
             }
