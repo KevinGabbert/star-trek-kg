@@ -64,6 +64,27 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                   });
         }
 
+        public void SetupMapWith1HostileAtSector(Coordinate friendlySector, Coordinate hostileSector)
+        {
+            this.Startup();
+
+            this.TestMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                SectorDefs = new SectorDefs
+                                                       {
+                                                           new SectorDef(
+                                                               new LocationDef(new Coordinate(0, 0),
+                                                                               friendlySector),
+                                                               SectorItem.Friendly),
+                                                           new SectorDef(
+                                                               new LocationDef(new Coordinate(0, 0),
+                                                                               hostileSector), SectorItem.Hostile),
+                                                       }
+            });
+        }
+
+
         private void Startup()
         {
             Constants.SECTOR_MIN = 0;
