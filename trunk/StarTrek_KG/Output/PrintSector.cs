@@ -8,20 +8,18 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Output
 {
-    public class PrintSector: ICommand, IWrite
+    public class PrintSector: IWrite
     {
         private Location Location { get; set; }
         public string Condition { get; set; }
         private int ShieldsDownLevel { get; set; }
         private int LowEnergyLevel { get; set; }
 
-        public Command Command { get; set; }
         public Write Write { get; set; }
 
-        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write, Command command)
+        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.ShieldsDownLevel = shieldsDownLevel;
             this.LowEnergyLevel = lowEnergyLevel;
@@ -50,15 +48,15 @@ namespace StarTrek_KG.Output
             this.Condition = condition;
             this.Location = location;
 
-            Command.Console.WriteLine("");
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
+            this.Write.Console.WriteLine("");
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
 
             for (int i = 0; i < 8; i++ )
             {
                 this.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles);
             }
 
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
         private string GetRowIndicator(int row, Map map)
@@ -126,7 +124,7 @@ namespace StarTrek_KG.Output
 
                         if (totalHostiles < 1)
                         {
-                            this.Command.Console.WriteLine("bug. hostile not removed from display.");
+                            this.Write.Console.WriteLine("bug. hostile not removed from display.");
                         }
 
                         sb.Append(Constants.HOSTILE);
@@ -154,7 +152,7 @@ namespace StarTrek_KG.Output
                 sb.Append(suffix);
             }
 
-            Command.Console.WriteLine(sb.ToString());
+            this.Write.Console.WriteLine(sb.ToString());
             sb.Length = 0;
         }
 
@@ -188,15 +186,15 @@ namespace StarTrek_KG.Output
 
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"),
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("HostileDetected"),
                               (quadrant.GetHostiles().Count == 1 ? "" : "s"));
 
             foreach (var hostile in quadrant.GetHostiles())
             {
-                Command.Console.WriteLine(StarTrekKGSettings.GetText("IDHostile"), hostile.Name);
+                this.Write.Console.WriteLine(StarTrekKGSettings.GetText("IDHostile"), hostile.Name);
             }
 
-            Command.Console.WriteLine("");
+            this.Write.Console.WriteLine("");
 
             if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
             {

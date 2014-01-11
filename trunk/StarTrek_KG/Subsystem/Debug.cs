@@ -12,7 +12,7 @@ using StarTrek_KG.Utility;
 namespace StarTrek_KG.Subsystem
 {
     //todo: investigate removing this base class
-    public class Debug : SubSystem_Base, IWrite, ICommand //temporary, until this area gets rewritten
+    public class Debug : SubSystem_Base, IWrite //temporary, until this area gets rewritten
     {
         //todo: debug should not really be a subsystem.  Debug mode should be outside of the subsystem pattern, 
         //but I wanted to slap it together in a hurry.  That would be hilarious if DebugMode can get damaged if hit by a baddie (I haven't tested that but I guess its possible!  :D)
@@ -44,10 +44,9 @@ namespace StarTrek_KG.Subsystem
                                                     "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
-        public Debug(Map map, Ship shipConnectedTo, Write write, Command command)
+        public Debug(Map map, Ship shipConnectedTo, Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.Initialize();
 
@@ -115,7 +114,7 @@ namespace StarTrek_KG.Subsystem
 
                     var randomSector = new Sector(new LocationDef(quadX, quadY));
 
-                    var hostileShip = new Ship(testShipNames[0], this.Map, randomSector, this.Write, this.Command);
+                    var hostileShip = new Ship(testShipNames[0], this.Map, randomSector, this.Write);
 
                     this.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
@@ -141,7 +140,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    this.Write.Line("Invalid debug command.");
+                    this.Write.Line("Invalid debug this.Write");
                     break;
             }
         }

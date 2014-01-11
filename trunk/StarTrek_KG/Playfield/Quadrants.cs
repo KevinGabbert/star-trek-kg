@@ -9,13 +9,11 @@ using StarTrek_KG.Output;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Quadrants: List<Quadrant>, ICommand, IWrite
+    public class Quadrants: List<Quadrant>, IWrite
     {
         #region Properties
 
             public Map Map { get; set; }
-
-            public Command Command { get; set; }
             public Write Write { get; set; }
 
             /// <summary>
@@ -24,11 +22,9 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-        public Quadrants(Map map, Write write, Command command)
+        public Quadrants(Map map, Write write)
         {
             this.Write = write;
-            this.Command = command;
-
             this.Map = map;
         }
 
@@ -73,11 +69,11 @@ namespace StarTrek_KG.Playfield
             return activeQuadrants.Single();
         }
 
-        public static bool NoHostiles(List<IShip> hostiles)
+        public bool NoHostiles(List<IShip> hostiles)
         {
             if (hostiles.Count == 0)
             {
-                (new Write()).Line("There are no Hostile ships in this quadrant.");
+                (new Write(this.Map)).Line("There are no Hostile ships in this quadrant.");
                 return true;
             }
             return false;

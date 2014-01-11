@@ -10,12 +10,11 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class ShortRangeScan : SubSystem_Base, IMap, ICommand, IWrite
+    public class ShortRangeScan : SubSystem_Base, IMap, IWrite
     {
-        public ShortRangeScan(Map map, Ship shipConnectedTo, Write write, Command command)
+        public ShortRangeScan(Map map, Ship shipConnectedTo, Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.Initialize();
 
@@ -51,7 +50,7 @@ namespace StarTrek_KG.Subsystem
             var location = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Map, location.Quadrant);
 
-            var printSector = (new PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"),this.Write, this.Command));
+            var printSector = (new PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"),this.Write));
             printSector.Print(quadrant, this.Map); 
 
             quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set

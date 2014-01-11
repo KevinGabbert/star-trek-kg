@@ -22,9 +22,7 @@ namespace StarTrek_KG.Subsystem
             public double MaxTransfer { get; set; }
             public SubsystemType Type { get; set; }
 
-            public Command Command { get; set; }
             public Write Write { get; set; }
-            public Draw Draw { get; set; }
 
         #endregion
 
@@ -39,7 +37,7 @@ namespace StarTrek_KG.Subsystem
                 throw new GameException("Property Write is not set for: " + this.Type);
             }
 
-            if(this.Command == null)
+            if(this.Write == null)
             {
                 throw new GameException("Property Command is not set for: " + this.Type);
             }

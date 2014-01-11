@@ -212,6 +212,12 @@ namespace UnitTests.ShipTests.SubSystemTests
             this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(3, 5), 6, true);
         }
 
+        [Test]
+        public void ShootHostileOutfSector()
+        {
+            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(3, 5), 6, true);
+        }
+
         public void ShootHostileAt(Coordinate friendlySector, Coordinate hostileSector, int directionToShoot, bool debugMode)
         {
             Constants.DEBUG_MODE = false;

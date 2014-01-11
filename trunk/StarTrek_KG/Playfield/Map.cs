@@ -14,11 +14,10 @@ using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Map : ICommand, IWrite
+    public class Map : IWrite
     {
         #region Properties
 
-            public Command Command { get; set; }
             public Write Write { get; set; }
 
             public Quadrants Quadrants { get; set; }
@@ -39,11 +38,9 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(GameConfig setupOptions, Write write, Command command)
+        public Map(GameConfig setupOptions, Write write)
         {
             this.Write = write;
-            this.Command = command;
-
             this.Initialize(setupOptions);
         }
 
@@ -145,7 +142,7 @@ namespace StarTrek_KG.Playfield
         //Creates a 2D array of quadrants.  This is how all of our game pieces will be moving around.
         public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs)
         {
-            this.Quadrants = new Quadrants(this, this.Write, this.Command);
+            this.Quadrants = new Quadrants(this, this.Write);
 
             //Friendlies are added separately
             List<Sector> itemsToPopulateThatAreNotFriendlies = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.Friendly).ToList();
@@ -168,7 +165,7 @@ namespace StarTrek_KG.Playfield
                 for (var quadrantY = 0; quadrantY < Constants.QUADRANT_MAX; quadrantY++)
                 {
                     int index;
-                    var newQuadrant = new Quadrant(this.Write, this.Command);
+                    var newQuadrant = new Quadrant(this.Write);
                     var quadrantXY = new Coordinate(quadrantX, quadrantY);
 
                     newQuadrant.Create(this, names, baddieNames, quadrantXY, out index, itemsToPopulate,
@@ -319,7 +316,7 @@ namespace StarTrek_KG.Playfield
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
-            this.Playership = new Ship(playerShipName, this, startingSector, this.Write, this.Command)
+            this.Playership = new Ship(playerShipName, this, startingSector, this.Write)
                                   {
                                       Allegiance = Allegiance.GoodGuy
                                   };

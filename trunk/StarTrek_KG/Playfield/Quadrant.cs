@@ -14,7 +14,7 @@ namespace StarTrek_KG.Playfield
     /// <summary>
     /// A Quadrant in this game is a named area of space. It can contain ships, starbases, or stars. 
     /// </summary>
-    public class Quadrant : Coordinate, ICommand, IWrite
+    public class Quadrant : Coordinate, IWrite
     {
         #region Properties
             public string Name { get; set; }
@@ -47,24 +47,21 @@ namespace StarTrek_KG.Playfield
                 }
             }
 
-            public Command Command { get; set; }
             public Write Write { get; set; }     
 
         #endregion
 
-        public Quadrant(Write write, Command command)
+        public Quadrant(Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.Empty = true;
             this.Name = String.Empty;
         }
 
-        public Quadrant(Map map, Stack<string> names, Write write, Command command)
+        public Quadrant(Map map, Stack<string> names, Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.Empty = true;
             this.Map = map;
@@ -72,10 +69,9 @@ namespace StarTrek_KG.Playfield
             this.Name = String.Empty;
         }
 
-        public Quadrant(Map map, Stack<string> names, out int nameIndex, Write write, Command command)
+        public Quadrant(Map map, Stack<string> names, out int nameIndex, Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.Empty = true;
             this.Map = map;
@@ -92,7 +88,7 @@ namespace StarTrek_KG.Playfield
         {
             nameIndex = (Utility.Utility.Random).Next(names.Count);
 
-            var newQuadrant = new Quadrant(this.Map, names, this.Write, this.Command);
+            var newQuadrant = new Quadrant(this.Map, names, this.Write);
             newQuadrant.Name = names.Pop();
 
             //fix: error here:
@@ -267,7 +263,7 @@ namespace StarTrek_KG.Playfield
         private Ship CreateHostileShip(Sector position, Stack<string> listOfBaddies, Map map)
         {
             //todo: this should be a random baddie, from the list of baddies in app.config
-            var hostileShip = new Ship(listOfBaddies.Pop(), map, position, this.Write, this.Command); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
+            var hostileShip = new Ship(listOfBaddies.Pop(), map, position, this.Write); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
             hostileShip.Sector.X = position.X; 
             hostileShip.Sector.Y = position.Y;
 

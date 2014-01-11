@@ -37,7 +37,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                                  SectorItem.Hostile)
                                                          },
                                         AddStars = false
-                                    }, this.Write, this.Command));
+                                    }, this.Write));
         }
 
         [TearDown]
@@ -63,7 +63,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                     },
                 AddStars = false
-            }, this.Write, this.Command));
+            }, this.Write));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");;
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
@@ -88,7 +88,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                     },
                 AddStars = false
-            }, this.Write, this.Command));
+            }, this.Write));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); 
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
@@ -117,7 +117,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                     },
                 AddStars = false
-            }, this.Write, this.Command));
+            }, this.Write));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); ;
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
@@ -148,7 +148,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)), SectorItem.Hostile)
                     },
                 AddStars = false
-            }, this.Write, this.Command));
+            }, this.Write));
 
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = _testMap.Quadrants.GetActive();

@@ -28,7 +28,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                             }
-            }, this.Write, this.Command));
+            }, this.Write));
 
         }
 
@@ -89,7 +89,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)
                             }
-            }, this.Write, this.Command));
+            }, this.Write));
 
             Assert.IsFalse(IsDockingLocation(map, 4, 4, 4, 4));
         }

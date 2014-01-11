@@ -10,7 +10,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Navigation : SubSystem_Base, IMap, ICommand, IWrite, IDraw
+    public class Navigation : SubSystem_Base, IMap, IWrite
     {
         #region Properties
 
@@ -22,25 +22,18 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Navigation(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
+        public Navigation(Map map, Ship shipConnectedTo, Write write)
         {
             this.Write = write;
-            this.Command = command;
-            this.Draw = draw;
 
             this.Initialize();
-
-            if (this.Draw == null)
-            {
-                throw new GameException("Property Draw is not set for: " + this.Type);
-            }
 
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Navigation;
 
-            this.Warp = new Warp(write, command);
-            this.Movement = new Movement(map, shipConnectedTo, draw, write, command);
+            this.Warp = new Warp(write);
+            this.Movement = new Movement(map, shipConnectedTo, write);
         }
 
         public override void OutputDamagedMessage()
@@ -135,7 +128,10 @@ namespace StarTrek_KG.Subsystem
 
             if (baddiesHangingAround && stillInThisQuadrant)
             {
-                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map);
+                var game = new Game(false);
+                game.Write = this.Write;
+                
+                game.ALLHostilesAttack(this.Map);
             }
             else
             {
@@ -152,7 +148,7 @@ namespace StarTrek_KG.Subsystem
 
             this.Write.Line(string.Format("Your Ship" + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
 
-            if (!Command.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantX"), out quadX)
+            if (!this.Write.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantX"), out quadX)
                 || quadX < (Constants.QUADRANT_MIN + 1) 
                 || quadX > Constants.QUADRANT_MAX)
                 {
@@ -160,7 +156,7 @@ namespace StarTrek_KG.Subsystem
                     return;
                 }
 
-            if (!Command.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantY"), out quadY)
+            if (!this.Write.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantY"), out quadY)
                 || quadY < (Constants.QUADRANT_MIN + 1) 
                 || quadY > Constants.QUADRANT_MAX)
                 {

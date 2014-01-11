@@ -105,8 +105,16 @@ namespace StarTrek_KG.Playfield
 
         internal void IncrementBy(VectorCoordinate coordinate)
         {
-            this.X = (int)Math.Round(coordinate.X);
-            this.Y = (int)Math.Round(coordinate.Y);
+            this._enforceBoundsChecking = false;
+
+            var x = (int)Math.Round(coordinate.X);
+            var y = (int)Math.Round(coordinate.Y);
+
+            if (x < Constants.SECTOR_MIN || y < Constants.SECTOR_MIN || x > Constants.SECTOR_MAX || y > Constants.SECTOR_MAX)
+            {
+                this.X = x;
+                this.Y = y;
+            }
         }
     }
 }

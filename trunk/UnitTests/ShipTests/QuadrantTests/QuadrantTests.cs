@@ -16,9 +16,9 @@ namespace UnitTests.ShipTests.QuadrantTests
         [SetUp]
         public void Setup()
         {
-            _testQuadrant = new Quadrant(this.Write, this.Command);
+            _testQuadrant = new Quadrant(this.Write);
 
-            _testQuadrant.Map = new Map(null, this.Write, this.Command);
+            _testQuadrant.Map = new Map(null, this.Write);
             _testQuadrant.Name = "Setup";
             _testQuadrant.Scanned = false;
 
@@ -30,7 +30,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         public void New()
         {
             //*************** sector not being created with new quadrant
-            _testQuadrant = new Quadrant(this.Write, this.Command);
+            _testQuadrant = new Quadrant(this.Write);
 
             Assert.AreEqual(null, _testQuadrant.Map);
             this.QuadrantNewAsserts();
@@ -42,7 +42,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         {
             var systemNames = StarTrekKGSettings.GetStarSystems();
 
-            _testQuadrant = new Quadrant(_setup.TestMap, new Stack<string>(systemNames), this.Write, this.Command);
+            _testQuadrant = new Quadrant(_setup.TestMap, new Stack<string>(systemNames), this.Write);
 
             //todo: make sure that map is not set up with anyting
 
@@ -70,8 +70,8 @@ namespace UnitTests.ShipTests.QuadrantTests
             var names = new Stack<string>(name);
 
             int index;
-            var newQuadrant = new Quadrant(_setup.Write, _setup.Command);
-            newQuadrant.Create(new Map(null, _setup.Write, _setup.Command), names,
+            var newQuadrant = new Quadrant(_setup.Write);
+            newQuadrant.Create(new Map(null, _setup.Write), names,
                                new Stack<string>(klingonShipNames),
                                new Coordinate(1, 1), out index, null);
 
