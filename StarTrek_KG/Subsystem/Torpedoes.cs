@@ -4,11 +4,12 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Torpedoes : SubSystem_Base, IMap 
+    public class Torpedoes : SubSystem_Base, IMap, ICommand, IWrite, IDraw
     {
         #region Properties
 
@@ -16,8 +17,19 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Map map, Ship shipConnectedTo)
+        public Torpedoes(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
         {
+            this.Draw = draw;
+            this.Write = write;
+            this.Command = command;
+
+            this.Initialize();
+
+            if (this.Draw == null)
+            {
+                throw new GameException("Property Draw is not set for: " + this.Type);
+            }
+
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Torpedoes;
@@ -25,12 +37,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write.Line("Photon torpedo control is damaged. Repairs are underway. ");
+            this.Write.Line("Photon torpedo control is damaged. Repairs are underway. ");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.Write.Line("Photon torpedo controls have been repaired. ");
+            this.Write.Line("Photon torpedo controls have been repaired. ");
         }
 
         public override void OutputMalfunctioningMessage()
@@ -63,7 +75,7 @@ namespace StarTrek_KG.Subsystem
                 || direction < 1.0 
                 || direction > 9.0)
             {
-                Output.Write.Line("Invalid direction.");
+                this.Write.Line("Invalid direction.");
                 return;
             }
 
@@ -74,7 +86,7 @@ namespace StarTrek_KG.Subsystem
         {
             if(this.Count < 1)
             {
-                Output.Write.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
+                this.Write.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
                 return;
             }
 
@@ -86,7 +98,7 @@ namespace StarTrek_KG.Subsystem
             var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
             var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
 
-            Output.Write.Line("Photon torpedo fired...");
+            this.Write.Line("Photon torpedo fired...");
             this.Count--;
 
             //TODO: WRITE SOME TORPEDO TESTS!
@@ -116,7 +128,7 @@ namespace StarTrek_KG.Subsystem
                 currentLocation.IncrementBy(torpedoVector);
             }
 
-            Output.Write.Line("Photon torpedo failed to hit anything.");
+            this.Write.Line("Photon torpedo failed to hit anything.");
         }
 
         private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation)
@@ -126,8 +138,8 @@ namespace StarTrek_KG.Subsystem
             //todo: Condense into function of Coordinate
             if (Torpedoes.LastPositionAintNewPosition(newLocation, lastPosition))
             {
-                Output.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
-                Output.Write.Line(string.Format("  [{0},{1}]", newLocation.Sector.X, newLocation.Sector.Y));
+                this.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
+                this.Write.Line(string.Format("  [{0},{1}]", newLocation.Sector.X, newLocation.Sector.Y));
                 lastPosition.Update(newLocation);
             }
             else
@@ -163,14 +175,14 @@ namespace StarTrek_KG.Subsystem
             if (this.HitHostile(location.Sector.Y, location.Sector.X))
             {
                 //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
-                Game.ALLHostilesAttack(this.Map);
+                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map);
                 return true;
             }
 
-            if (Torpedoes.HitSomethingElse(this.Map, location.Quadrant, location.Sector.Y, location.Sector.X))
+            if (this.HitSomethingElse(this.Map, location.Quadrant, location.Sector.Y, location.Sector.X))
             {
                 //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
-                Game.ALLHostilesAttack(this.Map);
+                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map);
                 return true;
             }
             return false;
@@ -205,7 +217,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        private static bool HitSomethingElse(Map map,
+        private bool HitSomethingElse(Map map,
                                               Quadrant quadrant, 
                                               int newY, 
                                               int newX)
@@ -223,7 +235,7 @@ namespace StarTrek_KG.Subsystem
                     qLocation.Item = SectorItem.Empty;
 
                     //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
-                    Output.Write.Line(string.Format("A Federation starbase at sector [{0},{1}] has been destroyed!",
+                    this.Write.Line(string.Format("A Federation starbase at sector [{0},{1}] has been destroyed!",
                                                     newX, newY));
 
                     //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
@@ -244,7 +256,7 @@ namespace StarTrek_KG.Subsystem
                         starName = star.Name;
                     }
 
-                    Output.Write.Line(string.Format(
+                    this.Write.Line(string.Format(
                         "The torpedo was captured by the gravitational field of star: " + starName +
                         " at sector [{0},{1}].",
                         newX, newY));
@@ -259,7 +271,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Count == 0)
             {
-                Output.Write.Line("Photon torpedoes exhausted.");
+                this.Write.Line("Photon torpedoes exhausted.");
                 return true;
             }
             return false;
@@ -268,15 +280,15 @@ namespace StarTrek_KG.Subsystem
         //todo: move to Utility() object
         public void Calculator(Map map)
         {
-            Output.Write.Line("");
+            this.Write.Line("");
 
             var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
             var thisQuadrantHostiles = thisQuadrant.GetHostiles();
 
             if (thisQuadrantHostiles.Count == 0)
             {
-                Output.Write.Line("There are no Hostile ships in this quadrant.");
-                Output.Write.Line("");
+                this.Write.Line("There are no Hostile ships in this quadrant.");
+                this.Write.Line("");
                 return;
             }
 
@@ -284,7 +296,7 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var ship in thisQuadrantHostiles)
             {
-                Output.Write.Line(string.Format("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
+                this.Write.Line(string.Format("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
                                   (ship.Sector.X), (ship.Sector.Y),
                                   Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y)));
             }

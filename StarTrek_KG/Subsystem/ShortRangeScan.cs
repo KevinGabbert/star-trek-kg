@@ -5,14 +5,20 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class ShortRangeScan : SubSystem_Base, IMap
+    public class ShortRangeScan : SubSystem_Base, IMap, ICommand, IWrite
     {
-        public ShortRangeScan(Map map, Ship shipConnectedTo)
+        public ShortRangeScan(Map map, Ship shipConnectedTo, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+
+            this.Initialize();
+
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.ShortRangeScan;
@@ -20,13 +26,13 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write.Resource("SRSDamaged");
-            Output.Write.Resource("RepairsUnderway");
-            Output.Write.Line("Hint: You can use some computer functions to navigate without SRS"); //todo: can we make hints dismissable?
+            this.Write.Resource("SRSDamaged");
+            this.Write.Resource("RepairsUnderway");
+            this.Write.Line("Hint: You can use some computer functions to navigate without SRS"); //todo: can we make hints dismissable?
         }
         public override void OutputRepairedMessage()
         {
-            Output.Write.Line("Short range scanner has been repaired.");
+            this.Write.Line("Short range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -45,8 +51,8 @@ namespace StarTrek_KG.Subsystem
             var location = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Map, location.Quadrant);
 
-            var write = (new Output.PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel")));
-            write.Print(quadrant, this.Map); 
+            var printSector = (new PrintSector(StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel"), StarTrekKGSettings.GetSetting<int>("LowEnergyLevel"),this.Write, this.Command));
+            printSector.Print(quadrant, this.Map); 
 
             quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
 

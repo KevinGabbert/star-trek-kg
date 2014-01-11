@@ -4,13 +4,14 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Actors
 {
     //TODO: ship.Energy not decrementing after being hit
-    public class Ship : ISystem, IShip
+    public class Ship : ISystem, IShip, ICommand, IWrite
     {
         #region Properties
 
@@ -29,6 +30,9 @@ namespace StarTrek_KG.Actors
             public Map Map { get; set; }
             public Type Type { get; set; }
 
+            public Command Command { get; set; }
+            public Write Write { get; set; }  
+
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log Log { get; set; } //
 
@@ -36,8 +40,11 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, Map map, Sector position)
+        public Ship(string name, Map map, Sector position, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+
             this.Type = this.GetType();
             this.Map = map;
             this.Sector = position;
@@ -78,7 +85,7 @@ namespace StarTrek_KG.Actors
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public void AbsorbHitFrom(IShip attacker, int attackingEnergy) //
         {
-            Output.Write.Line(string.Format(this.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
+            this.Write.Line(string.Format(this.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
 
             var shields = this.Shields();
             shields.Energy -= attackingEnergy;
@@ -107,7 +114,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                Output.Write.Line("No Structural Damage from hit.");
+                this.Write.Line("No Structural Damage from hit.");
             }
         }
 

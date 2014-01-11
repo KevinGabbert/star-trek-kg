@@ -10,9 +10,11 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG
 {
-    public class Game: IDisposable
+    public class Game : IDisposable, ICommand, IWrite, IDraw
     {
         #region Properties
+            public Write Write { get; set; }
+            public Draw Draw { get; set; }
 
             public Output.Write Output { get; set; }
             public Output.PrintSector PrintSector { get; set; }
@@ -26,45 +28,60 @@ namespace StarTrek_KG
         /// <summary>
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
         /// </summary>
-        public Game()
+        public Game(Draw draw, bool startup = true)
         {
-            //Set initial color scheme
-            StarTrek_KG.Output.Write.HighlightTextBW(false);
+            this.Draw = draw;
 
-            //The config file is loaded here, and persisted through the rest of the game. 
-            //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
-            //might try to reload the file. #NotInThisVersion
-            StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
+            if (startup)
+            {
+                //The config file is loaded here, and persisted through the rest of the game. 
+                //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
+                //might try to reload the file. #NotInThisVersion
+                StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
 
-            //These constants need to be localized to Game:
-            Game.GetConstants();
+                //These constants need to be localized to Game:
+                this.GetConstants();
 
-            this.PrintSector = (new Output.PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL));
+                this.PrintSector =
+                    (new Output.PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write,
+                                            this.Command));
 
-            var startConfig = (new GameConfig
-                                   {
-                                       Initialize = true,
-                                       SectorDefs = SectorSetup()
-                                   });
+                var startConfig = (new GameConfig
+                                       {
+                                           Initialize = true,
+                                           SectorDefs = SectorSetup()
+                                       });
 
-            this.Map = new Map(startConfig);
-            this.Command = new Command(this.Map);
+                this.Write = new Write();
 
-            //We don't want to start game without hostiles
-            if (this.HostileCheck(this.Map)) return;  //todo: unless we want to have a mode that allows it for some reason.
+                this.Map = new Map(startConfig, this.Write, this.Command);
+                this.Command = new Command(this.Map, this.Write, this.Draw);
+                this.Write = new Write(this.Command);
 
-            //todo: why are we creating this PrintSector() class a second time??
-            this.Output = new Output.Write(this.Map.hostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining);
-            this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL);
+                //We don't want to start game without hostiles
+                if (this.HostileCheck(this.Map))
+                    return; //todo: unless we want to have a mode that allows it for some reason.
+
+                //Set initial color scheme
+                this.Write.HighlightTextBW(false);
+
+                //todo: why are we creating this PrintSector() class a second time??
+                this.Output = new Output.Write(this.Map.hostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Command);
+                this.Output.Command = this.Command;
+               
+                this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write,
+                                                   this.Command);
+
+            }
         }
 
-        private static void GetConstants()
+        private void GetConstants()
         {
             Constants.DEBUG_MODE = StarTrekKGSettings.GetSetting<bool>("DebugMode");
 
             if (Constants.DEBUG_MODE)
             {
-                StarTrek_KG.Output.Write.Line("// ---------------- Debug Mode ----------------");
+                this.Write.Line("// ---------------- Debug Mode ----------------");
             }
 
             Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
@@ -77,7 +94,7 @@ namespace StarTrek_KG
             Constants.LOW_ENERGY_LEVEL = StarTrekKGSettings.GetSetting<int>("LowEnergyLevel");  
         }
 
-        private static SectorDefs SectorSetup()
+        private SectorDefs SectorSetup()
         {
 
             //todo: these SectorDefs can be computed somewhere
@@ -91,7 +108,7 @@ namespace StarTrek_KG
         /// This is the setup we get if app config can not be read for some reason (or it is buggy)
         /// </summary>
         /// <returns></returns>
-        private static SectorDefs DefaultHardcodedSetup()
+        private SectorDefs DefaultHardcodedSetup()
         {
             return new SectorDefs
                        {
@@ -152,7 +169,7 @@ namespace StarTrek_KG
         {
             if (!map.Quadrants.GetHostiles().Any())
             {
-                StarTrek_KG.Output.Write.Line("ERROR: --- No Hostiles have been set up.");
+                this.Write.Line("ERROR: --- No Hostiles have been set up.");
 
                 //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
                 //todo: in that case, this function would not be called
@@ -183,9 +200,9 @@ namespace StarTrek_KG
         /// </summary>
         private void PrintOpeningScreen()
         {
-            StarTrek_KG.Output.Draw.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
+            this.Draw.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
             
-            StarTrek_KG.Output.Write.ResourceLine("UnderConstructionMessage");
+            this.Write.ResourceLine("UnderConstructionMessage");
 
             Output.PrintMission();
         }
@@ -197,7 +214,7 @@ namespace StarTrek_KG
         {
             if(gameOver)
             {
-                StarTrek_KG.Output.Write.DebugLine("Game Over.");
+                this.Write.DebugLine("Game Over.");
                 return;
             }
 
@@ -209,7 +226,7 @@ namespace StarTrek_KG
 
                 if (gameOver)
                 {
-                    StarTrek_KG.Output.Write.DebugLine("Game Over.. Restarting.");
+                    this.Write.DebugLine("Game Over.. Restarting.");
 
                     //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
                     this.Map.Initialize(this.Map.GameConfig.SectorDefs); //we gonna start over
@@ -239,7 +256,7 @@ namespace StarTrek_KG
             return gameOver;
         }
 
-        public static void MoveTimeForward(Map map, Coordinate lastQuadrant, Coordinate quadrant)
+        public void MoveTimeForward(Map map, Coordinate lastQuadrant, Coordinate quadrant)
         {
             if (lastQuadrant.X != quadrant.X || lastQuadrant.Y != quadrant.Y)
             {
@@ -262,7 +279,7 @@ namespace StarTrek_KG
         /// TODO: this needs to be changed.  after destruction, it appears to take several method returns to realize that we are dead.
         /// </summary>
         /// <returns></returns>
-        public static bool ALLHostilesAttack(Map map)
+        public bool ALLHostilesAttack(Map map)
         {
             //todo:rewrite this.
             //this is called from torpedo control/phaser control, and navigation control
@@ -276,7 +293,7 @@ namespace StarTrek_KG
                 {
                     foreach (var badGuy in hostilesAttacking)
                     {
-                        Game.HostileAttacks(map, badGuy);
+                        this.HostileAttacks(map, badGuy);
                     }
                     return true;
                 }
@@ -285,19 +302,19 @@ namespace StarTrek_KG
             return false;
         }
 
-        private static void HostileAttacks(Map map, IShip badGuy)
+        private void HostileAttacks(Map map, IShip badGuy)
         {
             if (Navigation.For(map.Playership).docked)
             {
-                Game.AttackDockedPlayership(badGuy);
+                this.AttackDockedPlayership(badGuy);
             }
             else
             {
-                Game.AttackNonDockedPlayership(map, badGuy);
+                this.AttackNonDockedPlayership(map, badGuy);
             }
         }
 
-        private static void AttackNonDockedPlayership(Map map, IShip badGuy)
+        private void AttackNonDockedPlayership(Map map, IShip badGuy)
         {
             var playerShipLocation = map.Playership.GetLocation();
             var distance = Utility.Utility.Distance(playerShipLocation.Sector.X,
@@ -316,12 +333,12 @@ namespace StarTrek_KG
 
             map.Playership.AbsorbHitFrom(badGuy, attackingEnergy);
 
-            Game.ReportShieldsStatus(map, shieldsValueBeforeHit);
+            this.ReportShieldsStatus(map, shieldsValueBeforeHit);
         }
 
-        private static void AttackDockedPlayership(IShip badGuy)
+        private void AttackDockedPlayership(IShip badGuy)
         {
-            StarTrek_KG.Output.Write.Line(
+            this.Write.Line(
                 String.Format(
                     "Your Ship has been hit by " + badGuy.Name + " at sector [{0},{1}]. No damage due to starbase shields.",
                     (badGuy.Sector.X), (badGuy.Sector.Y)));
@@ -329,7 +346,7 @@ namespace StarTrek_KG
 
 
         //todo: move this to a report object?
-        public static void ReportShieldsStatus(Map map, int shieldsValueBeforeHit)
+        public void ReportShieldsStatus(Map map, int shieldsValueBeforeHit)
         {
             var shieldsValueAfterHit = Shields.For(map.Playership).Energy;
 
@@ -337,11 +354,11 @@ namespace StarTrek_KG
             {
                 if (shieldsValueAfterHit == 0)
                 {
-                    StarTrek_KG.Output.Write.SingleLine(" Shields are Down.");
+                    this.Write.SingleLine(" Shields are Down.");
                 }
                 else
                 {
-                    StarTrek_KG.Output.Write.SingleLine(String.Format(" Shields dropped to {0}.", Shields.For(map.Playership).Energy));
+                    this.Write.SingleLine(String.Format(" Shields dropped to {0}.", Shields.For(map.Playership).Energy));
                 }
             }
         }

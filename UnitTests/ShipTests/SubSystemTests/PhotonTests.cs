@@ -10,9 +10,8 @@ using UnitTests.ShipTests.Test_Harness_Objects;
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
-    public class PhotonTests
+    public class PhotonTests : TestClass_Base
     {
-        private readonly Test_Setup _setup = new Test_Setup();
         private Torpedoes _photonsToTest;
         private Quadrant _testQuadrant;
 

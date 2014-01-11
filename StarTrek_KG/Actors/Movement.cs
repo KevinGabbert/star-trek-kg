@@ -3,18 +3,27 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Actors
 {
-    public class Movement : System
+    public class Movement : System, ICommand, IWrite, IDraw
     {
+        public Command Command { get; set; }
+        public Write Write { get; set; }
+        public Draw Draw { get; set; }
+
         //todo: to fully abstract this out, this could be a Blocked by property, set to whatever stops us from moving.
         public bool BlockedByObstacle { get; set; }
         public bool BlockedByGalacticBarrier { get; set; }
 
-        public Movement(Map map, Ship shipConnectedTo)
+        public Movement(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
         {
+            this.Draw = draw;
+            this.Write = write;
+            this.Command = command;
+
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
         }
@@ -72,7 +81,7 @@ namespace StarTrek_KG.Actors
 
         EndNavigation:
 
-            Game.MoveTimeForward(this.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
+            (new Game(this.Draw, false)).MoveTimeForward(this.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
         }
 
 
@@ -121,7 +130,7 @@ namespace StarTrek_KG.Actors
                         if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
                         {
                             //vector_div is so you can get right up to an obstacle before hitting it.
-                            Output.Write.Line("All Stop.");
+                            this.Write.Line("All Stop.");
                             return true;
                         }
                     }
@@ -160,7 +169,7 @@ namespace StarTrek_KG.Actors
                     //todo: move this to XXX label.  run tests.  should work.
                     Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.Friendly;
 
-                    Movement.IdentifyObstacle(sector, currentObject, currentItem);
+                    this.IdentifyObstacle(sector, currentObject, currentItem);
 
                     this.BlockedByObstacle = true;
 
@@ -175,29 +184,29 @@ namespace StarTrek_KG.Actors
             return false;
         }
 
-        private static void IdentifyObstacle(Coordinate sector, ISectorObject currentObject, SectorItem currentItem)
+        private void IdentifyObstacle(Coordinate sector, ISectorObject currentObject, SectorItem currentItem)
         {
             switch (currentItem)
             {
                 case SectorItem.Star:
                     var star = (Star) currentObject;
-                    Output.Write.Line("Stellar body " + star.Name.ToUpper() + " encountered while navigating at sector: [" + sector.X + "," +
+                    this.Write.Line("Stellar body " + star.Name.ToUpper() + " encountered while navigating at sector: [" + sector.X + "," +
                                       sector.Y + "]");
                     break;
 
                 case SectorItem.Hostile:
                     var hostile = (Ship) currentObject;
-                    Output.Write.Line("Ship " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
+                    this.Write.Line("Ship " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
                                       sector.Y + "]");
                     break;
 
                     
                 case SectorItem.Starbase:
-                    Output.Write.Line("Starbase encountered while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    this.Write.Line("Starbase encountered while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
 
                 default:
-                    Output.Write.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    this.Write.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
             }
         }
@@ -279,14 +288,14 @@ namespace StarTrek_KG.Actors
             if (this.BlockedByGalacticBarrier)
             {
                 //todo: which one?  name it.
-                Output.Write.Line("Galactic Barrier hit. Navigation stopped.");
+                this.Write.Line("Galactic Barrier hit. Navigation stopped.");
             }
         }
 
         //This prompt needs to be exposed to the user as an event
         public bool InvalidCourseCheck(out double direction)
         {
-            var course = Output.Draw.Course() + "Enter Course: ";
+            var course = this.Draw.Course() + "Enter Course: ";
             string userDirection;
 
             if (Command.PromptUser(course, out userDirection))
@@ -296,7 +305,7 @@ namespace StarTrek_KG.Actors
 
                 if (!userDirection.IsNumeric())
                 {
-                    Output.Write.Line("Invalid course.");
+                    this.Write.Line("Invalid course.");
                     direction = 0;
                      
                     return true;
@@ -306,7 +315,7 @@ namespace StarTrek_KG.Actors
 
                 if (directionToCheck > 8.9 || directionToCheck < 0)
                 {
-                    Output.Write.Line("Invalid course...");
+                    this.Write.Line("Invalid course...");
                     direction = 0;
 
                     return true;

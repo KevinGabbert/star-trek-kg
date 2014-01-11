@@ -3,6 +3,7 @@ using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -13,15 +14,24 @@ namespace StarTrek_KG.Subsystem
         {
             // TODO: Complete member initialization
 
+            var command = new Command(map, new Write(), new Draw(new Write(), new Command(map, new Write())));
+            var write = new Write(command);
+            var draw = new Draw(write);
+
+            command.Write = write;
+            command.Draw = draw;
+
+            write.Command = command;
+
             this.AddRange(new List<ISubsystem>(){
-                                     new Debug(map, shipConnectedTo),
-                                     new Shields(map, shipConnectedTo) { Energy = 0 },
-                                     new Computer(map, shipConnectedTo),
-                                     new Navigation(map, shipConnectedTo),
-                                     new ShortRangeScan(map, shipConnectedTo),
-                                     new LongRangeScan(map, shipConnectedTo),
-                                     new Torpedoes(map, shipConnectedTo),
-                                     new Phasers(map, shipConnectedTo)
+                                     new Debug(map, shipConnectedTo, write, command),
+                                     new Shields(map, shipConnectedTo, write, command) { Energy = 0 },
+                                     new Computer(map, shipConnectedTo, draw, write, command),
+                                     new Navigation(map, shipConnectedTo, draw, write, command),
+                                     new ShortRangeScan(map, shipConnectedTo, write, command),
+                                     new LongRangeScan(map, shipConnectedTo, draw, write, command),
+                                     new Torpedoes(map, shipConnectedTo, draw, write, command),
+                                     new Phasers(map, shipConnectedTo, draw, write, command)
                                   });
         }
 

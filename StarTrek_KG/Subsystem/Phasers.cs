@@ -6,14 +6,26 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Phasers : SubSystem_Base, IMap
+    public class Phasers : SubSystem_Base, IMap, ICommand, IWrite, IDraw
     {
-        public Phasers(Map map, Ship shipConnectedTo)
+        public Phasers(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
         {
+            this.Draw = draw;
+            this.Write = write;
+            this.Command = command;
+
+            this.Initialize();
+
+            if (this.Draw == null)
+            {
+                throw new GameException("Property Draw is not set for: " + this.Type);
+            }
+
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Phasers;
@@ -21,12 +33,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write.Line("Phasers are damaged. Repairs are underway.");
+            this.Write.Line("Phasers are damaged. Repairs are underway.");
         }
 
         public override void OutputRepairedMessage()
         {
-            Output.Write.Line("Phasers have been repaired.");
+            this.Write.Line("Phasers have been repaired.");
         }
 
         public override void OutputMalfunctioningMessage()
@@ -44,12 +56,12 @@ namespace StarTrek_KG.Subsystem
                 //todo: move to Game() object
                 //todo: move to Game() object
                 //any remaining bad guys now have the opportunity to fire back
-                Game.ALLHostilesAttack(this.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
+                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
             }
             else
             {
                 //Energy Check has failed
-                Output.Write.Line("Not enough Energy to fire Phasers");
+                this.Write.Line("Not enough Energy to fire Phasers");
             }
         }
 
@@ -63,21 +75,21 @@ namespace StarTrek_KG.Subsystem
 
             double phaserEnergy;
 
-            Output.Write.Line("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
+            this.Write.Line("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
 
-            if (!Phasers.PromptUserForPhaserEnergy(this.Map, out phaserEnergy))
+            if (!this.PromptUserForPhaserEnergy(this.Map, out phaserEnergy))
             {
-                Output.Write.Line("Invalid energy level.");
+                this.Write.Line("Invalid energy level.");
                 return;
             }
-            Output.Write.Line("");
+            this.Write.Line("");
 
             this.Fire(phaserEnergy, shipFiringPhasers);
         }
 
         private void Execute(Map map, double phaserEnergy)
         {
-            Output.Write.Line("Firing phasers..."); //todo: pull from config
+            this.Write.Line("Firing phasers..."); //todo: pull from config
 
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
@@ -90,15 +102,15 @@ namespace StarTrek_KG.Subsystem
 
                 double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate", "PhaserEnergyAdjustment");
 
-                Phasers.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
+                this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
 
             map.RemoveAllDestroyedShips(map, destroyedShips);//remove from Hostiles collection
         }
 
-        private static bool PromptUserForPhaserEnergy(Map map, out double phaserEnergy)
+        private bool PromptUserForPhaserEnergy(Map map, out double phaserEnergy)
         {
-            return Command.PromptUser(String.Format("Enter phaser energy (1--{0}): ", map.Playership.Energy), out phaserEnergy);
+            return this.Command.PromptUser(String.Format("Enter phaser energy (1--{0}): ", map.Playership.Energy), out phaserEnergy);
         }
 
         //todo: move to Utility() object
@@ -119,7 +131,7 @@ namespace StarTrek_KG.Subsystem
         //}
 
         //todo: move to badguy.DamageControl() object
-        private static void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
+        private void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
         {
             //todo: add more descriptive output messages depending on how much phaser energy absorbed by baddie
 
@@ -134,7 +146,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                Output.Write.Line(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. " + badGuyShip.Name + " shield strength down to {2}.",
+                this.Write.Line(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. " + badGuyShip.Name + " shield strength down to {2}.",
                                   (badGuyShip.Sector.X), (badGuyShip.Sector.Y), badGuyShields.Energy));
             }
         }

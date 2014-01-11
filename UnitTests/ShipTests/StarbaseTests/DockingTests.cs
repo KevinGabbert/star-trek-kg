@@ -2,15 +2,14 @@
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
-using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.StarbaseTests
 {
-    public class DockingTests
+    public class DockingTests: TestClass_Base
     {
         Map _testMapNoObjects;
         Movement _testMovement;
@@ -50,7 +49,7 @@ namespace UnitTests.ShipTests.StarbaseTests
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 2)), SectorItem.Starbase)
                                     }
-            }));
+            }, this.Write, this.Command));
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
@@ -92,7 +91,7 @@ namespace UnitTests.ShipTests.StarbaseTests
                                                            _testMapNoObjects.Playership.Sector.X,
                                                            _testMapNoObjects.Playership.Sector.Y).Item);
 
-            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership);
+            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Draw, this.Write, this.Command);
             _testMovement.BlockedByObstacle = false;
 
             var sectorItem =

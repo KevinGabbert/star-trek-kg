@@ -1,15 +1,12 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
-using StarTrek_KG.Enums;
-using StarTrek_KG.Playfield;
-using StarTrek_KG.Settings;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.StarbaseTests
 {
     public class Starbase_Tests
     {
-
-        private Map _testMap;
+        private readonly Test_Setup _setup = new Test_Setup();
 
         [SetUp]
         public void SetUp()
@@ -28,33 +25,12 @@ namespace UnitTests.ShipTests.StarbaseTests
         }
 
 
-        private void SetupMapWithStarbase()
-        {
-            _testMap = (new Map(new GameConfig
-            {
-                Initialize = true,
-
-                SectorDefs = new SectorDefs
-                                    {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
-                                    }
-            }));
-
-            //Todo: this is how we would like to add a starbase
-            ////add a ship
-            //var starbase = new Starbase("starbaseAlpha", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
-
-            //var activeQuad = _testMap.Quadrants.GetActive();
-            //activeQuad.AddShip(starbase, starbase.Sector);
-        }
-
         [Test]
         public void NewStarbase()
         {
-            this.SetupMapWithStarbase();
+            _setup.SetupMapWithStarbase();
 
-            Assert.IsNotNull(_testMap.Quadrants[0].Sectors);
+            Assert.IsNotNull(_setup.TestMap.Quadrants[0].Sectors);
         }
     }
 }

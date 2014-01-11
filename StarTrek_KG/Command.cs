@@ -1,26 +1,31 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
-using KGConsole = StarTrek_KG.Subsystem.Console;
+using KGConsole = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG
 {
-    public class Command
+    public class Command: IWrite
     {
-        public static List<string> ACTIVITY_PANEL = new List<string>();
-                                                         
+        public List<string> ACTIVITY_PANEL = new List<string>();
+                                            
         #region Properties
+
+            public Write Write { get; set; }
+            public Draw Draw { get; set; }
 
             public Map Map { get; set; }
 
             //todo: make this non-static so we can test this class..
 
-            private static KGConsole _console;
+            private KGConsole _console;
 
-            public static KGConsole Console
+            public KGConsole Console
             {
                 get { return _console ?? (_console = new KGConsole()); }
                 set { _console = value; }
@@ -29,8 +34,22 @@ namespace StarTrek_KG
 
         #endregion
 
-        public Command(Map map)
+        public Command(Map map, Write write, Draw draw)
         {
+            this.Write = write;
+            this.Write.Command = this;
+            this.Draw = draw;
+
+            if(this.Write == null)
+            {
+                throw new GameException("Command Write object not set");
+            }
+
+            if (this.Draw == null)
+            {
+                throw new GameException("Command DRaw object not set");
+            }
+
             ACTIVITY_PANEL.Add("nav = Navigation");
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
@@ -83,9 +102,9 @@ namespace StarTrek_KG
 
         public void Prompt(string shipName)
         {
-            Command.Console.Write(this.Map.Text);
+            this.Console.Write(this.Map.Text);
 
-            var readLine = Command.Console.ReadLine();
+            var readLine = this.Console.ReadLine();
             if (readLine == null) return;
 
             var command = readLine.Trim().ToLower();
@@ -125,15 +144,15 @@ namespace StarTrek_KG
                     break;
 
                 default: //case "?":
-                    Draw.Panel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
+                    this.Draw.Panel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
                     break;
             }
         }
 
         private bool DebugMenu()
         {
-            Output.Write.Strings(Debug.CONTROL_PANEL);
-            Output.Write.WithNoEndCR("Enter Debug command: ");
+            this.Write.Strings(Debug.CONTROL_PANEL);
+            this.Write.WithNoEndCR("Enter Debug command: ");
 
             //todo: readline needs to be done using an event
             var debugCommand = Console.ReadLine().Trim().ToLower();
@@ -146,8 +165,8 @@ namespace StarTrek_KG
         {
             if (Computer.For(this.Map.Playership).Damaged()) return true;
 
-            Output.Write.Strings(Computer.CONTROL_PANEL);
-            Output.Write.WithNoEndCR("Enter computer command: ");
+            this.Write.Strings(Computer.CONTROL_PANEL);
+            this.Write.WithNoEndCR("Enter computer command: ");
 
             //todo: readline needs to be done using an event
             var computerCommand = Console.ReadLine().Trim().ToLower();
@@ -177,9 +196,9 @@ namespace StarTrek_KG
                 Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
             }
 
-            Output.Write.Strings(Shields.SHIELD_PANEL);
+            this.Write.Strings(Shields.SHIELD_PANEL);
 
-            Output.Write.WithNoEndCR("Enter shield control command: ");
+            this.Write.WithNoEndCR("Enter shield control command: ");
             var shieldsCommand = Console.ReadLine().Trim().ToLower();
 
             Shields.For(this.Map.Playership).MaxTransfer = this.Map.Playership.Energy; //todo: this does nothing!
@@ -192,13 +211,13 @@ namespace StarTrek_KG
             return "--- > " +  shipName + " < ---";
         }
 
-        public static bool PromptUser(string promptMessage, out double value)
+        public bool PromptUser(string promptMessage, out double value)
         {
             try
             {
-                Output.Write.WithNoEndCR(promptMessage);
+                this.Write.WithNoEndCR(promptMessage);
 
-                value = Double.Parse(Command.Console.ReadLine());
+                value = Double.Parse(this.Console.ReadLine());
 
                 return true;
             }
@@ -210,15 +229,15 @@ namespace StarTrek_KG
             return false;
         }
 
-        public static bool PromptUser(string promptMessage, out string value)
+        public bool PromptUser(string promptMessage, out string value)
         {
             value = null;
 
             try
             {
-                Command.Console.Write(promptMessage);
+                this.Console.Write(promptMessage);
 
-                var readLine = Command.Console.ReadLine();
+                var readLine = this.Console.ReadLine();
                 if (readLine != null) value = readLine.ToLower();
 
                 return true;

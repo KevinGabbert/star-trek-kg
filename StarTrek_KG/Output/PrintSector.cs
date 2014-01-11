@@ -2,20 +2,27 @@
 using System.Text;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Output
 {
-    public class PrintSector
+    public class PrintSector: ICommand, IWrite
     {
         private Location Location { get; set; }
         public string Condition { get; set; }
         private int ShieldsDownLevel { get; set; }
         private int LowEnergyLevel { get; set; }
 
-        public PrintSector(int shieldsDownLevel, int lowEnergyLevel)
+        public Command Command { get; set; }
+        public Write Write { get; set; }
+
+        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+
             this.ShieldsDownLevel = shieldsDownLevel;
             this.LowEnergyLevel = lowEnergyLevel;
         }
@@ -48,7 +55,7 @@ namespace StarTrek_KG.Output
 
             for (int i = 0; i < 8; i++ )
             {
-                PrintSector.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles);
+                this.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles);
             }
 
             Command.Console.WriteLine(StarTrekKGSettings.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
@@ -89,7 +96,7 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        private static void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles)
+        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles)
         {
             for (var column = 0; column < Constants.SECTOR_MAX; column++)
             {
@@ -119,7 +126,7 @@ namespace StarTrek_KG.Output
 
                         if (totalHostiles < 1)
                         {
-                            Command.Console.WriteLine("bug. hostile not removed from display.");
+                            this.Command.Console.WriteLine("bug. hostile not removed from display.");
                         }
 
                         sb.Append(Constants.HOSTILE);

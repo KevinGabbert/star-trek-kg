@@ -1,15 +1,15 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
-    public class ComputerTests
+    public class ComputerTests: TestClass_Base
     {
         private Computer _testComputer;
 
@@ -33,9 +33,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                                      SectorDefs = sectorDefs
                                  };
 
-            var map = new Map(gameConfig);
+            var map = new Map(gameConfig, this.Write, this.Command);
 
-            _testComputer = new Computer(map, map.Playership); 
+            _testComputer = new Computer(map, map.Playership, this.Draw, this.Write, this.Command); 
         }
 
         [TearDownAttribute]

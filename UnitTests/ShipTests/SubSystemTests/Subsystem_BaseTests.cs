@@ -1,25 +1,19 @@
 ﻿using NUnit.Framework;
-using StarTrek_KG.Playfield;
-using StarTrek_KG.Settings;
-using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
     public class Subsystem_BaseTests
     {
-        private Computer _testComputer;
+        private Test_Setup _setup = new Test_Setup();
         
         [SetUp]
         public void Setup()
         {
-            var map = new Map(new GameConfig
-                                  {
-                                      Initialize = true,
-                                      //GenerateMap = true
-                                  });
 
-            _testComputer = new Computer(map, map.Playership); 
+
+            
         }
     }
 }

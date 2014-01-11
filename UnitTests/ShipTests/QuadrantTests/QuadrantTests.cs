@@ -1,26 +1,24 @@
 ﻿
 using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
-using StarTrek_KG;
 using StarTrek_KG.Config;
-using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.QuadrantTests
 {
     [TestFixture]
-    public class QuadrantTests
+    public class QuadrantTests: TestClass_Base
     {
         Quadrant _testQuadrant;
 
         [SetUp]
         public void Setup()
         {
-            _testQuadrant = new Quadrant();
+            _testQuadrant = new Quadrant(this.Write, this.Command);
 
-            _testQuadrant.Map = new Map(null);
+            _testQuadrant.Map = new Map(null, this.Write, this.Command);
             _testQuadrant.Name = "Setup";
             _testQuadrant.Scanned = false;
 
@@ -32,7 +30,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         public void New()
         {
             //*************** sector not being created with new quadrant
-            _testQuadrant = new Quadrant();
+            _testQuadrant = new Quadrant(this.Write, this.Command);
 
             Assert.AreEqual(null, _testQuadrant.Map);
             this.QuadrantNewAsserts();
@@ -44,7 +42,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         {
             var systemNames = StarTrekKGSettings.GetStarSystems();
 
-            _testQuadrant = new Quadrant(new Map(null), new Stack<string>(systemNames));
+            _testQuadrant = new Quadrant(_setup.TestMap, new Stack<string>(systemNames), this.Write, this.Command);
 
             //todo: make sure that map is not set up with anyting
 
@@ -72,8 +70,8 @@ namespace UnitTests.ShipTests.QuadrantTests
             var names = new Stack<string>(name);
 
             int index;
-            var newQuadrant = new Quadrant();
-            newQuadrant.Create(new Map(null), names,
+            var newQuadrant = new Quadrant(_setup.Write, _setup.Command);
+            newQuadrant.Create(new Map(null, _setup.Write, _setup.Command), names,
                                new Stack<string>(klingonShipNames),
                                new Coordinate(1, 1), out index, null);
 

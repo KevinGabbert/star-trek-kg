@@ -4,11 +4,12 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.MapTests
 {
     [TestFixture]
-    public class DockingLocationTests
+    public class DockingLocationTests: TestClass_Base
     {
         //Todo: docking energy tests
 
@@ -27,7 +28,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                             }
-            }));
+            }, this.Write, this.Command));
 
         }
 
@@ -88,7 +89,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)
                             }
-            }));
+            }, this.Write, this.Command));
 
             Assert.IsFalse(IsDockingLocation(map, 4, 4, 4, 4));
         }

@@ -7,11 +7,12 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 
 using System.Linq;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.MovementTests
 {
     [TestFixture]
-    public class MovementTests
+    public class MovementTests: TestClass_Base
     {
         //todo: write error messages for no sector set up and no quadrant set up.
         #region Setup
@@ -76,8 +77,8 @@ namespace UnitTests.ShipTests.MovementTests
                             AddStars = false
                         };
 
-            _testMapNoObjects = new Map(x);
-            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership);
+            _testMapNoObjects = new Map(x, this.Write, this.Command);
+            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Draw, this.Write, this.Command);
             _testMovement.BlockedByObstacle = false;
 
             #region "Manually set ship. todo: write test to ensure that this method works too"
@@ -658,7 +659,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void TravelAlongCourse_BugVerification()
         {
-            var testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership);
+            var testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Draw, this.Write, this.Command);
 
             double x = 31.5084577259018;
             double y = 31.5084577259018;

@@ -5,11 +5,12 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
-    public class PhaserTests
+    public class PhaserTests: TestClass_Base
     {
         private Map _testMap;
 
@@ -36,7 +37,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                                  SectorItem.Hostile)
                                                          },
                                         AddStars = false
-                                    }));
+                                    }, this.Write, this.Command));
         }
 
         [TearDown]
@@ -62,7 +63,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                     },
                 AddStars = false
-            }));
+            }, this.Write, this.Command));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");;
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
@@ -87,7 +88,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                     },
                 AddStars = false
-            }));
+            }, this.Write, this.Command));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); 
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
@@ -116,7 +117,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                     },
                 AddStars = false
-            }));
+            }, this.Write, this.Command));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); ;
             Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
@@ -147,7 +148,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)), SectorItem.Hostile)
                     },
                 AddStars = false
-            }));
+            }, this.Write, this.Command));
 
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = _testMap.Quadrants.GetActive();
