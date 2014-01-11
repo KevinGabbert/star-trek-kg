@@ -12,20 +12,13 @@ namespace StarTrek_KG.Subsystem
 {
     //todo: this functionality is currently broken
     //todo: fix hostiles and starbases and stars to test fully
-    public class LongRangeScan : SubSystem_Base, IMap, ICommand, IWrite, IDraw
+    public class LongRangeScan : SubSystem_Base, IMap, IWrite
     {
-        public LongRangeScan(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
+        public LongRangeScan(Map map, Ship shipConnectedTo, Write write)
         {
             this.Write = write;
-            this.Command = command;
-            this.Draw = draw;
 
             this.Initialize();
-
-            if (this.Draw == null)
-            {
-                throw new GameException("Property Draw is not set for: " + this.Type);
-            }
 
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
@@ -78,7 +71,7 @@ namespace StarTrek_KG.Subsystem
                         this.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
                     }
 
-                    this.Draw.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                    this.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
                     Write.WithNoEndCR(" ");
                 }
 

@@ -11,20 +11,13 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Phasers : SubSystem_Base, IMap, ICommand, IWrite, IDraw
+    public class Phasers : SubSystem_Base, IMap, IWrite
     {
-        public Phasers(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
+        public Phasers(Map map, Ship shipConnectedTo, Write write)
         {
-            this.Draw = draw;
             this.Write = write;
-            this.Command = command;
 
             this.Initialize();
-
-            if (this.Draw == null)
-            {
-                throw new GameException("Property Draw is not set for: " + this.Type);
-            }
 
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
@@ -56,7 +49,11 @@ namespace StarTrek_KG.Subsystem
                 //todo: move to Game() object
                 //todo: move to Game() object
                 //any remaining bad guys now have the opportunity to fire back
-                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
+
+                var game = new Game(false);
+                game.Write = this.Write;
+                
+                game.ALLHostilesAttack(this.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
             }
             else
             {
@@ -68,7 +65,7 @@ namespace StarTrek_KG.Subsystem
         public void Controls(IShip shipFiringPhasers)
         {
             if (this.Damaged()) return;
-            if (Quadrants.NoHostiles(this.Map.Quadrants.GetActive().GetHostiles()))
+            if ((new Quadrants(this.Map, this.Write)).NoHostiles(this.Map.Quadrants.GetActive().GetHostiles()))
             {
                 return;
             }
@@ -110,7 +107,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool PromptUserForPhaserEnergy(Map map, out double phaserEnergy)
         {
-            return this.Command.PromptUser(String.Format("Enter phaser energy (1--{0}): ", map.Playership.Energy), out phaserEnergy);
+            return this.Write.PromptUser(String.Format("Enter phaser energy (1--{0}): ", map.Playership.Energy), out phaserEnergy);
         }
 
         //todo: move to Utility() object

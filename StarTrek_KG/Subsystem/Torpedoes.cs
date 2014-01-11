@@ -9,7 +9,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Torpedoes : SubSystem_Base, IMap, ICommand, IWrite, IDraw
+    public class Torpedoes : SubSystem_Base, IMap, IWrite
     {
         #region Properties
 
@@ -17,18 +17,11 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
+        public Torpedoes(Map map, Ship shipConnectedTo, Write write)
         {
-            this.Draw = draw;
             this.Write = write;
-            this.Command = command;
 
             this.Initialize();
-
-            if (this.Draw == null)
-            {
-                throw new GameException("Property Draw is not set for: " + this.Type);
-            }
 
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
@@ -59,7 +52,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged() || 
                 this.Exhausted() || 
-                Quadrants.NoHostiles(this.Map.Quadrants.GetHostiles())) return;
+                (new Quadrants(this.Map, this.Write)).NoHostiles(this.Map.Quadrants.GetHostiles())) return;
 
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
@@ -71,7 +64,7 @@ namespace StarTrek_KG.Subsystem
                                   "Enter firing direction (1.0--9.0) ";
 
             double direction;
-            if (!Command.PromptUser(firingDirection, out direction)
+            if (!this.Write.PromptUser(firingDirection, out direction)
                 || direction < 1.0 
                 || direction > 9.0)
             {
@@ -175,14 +168,20 @@ namespace StarTrek_KG.Subsystem
             if (this.HitHostile(location.Sector.Y, location.Sector.X))
             {
                 //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
-                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map);
+                var game = new Game(false);
+                game.Write = this.Write;
+                
+                game.ALLHostilesAttack(this.Map);
                 return true;
             }
 
             if (this.HitSomethingElse(this.Map, location.Quadrant, location.Sector.Y, location.Sector.X))
             {
                 //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
-                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map);
+                var game = new Game(false);
+                game.Write = this.Write;
+                
+                game.ALLHostilesAttack(this.Map);
                 return true;
             }
             return false;

@@ -19,7 +19,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
            _setup.SetupMapWith1Hostile();
 
-           _testShields = new Shields(_setup.TestMap, _setup.TestMap.Playership, _setup.Write, _setup.Command);  
+           _testShields = new Shields(_setup.TestMap, _setup.TestMap.Playership, _setup.Write);  
         }
 
         [TearDown]

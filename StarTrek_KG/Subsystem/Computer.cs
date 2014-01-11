@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -13,7 +11,7 @@ using StarTrek_KG.Playfield;
 namespace StarTrek_KG.Subsystem
 {
     //todo: make feature where opposing ships can hack into your computer (and you, theirs) if shields are down
-    public class Computer : SubSystem_Base, ICommand, IWrite, IDraw
+    public class Computer : SubSystem_Base, IWrite
     {
         public static readonly string[] CONTROL_PANEL = {
                                                     "--- > Main Computer --------------",
@@ -24,18 +22,11 @@ namespace StarTrek_KG.Subsystem
                                                     "nav = Navigation Calculator"
                                                 };
 
-        public Computer(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
+        public Computer(Map map, Ship shipConnectedTo, Write write)
         {
             this.Write = write;
-            this.Command = command;
-            this.Draw = draw;
 
             this.Initialize();
-
-            if (this.Draw == null)
-            {
-                throw new GameException("Property Draw is not set for: " + this.Type);
-            }
 
             this.Map = map;
             this.ShipConnectedTo = shipConnectedTo;
@@ -91,7 +82,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    Write.Line("Invalid computer command.");
+                    Write.Line("Invalid computer this.Write");
                     break;
             }
         }
@@ -103,27 +94,27 @@ namespace StarTrek_KG.Subsystem
         {
             //todo: completely redo this
 
-            Command.Console.WriteLine("");
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSTimeRemaining"), map.timeRemaining);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount());
+            this.Write.Console.WriteLine("");
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSTimeRemaining"), map.timeRemaining);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount());
             //Map.GetAllHostiles(map).Count
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesInQuadrant"), currentQuadrant.GetHostiles().Count);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSStarbases"), map.starbases);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSComputerDamage"), computerDamage);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
-            Command.Console.WriteLine();
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesInQuadrant"), currentQuadrant.GetHostiles().Count);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSStarbases"), map.starbases);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSComputerDamage"), computerDamage);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
+            this.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
+            this.Write.Console.WriteLine();
 
             //foreach (var badGuy in currentQuadrant.Hostiles)
             //{
             //    
             //}
 
-            Command.Console.WriteLine();
+            this.Write.Console.WriteLine();
 
             //todo: Display all baddie names in quadrant when encountered.
         }
@@ -133,7 +124,7 @@ namespace StarTrek_KG.Subsystem
 
         public void PrintGalacticRecord(List<Quadrant> Quadrants)
         {
-            Command.Console.WriteLine();
+            this.Write.Console.WriteLine();
             Write.ResourceSingleLine("GalacticRecordLine");
 
             var myLocation = this.ShipConnectedTo.GetLocation();
@@ -162,14 +153,14 @@ namespace StarTrek_KG.Subsystem
                         renderingMyLocation = myLocation.Quadrant.X == quadrantUB && myLocation.Quadrant.Y == quadrantLB;
                     }
 
-                    Draw.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                    this.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
                 }
 
                 this.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
                 Write.ResourceSingleLine("GalacticRecordLine");
             }
 
-            Command.Console.WriteLine();
+            this.Write.Console.WriteLine();
         }
 
         public new static Computer For(Ship ship)

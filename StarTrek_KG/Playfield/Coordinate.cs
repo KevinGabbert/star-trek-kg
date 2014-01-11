@@ -5,7 +5,7 @@ namespace StarTrek_KG.Playfield
 {
     public class Coordinate
     {
-        private readonly bool _enforceBoundsChecking = true;
+        protected bool _enforceBoundsChecking = true;
 
         #region Properties
 

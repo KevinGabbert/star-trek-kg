@@ -11,7 +11,7 @@ using StarTrek_KG.Subsystem;
 namespace StarTrek_KG.Actors
 {
     //TODO: ship.Energy not decrementing after being hit
-    public class Ship : ISystem, IShip, ICommand, IWrite
+    public class Ship : ISystem, IShip, IWrite
     {
         #region Properties
 
@@ -30,7 +30,6 @@ namespace StarTrek_KG.Actors
             public Map Map { get; set; }
             public Type Type { get; set; }
 
-            public Command Command { get; set; }
             public Write Write { get; set; }  
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
@@ -40,10 +39,9 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, Map map, Sector position, Write write, Command command)
+        public Ship(string name, Map map, Sector position, Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.Type = this.GetType();
             this.Map = map;

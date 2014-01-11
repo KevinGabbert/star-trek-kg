@@ -33,9 +33,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                                      SectorDefs = sectorDefs
                                  };
 
-            var map = new Map(gameConfig, this.Write, this.Command);
+            var map = new Map(gameConfig, this.Write);
 
-            _testComputer = new Computer(map, map.Playership, this.Draw, this.Write, this.Command); 
+            _testComputer = new Computer(map, map.Playership, this.Write); 
         }
 
         [TearDownAttribute]

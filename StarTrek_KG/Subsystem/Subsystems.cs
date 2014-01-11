@@ -14,24 +14,17 @@ namespace StarTrek_KG.Subsystem
         {
             // TODO: Complete member initialization
 
-            var command = new Command(map, new Write(), new Draw(new Write(), new Command(map, new Write())));
-            var write = new Write(command);
-            var draw = new Draw(write);
-
-            command.Write = write;
-            command.Draw = draw;
-
-            write.Command = command;
+            var write = new Write(map);
 
             this.AddRange(new List<ISubsystem>(){
-                                     new Debug(map, shipConnectedTo, write, command),
-                                     new Shields(map, shipConnectedTo, write, command) { Energy = 0 },
-                                     new Computer(map, shipConnectedTo, draw, write, command),
-                                     new Navigation(map, shipConnectedTo, draw, write, command),
-                                     new ShortRangeScan(map, shipConnectedTo, write, command),
-                                     new LongRangeScan(map, shipConnectedTo, draw, write, command),
-                                     new Torpedoes(map, shipConnectedTo, draw, write, command),
-                                     new Phasers(map, shipConnectedTo, draw, write, command)
+                                     new Debug(map, shipConnectedTo, write),
+                                     new Shields(map, shipConnectedTo, write) { Energy = 0 },
+                                     new Computer(map, shipConnectedTo, write),
+                                     new Navigation(map, shipConnectedTo, write),
+                                     new ShortRangeScan(map, shipConnectedTo, write),
+                                     new LongRangeScan(map, shipConnectedTo, write),
+                                     new Torpedoes(map, shipConnectedTo, write),
+                                     new Phasers(map, shipConnectedTo, write)
                                   });
         }
 

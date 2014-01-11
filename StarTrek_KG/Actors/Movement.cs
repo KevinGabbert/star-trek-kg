@@ -8,21 +8,17 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Actors
 {
-    public class Movement : System, ICommand, IWrite, IDraw
+    public class Movement : System, IWrite
     {
-        public Command Command { get; set; }
         public Write Write { get; set; }
-        public Draw Draw { get; set; }
 
         //todo: to fully abstract this out, this could be a Blocked by property, set to whatever stops us from moving.
         public bool BlockedByObstacle { get; set; }
         public bool BlockedByGalacticBarrier { get; set; }
 
-        public Movement(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
+        public Movement(Map map, Ship shipConnectedTo, Write write)
         {
-            this.Draw = draw;
             this.Write = write;
-            this.Command = command;
 
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
@@ -80,8 +76,10 @@ namespace StarTrek_KG.Actors
             newLocation = this.SetShipLocation(vectorLocationX, vectorLocationY);//Set new Sector
 
         EndNavigation:
-
-            (new Game(this.Draw, false)).MoveTimeForward(this.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
+            var game = new Game(false);
+            game.Write = this.Write;
+                
+            game.MoveTimeForward(this.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
         }
 
 
@@ -292,13 +290,24 @@ namespace StarTrek_KG.Actors
             }
         }
 
+        public string Course()
+        {
+            return Environment.NewLine +
+                   " 4   5   6 " + Environment.NewLine +
+                   @"   \ ↑ /  " + Environment.NewLine +
+                   "3 ← <*> → 7" + Environment.NewLine +
+                   @"   / ↓ \  " + Environment.NewLine +
+                   " 2   1   8" + Environment.NewLine +
+                   Environment.NewLine;
+        }
+
         //This prompt needs to be exposed to the user as an event
         public bool InvalidCourseCheck(out double direction)
         {
-            var course = this.Draw.Course() + "Enter Course: ";
+            var course = this.Course() + "Enter Course: ";
             string userDirection;
 
-            if (Command.PromptUser(course, out userDirection))
+            if (this.Write.PromptUser(course, out userDirection))
             {
 
                 //todo: check to see if number is higher than 8

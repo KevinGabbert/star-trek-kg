@@ -11,14 +11,13 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Shields : SubSystem_Base, ICommand, IWrite
+    public class Shields : SubSystem_Base, IWrite
     {
         public static List<string> SHIELD_PANEL = new List<string>();
 
-        public Shields(Map map, Ship shipConnectedTo, Write write, Command command)
+        public Shields(Map map, Ship shipConnectedTo, Write write)
         {
             this.Write = write;
-            this.Command = command;
 
             this.Initialize();
 
@@ -70,7 +69,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    this.Write.Line("Invalid command.");
+                    this.Write.Line("Invalid this.Write");
                     return;
             }
 
@@ -119,7 +118,7 @@ namespace StarTrek_KG.Subsystem
         public new int TransferredFromUser()
         {
             double transfer;
-            bool readSuccess = Command.PromptUser(String.Format("Enter amount of energy (1--{0}): ", this.MaxTransfer),
+            bool readSuccess = this.Write.PromptUser(String.Format("Enter amount of energy (1--{0}): ", this.MaxTransfer),
                                                  out transfer);
 
             return EnergyValidation(transfer, readSuccess);

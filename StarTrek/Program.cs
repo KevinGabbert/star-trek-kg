@@ -33,17 +33,7 @@ namespace StarTrek_Console {
 
     public static void Main(string[] args)
     {
-        //This is stupid. untangle this.
-        var write = new Write();
-            
-        var command = new Command(null, new Write(), new Draw(new Write()));
-
-        write.Command = command;
-        command.Draw = new Draw(write);
-        
-        var draw = new Draw(new Write(command));
-
-        (new Game(draw)).Run();
+        (new Game()).Run();
     } 
   }
 }

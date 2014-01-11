@@ -10,16 +10,14 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG
 {
-    public class Game : IDisposable, ICommand, IWrite, IDraw
+    public class Game : IDisposable, IWrite
     {
         #region Properties
             public Write Write { get; set; }
-            public Draw Draw { get; set; }
 
             public Output.Write Output { get; set; }
             public Output.PrintSector PrintSector { get; set; }
             public Map Map { get; set; }
-            public Command Command { get; set; }
 
             public bool gameOver;
 
@@ -28,10 +26,8 @@ namespace StarTrek_KG
         /// <summary>
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
         /// </summary>
-        public Game(Draw draw, bool startup = true)
+        public Game(bool startup = true)
         {
-            this.Draw = draw;
-
             if (startup)
             {
                 //The config file is loaded here, and persisted through the rest of the game. 
@@ -43,8 +39,7 @@ namespace StarTrek_KG
                 this.GetConstants();
 
                 this.PrintSector =
-                    (new Output.PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write,
-                                            this.Command));
+                    (new Output.PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write));
 
                 var startConfig = (new GameConfig
                                        {
@@ -52,11 +47,9 @@ namespace StarTrek_KG
                                            SectorDefs = SectorSetup()
                                        });
 
-                this.Write = new Write();
-
-                this.Map = new Map(startConfig, this.Write, this.Command);
-                this.Command = new Command(this.Map, this.Write, this.Draw);
-                this.Write = new Write(this.Command);
+                this.Write = new Write(null);
+                this.Map = new Map(startConfig, this.Write);
+                this.Write = new Write(this.Map);
 
                 //We don't want to start game without hostiles
                 if (this.HostileCheck(this.Map))
@@ -66,12 +59,8 @@ namespace StarTrek_KG
                 this.Write.HighlightTextBW(false);
 
                 //todo: why are we creating this PrintSector() class a second time??
-                this.Output = new Output.Write(this.Map.hostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Command);
-                this.Output.Command = this.Command;
-               
-                this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write,
-                                                   this.Command);
-
+                this.Output = new Output.Write(this.Map.hostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining);   
+                this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write);
             }
         }
 
@@ -200,12 +189,127 @@ namespace StarTrek_KG
         /// </summary>
         private void PrintOpeningScreen()
         {
-            this.Draw.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
+            this.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
             
             this.Write.ResourceLine("UnderConstructionMessage");
 
             Output.PrintMission();
         }
+
+        public void RandomAppTitle()
+        {
+            int randomVal = Utility.Utility.Random.Next(3);
+
+            switch (randomVal)
+            {
+                case 0:
+                    this.AppTitleItem("Classic", 7);
+                    break;
+
+                case 2:
+                    this.AppTitleItem("TNG", 7);
+                    break;
+
+                default:
+                    this.AppTitleItem("Movie", 7);
+                    break;
+            }
+
+            this.Write.Resource("AppTitleSpace");
+
+            RandomPicture();
+
+            this.Write.Resource("AppTitleSpace");
+        }
+
+        private void RandomPicture()
+        {
+            Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
+            int randomVal = Utility.Utility.Random.Next(150);
+            switch (randomVal)
+            {
+                case 1:
+                    AppTitleItem("ExcelsiorMedium", 8);
+                    break;
+
+                case 2:
+                    AppTitleItem("DaedalusSmall", 8);
+                    break;
+
+                case 3:
+                    AppTitleItem("Reliant", 8);
+                    break;
+
+                case 4:
+                    AppTitleItem("D7Front", 6);
+                    break;
+
+                case 5:
+                    AppTitleItem("D-10-", 6);
+                    break;
+
+                case 6:
+                    AppTitleItem("D-4-", 7);
+                    break;
+
+                case 7:
+                    AppTitleItem("D-11-", 6);
+                    break;
+
+                case 8:
+                    AppTitleItem("D-18-", 6);
+                    break;
+
+                case 9:
+                    AppTitleItem("D-27-", 7);
+                    break;
+
+                case 10:
+                    AppTitleItem("AkulaSmall", 7);
+                    break;
+
+                case 11:
+                    AppTitleItem("BattlecruiserSmall", 6);
+                    break;
+
+                case 12:
+                    AppTitleItem("SaladinSmall", 6);
+                    break;
+
+                case 13:
+                    AppTitleItem("EagleSmall", 6);
+                    break;
+
+                case 14:
+                    AppTitleItem("DreadnaughtSide", 9);
+                    break;
+
+                case 15:
+                    AppTitleItem("Enterprise-BSmall", 6);
+                    break;
+
+                case 16:
+                    AppTitleItem("ExcelsiorSmall", 6);
+                    break;
+
+                case 17:
+                    AppTitleItem("RomulanBOP", 7);
+                    break;
+
+                default:
+                    AppTitleItem("2ShipsSmall", 7);
+                    break;
+            }
+        }
+
+        private void AppTitleItem(string itemName, int endingLine)
+        {
+            for (int i = 1; i < endingLine; i++)
+            {
+                this.Write.Resource("AppTitle" + itemName + i);
+            }
+        }
+
 
         /// <summary>
         /// Game ends when user runs out of power, wins, or is destroyed
@@ -243,7 +347,7 @@ namespace StarTrek_KG
         /// <returns></returns>
         private bool NewTurn()
         {
-            this.Command.Prompt("Your Ship");
+            this.Write.Prompt("Your Ship", this.Map.Text);
                 //move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
                 ////Map.GetAllHostiles(this.Map).Count
 

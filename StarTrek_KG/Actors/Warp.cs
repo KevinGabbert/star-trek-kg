@@ -7,24 +7,17 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Actors
 {
-    public class Warp: ICommand, IWrite
+    public class Warp: IWrite
     {
-        public Command Command { get; set; } 
         public Write Write { get; set; }     
 
-        public Warp(Write output, Command command)
+        public Warp(Write output)
         {
             this.Write = output;
-            this.Command = command;
 
             if (this.Write == null)
             {
                 throw new GameException("Property Write is not set for Warp. ");
-            }
-
-            if (this.Command == null)
-            {
-                throw new GameException("Property Command is not set for Warp. ");
             }
         }
 
@@ -59,7 +52,7 @@ namespace StarTrek_KG.Actors
         }
         public bool InvalidWarpFactorCheck(double maxWarpFactor, out double distance)
         {
-            if (!this.Command.PromptUser(String.Format("Enter warp factor (0.1--{0}): ", maxWarpFactor), out distance)
+            if (!this.Write.PromptUser(String.Format("Enter warp factor (0.1--{0}): ", maxWarpFactor), out distance)
                 || distance < 0.1 
                 || distance > maxWarpFactor)
             {
