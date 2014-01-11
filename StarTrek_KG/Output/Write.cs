@@ -20,6 +20,19 @@ namespace StarTrek_KG.Output
         private int Starbases { get; set; }
         private int Stardate { get; set; }
 
+        public Map Map { get; set; }
+
+        //todo: make this non-static so we can test this class..
+
+        private Console _console;
+
+        public Console Console
+        {
+            get { return _console ?? (_console = new Console()); }
+            set { _console = value; }
+        }
+
+
         public List<string> ACTIVITY_PANEL = new List<string>();
 
         //TODO:  Have Game expose and raise an output event
@@ -148,63 +161,8 @@ namespace StarTrek_KG.Output
                 }
             }
 
-            //try
-            //{
-            //    List<ObjectWalkerEntity> x = ObjectWalker.Walk(@object);
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    throw;
-            //}
         }
 
-        //public void PrintSector(Quadrant quadrant, Map map)
-        //{
-        //    var condition = this.GetCurrentCondition(quadrant, map);
-
-        //    Location myLocation = map.Playership.GetLocation();
-        //    int totalHostiles = map.Quadrants.GetHostileCount();
-        //    bool docked = Navigation.For(map.Playership).docked;
-
-        //    Output.PrintSector.CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
-        //    this.OutputWarnings(quadrant, map, docked);
-        //}
-
-        //private string GetRowIndicator(int row, Map map)
-        //{
-        //    string retVal = "";
-
-        //    switch (row)
-        //    {
-        //        case 0:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSQuadrantIndicator"), location.Quadrant.X, location.Quadrant.Y);
-        //            break;
-        //        case 1:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSSectorIndicator"), location.Sector.X, location.Sector.Y);
-        //            break;
-        //        case 2:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSStardateIndicator"), map.Stardate);
-        //            break;
-        //        case 3:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
-        //            break;
-        //        case 4:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSConditionIndicator"), condition);
-        //            break;
-        //        case 5:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSEnergyIndicator"), map.Playership.Energy);
-        //            break;
-        //        case 6:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
-        //            break;
-        //        case 7:
-        //            retVal = String.Format(StarTrekKGSettings.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
-        //            break;
-        //    }
-
-        //    return retVal;
-        //}
 
         public void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
         {
@@ -223,27 +181,12 @@ namespace StarTrek_KG.Output
             }
         }
 
-        #region Commands
-
-                              
-
-            public Map Map { get; set; }
-
-            //todo: make this non-static so we can test this class..
-
-            private Console _console;
-
-            public Console Console
-            {
-                get { return _console ?? (_console = new Console()); }
-                set { _console = value; }
-            }
 
 
-        #endregion
-
-        public void CommandPanel()
+        public void CreateCommandPanel()
         {
+            ACTIVITY_PANEL = new List<string>();
+
             ACTIVITY_PANEL.Add("nav = Navigation");
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
@@ -307,6 +250,7 @@ namespace StarTrek_KG.Output
                     break;
 
                 default: //case "?":
+                    this.CreateCommandPanel();
                     this.Panel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
                     break;
             }

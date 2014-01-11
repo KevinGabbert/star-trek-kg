@@ -20,7 +20,6 @@ namespace UnitTests.ShipTests.MapTests
         [SetUp]
         public void Setup()
         {
-             Assert.IsInstanceOf(typeof(Map), _setup.TestMap);
             //todo: call VerifyGlobalInfoSettings
 
              TestRunner.GetTestConstants();
@@ -39,11 +38,13 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void InitializeSectors()
         {
-            _setup.TestMap.Initialize(new SectorDefs
-                                            {
-                                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly),
-                                                //todo: this needs to be in a random spo
-                                            });
+            _setup.SetupMapWith1Friendly();
+
+            //_setup.TestMap.Initialize(new SectorDefs
+            //                                {
+            //                                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly),
+            //                                    //todo: this needs to be in a random spo
+            //                                });
 
             //More comprehensive Quadrant tests is in QuadrantTests
             Assert.AreEqual(64, _setup.TestMap.Quadrants.Count); //currently these reside in constants, but will be moving to app.config
@@ -366,15 +367,17 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Remove2()
         {
-            _setup.TestMap = (new Map(new GameConfig
-            {
-                Initialize = true,
+            _setup.SetupMapWith1Friendly();
+
+            //_setup.TestMap = (new Map(new GameConfig
+            //{
+            //    Initialize = true,
                 
-                SectorDefs = new SectorDefs
-                {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
-                }
-            }, this.Write));
+            //    SectorDefs = new SectorDefs
+            //    {
+            //        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+            //    }
+            //}, this.Write));
 
             //add a ship
             var ship = new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)));

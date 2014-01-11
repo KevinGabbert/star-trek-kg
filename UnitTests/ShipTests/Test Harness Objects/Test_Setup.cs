@@ -23,6 +23,12 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             Startup();
         }
 
+        private void VerifyMap()
+        {
+            Assert.IsInstanceOf(typeof(Map), this.TestMap);
+            Assert.IsInstanceOf(typeof(Write), this.TestMap.Write);
+        }
+
         public void SetupMapWith2Hostiles()
         {
             this.SetupMapWith1Friendly();
@@ -34,6 +40,8 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             var activeQuad = this.TestMap.Quadrants.GetActive();
             activeQuad.AddShip(hostileShip, hostileShip.Sector);
             activeQuad.AddShip(hostileShip2, hostileShip2.Sector);
+
+            this.VerifyMap();
         }
 
         public void SetupMapWith1Friendly()
@@ -49,6 +57,8 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                  //todo: this needs to be in a random spo
                                                              }
                                         }, this.Write));
+
+            this.VerifyMap();
         }
 
         public void SetupMapWith1Hostile()
@@ -67,6 +77,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                                new Coordinate(0, 1)), SectorItem.Hostile),
                                                        }
                                   }, this.Write);
+            this.VerifyMap();
         }
 
         public void SetupMapWith1HostileAtSector(Coordinate friendlySector, Coordinate hostileSector)
@@ -85,6 +96,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                                hostileSector), SectorItem.Hostile),
                                                        }
             }, this.Write);
+            this.VerifyMap();
         }
 
         public void SetupMapWithStarbase()
@@ -106,6 +118,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
 
             //var activeQuad = _testMap.Quadrants.GetActive();
             //activeQuad.AddShip(starbase, starbase.Sector);
+            this.VerifyMap();
         }
 
         public void SetupNewMapOnly()
@@ -115,21 +128,24 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                 Initialize = true,
                 //GenerateMap = true
             }, this.Write);
+            this.VerifyMap();
         }
 
         public  void SetupBaseMap()
         {
             this.TestMap = new Map(null, this.Write);
+            this.VerifyMap();
         }
 
-
-        private static void Startup()
+        private void Startup()
         {
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
             Constants.QUADRANT_MIN = 0;
             Constants.QUADRANT_MAX = 0;
+
+            this.Write = new Write(this.TestMap);
 
             TestRunner.GetTestConstants();
 

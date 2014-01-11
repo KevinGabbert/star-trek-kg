@@ -156,6 +156,10 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.IsNotNull(hostile.Sector.Object);
 
             Constants.DEBUG_MODE = debugMode;
+
+
+            Assert.IsTrue(_setup.TestMap == _photonsToTest.Map);
+
             _photonsToTest.Shoot(7);
 
             var noMoreHostile = _testQuadrant.GetHostiles();

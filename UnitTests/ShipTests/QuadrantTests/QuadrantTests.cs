@@ -42,7 +42,9 @@ namespace UnitTests.ShipTests.QuadrantTests
         {
             var systemNames = StarTrekKGSettings.GetStarSystems();
 
-            _testQuadrant = new Quadrant(_setup.TestMap, new Stack<string>(systemNames), this.Write);
+            _setup.SetupMapWith1Friendly();
+
+            _testQuadrant = new Quadrant(_setup.TestMap, new Stack<string>(), this.Write);
 
             //todo: make sure that map is not set up with anyting
 

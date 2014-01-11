@@ -59,24 +59,25 @@ namespace StarTrek_KG.Playfield
             this.Name = String.Empty;
         }
 
-        public Quadrant(Map map, Stack<string> names, Write write)
+        public Quadrant(Map map, Stack<string> baddieNames, Write write)
         {
             this.Write = write;
 
             this.Empty = true;
             this.Map = map;
-            this.Create(names);
             this.Name = String.Empty;
+            this.Create(baddieNames);
         }
 
-        public Quadrant(Map map, Stack<string> names, out int nameIndex, Write write)
+
+        //todo: we might want to avoid passing in baddie names and set up baddies later..
+        public Quadrant(Map map, Stack<string> baddieNames, out int nameIndex, Write write)
         {
             this.Write = write;
 
             this.Empty = true;
             this.Map = map;
-            this.Create(names, out nameIndex);
-            this.Name = String.Empty;
+            this.Create(baddieNames, out nameIndex);
         }
 
         public void Create(Stack<string> baddieNames, bool addStars = true)
@@ -161,10 +162,10 @@ namespace StarTrek_KG.Playfield
         private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y, Stack<string> baddieNames, Map map)
         {
 
-            if (quadrant.X == 1 && quadrant.Y == 1)
-            {
-                var i = 0;
-            }
+            //if (quadrant.X == 1 && quadrant.Y == 1)
+            //{
+            //    var i = 0;
+            //}
 
             SectorItem sectorItemToPopulate = SectorItem.Empty;
 

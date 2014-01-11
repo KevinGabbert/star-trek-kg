@@ -245,6 +245,12 @@ namespace StarTrek_KG.Playfield
                             if (allStarsDontHaveNewDesignation)
                             {
                                 foundStarName = true;
+
+                                if(quadrant.Name == null) //todo: why do we have null quadrant names???
+                                {
+                                    quadrant.Name = "UNKNOWN QUADRANT " + newNameLetter + " " + counter; //todo: this could get dupes
+                                }
+
                                 currentStarName = quadrant.Name.ToUpper() + " " + newNameLetter;
 
                                 newStar.Name = currentStarName;
@@ -265,6 +271,7 @@ namespace StarTrek_KG.Playfield
                     }
                 }
             }
+
             return currentStarName;
         }
 
