@@ -107,10 +107,10 @@ namespace StarTrek_KG.Playfield
         {
             this._enforceBoundsChecking = false;
 
-            var x = (int)Math.Round(coordinate.X);
-            var y = (int)Math.Round(coordinate.Y);
+            var x = (int)Math.Round(coordinate.X, MidpointRounding.AwayFromZero);
+            var y = (int)Math.Round(coordinate.Y, MidpointRounding.AwayFromZero);
 
-            if (x < Constants.SECTOR_MIN || y < Constants.SECTOR_MIN || x > Constants.SECTOR_MAX || y > Constants.SECTOR_MAX)
+            if (x > Constants.SECTOR_MIN || y > Constants.SECTOR_MIN || x < Constants.SECTOR_MAX || y < Constants.SECTOR_MAX)
             {
                 this.X = x;
                 this.Y = y;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -142,12 +143,7 @@ namespace StarTrek_KG.Subsystem
 
             Torpedoes.DebugTrack(newLocation);
 
-            if (this.HitSomething(newLocation))
-            {
-                return true;
-            }
-
-            return false;
+            return this.HitSomething(newLocation);
         }
 
         private static bool LastPositionAintNewPosition(Location newTorpedoLocation, Coordinate torpedoLastPosition)
@@ -207,7 +203,14 @@ namespace StarTrek_KG.Subsystem
         {
             if (Constants.DEBUG_MODE)
             {
-                Sector qLocation = newLocation.Quadrant.Sectors.Single(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y);
+                List<Sector> qLocations = newLocation.Quadrant.Sectors.Where(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y).ToList();
+
+                var qLocation = new Sector();
+
+                if (qLocations.Count > 0)
+                {
+                    qLocation = qLocations.Single();
+                }
 
                 if (qLocation.Item == SectorItem.Empty)
                 {
@@ -217,13 +220,20 @@ namespace StarTrek_KG.Subsystem
         }
 
         private bool HitSomethingElse(Map map,
-                                              Quadrant quadrant, 
-                                              int newY, 
-                                              int newX)
+                                      Quadrant quadrant, 
+                                      int newY, 
+                                      int newX)
         {
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
-            Sector qLocation = quadrant.Sectors.Single(s => s.X == newX && s.Y == newY);
+            List<Sector> qLocations = quadrant.Sectors.Where(s => s.X == newX && s.Y == newY).ToList();
+
+            var qLocation = new Sector();
+
+            if (qLocations.Count > 0)
+            {
+                qLocation = qLocations.Single(); //this is really for debug purposes.. It could be 1 line.
+            }
 
             switch (qLocation.Item)
             {
