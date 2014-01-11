@@ -3,7 +3,6 @@ using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
-using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using UnitTests.ShipTests.Test_Harness_Objects;
 
@@ -12,32 +11,13 @@ namespace UnitTests.ShipTests.SubSystemTests
     [TestFixture]
     public class PhaserTests: TestClass_Base
     {
-        private Map _testMap;
-
 
         [SetUp]
         public void SetUp()
         {
             TestRunner.GetTestConstants();
 
-            _testMap = (new Map(new GameConfig
-                                    {
-                                        Initialize = true,
-                                        
-                                        
-                                        SectorDefs = new SectorDefs
-                                                         {
-                                                             new SectorDef(
-                                                                 new LocationDef(new Coordinate(0, 0),
-                                                                                 new Coordinate(0, 1)),
-                                                                 SectorItem.Friendly),
-                                                             new SectorDef(
-                                                                 new LocationDef(new Coordinate(0, 0),
-                                                                                 new Coordinate(0, 3)),
-                                                                 SectorItem.Hostile)
-                                                         },
-                                        AddStars = false
-                                    }, this.Write));
+            _setup.SetupMapWith1HostileAtSector(new Coordinate(0, 0), new Coordinate(0, 3));
         }
 
         [TearDown]
@@ -53,105 +33,66 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void PhaserFireSubtractsEnergyFromShip()
         {
-            _testMap = (new Map(new GameConfig
-            {
-                Initialize = true,
-                
-                
-                SectorDefs = new SectorDefs
-                    {
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
-                    },
-                AddStars = false
-            }, this.Write));
+            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2,1));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");;
-            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = 89.6829;
 
             //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
-            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership); 
+            Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership); 
 
             //Verifies energy subtracted from firing ship.
-            Assert.AreEqual(startingEnergy - testBoltEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy - testBoltEnergy, _setup.TestMap.Playership.Energy);
         }
 
         [Test]
         public void PhasersWontFireWhenToldTooMuchEnergy()
         {
-            _testMap = (new Map(new GameConfig
-            {
-                Initialize = true,
-                SectorDefs = new SectorDefs
-                    {
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
-                    },
-                AddStars = false
-            }, this.Write));
+            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); 
-            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = 4000;
 
             //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
-            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership);
+            Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership);
 
             //Todo: Mock up Output so we can see the text result
             //Without a mock for Output, we can't see the output, but the conclusion we can draw here is that the phasers didn't fire, and no energy was expended
 
-            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
         }
 
         [Test]
         public void PhasersWontFireWhenToldNotEnoughEnergy()
         {
-            _testMap = (new Map(new GameConfig
-            {
-                Initialize = true,
-                
-                
-                SectorDefs = new SectorDefs
-                    {
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
-                    },
-                AddStars = false
-            }, this.Write));
+            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); ;
-            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = -1;
 
             //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
-            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership);
+            Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership);
 
             //Todo: Mock up Output so we can see the text result
             //Without a mock for Output, we can't see the output, but the conclusion we can draw here is that the phasers didn't fire, and no energy was expended
 
-            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
         }
 
 
         [Test]
         public void HitThatDestroys()
         {
-            _testMap = (new Map(new GameConfig
-            {
-                Initialize = true,
-                
-                
-                SectorDefs = new SectorDefs
-                    {
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
-                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)), SectorItem.Hostile)
-                    },
-                AddStars = false
-            }, this.Write));
+            _setup.SetupMapWith1HostileAtSector(new Coordinate(2, 1), new Coordinate(2,6));
 
             //todo: why active? are hostiles in the same sector?
-            var activeQuadrant = _testMap.Quadrants.GetActive();
+            var activeQuadrant = _setup.TestMap.Quadrants.GetActive();
 
             Assert.AreEqual(1, activeQuadrant.GetHostiles().Count);
 
@@ -169,15 +110,15 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");
 
-            Assert.AreEqual(startingEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = 89.6829;
 
             //This action will hit every single hostile in the quadrant
-            Phasers.For(_testMap.Playership).Fire(testBoltEnergy, _testMap.Playership); //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
+            Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership); //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
 
             //Verifies energy subtracted from firing ship.
-            Assert.AreEqual(startingEnergy - testBoltEnergy, _testMap.Playership.Energy);
+            Assert.AreEqual(startingEnergy - testBoltEnergy, _setup.TestMap.Playership.Energy);
 
             //in space. no one can hear you scream.
             Assert.AreEqual(0, activeQuadrant.GetHostiles().Count);
@@ -198,7 +139,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             //_testMap.Quadrants.GetHostile(0).Shields = 20
 
             //todo: ensure that baddie has less than 50 (from config?)
-            Phasers.For(_testMap.Playership).Fire(50, _testMap.Playership);
+            Phasers.For(_setup.TestMap.Playership).Fire(50, _setup.TestMap.Playership);
         }
 
         public void HitThatWoundsMultipleHostiles()
