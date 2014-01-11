@@ -15,6 +15,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         public Navigation TestNavigation { get; set; }
         public Torpedoes TestPhotons { get; set; }
         public Computer TestComputer { get; set; }
+        public Computer TestPhasers { get; set; }
 
         public Write Write { get; set; }
 
@@ -95,6 +96,19 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                hostileSector), SectorItem.Hostile),
                                                        }
+            }, this.Write);
+            this.VerifyMap();
+        }
+
+        public void SetupMapWith1FriendlyAtSector(Coordinate friendlySector)
+        {
+            this.TestMap = new Map(new GameConfig
+            {
+                Initialize = true,
+                SectorDefs = new SectorDefs
+                {
+                   new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.Friendly)},
+              AddStars = false
             }, this.Write);
             this.VerifyMap();
         }
