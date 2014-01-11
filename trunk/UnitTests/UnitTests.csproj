@@ -71,6 +71,7 @@
     <Compile Include="ShipTests\SubSystemTests\ComputerTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\Subsystem_BaseTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\Subsystem_Base_Tests.cs" />
+    <Compile Include="ShipTests\Test Harness Objects\TestClass_Base.cs" />
     <Compile Include="ShipTests\Test Harness Objects\Test_Setup.cs" />
     <Compile Include="ShipTests\WarpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

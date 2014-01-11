@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Playfield;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests
 {
-    public class GameTests
+    public class GameTests: TestClass_Base
     {
         //ctor
         //Initialize
@@ -17,7 +18,7 @@ namespace UnitTests.ShipTests
             var map = new Map();
 
             //apparently, the only requirement for this is that an observed movement needs to happen
-            Game.MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 1));
+            (new Game(this.Draw)).MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 1));
 
             Assert.AreEqual(-1, map.timeRemaining);
             Assert.AreEqual(1, map.Stardate);
@@ -29,7 +30,7 @@ namespace UnitTests.ShipTests
             var map = new Map();
 
             //apparently, the only requirement for this is that an observed movement needs to happen
-            Game.MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 0));
+            (new Game(this.Draw)).MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 0));
 
             //Time has not moved
             Assert.AreEqual(0, map.timeRemaining);

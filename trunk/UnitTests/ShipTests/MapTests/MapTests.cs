@@ -10,18 +10,17 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Utility;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.MapTests
 {
     [TestFixture]
-    public class MapTests
+    public class MapTests: TestClass_Base
     {
-        private Map _testMap = new Map(null); //Remember, when a map is set up, a ship is generated in a random location
-
         [SetUp]
         public void Setup()
         {
-             Assert.IsInstanceOf(typeof(Map), _testMap);
+             Assert.IsInstanceOf(typeof(Map), _setup.TestMap);
             //todo: call VerifyGlobalInfoSettings
 
              TestRunner.GetTestConstants();
@@ -40,16 +39,16 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void InitializeSectors()
         {
-            _testMap.Initialize(new SectorDefs
+            _setup.TestMap.Initialize(new SectorDefs
                                             {
                                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly),
                                                 //todo: this needs to be in a random spo
                                             });
 
             //More comprehensive Quadrant tests is in QuadrantTests
-            Assert.AreEqual(64, _testMap.Quadrants.Count); //currently these reside in constants, but will be moving to app.config
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.Count); //currently these reside in constants, but will be moving to app.config
 
-            foreach (var quadrant in _testMap.Quadrants)
+            foreach (var quadrant in _setup.TestMap.Quadrants)
             {
                 Assert.AreEqual(64, quadrant.Sectors.Count, "Unexpected sector count: Quadrant X: " + quadrant.X + " Y: " + quadrant.Y);
             }
@@ -70,12 +69,12 @@ namespace UnitTests.ShipTests.MapTests
         {
             var klingonShipNames =  StarTrekKGSettings.GetShips("Klingon");
             var systemNames = StarTrekKGSettings.GetStarSystems();
-            _testMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
+            _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames),
                                          new SectorDefs());
 
-            Assert.IsInstanceOf(typeof(Map), _testMap);
-            Assert.Greater(_testMap.Quadrants.Count, 63); //todo: currently these reside in constants, but will be moving to app.config
+            Assert.IsInstanceOf(typeof(Map), _setup.TestMap);
+            Assert.Greater(_setup.TestMap.Quadrants.Count, 63); //todo: currently these reside in constants, but will be moving to app.config
 
             ////todo: Assert that no baddies or friendlies are set up.
         }
@@ -87,12 +86,12 @@ namespace UnitTests.ShipTests.MapTests
             var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
             var systemNames = StarTrekKGSettings.GetStarSystems();
 
-            _testMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
+            _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames),
                                          null);
-            //Quadrant.Populate(_testMap);
+            //Quadrant.Populate(_setup.TestMap);
 
-            Assert.Greater(_testMap.Quadrants.Count, 63); //currently these reside in constants, but will be moving to app.config
+            Assert.Greater(_setup.TestMap.Quadrants.Count, 63); //currently these reside in constants, but will be moving to app.config
 
 
             //todo: query quadrants for number of starbases (change quadrants to a collection!) and get rid of "starbases" variable)
@@ -101,7 +100,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void GetGlobalInfo()
         {
-            _testMap.GetGlobalInfo(); 
+            _setup.TestMap.GetGlobalInfo(); 
             this.VerifyGlobalInfoSettings();
         }
 
@@ -109,16 +108,16 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void VerifyCommandLineText()
         {
-            _testMap.GetGlobalInfo(); 
-            Assert.AreEqual("Enter command: ", _testMap.Text); 
+            _setup.TestMap.GetGlobalInfo(); 
+            Assert.AreEqual("Enter command: ", _setup.TestMap.Text); 
         }
 
         [Test]
         public void Generate_NoIntitialize()
         {
-            _testMap = new Map(null);
+            _setup.TestMap = new Map(null, this.Write, this.Command);
 
-            MapTests.NoInitializeAsserts(_testMap);
+            MapTests.NoInitializeAsserts(_setup.TestMap);
         }
 
         public static void NoInitializeAsserts(Map testMap)
@@ -141,16 +140,16 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Generate_WithNoObjects()
         {
-            _testMap = new Map(new GameConfig()
+            _setup.TestMap = new Map(new GameConfig()
                         {
                             
                             Initialize = true,
                             SectorDefs = new SectorDefs()
-                        });
+                        }, this.Write, this.Command);
 
-            //_testMap.Quadrants.PopulateSectors(null, _testMap);
+            //_setup.TestMap.Quadrants.PopulateSectors(null, _setup.TestMap);
 
-            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);       
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);       
         }
 
         /// <summary>
@@ -159,21 +158,21 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Generate_WithNoObjectsDefaultCount()
         {
-            _testMap = new Map(new GameConfig()
+            _setup.TestMap = new Map(new GameConfig()
             {
                 
                 Initialize = true,
                 SectorDefs = new SectorDefs()
-            });
+            }, this.Write, this.Command);
 
-            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);
         }
 
         [Ignore]
         [Test]
         public void Generate_WithPlayerShip()
         {
-            _testMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -181,22 +180,22 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                             }
-            })); 
+            }, this.Write, this.Command)); 
 
-            //_testMap.Quadrants.PopulateSectors(_testMap.GameConfig.SectorDefs, _testMap);
+            //_setup.TestMap.Quadrants.PopulateSectors(_setup.TestMap.GameConfig.SectorDefs, _setup.TestMap);
 
             this.VerifyPlayerShipSettings();
 
             //More comprehensive tests of Sectors will be in SectorTests
-            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);
-            Assert.Greater(_testMap.Quadrants.GetActive().GetHostiles().Count, -1); 
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);
+            Assert.Greater(_setup.TestMap.Quadrants.GetActive().GetHostiles().Count, -1); 
         }
 
         [Ignore]
         [Test]
         public void Generate_WithHostiles()
         {
-            _testMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -204,33 +203,33 @@ namespace UnitTests.ShipTests.MapTests
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                     }
-            }));
-            //_testMap.Quadrants.PopulateSectors(null, _testMap);
+            }, this.Write, this.Command));
+            //_setup.TestMap.Quadrants.PopulateSectors(null, _setup.TestMap);
 
             this.VerifyPlayerShipSettings();
 
             //More comprehensive tests of Sectors will be in SectorTests
-            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);
-            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);
 
-            Assert.Greater(_testMap.Quadrants.GetActive().GetHostiles().Count, 0);
+            Assert.Greater(_setup.TestMap.Quadrants.GetActive().GetHostiles().Count, 0);
         }
         
         [Test]
         public void CreateEmptySectors()
         {
-            _testMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
                 SectorDefs = new SectorDefs(),
                 AddStars = false
-            }));
+            }, this.Write, this.Command));
 
             var systemNames = StarTrekKGSettings.GetStarSystems();
-            Quadrant.InitializeSectors(_testMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), _testMap, false);
+            _setup.TestMap.Quadrants.GetActive().InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), _setup.TestMap, false);
 
-            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);  
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);  
 
             this.VerifyAllEmpty();
         }
@@ -239,32 +238,32 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void EmptyActive()
         {
-            _testMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
                 SectorDefs = new SectorDefs()
-            }));
+            }, this.Write, this.Command));
 
-            _testMap.Quadrants.ClearActive();
+            _setup.TestMap.Quadrants.ClearActive();
 
-            _testMap.Quadrants.GetActive();
+            _setup.TestMap.Quadrants.GetActive();
         }
 
         [Ignore] //should be: CreateSectorObjects
         [Test]
         public void CreateSectorItems()
         {
-            _testMap = new Map(null);
-            Assert.IsNull(_testMap.Quadrants.GetActive().Sectors);
+            _setup.TestMap = new Map(null, this.Write, this.Command);
+            Assert.IsNull(_setup.TestMap.Quadrants.GetActive().Sectors);
 
-            _testMap.Quadrants.GetActive().Sectors = new Sectors(); //[8, 8];
+            _setup.TestMap.Quadrants.GetActive().Sectors = new Sectors(); //[8, 8];
 
 
-            //_testMap.CreateSectorItems(1); //CreateSectorObjects
+            //_setup.TestMap.CreateSectorItems(1); //CreateSectorObjects
 
-            Assert.IsNotNull(_testMap.Quadrants.GetActive().Sectors);
-            Assert.AreEqual(64, _testMap.Quadrants.GetActive().Sectors.Count);   
+            Assert.IsNotNull(_setup.TestMap.Quadrants.GetActive().Sectors);
+            Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);   
         }
         
         [Ignore]
@@ -282,18 +281,18 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void IsSectorRegionEmpty()
         {
-            _testMap = new Map(null);
+            _setup.TestMap = new Map(null, this.Write, this.Command);
 
-            Assert.IsNull(_testMap.Quadrants.GetActive().Sectors);
+            Assert.IsNull(_setup.TestMap.Quadrants.GetActive().Sectors);
 
-            //Quadrant.InitializeSectors(_testMap.Quadrants.GetActive(), null);
+            //Quadrant.InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null);
 
             //They should all be empty
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    //_testMap.IsSectorRegionEmpty(i, j, _testMap.Quadrants.Active.Sectors);
+                    //_setup.TestMap.IsSectorRegionEmpty(i, j, _setup.TestMap.Quadrants.Active.Sectors);
                 }
             }
         }
@@ -301,7 +300,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Remove()
         {
-            _testMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -310,9 +309,9 @@ namespace UnitTests.ShipTests.MapTests
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                     }
-            }));
+            }, this.Write, this.Command));
 
-            //Assert.AreEqual(SectorItem.Friendly, _testMap.GetItem(0, 1, 0, 0)); //verify our newly added friendly ship is on the map
+            //Assert.AreEqual(SectorItem.Friendly, _setup.TestMap.GetItem(0, 1, 0, 0)); //verify our newly added friendly ship is on the map
 
             //todo: refactor this into CreateHostile  //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
 
@@ -323,27 +322,27 @@ namespace UnitTests.ShipTests.MapTests
 
             //add a ship to remove
             var sector = new Sector(new LocationDef(new Coordinate(testQuadX, testQuadY), new Coordinate(testSectX, testSectY)));
-            var hostileShip = new Ship("this is the ship", _testMap, sector);
+            var hostileShip = new Ship("this is the ship", _setup.TestMap, sector, this.Write, this.Command);
 
-            _testMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
+            _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
                                            q.Y == hostileShip.QuadrantDef.Y).AddShip(hostileShip, sector);
 
-            _testMap.Quadrants.Single(q => q.X == testQuadX &&
+            _setup.TestMap.Quadrants.Single(q => q.X == testQuadX &&
                                            q.Y == testQuadY).Sectors.Single(s => s.X == testSectX &&
                                                                                  s.Y == testSectY).Item = SectorItem.Hostile;
             //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
 
-            var hostiles1 = _testMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
+            var hostiles1 = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
                                                            q.Y == hostileShip.QuadrantDef.Y).GetHostiles();
 
             var verifiedShip = hostiles1.Single(s => s.Sector.X == sector.X && s.Sector.Y == sector.Y && s.Name == "this is the ship");
             Assert.IsNotNull(verifiedShip);
 
-            var sectorItemBefore = _testMap.GetItem(testQuadX, testQuadY, testSectX, testSectY);
+            var sectorItemBefore = _setup.TestMap.GetItem(testQuadX, testQuadY, testSectX, testSectY);
             Assert.AreEqual(SectorItem.Hostile, sectorItemBefore); //verify our newly added ship is on the map
 
             //verify our newly added ship is in the Hostiles list
-            var shipToRemove = _testMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
+            var shipToRemove = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
                                                               q.Y == hostileShip.QuadrantDef.Y).GetHostiles().Single(h => 
                                                                                    h.Sector.X == hostileShip.Sector.X &&
                                                                                    h.Sector.Y == hostileShip.Sector.Y &&
@@ -352,13 +351,13 @@ namespace UnitTests.ShipTests.MapTests
             Assert.IsInstanceOf<Ship>(shipToRemove);
 
             //todo: verify with assert that map is set up with sectors and quadrants
-            _testMap.Quadrants.Remove(hostileShip, _testMap);
+            _setup.TestMap.Quadrants.Remove(hostileShip, _setup.TestMap);
 
-            var sectorItemAfter = _testMap.GetItem(testQuadX, testQuadY, testSectX, testSectY);
+            var sectorItemAfter = _setup.TestMap.GetItem(testQuadX, testQuadY, testSectX, testSectY);
             Assert.AreEqual(SectorItem.Empty, sectorItemAfter);
 
             //todo: Quadrant.Hostiles not sync'd or something?
-            var hostilesAfter = _testMap.Quadrants.GetActive().GetHostiles();
+            var hostilesAfter = _setup.TestMap.Quadrants.GetActive().GetHostiles();
             Assert.IsEmpty(hostilesAfter);
 
             //todo: finish map.GetShip()
@@ -367,7 +366,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Remove2()
         {
-            _testMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -375,32 +374,32 @@ namespace UnitTests.ShipTests.MapTests
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                 }
-            }));
+            }, this.Write, this.Command));
 
             //add a ship
             var ship = new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)));
-            var hostileShip = new Ship("this is the ship", _testMap, ship);
+            var hostileShip = new Ship("this is the ship", _setup.TestMap, ship, this.Write, this.Command);
 
-            _testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+            _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
-            var verifiedShip = _testMap.Quadrants.GetActive().GetHostiles().Single(s => s.Sector.X == ship.X && s.Sector.Y == ship.Y && s.Name == "this is the ship");
+            var verifiedShip = _setup.TestMap.Quadrants.GetActive().GetHostiles().Single(s => s.Sector.X == ship.X && s.Sector.Y == ship.Y && s.Name == "this is the ship");
 
             Assert.IsNotNull(verifiedShip);
 
             //todo: verify with assert that map is set up with sectors and quadrants
-            //_testMap.Remove(_testMap.Quadrants.Active.Hostiles);// get rid of all hostiles on map
+            //_setup.TestMap.Remove(_setup.TestMap.Quadrants.Active.Hostiles);// get rid of all hostiles on map
 
-            _testMap.Quadrants.GetActive().ClearHostiles();
+            _setup.TestMap.Quadrants.GetActive().ClearHostiles();
 
-            var verifiedGone = _testMap.Quadrants.GetActive().GetHostiles().SingleOrDefault(s => s.Sector.X == ship.X && s.Sector.Y == ship.Y && s.Name == "this is the ship");
+            var verifiedGone = _setup.TestMap.Quadrants.GetActive().GetHostiles().SingleOrDefault(s => s.Sector.X == ship.X && s.Sector.Y == ship.Y && s.Name == "this is the ship");
 
-            Assert.IsEmpty(_testMap.Quadrants.GetActive().GetHostiles());
+            Assert.IsEmpty(_setup.TestMap.Quadrants.GetActive().GetHostiles());
         }
 
         [Test]
         public void Remove3()
         {
-            _testMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new GameConfig
             {
                 Initialize = true,
                 
@@ -409,28 +408,28 @@ namespace UnitTests.ShipTests.MapTests
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                 }
-            }));
+            }, this.Write, this.Command));
 
             //add a ship
-            var hostileShip = new Ship("ship1", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
-            var hostileShip2 = new Ship("ship2", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))));
+            var hostileShip = new Ship("ship1", _setup.TestMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Write, this.Command);
+            var hostileShip2 = new Ship("ship2", _setup.TestMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))), this.Write, this.Command);
 
-            _testMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
-            _testMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip2.Sector);
+            _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+            _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip2.Sector);
 
-            var x = _testMap.Quadrants.GetActive().GetHostiles();
+            var x = _setup.TestMap.Quadrants.GetActive().GetHostiles();
 
-            Assert.IsNotNull(_testMap.Quadrants.GetActive().GetHostiles().Single(s => s.Name == "ship1"));
-            Assert.IsNotNull(_testMap.Quadrants.GetActive().GetHostiles().Single(s => s.Name == "ship2"));
+            Assert.IsNotNull(_setup.TestMap.Quadrants.GetActive().GetHostiles().Single(s => s.Name == "ship1"));
+            Assert.IsNotNull(_setup.TestMap.Quadrants.GetActive().GetHostiles().Single(s => s.Name == "ship2"));
 
-            _testMap.Quadrants.RemoveShip("ship1");
+            _setup.TestMap.Quadrants.RemoveShip("ship1");
 
-            //var verifiedGone = _testMap.Quadrants.Active.Hostiles.SingleOrDefault(s => s.Name == "this is the ship");
+            //var verifiedGone = _setup.TestMap.Quadrants.Active.Hostiles.SingleOrDefault(s => s.Name == "this is the ship");
 
-            Assert.AreEqual(1, _testMap.Quadrants.GetActive().GetHostiles().Count);
+            Assert.AreEqual(1, _setup.TestMap.Quadrants.GetActive().GetHostiles().Count);
 
-            _testMap.Quadrants.RemoveShip("ship2");
-            Assert.AreEqual(0, _testMap.Quadrants.GetActive().GetHostiles().Count);
+            _setup.TestMap.Quadrants.RemoveShip("ship2");
+            Assert.AreEqual(0, _setup.TestMap.Quadrants.GetActive().GetHostiles().Count);
         }
 
         [Test]
@@ -484,13 +483,13 @@ namespace UnitTests.ShipTests.MapTests
         {
             //todo: Assert for each item set
 
-            Assert.IsInstanceOf(typeof(List<IShip>), _testMap.Quadrants.GetActive().GetHostiles());
-            Assert.AreEqual(0, _testMap.Quadrants.GetActive().GetHostiles().Count);
+            Assert.IsInstanceOf(typeof(List<IShip>), _setup.TestMap.Quadrants.GetActive().GetHostiles());
+            Assert.AreEqual(0, _setup.TestMap.Quadrants.GetActive().GetHostiles().Count);
 
-            Assert.Greater(_testMap.hostilesToSetUp, -1);
-            Assert.Greater(_testMap.Stardate, -1);
-            Assert.Greater(_testMap.timeRemaining, -1);
-            Assert.Greater(_testMap.starbases, -1);        
+            Assert.Greater(_setup.TestMap.hostilesToSetUp, -1);
+            Assert.Greater(_setup.TestMap.Stardate, -1);
+            Assert.Greater(_setup.TestMap.timeRemaining, -1);
+            Assert.Greater(_setup.TestMap.starbases, -1);        
         }
         public void VerifyInitializeSettings()
         {
@@ -502,12 +501,12 @@ namespace UnitTests.ShipTests.MapTests
         }
         private void VerifyPlayerShipSettings()
         {
-            Assert.IsInstanceOf(typeof (Ship), _testMap.Playership);
+            Assert.IsInstanceOf(typeof (Ship), _setup.TestMap.Playership);
 
-            Assert.Greater(_testMap.Playership.Sector.X, -1);
-            Assert.Greater(_testMap.Playership.Sector.Y, -1);
+            Assert.Greater(_setup.TestMap.Playership.Sector.X, -1);
+            Assert.Greater(_setup.TestMap.Playership.Sector.Y, -1);
 
-            Assert.AreEqual(_testMap.Playership.Allegiance, Allegiance.GoodGuy);
+            Assert.AreEqual(_setup.TestMap.Playership.Allegiance, Allegiance.GoodGuy);
         }
         private void VerifyAllEmpty()
         {
@@ -515,7 +514,7 @@ namespace UnitTests.ShipTests.MapTests
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    Assert.AreEqual(SectorItem.Empty, Sector.Get(_testMap.Quadrants.GetActive().Sectors, i, j).Item);
+                    Assert.AreEqual(SectorItem.Empty, Sector.Get(_setup.TestMap.Quadrants.GetActive().Sectors, i, j).Item);
                 }
             }
         }

@@ -1,12 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Output
 {
-    public class Draw
+    public class Draw: ICommand, IWrite
     {
-        public static void RandomAppTitle()
+        public Command Command { get; set; }
+        public Write Write { get; set; }   
+  
+        public Draw(Write write, Command command)
+        {
+            this.Write = write;
+            this.Command = command;
+
+            if (this.Write == null)
+            {
+                throw new GameException("Property Write is not set for Draw ");
+            }
+
+            if (this.Command == null)
+            {
+                throw new GameException("Property Command is not set for Draw ");
+            }
+        }
+
+        public void RandomAppTitle()
         {
             int randomVal = Utility.Utility.Random.Next(3);
 
@@ -25,14 +46,14 @@ namespace StarTrek_KG.Output
                     break;
             }
 
-            Write.Resource("AppTitleSpace");
+            this.Write.Resource("AppTitleSpace");
 
             RandomPicture();
 
-            Write.Resource("AppTitleSpace");
+            this.Write.Resource("AppTitleSpace");
         }
 
-        private static void RandomPicture()
+        private void RandomPicture()
         {
             Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
             int randomVal = Utility.Utility.Random.Next(150);
@@ -112,15 +133,15 @@ namespace StarTrek_KG.Output
             }
         }
 
-        private static void AppTitleItem(string itemName, int endingLine)
+        private void AppTitleItem(string itemName, int endingLine)
         {
             for (int i = 1; i < endingLine; i++)
             {
-                Write.Resource("AppTitle" + itemName + i);
+                this.Write.Resource("AppTitle" + itemName + i);
             }
         }
 
-        public static string Course()
+        public string Course()
         {
             return Environment.NewLine +
                    " 4   5   6 " + Environment.NewLine +
@@ -131,30 +152,30 @@ namespace StarTrek_KG.Output
                    Environment.NewLine;
         }
 
-        public static void Panel(string panelHead, IEnumerable<string> strings)
+        public void Panel(string panelHead, IEnumerable<string> strings)
         {
-            Command.Console.WriteLine();
-            Command.Console.WriteLine(panelHead);
-            Command.Console.WriteLine();
+            this.Command.Console.WriteLine();
+            this.Command.Console.WriteLine(panelHead);
+            this.Command.Console.WriteLine();
 
             foreach (var str in strings)
             {
-                Command.Console.WriteLine(str);
+                this.Command.Console.WriteLine(str);
             }
 
-            Command.Console.WriteLine();
+            this.Command.Console.WriteLine();
         }
 
-        public static void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
+        public void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
         {
             if (renderingMyLocation)
             {
                 Write.HighlightTextBW(true);
             }
 
-            Write.WithNoEndCR(hostileCount.FormatForLRS());
-            Write.WithNoEndCR(starbaseCount.FormatForLRS());
-            Write.WithNoEndCR(starCount.FormatForLRS());
+            this.Write.WithNoEndCR(hostileCount.FormatForLRS());
+            this.Write.WithNoEndCR(starbaseCount.FormatForLRS());
+            this.Write.WithNoEndCR(starCount.FormatForLRS());
 
             if (renderingMyLocation)
             {

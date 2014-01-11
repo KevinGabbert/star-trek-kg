@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
+using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
@@ -12,12 +14,14 @@ namespace StarTrek_KG.Output
     /// <summary>
     /// todo: the goal here is to be able to save all output to a file for later printing..
     /// </summary>
-    public class Write
+    public class Write: ICommand
     {
         private int TotalHostiles { get; set; }
         private int TimeRemaining { get; set; }
         private int Starbases { get; set; }
         private int Stardate { get; set; }
+
+        public Command Command { get; set; } 
 
         //TODO:  Have Game expose and raise an output event
         //Have UI subscribe to it.
@@ -32,8 +36,18 @@ namespace StarTrek_KG.Output
 
         }
 
-        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining)
+        public Write(Command commandObject)
         {
+            if(commandObject == null)
+            {
+                throw new GameException("null dependency");
+            }
+            this.Command = commandObject;
+        }
+
+        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, Command commandObject)
+        {
+            this.Command = Command;
             this.TotalHostiles = totalHostiles;
             this.Starbases = starbases;
             this.Stardate = stardate;
@@ -70,78 +84,78 @@ namespace StarTrek_KG.Output
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            Command.Console.WriteLine(StarTrekKGSettings.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
-            Command.Console.WriteLine();
+            this.Command.Console.WriteLine(StarTrekKGSettings.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.Command.Console.WriteLine();
         }
 
-        public static void Strings(IEnumerable<string> strings)
+        public void Strings(IEnumerable<string> strings)
         {
             foreach (var str in strings)
             {
-                Command.Console.WriteLine(str);
+                this.Command.Console.WriteLine(str);
             }
-            Command.Console.WriteLine();
+            this.Command.Console.WriteLine();
         }
 
-        public static void HighlightTextBW(bool on)
+        public void HighlightTextBW(bool on)
         {
-            Command.Console.HighlightTextBW(on);
+            this.Command.Console.HighlightTextBW(on);
         }
 
-        public static void Line(string stringToOutput)
+        public void Line(string stringToOutput)
         {
-            Command.Console.WriteLine(stringToOutput);
-            Command.Console.WriteLine();
+            this.Command.Console.WriteLine(stringToOutput);
+            this.Command.Console.WriteLine();
         }
 
-        public static void DebugLine(string stringToOutput)
+        public void DebugLine(string stringToOutput)
         {
             if (Constants.DEBUG_MODE)
             {
-                Command.Console.WriteLine(stringToOutput);
+                this.Command.Console.WriteLine(stringToOutput);
             }
         }
 
-        public static void Resource(string text)
+        public void Resource(string text)
         {
-            Command.Console.WriteLine(StarTrekKGSettings.GetText(text) + " ");
+            this.Command.Console.WriteLine(StarTrekKGSettings.GetText(text) + " ");
         }
 
-        public static void ResourceLine(string text)
+        public void ResourceLine(string text)
         {
-            Command.Console.WriteLine(StarTrekKGSettings.GetText(text));
-            Command.Console.WriteLine();
+            this.Command.Console.WriteLine(StarTrekKGSettings.GetText(text));
+            this.Command.Console.WriteLine();
         }
 
-        public static void ResourceSingleLine(string text)
+        public void ResourceSingleLine(string text)
         {
-            Command.Console.WriteLine(StarTrekKGSettings.GetText(text));
+            this.Command.Console.WriteLine(StarTrekKGSettings.GetText(text));
         }
 
-        public static void ResourceLine(string prependText, string text)
+        public void ResourceLine(string prependText, string text)
         {
-            Command.Console.WriteLine(prependText + " " + StarTrekKGSettings.GetText(text));
-            Command.Console.WriteLine();
+            this.Command.Console.WriteLine(prependText + " " + StarTrekKGSettings.GetText(text));
+            this.Command.Console.WriteLine();
         }
 
-        public static void SingleLine(string stringToOutput)
+        public void SingleLine(string stringToOutput)
         {
-            Command.Console.WriteLine(stringToOutput);
+            this.Command.Console.WriteLine(stringToOutput);
         }
 
-        public static void WithNoEndCR(string stringToOutput)
+        public void WithNoEndCR(string stringToOutput)
         {
-            Command.Console.Write(stringToOutput);
+            this.Command.Console.Write(stringToOutput);
         }
 
-        public static void DisplayPropertiesOf(object @object)
+        public void DisplayPropertiesOf(object @object)
         {
             if (@object != null)
             {
                 var objectPropInfos = @object.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
                 foreach (PropertyInfo prop in objectPropInfos)
                 {
-                    Command.Console.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
+                    this.Command.Console.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
                 }
             }
 

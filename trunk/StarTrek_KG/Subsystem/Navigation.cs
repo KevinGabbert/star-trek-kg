@@ -5,11 +5,12 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Navigation : SubSystem_Base, IMap
+    public class Navigation : SubSystem_Base, IMap, ICommand, IWrite, IDraw
     {
         #region Properties
 
@@ -21,23 +22,34 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Navigation(Map map, Ship shipConnectedTo)
+        public Navigation(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+            this.Draw = draw;
+
+            this.Initialize();
+
+            if (this.Draw == null)
+            {
+                throw new GameException("Property Draw is not set for: " + this.Type);
+            }
+
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.Navigation;
 
-            this.Warp = new Warp();
-            this.Movement = new Movement(map, shipConnectedTo);
+            this.Warp = new Warp(write, command);
+            this.Movement = new Movement(map, shipConnectedTo, draw, write, command);
         }
 
         public override void OutputDamagedMessage()
         {
-            Output.Write.Line(StarTrekKGSettings.GetSetting<string>("WarpEnginesDamaged"));
+            this.Write.Line(StarTrekKGSettings.GetSetting<string>("WarpEnginesDamaged"));
         }
         public override void OutputRepairedMessage()
         {
-            Output.Write.Line(StarTrekKGSettings.GetSetting<string>("WarpEnginesRepaired"));
+            this.Write.Line(StarTrekKGSettings.GetSetting<string>("WarpEnginesRepaired"));
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -47,7 +59,7 @@ namespace StarTrek_KG.Subsystem
         private void SetMaxWarpFactor()
         {
             this.MaxWarpFactor = (int)(0.2 + (Utility.Utility.Random).Next(9)); //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
-            Output.Write.Line(string.Format(StarTrekKGSettings.GetSetting<string>("MaxWarpFactorMessage"), this.MaxWarpFactor));
+            this.Write.Line(string.Format(StarTrekKGSettings.GetSetting<string>("MaxWarpFactorMessage"), this.MaxWarpFactor));
         }
 
         public override void Controls(string command)
@@ -106,12 +118,12 @@ namespace StarTrek_KG.Subsystem
         //todo: move to Game() object
         private void SuccessfulDockWithStarbase()
         {
-            Output.Write.ResourceLine("DockingMessageLowerShields");
+            this.Write.ResourceLine("DockingMessageLowerShields");
             Shields.For(this.ShipConnectedTo).Damage = 0;
 
             this.ShipConnectedTo.RepairEverything();
 
-            Output.Write.ResourceLine(StarTrekKGSettings.GetSetting<string>("PlayerShip"), "SuccessfullDock");
+            this.Write.ResourceLine(StarTrekKGSettings.GetSetting<string>("PlayerShip"), "SuccessfullDock");
         }
 
         //todo: move to Game() object
@@ -123,7 +135,7 @@ namespace StarTrek_KG.Subsystem
 
             if (baddiesHangingAround && stillInThisQuadrant)
             {
-                Game.ALLHostilesAttack(this.Map);
+                (new Game(this.Draw, false)).ALLHostilesAttack(this.Map);
             }
             else
             {
@@ -138,13 +150,13 @@ namespace StarTrek_KG.Subsystem
             double quadX;
             double quadY;
 
-            Output.Write.Line(string.Format("Your Ship" + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
+            this.Write.Line(string.Format("Your Ship" + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
 
             if (!Command.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantX"), out quadX)
                 || quadX < (Constants.QUADRANT_MIN + 1) 
                 || quadX > Constants.QUADRANT_MAX)
                 {
-                    Output.Write.Line(StarTrekKGSettings.GetSetting<string>("InvalidXCoordinate"));
+                    this.Write.Line(StarTrekKGSettings.GetSetting<string>("InvalidXCoordinate"));
                     return;
                 }
 
@@ -152,21 +164,21 @@ namespace StarTrek_KG.Subsystem
                 || quadY < (Constants.QUADRANT_MIN + 1) 
                 || quadY > Constants.QUADRANT_MAX)
                 {
-                    Output.Write.Line(StarTrekKGSettings.GetSetting<string>("InvalidYCoordinate"));
+                    this.Write.Line(StarTrekKGSettings.GetSetting<string>("InvalidYCoordinate"));
                     return;
                 }
 
-            Output.Write.Line("");
+            this.Write.Line("");
             var qx = ((int)(quadX)) - 1;
             var qy = ((int)(quadY)) - 1;
             if (qx == thisShip.Quadrant.X && qy == thisShip.Quadrant.Y)
             {
-                Output.Write.Line(StarTrekKGSettings.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
+                this.Write.Line(StarTrekKGSettings.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 
-            Output.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
-            Output.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+            this.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+            this.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
         }
 
         public new static Navigation For(Ship ship)

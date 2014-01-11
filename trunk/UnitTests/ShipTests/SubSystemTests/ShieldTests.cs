@@ -1,17 +1,15 @@
 ﻿using Moq;
 using NUnit.Framework;
 using StarTrek_KG;
-using StarTrek_KG.Config;
-using StarTrek_KG.Enums;
-using StarTrek_KG.Playfield;
-using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
     public class ShieldTests
     {
+        private readonly Test_Setup _setup = new Test_Setup();
         private Shields _testShields;
 
        [SetUp]
@@ -19,22 +17,9 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             TestRunner.GetTestConstants();
 
-           var map = new Map(new GameConfig
-                                 {
-                                     Initialize = true,
+           _setup.SetupMapWith1Hostile();
 
-                                     SectorDefs = new SectorDefs
-                                                      {
-                                                          new SectorDef(
-                                                              new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)),
-                                                              SectorItem.Friendly),
-                                                          new SectorDef(
-                                                              new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)),
-                                                              SectorItem.Hostile),
-                                                      }
-                                 });
-
-            _testShields = new Shields(map, map.Playership);  
+           _testShields = new Shields(_setup.TestMap, _setup.TestMap.Playership, _setup.Write, _setup.Command);  
         }
 
         [TearDown]
@@ -49,13 +34,8 @@ namespace UnitTests.ShipTests.SubSystemTests
 
         public void TestPhaserHit()
         {
-            
-
-
 
         }
-
-
 
         [Test]
         public void ControlsDamaged()
@@ -77,16 +57,9 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void ControlsSUB()
         {
-            var mockedShields = new Mock<Shields>(new Map(new GameConfig
-            {
-                Initialize = true,
-                
-                SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
-                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
-                            }
-            })); 
+            _setup.SetupMapWith1Hostile();
+
+            var mockedShields = new Mock<Shields>(_setup.TestMap); 
 
             Assert.AreEqual(0, mockedShields.Object.Energy);
 

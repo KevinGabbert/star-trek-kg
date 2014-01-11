@@ -6,10 +6,8 @@ using UnitTests.ShipTests.Test_Harness_Objects;
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
-    public class NavigationTests
+    public class NavigationTests: TestClass_Base
     {
-        private readonly Test_Setup _setup = new Test_Setup();
-
         [SetUp]
         public void Setup()
         {
@@ -17,7 +15,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _setup.SetupMapWith1Hostile();
 
-            _setup.TestNavigation = new Navigation(_setup.TestMap, _setup.TestMap.Playership); 
+            _setup.TestNavigation = new Navigation(_setup.TestMap, _setup.TestMap.Playership, this.Draw, this.Write, this.Command); 
         }
 
 

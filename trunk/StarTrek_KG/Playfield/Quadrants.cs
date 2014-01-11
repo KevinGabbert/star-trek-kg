@@ -5,23 +5,30 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Quadrants: List<Quadrant>
+    public class Quadrants: List<Quadrant>, ICommand, IWrite
     {
         #region Properties
 
             public Map Map { get; set; }
 
-        /// <summary>
-        /// Movement.Execute and Map.SetupPlayership are the only places this is set
-        /// </summary>
+            public Command Command { get; set; }
+            public Write Write { get; set; }
+
+            /// <summary>
+            /// Movement.Execute and Map.SetupPlayership are the only places this is set
+            /// </summary>
 
         #endregion
 
-        public Quadrants(Map map)
+        public Quadrants(Map map, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+
             this.Map = map;
         }
 
@@ -70,7 +77,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                Output.Write.Line("There are no Hostile ships in this quadrant.");
+                (new Write()).Line("There are no Hostile ships in this quadrant.");
                 return true;
             }
             return false;
@@ -180,7 +187,7 @@ namespace StarTrek_KG.Playfield
 
             this.RemoveShip(shipToRemove.Name);
 
-            Output.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed")));
+            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed")));
         }
 
         //private static void DeleteShip(IShip shipToRemove, Map map)

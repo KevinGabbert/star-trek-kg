@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Extensions;
+using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
@@ -13,10 +12,21 @@ namespace StarTrek_KG.Subsystem
 {
     //todo: this functionality is currently broken
     //todo: fix hostiles and starbases and stars to test fully
-    public class LongRangeScan : SubSystem_Base, IMap
+    public class LongRangeScan : SubSystem_Base, IMap, ICommand, IWrite, IDraw
     {
-        public LongRangeScan(Map map, Ship shipConnectedTo)
+        public LongRangeScan(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+            this.Draw = draw;
+
+            this.Initialize();
+
+            if (this.Draw == null)
+            {
+                throw new GameException("Property Draw is not set for: " + this.Type);
+            }
+
             this.ShipConnectedTo = shipConnectedTo;
             this.Map = map;
             this.Type = SubsystemType.LongRangeScan;
@@ -24,12 +34,12 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            Output.Write.Resource("LRSDamaged");
-            Output.Write.Resource("RepairsUnderway");
+            this.Write.Resource("LRSDamaged");
+            this.Write.Resource("RepairsUnderway");
         }
         public override void OutputRepairedMessage()
         {
-            Output.Write.Line("Long range scanner has been repaired.");
+            this.Write.Line("Long range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -47,13 +57,13 @@ namespace StarTrek_KG.Subsystem
 
             var myLocation = this.ShipConnectedTo.GetLocation();
 
-            Output.Write.SingleLine("-------------------");
+            this.Write.SingleLine("-------------------");
 
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
             {
                 for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
                 {
-                    Output.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER + " ");
+                    this.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER + " ");
 
                     var renderingMyLocation = myLocation.Quadrant.X == quadrantX && myLocation.Quadrant.Y == quadrantY;
 
@@ -65,19 +75,19 @@ namespace StarTrek_KG.Subsystem
                     if (!OutOfBounds(quadrantY, quadrantX))
                     {
                         Coordinate quadrantToScan = SetQuadrantToScan(quadrantY, quadrantX, myLocation);
-                        LongRangeScan.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+                        this.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
                     }
 
-                    Draw.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                    this.Draw.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
                     Write.WithNoEndCR(" ");
                 }
 
-                Output.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
-                Output.Write.SingleLine("-------------------");
+                this.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
+                this.Write.SingleLine("-------------------");
             }
         }
 
-        private static bool OutOfBounds(int quadrantY, int quadrantX)
+        private bool OutOfBounds(int quadrantY, int quadrantX)
         {
             return quadrantX < 0 || quadrantY < 0 || quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX;
         }
@@ -121,7 +131,7 @@ namespace StarTrek_KG.Subsystem
             return quadrantToScan;
         }
 
-        public static int GetMapInfoForScanner(Map map, Coordinate quadrant,
+        public int GetMapInfoForScanner(Map map, Coordinate quadrant,
                                                         out int hostileCount,
                                                         out int starbaseCount,
                                                         out int starCount)
@@ -158,7 +168,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                Output.Write.Line("Ship not set up (LongRangeScan)."); //todo: reflect the name and refactor this to ISubsystem
+                throw new GameConfigException("Ship not set up (LongRangeScan)."); //todo: reflect the name and refactor this to ISubsystem
                 return null;
             }
 

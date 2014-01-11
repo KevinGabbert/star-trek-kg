@@ -1,11 +1,33 @@
 ﻿using System;
+using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Actors
 {
-    public class Warp
+    public class Warp: ICommand, IWrite
     {
+        public Command Command { get; set; } 
+        public Write Write { get; set; }     
+
+        public Warp(Write output, Command command)
+        {
+            this.Write = output;
+            this.Command = command;
+
+            if (this.Write == null)
+            {
+                throw new GameException("Property Write is not set for Warp. ");
+            }
+
+            if (this.Command == null)
+            {
+                throw new GameException("Property Command is not set for Warp. ");
+            }
+        }
+
         /// <summary>
         /// Checks for energy required.  Subracts energy required for warp.
         /// </summary>
@@ -22,7 +44,7 @@ namespace StarTrek_KG.Actors
             var energyRequired = (int)distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
-                Output.Write.Line("Insufficient energy to travel that speed.");
+                this.Write.Line("Insufficient energy to travel that speed.");
                 returnVal = false;
             }
             else
@@ -31,17 +53,17 @@ namespace StarTrek_KG.Actors
                 returnVal = true;
             }
 
-            Output.Write.Line("");
+            this.Write.Line("");
 
             return returnVal;
         }
         public bool InvalidWarpFactorCheck(double maxWarpFactor, out double distance)
         {
-            if (!Command.PromptUser(String.Format("Enter warp factor (0.1--{0}): ", maxWarpFactor), out distance)
+            if (!this.Command.PromptUser(String.Format("Enter warp factor (0.1--{0}): ", maxWarpFactor), out distance)
                 || distance < 0.1 
                 || distance > maxWarpFactor)
             {
-                Output.Write.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
+                this.Write.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
                 return true;
             }
             return false;

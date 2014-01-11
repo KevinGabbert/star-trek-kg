@@ -6,13 +6,14 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
     //todo: make feature where opposing ships can hack into your computer (and you, theirs) if shields are down
-    public class Computer : SubSystem_Base
+    public class Computer : SubSystem_Base, ICommand, IWrite, IDraw
     {
         public static readonly string[] CONTROL_PANEL = {
                                                     "--- > Main Computer --------------",
@@ -23,8 +24,19 @@ namespace StarTrek_KG.Subsystem
                                                     "nav = Navigation Calculator"
                                                 };
 
-        public Computer(Map map, Ship shipConnectedTo)
+        public Computer(Map map, Ship shipConnectedTo, Draw draw, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+            this.Draw = draw;
+
+            this.Initialize();
+
+            if (this.Draw == null)
+            {
+                throw new GameException("Property Draw is not set for: " + this.Type);
+            }
+
             this.Map = map;
             this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Computer;
@@ -130,7 +142,7 @@ namespace StarTrek_KG.Subsystem
             {
                 for (var quadrantUB = 0; quadrantUB < Constants.QUADRANT_MAX; quadrantUB++)
                 {
-                    Output.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER);
+                    this.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER);
                     int starbaseCount = -1;
                     int starCount = -1;
                     int hostileCount = -1;
@@ -153,7 +165,7 @@ namespace StarTrek_KG.Subsystem
                     Draw.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
                 }
 
-                Output.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
+                this.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
                 Write.ResourceSingleLine("GalacticRecordLine");
             }
 

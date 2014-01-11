@@ -7,15 +7,19 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Map
+    public class Map : ICommand, IWrite
     {
         #region Properties
+
+            public Command Command { get; set; }
+            public Write Write { get; set; }
 
             public Quadrants Quadrants { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
@@ -35,8 +39,11 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(GameConfig setupOptions)
+        public Map(GameConfig setupOptions, Write write, Command command)
         {
+            this.Write = write;
+            this.Command = command;
+
             this.Initialize(setupOptions);
         }
 
@@ -71,7 +78,7 @@ namespace StarTrek_KG.Playfield
             //This list should match baddie type that is created
             List<string> quadrantNames = StarTrekKGSettings.GetStarSystems();
 
-            Output.Write.DebugLine("Got Starsystems");
+            this.Write.DebugLine("Got Starsystems");
 
             //TODO: if there are less than 64 quadrant names then there will be problems..
 
@@ -79,14 +86,14 @@ namespace StarTrek_KG.Playfield
 
             var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
 
-            Output.Write.DebugLine("Got Baddies");
+            this.Write.DebugLine("Got Baddies");
 
             var baddieNames = new Stack<string>(klingonShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
             this.InitializeQuadrantsWithBaddies(names, baddieNames, sectorDefs);
 
-            Output.Write.DebugLine("Intialized quadrants with Baddies");
+            this.Write.DebugLine("Intialized quadrants with Baddies");
 
             if (sectorDefs != null)
             {
@@ -98,9 +105,9 @@ namespace StarTrek_KG.Playfield
             {
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
-                Output.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
-                Output.Write.Line(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
-                Output.Write.Line("");
+                this.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
+                this.Write.Line(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
+                this.Write.Line("");
             }
         }
 
@@ -138,12 +145,12 @@ namespace StarTrek_KG.Playfield
         //Creates a 2D array of quadrants.  This is how all of our game pieces will be moving around.
         public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs)
         {
-            this.Quadrants = new Quadrants(this);
+            this.Quadrants = new Quadrants(this, this.Write, this.Command);
 
             //Friendlies are added separately
             List<Sector> itemsToPopulateThatAreNotFriendlies = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.Friendly).ToList();
 
-            Output.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotFriendlies.Count + " Quadrants: " + this.Quadrants.Count);
+            this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotFriendlies.Count + " Quadrants: " + this.Quadrants.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
             this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulateThatAreNotFriendlies);
@@ -161,7 +168,7 @@ namespace StarTrek_KG.Playfield
                 for (var quadrantY = 0; quadrantY < Constants.QUADRANT_MAX; quadrantY++)
                 {
                     int index;
-                    var newQuadrant = new Quadrant();
+                    var newQuadrant = new Quadrant(this.Write, this.Command);
                     var quadrantXY = new Coordinate(quadrantX, quadrantY);
 
                     newQuadrant.Create(this, names, baddieNames, quadrantXY, out index, itemsToPopulate,
@@ -170,13 +177,13 @@ namespace StarTrek_KG.Playfield
 
                     if (Constants.DEBUG_MODE)
                     {
-                        Output.Write.SingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
+                        this.Write.SingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
 
-                        Output.Write.DisplayPropertiesOf(newQuadrant);
+                        this.Write.DisplayPropertiesOf(newQuadrant);
 
                         //TODO: each object within quadrant needs a .ToString()
 
-                        Output.Write.Line("");
+                        this.Write.Line("");
                     }
                 }
             }
@@ -187,27 +194,27 @@ namespace StarTrek_KG.Playfield
             throw new NotImplementedException();
         }
 
-        public static IEnumerable<Sector> AddStars(Quadrant quadrant, int totalStarsInQuadrant)
+        public IEnumerable<Sector> AddStars(Quadrant quadrant, int totalStarsInQuadrant)
         {
             Utility.Utility.ResetGreekLetterStack();
 
-            Map.CreateStar(quadrant, totalStarsInQuadrant);
+            this.CreateStar(quadrant, totalStarsInQuadrant);
 
             return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
         }
 
-        public static Sector AddStar(Quadrant quadrant)
+        public Sector AddStar(Quadrant quadrant)
         {
             Utility.Utility.ResetGreekLetterStack();
 
             const int totalStarsInQuadrant = 1;
 
-            var currentStarName = Map.CreateStar(quadrant, totalStarsInQuadrant);
+            var currentStarName = this.CreateStar(quadrant, totalStarsInQuadrant);
 
             return quadrant.Sectors.Single(s => s.Item == SectorItem.Star && ((Star)s.Object).Name == currentStarName);
         }
 
-        private static string CreateStar(Quadrant quadrant, int totalStarsInQuadrant)
+        private string CreateStar(Quadrant quadrant, int totalStarsInQuadrant)
         {
             string currentStarName = "";
 
@@ -254,7 +261,7 @@ namespace StarTrek_KG.Playfield
                             //Assuming we are using the greek alphabet for star names, we don't want to create a lockup.
                             if(counter > 25)
                             {
-                               Output.Write.Line("Too Many Stars.  Sorry.  Not gonna create more.");
+                               this.Write.Line("Too Many Stars.  Sorry.  Not gonna create more.");
                                foundStarName = true;
                             }
                         }
@@ -289,16 +296,16 @@ namespace StarTrek_KG.Playfield
 
             this.Text = StarTrekKGSettings.GetSetting<string>("CommandPrompt");
 
-            Output.Write.DebugLine("HostilesToSetUp: " + hostilesToSetUp);
-            Output.Write.DebugLine("Stardate: " + Stardate);
-            Output.Write.DebugLine("timeRemaining: " + hostilesToSetUp);
-            Output.Write.DebugLine("starbases: " + hostilesToSetUp);
+            this.Write.DebugLine("HostilesToSetUp: " + hostilesToSetUp);
+            this.Write.DebugLine("Stardate: " + Stardate);
+            this.Write.DebugLine("timeRemaining: " + hostilesToSetUp);
+            this.Write.DebugLine("starbases: " + hostilesToSetUp);
         }
 
         //refactor these to a setup object
         private void SetUpPlayerShip(SectorDef playerShipDef)
         {
-            Output.Write.DebugLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
+            this.Write.DebugLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
             if (this.Quadrants == null)
@@ -312,7 +319,7 @@ namespace StarTrek_KG.Playfield
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
-            this.Playership = new Ship(playerShipName, this, startingSector)
+            this.Playership = new Ship(playerShipName, this, startingSector, this.Write, this.Command)
                                   {
                                       Allegiance = Allegiance.GoodGuy
                                   };
@@ -487,7 +494,7 @@ namespace StarTrek_KG.Playfield
             map.Quadrants.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
         }
 
-        public static void RemoveTargetFromSector(Map map, IShip ship)
+        public void RemoveTargetFromSector(Map map, IShip ship)
         {
             map.Quadrants.Remove(ship, map);
         }
@@ -517,16 +524,16 @@ namespace StarTrek_KG.Playfield
             {
                 foreach (var starbase in starbasesInSector)
                 {
-                    Output.Write.Line("-----------------");
-                    Output.Write.Line(string.Format("Starbase in sector [{0},{1}].", (starbase.X + 1), (starbase.Y + 1)));
+                    this.Write.Line("-----------------");
+                    this.Write.Line(string.Format("Starbase in sector [{0},{1}].", (starbase.X + 1), (starbase.Y + 1)));
 
-                    Output.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y)));
-                    Output.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y) / Constants.SECTOR_MAX));
+                    this.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y)));
+                    this.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y) / Constants.SECTOR_MAX));
                 }
             }
             else
             {
-                Output.Write.Line("There are no starbases in this quadrant.");
+                this.Write.Line("There are no starbases in this quadrant.");
             }
         }
 
@@ -534,7 +541,7 @@ namespace StarTrek_KG.Playfield
         /// Removes all friendlies fromevery sector in the entire map.
         /// </summary>
         /// <param name="map"></param>
-        public static void RemoveAllFriendlies(Map map)
+        public void RemoveAllFriendlies(Map map)
         {
             var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
 
@@ -548,7 +555,7 @@ namespace StarTrek_KG.Playfield
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        public static void SetFriendly(Map map)
+        public void SetFriendly(Map map)
         {
             //zip through all sectors in all quadrants.  remove any friendlies
 
@@ -556,7 +563,7 @@ namespace StarTrek_KG.Playfield
             //to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
             //to have multiple friendlies, as is the eventual plan.
 
-            Map.RemoveAllFriendlies(map);
+            this.RemoveAllFriendlies(map);
 
             var activeQuadrant = map.Quadrants.GetActive();
 
