@@ -23,6 +23,7 @@ namespace StarTrek_KG.Subsystem
             public SubsystemType Type { get; set; }
 
             public Write Write { get; set; }
+            public Game Game { get; set; }
 
         #endregion
 
