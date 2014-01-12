@@ -13,6 +13,7 @@ namespace StarTrek_KG.Actors
     //TODO: ship.Energy not decrementing after being hit
     public class Ship : ISystem, IShip, IWrite
     {
+        //todo: needs access to quadrants and utility and game for subsystem FOR mnemonic to work for DI
         #region Properties
 
             //todo: (maybe) create function GetQuadrant() to replace this (will query map.quadrants for ship)

@@ -31,6 +31,28 @@ namespace UnitTests.ShipTests.SubSystemTests
         }
 
         [Test]
+        public void PhaserFireSubtractsEnergyFromShip2()
+        {
+            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
+
+            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); ;
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
+
+            const double testBoltEnergy = 89.6829;
+
+            var game = new Game(false);
+            game.Write = this.Write;
+
+            var phasers = new Phasers(_setup.TestMap.Playership, game);
+
+            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            phasers.Fire(testBoltEnergy, _setup.TestMap.Playership);
+
+            //Verifies energy subtracted from firing ship.
+            Assert.AreEqual(startingEnergy - testBoltEnergy, _setup.TestMap.Playership.Energy);
+        }
+
+        [Test]
         public void PhaserFireSubtractsEnergyFromShip()
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2,1));

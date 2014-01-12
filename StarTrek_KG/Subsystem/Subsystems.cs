@@ -15,6 +15,8 @@ namespace StarTrek_KG.Subsystem
             // TODO: Complete member initialization
 
             var write = new Write(map);
+            var game = new Game(false);
+            game.Write = write;
 
             this.AddRange(new List<ISubsystem>(){
                                      new Debug(map, shipConnectedTo, write),
@@ -24,7 +26,9 @@ namespace StarTrek_KG.Subsystem
                                      new ShortRangeScan(map, shipConnectedTo, write),
                                      new LongRangeScan(map, shipConnectedTo, write),
                                      new Torpedoes(map, shipConnectedTo, write),
-                                     new Phasers(map, shipConnectedTo, write)
+
+
+                                     new Phasers(shipConnectedTo, game) //TODO: get game ref from shipCOnnectedTo
                                   });
         }
 
