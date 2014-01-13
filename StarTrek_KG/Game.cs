@@ -296,7 +296,7 @@ namespace StarTrek_KG
                     break;
 
                 case 17:
-                    AppTitleItem("RomulanBOP", 7);
+                    AppTitleItem("RomulanBOP", 8);
                     break;
 
                 default:
