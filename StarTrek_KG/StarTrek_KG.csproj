@@ -119,6 +119,7 @@
     <Compile Include="Subsystem\SubSystem_Base.cs" />
     <Compile Include="Subsystem\Torpedoes.cs" />
     <Compile Include="Actors\System.cs" />
+    <Compile Include="Utility\MelodyPlayer.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Actors\Warp.cs" />
   </ItemGroup>
