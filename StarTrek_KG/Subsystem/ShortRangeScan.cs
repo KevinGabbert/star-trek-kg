@@ -10,7 +10,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class ShortRangeScan : SubSystem_Base, IMap, IWrite
+    public class ShortRangeScan : SubSystem_Base, IWrite
     {
         public ShortRangeScan(Map map, Ship shipConnectedTo, Write write)
         {

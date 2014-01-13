@@ -10,7 +10,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Navigation : SubSystem_Base, IMap, IWrite
+    public class Navigation : SubSystem_Base, IWrite
     {
         #region Properties
 

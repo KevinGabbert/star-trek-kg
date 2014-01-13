@@ -10,7 +10,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Torpedoes : SubSystem_Base, IMap, IWrite
+    public class Torpedoes : SubSystem_Base, IWrite
     {
         #region Properties
 
@@ -18,14 +18,14 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Map map, Ship shipConnectedTo, Write write)
+        public Torpedoes(Ship shipConnectedTo Game game)
         {
             this.Write = write;
 
             this.Initialize();
 
             this.ShipConnectedTo = shipConnectedTo;
-            this.Map = map;
+            this.Game = Game;
             this.Type = SubsystemType.Torpedoes;
         }
 
@@ -53,7 +53,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Quadrants(this.Map, this.Write)).NoHostiles(this.Map.Quadrants.GetHostiles())) return;
+                (new Quadrants(this.Game.Map, this.Write)).NoHostiles(this.Game.Map.Quadrants.GetHostiles())) return;
 
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
