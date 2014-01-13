@@ -6,6 +6,5 @@ namespace StarTrek_KG.Interfaces
     {
         double Energy { get; set; }
         bool Destroyed { get; set; }
-        Map Map { get; set; }
     }
 }

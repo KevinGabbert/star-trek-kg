@@ -51,7 +51,7 @@ namespace StarTrek_KG.Subsystem
                 Phasers.For(this.ShipConnectedTo).Execute(energyToFire);
 
                 //todo: move to Game() object
-                this.Game.ALLHostilesAttack(this.ShipConnectedTo.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
+                this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
             }
             else
             {
@@ -65,7 +65,7 @@ namespace StarTrek_KG.Subsystem
             if (this.Damaged()) return;
 
             //todo:  this doesn't *work* too well as a feature of *quadrants*, but rather, of Ship?
-            if ((new Quadrants(this.ShipConnectedTo.Map, this.Game.Write)).NoHostiles(this.ShipConnectedTo.Map.Quadrants.GetActive().GetHostiles()))
+            if ((new Quadrants(this.Game.Map, this.Game.Write)).NoHostiles(this.ShipConnectedTo.Map.Quadrants.GetActive().GetHostiles()))
             {
                 return;
             }
@@ -91,9 +91,9 @@ namespace StarTrek_KG.Subsystem
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
             var destroyedShips = new List<IShip>();
-            foreach (var badGuyShip in this.ShipConnectedTo.Map.Quadrants.GetActive().GetHostiles())
+            foreach (var badGuyShip in this.Game.Map.Quadrants.GetActive().GetHostiles())
             {
-                Location location = this.ShipConnectedTo.Map.Playership.GetLocation();
+                Location location = this.Game.Map.Playership.GetLocation();
 
                 double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
 
@@ -102,12 +102,12 @@ namespace StarTrek_KG.Subsystem
                 this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
 
-            this.ShipConnectedTo.Map.RemoveAllDestroyedShips(this.ShipConnectedTo.Map, destroyedShips);//remove from Hostiles collection
+            this.Map.RemoveAllDestroyedShips(this.Game.Map, destroyedShips);//remove from Hostiles collection
         }
 
         private bool PromptUserForPhaserEnergy(out double phaserEnergy)
         {
-            return this.Game.Write.PromptUser(String.Format("Enter phaser energy (1--{0}): ", this.ShipConnectedTo.Map.Playership.Energy), out phaserEnergy);
+            return this.Game.Write.PromptUser(String.Format("Enter phaser energy (1--{0}): ", this.Game.Map.Playership.Energy), out phaserEnergy);
         }
 
         //todo: move to Utility() object

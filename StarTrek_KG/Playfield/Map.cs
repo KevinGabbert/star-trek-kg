@@ -14,11 +14,9 @@ using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Map : IWrite
+    public class Map
     {
         #region Properties
-
-            public Write Write { get; set; }
 
             public Quadrants Quadrants { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
@@ -28,6 +26,7 @@ namespace StarTrek_KG.Playfield
             public int timeRemaining { get; set; }
             public int starbases { get; set; }
             public string Text { get; set; }
+            public Write Write { get; set; }
 
         #endregion
 
@@ -165,7 +164,7 @@ namespace StarTrek_KG.Playfield
                 for (var quadrantY = 0; quadrantY < Constants.QUADRANT_MAX; quadrantY++)
                 {
                     int index;
-                    var newQuadrant = new Quadrant(this.Write);
+                    var newQuadrant = new Quadrant(this);
                     var quadrantXY = new Coordinate(quadrantX, quadrantY);
 
                     newQuadrant.Create(this, names, baddieNames, quadrantXY, out index, itemsToPopulate,
@@ -189,90 +188,6 @@ namespace StarTrek_KG.Playfield
         private IEnumerable<Sector> AddStarbases()
         {
             throw new NotImplementedException();
-        }
-
-        public IEnumerable<Sector> AddStars(Quadrant quadrant, int totalStarsInQuadrant)
-        {
-            Utility.Utility.ResetGreekLetterStack();
-
-            this.CreateStar(quadrant, totalStarsInQuadrant);
-
-            return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
-        }
-
-        public Sector AddStar(Quadrant quadrant)
-        {
-            Utility.Utility.ResetGreekLetterStack();
-
-            const int totalStarsInQuadrant = 1;
-
-            var currentStarName = this.CreateStar(quadrant, totalStarsInQuadrant);
-
-            return quadrant.Sectors.Single(s => s.Item == SectorItem.Star && ((Star)s.Object).Name == currentStarName);
-        }
-
-        private string CreateStar(Quadrant quadrant, int totalStarsInQuadrant)
-        {
-            string currentStarName = "";
-
-            while (totalStarsInQuadrant > 0)
-            {
-                var x = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
-                var y = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
-
-                //todo: just pass in coordinate and get its item
-                var sector = quadrant.Sectors.Single(s => s.X == x && s.Y == y);
-                var sectorEmpty = sector.Item == SectorItem.Empty;
-
-                if (sectorEmpty)
-                {
-                    if (totalStarsInQuadrant > 0)
-                    {
-                        var newStar = new Star();
-                        bool foundStarName = false;
-
-                        int counter = 0;
-                        while (!foundStarName)
-                        {
-                            //There's a practical max of 9 stars before LRS is broken, so we shouldn't see this while happening more than 9 times for a new star
-                            //unless one is adding stars via debug mode..
-                            counter++;
-                            var newNameLetter = Utility.Utility.RandomGreekLetter.Pop();
-
-                            var starsInQuadrant = quadrant.Sectors.Where( s => s.Object != null && s.Object.Type.Name == "Star").ToList();
-                            var allStarsDontHaveNewDesignation = starsInQuadrant.All(s => ((Star) s.Object).Designation != newNameLetter);
-
-                            if (allStarsDontHaveNewDesignation)
-                            {
-                                foundStarName = true;
-
-                                if(quadrant.Name == null) //todo: why do we have null quadrant names???
-                                {
-                                    quadrant.Name = "UNKNOWN QUADRANT " + newNameLetter + " " + counter; //todo: this could get dupes
-                                }
-
-                                currentStarName = quadrant.Name.ToUpper() + " " + newNameLetter;
-
-                                newStar.Name = currentStarName;
-                                newStar.Designation = newNameLetter;
-                                sector.Item = SectorItem.Star;
-
-                                sector.Object = newStar;
-                                totalStarsInQuadrant--;
-                            }
-
-                            //Assuming we are using the greek alphabet for star names, we don't want to create a lockup.
-                            if(counter > 25)
-                            {
-                               this.Write.Line("Too Many Stars.  Sorry.  Not gonna create more.");
-                               foundStarName = true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return currentStarName;
         }
 
         //private static List<Sector> GetQuadrantObjects(int starbases, int hostilesToSetUp)
@@ -323,7 +238,7 @@ namespace StarTrek_KG.Playfield
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
-            this.Playership = new Ship(playerShipName, this, startingSector, this.Write)
+            this.Playership = new Ship(playerShipName, startingSector, this)
                                   {
                                       Allegiance = Allegiance.GoodGuy
                                   };
