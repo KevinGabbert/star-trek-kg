@@ -25,6 +25,7 @@ namespace StarTrek_KG
 
         /// <summary>
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
+            /// and some unsorted crap at the moment..
         /// </summary>
         public Game(bool startup = true)
         {
