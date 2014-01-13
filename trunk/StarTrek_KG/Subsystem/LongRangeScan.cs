@@ -12,7 +12,7 @@ namespace StarTrek_KG.Subsystem
 {
     //todo: this functionality is currently broken
     //todo: fix hostiles and starbases and stars to test fully
-    public class LongRangeScan : SubSystem_Base, IMap, IWrite
+    public class LongRangeScan : SubSystem_Base, IWrite
     {
         public LongRangeScan(Map map, Ship shipConnectedTo, Write write)
         {
@@ -21,7 +21,7 @@ namespace StarTrek_KG.Subsystem
             this.Initialize();
 
             this.ShipConnectedTo = shipConnectedTo;
-            this.Map = map;
+            this.Game.Map = map;
             this.Type = SubsystemType.LongRangeScan;
         }
 

@@ -5,7 +5,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Disruptors : SubSystem_Base, IMap
+    public class Disruptors : SubSystem_Base
     {
         //this.Initialize();
         public Disruptors(Ship shipConnectedTo)

@@ -9,7 +9,6 @@ namespace StarTrek_KG.Interfaces
     /// </summary>
     public interface ISubsystem
     {
-        Map Map { get; set; }
         int Damage { get; set; }
         double MaxTransfer { get; set; }
         int Energy { get; set; }

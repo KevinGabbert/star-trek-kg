@@ -17,7 +17,7 @@ namespace StarTrek_KG.Subsystem
 
         public Phasers(Ship shipConnectedTo, Game game)
         {
-            this.Game = game;
+            base.Game = game;
 
             //For subsystem_Base, temporarily
             this.Write = this.Game.Write; //todo: remove this when all subsystems are converted
@@ -102,7 +102,7 @@ namespace StarTrek_KG.Subsystem
                 this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
 
-            this.Map.RemoveAllDestroyedShips(this.Game.Map, destroyedShips);//remove from Hostiles collection
+            this.Game.Map.RemoveAllDestroyedShips(this.Game.Map, destroyedShips);//remove from Hostiles collection
         }
 
         private bool PromptUserForPhaserEnergy(out double phaserEnergy)
