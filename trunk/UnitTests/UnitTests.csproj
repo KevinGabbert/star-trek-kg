@@ -76,6 +76,8 @@
     <Compile Include="ShipTests\WarpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShipTests\Test Harness Objects\TestRunner.cs" />
+    <Compile Include="UtilityTests\Beep_Tests.cs" />
+    <Compile Include="UtilityTests\MelodyPlayer_Tests.cs" />
     <Compile Include="UtilityTests\UtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
