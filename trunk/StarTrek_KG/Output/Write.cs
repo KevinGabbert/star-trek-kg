@@ -205,7 +205,7 @@ namespace StarTrek_KG.Output
         //This needs to be a command method that the UI passes values into.
         //Readline is done in UI
 
-        public void Prompt(Ship playerShip, string mapText)
+        public void Prompt(Ship playerShip, string mapText, Game game)
         {
             this.Console.Write(mapText);
 

@@ -4,7 +4,6 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Utility;
@@ -12,7 +11,7 @@ using StarTrek_KG.Utility;
 namespace StarTrek_KG.Subsystem
 {
     //todo: investigate removing this base class
-    public class Debug : SubSystem_Base, IWrite //temporary, until this area gets rewritten
+    public class Debug : SubSystem_Base //temporary, until this area gets rewritten
     {
         //todo: debug should not really be a subsystem.  Debug mode should be outside of the subsystem pattern, 
         //but I wanted to slap it together in a hurry.  That would be hilarious if DebugMode can get damaged if hit by a baddie (I haven't tested that but I guess its possible!  :D)
@@ -44,14 +43,13 @@ namespace StarTrek_KG.Subsystem
                                                     "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
-        public Debug(Map map, Ship shipConnectedTo, Write write)
+        public Debug(Ship shipConnectedTo, Game game)
         {
-            this.Write = write;
+            this.Game = game;
 
             this.Initialize();
 
             this.ShipConnectedTo = shipConnectedTo;
-            this.Map = map;
             this.Type = SubsystemType.Debug; //this is required if you want this system to be able to be looked up
             this.Damage = 0;
         }
@@ -78,29 +76,29 @@ namespace StarTrek_KG.Subsystem
             {
                 case "dsrec":
                     //this.PrintGalacticRecord(this.Map.Quadrants); 
-                    this.Write.Line("full galactic record with ship position as colored text, baddies as red");
-                    this.Write.Line("Not Implemented Yet");
+                    this.Game.Write.Line("full galactic record with ship position as colored text, baddies as red");
+                    this.Game.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dsnav":
                     //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
                     //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
-                    this.Write.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
-                    this.Write.Line("Not Implemented Yet");
+                    this.Game.Write.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
+                    this.Game.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dstor":
                     //Torpedoes.For(this.ShipConnectedTo).Controls(this.Map);
                     //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
-                    this.Write.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
-                    this.Write.Line("Not Implemented Yet");
+                    this.Game.Write.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
+                    this.Game.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dqnav":
                     //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
                     //this.PrintGalacticRecord(WithNavTrack); 
-                    this.Write.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
-                    this.Write.Line("Not Implemented Yet");
+                    this.Game.Write.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
+                    this.Game.Write.Line("Not Implemented Yet");
                     break;
 
                 case "dibd":
@@ -114,33 +112,33 @@ namespace StarTrek_KG.Subsystem
 
                     var randomSector = new Sector(new LocationDef(quadX, quadY));
 
-                    var hostileShip = new Ship(testShipNames[0], randomSector, this.Map);
+                    var hostileShip = new Ship(testShipNames[0], randomSector, this.Game.Map);
 
-                    this.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+                    this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
                     //todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
-                    this.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
-                    this.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + hostileShip.Shields().Energy + " ");
+                    this.Game.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
+                    this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + hostileShip.Shields().Energy + " ");
                     break;
 
                 case "dist":
-                    var sectorWithNewStar = this.Map.Quadrants.GetActive().AddStar(this.Map.Quadrants.GetActive());
-                    this.Write.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
-                    this.Write.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
+                    var sectorWithNewStar = this.Game.Map.Quadrants.GetActive().AddStar(this.Game.Map.Quadrants.GetActive());
+                    this.Game.Write.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
+                    this.Game.Write.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
                     break;
 
                 case "dbgm":
                     Constants.DEBUG_MODE = !Constants.DEBUG_MODE;
-                    this.Write.Line("Debug Mode set to: " + Constants.DEBUG_MODE + ".  This will clear on app restart.");
+                    this.Game.Write.Line("Debug Mode set to: " + Constants.DEBUG_MODE + ".  This will clear on app restart.");
                     break;
 
                 case "dlrs":
                     LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Quadrants(Constants.DEBUG_MODE);
-                    this.Write.Line("All Quadrants set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
+                    this.Game.Write.Line("All Quadrants set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
                     break;
 
                 default:
-                    this.Write.Line("Invalid debug this.Write");
+                    this.Game.Write.Line("Invalid debug this.Write");
                     break;
             }
         }

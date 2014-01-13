@@ -18,7 +18,6 @@ namespace UnitTests.ShipTests.MovementTests
         #region Setup
 
         #region Setup variables
-        Map _testMapNoObjects;
         Movement _testMovement;
 
         Coordinate _startingQuadrant;
@@ -47,8 +46,8 @@ namespace UnitTests.ShipTests.MovementTests
             reset();
             this.ClearAllSectors();
 
-            _testMapNoObjects.Playership = null;
-            _testMapNoObjects = null;
+            this.Game.Map.Playership = null;
+            this.Game.Map = null;
             _testMovement = null;
 
             Constants.SECTOR_MIN = 0;
@@ -64,43 +63,45 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void reset()
         {
-            var x = new GameConfig
-                        {
-                            
-                            Initialize = true,
-                            
-                            SectorDefs = new SectorDefs
-                                                {
-                                                    new SectorDef(new LocationDef(new Coordinate(4, 4), new Coordinate(4, 4)), SectorItem.Friendly),
-                                                    //todo: this needs to be in a random spot
-                                                },
-                            AddStars = false
-                        };
+            this.Game.Map = (new Map(new GameConfig
+                                         {
 
-            _testMapNoObjects = new Map(x, this.Game.Write);
-            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Game.Write);
+                                             Initialize = true,
+
+                                             SectorDefs = new SectorDefs
+                                                              {
+                                                                  new SectorDef(
+                                                                      new LocationDef(new Coordinate(4, 4),
+                                                                                      new Coordinate(4, 4)),
+                                                                      SectorItem.Friendly),
+                                                                  //todo: this needs to be in a random spot
+                                                              },
+                                             AddStars = false
+                                         }, this.Game.Write));
+
+            _testMovement = new Movement(this.Game.Map.Playership, this.Game);
             _testMovement.BlockedByObstacle = false;
 
             #region "Manually set ship. todo: write test to ensure that this method works too"
             ////Moves ship to new place in map - updates map
-            //Sector.SetFriendly(_testMapNoObjects.Playership.Sector.X,
-            //                    _testMapNoObjects.Playership.Sector.Y,
-            //                    _testMapNoObjects);
+            //Sector.SetFriendly(this.Game.Map.Playership.Sector.X,
+            //                    this.Game.Map.Playership.Sector.Y,
+            //                    this.Game.Map);
 
             ////sets ship
-            //_testMapNoObjects.Playership.Coordinate.X = 4;
-            //_testMapNoObjects.Playership.Coordinate.Y = 4;
+            //this.Game.Map.Playership.Coordinate.X = 4;
+            //this.Game.Map.Playership.Coordinate.Y = 4;
 
 
-            //_testMapNoObjects.Playership.Sector.X = 4;
-            //_testMapNoObjects.Playership.Sector.Y = 4;
+            //this.Game.Map.Playership.Sector.X = 4;
+            //this.Game.Map.Playership.Sector.Y = 4;
 
             #endregion
 
-            _startingQuadrant = new Coordinate(_testMapNoObjects.Playership.QuadrantDef.X, _testMapNoObjects.Playership.QuadrantDef.Y); //random
+            _startingQuadrant = new Coordinate(this.Game.Map.Playership.QuadrantDef.X, this.Game.Map.Playership.QuadrantDef.Y); //random
 
-            _startingSectorX = _testMapNoObjects.Playership.Sector.X; //4;
-            _startingSectorY = _testMapNoObjects.Playership.Sector.Y; //4;
+            _startingSectorX = this.Game.Map.Playership.Sector.X; //4;
+            _startingSectorY = this.Game.Map.Playership.Sector.Y; //4;
 
             _lastQuadX = 0;
             _lastQuadY = 0;
@@ -119,7 +120,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(false);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X, "(c)startingQuadrantX");
             Assert.AreEqual(0, playershipQuad.Y, "(c)startingQuadrantY");
         }
@@ -133,7 +134,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(false);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X, "(c)startingQuadrantX");
             Assert.AreEqual(7, playershipQuad.Y, "(c)startingQuadrantY");
         }
@@ -147,7 +148,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(false);
 
-            var endingQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var endingQuad = this.Game.Map.Playership.GetQuadrant();
 
             Assert.AreEqual(7, endingQuad.X, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, endingQuad.Y, "(c)startingQuadrantY");
@@ -162,7 +163,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(false);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(0, playershipQuad.X, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y, "(c)startingQuadrantY");
         }
@@ -177,13 +178,13 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitObstacle()
         {
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star;
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star;
 
             this.Move_Sector(((int)NavDirection.North).ToString(), .1 * 8); 
 
             Assert.IsTrue(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Empty;
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Empty;
         }
 
         [Test]
@@ -194,8 +195,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X + 1, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X + 1, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -206,8 +207,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X + 1, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y - 1, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X + 1, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y - 1, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -218,8 +219,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y - 1, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y - 1, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -230,8 +231,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X - 1, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y - 1, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X - 1, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y - 1, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -242,8 +243,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X - 1, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X - 1, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -254,8 +255,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X - 1, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y + 1, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X - 1, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y + 1, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -266,8 +267,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y + 1, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y + 1, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -278,8 +279,8 @@ namespace UnitTests.ShipTests.MovementTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X + 1, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y + 1, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X + 1, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y + 1, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -307,20 +308,20 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void Move_Sector(string direction, double distance)
         {
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
 
             _startingQuadrant = new Coordinate(playershipQuad.X, playershipQuad.Y);
 
-            _startingSectorX = _testMapNoObjects.Playership.Sector.X;
-            _startingSectorY = _testMapNoObjects.Playership.Sector.Y;
+            _startingSectorX = this.Game.Map.Playership.Sector.X;
+            _startingSectorY = this.Game.Map.Playership.Sector.Y;
 
             //verify that the ship is where we think it is before we start
-            Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 
-                                                           _testMapNoObjects.Playership.Sector.X,
-                                                           _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 
+                                                           this.Game.Map.Playership.Sector.X,
+                                                           this.Game.Map.Playership.Sector.Y).Item);
             var sectorItem =
-                Sector.Get(_testMovement.Map.Quadrants.GetActive().Sectors, _testMovement.Map.Playership.Sector.X,
-                                                                       _testMovement.Map.Playership.Sector.Y).Item;
+                Sector.Get(_testMovement.Game.Map.Quadrants.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
+                                                                       _testMovement.Game.Map.Playership.Sector.Y).Item;
             Assert.AreEqual(SectorItem.Friendly, sectorItem);
 
             _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
@@ -337,21 +338,21 @@ namespace UnitTests.ShipTests.MovementTests
         public void MoveQuadrant_MissObstacleSouth()
         {
             //This is the star that would be hit without fix
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
             this.Move_Quadrant("7", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
             //revert for next test
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Empty;
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Empty;
         }
 
         [Test]
@@ -360,15 +361,15 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
             this.Move_Quadrant("3", 1 * 8);
 
@@ -381,15 +382,15 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
             this.Move_Quadrant("5", 1 * 8);
 
@@ -402,15 +403,15 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
             this.Move_Quadrant("1", 1 * 8);
 
@@ -423,15 +424,15 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
             this.Move_Quadrant("6", 1 * 8);
 
@@ -444,15 +445,15 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //strange.  Going this direction, you actually don't get the "obstacle error" verified by the other "missobstacle" tests
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
             
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
             this.Move_Quadrant("4", 1 * 8);
 
@@ -465,15 +466,15 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the obstacle that gets hit
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
             this.Move_Quadrant("2", 1 * 8);
 
@@ -486,15 +487,15 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //strange.  Going this direction, you actually don't get the "obstacle error" verified by the other "missobstacle" tests
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
 
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest       
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest       
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
+            Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
 
             this.Move_Quadrant("8", 1 * 8);
 
@@ -515,7 +516,7 @@ namespace UnitTests.ShipTests.MovementTests
             //todo: moving forward .1 from the previous sector pops you in the middle of the next sector
             this.CheckQuadrantsAfterMovement(true);
 
-            var newQuadrant = _testMapNoObjects.Playership.GetQuadrant();
+            var newQuadrant = this.Game.Map.Playership.GetQuadrant();
 
             Assert.AreEqual(_startingQuadrant.X, newQuadrant.X - 1, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, newQuadrant.Y, "(c)startingQuadrantY");
@@ -528,13 +529,13 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X - 1, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y - 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X + 2, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y + 2, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X + 2, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y + 2, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -544,7 +545,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y - 1, "(c)startingQuadrantY");
         }
@@ -556,15 +557,15 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
 
             //todo: why is this +- 2?
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X + 1, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y - 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X - 2, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y + 2, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X - 2, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y + 2, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -582,7 +583,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X + 1, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y, "(c)startingQuadrantY");
         }
@@ -594,13 +595,13 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X + 1, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y + 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X - 2, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y - 2, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X - 2, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y - 2, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Test]
@@ -610,7 +611,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y + 1, "(c)startingQuadrantY");
         }
@@ -622,13 +623,13 @@ namespace UnitTests.ShipTests.MovementTests
 
             this.CheckQuadrantsAfterMovement(true);
 
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
             Assert.AreEqual(_startingQuadrant.X, playershipQuad.X - 1, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, playershipQuad.Y + 1, "(c)startingQuadrantY");
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testMapNoObjects.Playership.Sector.X + 2, "_testMapNoObjects.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testMapNoObjects.Playership.Sector.Y - 2, "_testMapNoObjects.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, this.Game.Map.Playership.Sector.X + 2, "this.Game.Map.Playership.Sector.X");
+            Assert.AreEqual(_startingSectorY, this.Game.Map.Playership.Sector.Y - 2, "this.Game.Map.Playership.Sector.Y");
         }
 
         [Ignore]
@@ -659,7 +660,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void TravelAlongCourse_BugVerification()
         {
-            var testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Game.Write);
+            var testMovement = new Movement( this.Game.Map.Playership, this.Game);
 
             double x = 31.5084577259018;
             double y = 31.5084577259018;
@@ -677,7 +678,7 @@ namespace UnitTests.ShipTests.MovementTests
         //todo: this needs to be refactored into a ship setup testfixture or something.
         private void CheckBeforeMovement()
         {
-            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
+            var activeQuad = this.Game.Map.Quadrants.GetActive();
 
             Assert.AreEqual(64, activeQuad.Sectors.Count);
 
@@ -692,7 +693,7 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(1, activeQuad.Sectors.Count(s => s.Item == SectorItem.Friendly));
 
             //directly.
-            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X && s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X && s.Y == this.Game.Map.Playership.Sector.Y).Item);
 
             var x = (from Sector s in activeQuad.Sectors
                      where s.Item == SectorItem.Friendly
@@ -700,19 +701,19 @@ namespace UnitTests.ShipTests.MovementTests
 
             Assert.AreEqual(1, x);
 
-            Assert.AreEqual(_startingQuadrant.X, _testMapNoObjects.Playership.QuadrantDef.X, "startingQuadrantX");
-            Assert.AreEqual(_startingQuadrant.Y, _testMapNoObjects.Playership.QuadrantDef.Y, "startingQuadrantY");
+            Assert.AreEqual(_startingQuadrant.X, this.Game.Map.Playership.QuadrantDef.X, "startingQuadrantX");
+            Assert.AreEqual(_startingQuadrant.Y, this.Game.Map.Playership.QuadrantDef.Y, "startingQuadrantY");
 
-            Assert.AreEqual(4, _testMapNoObjects.Playership.Sector.X, "startingShipSectorX");
-            Assert.AreEqual(4, _testMapNoObjects.Playership.Sector.Y, "startingShipSectorY");
+            Assert.AreEqual(4, this.Game.Map.Playership.Sector.X, "startingShipSectorX");
+            Assert.AreEqual(4, this.Game.Map.Playership.Sector.Y, "startingShipSectorY");
         }
 
         private void CheckQuadrantsAfterMovement(bool checkForGalacticBarrierHit)
         {
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
-            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
+            var playershipQuad = this.Game.Map.Playership.GetQuadrant();
+            var activeQuad = this.Game.Map.Quadrants.GetActive();
 
-            Assert.AreEqual(64, _testMapNoObjects.Quadrants.Count); //I'd certainly hope that this hasnt changed..
+            Assert.AreEqual(64, this.Game.Map.Quadrants.Count); //I'd certainly hope that this hasnt changed..
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Blocked by Obstacle");
 
             if (checkForGalacticBarrierHit)
@@ -725,13 +726,13 @@ namespace UnitTests.ShipTests.MovementTests
 
             //ship is in active sector
             var found = Sector.Get(activeQuad.Sectors,
-                                    _testMapNoObjects.Playership.Sector.X,
-                                    _testMapNoObjects.Playership.Sector.Y);
+                                    this.Game.Map.Playership.Sector.X,
+                                    this.Game.Map.Playership.Sector.Y);
 
             Assert.IsInstanceOf<Sector>(found);
 
             //starting location is empty
-            var startingQuadrantT = Quadrants.Get(_testMapNoObjects, _startingQuadrant);
+            var startingQuadrantT = Quadrants.Get(this.Game.Map, _startingQuadrant);
             Assert.AreEqual(SectorItem.Empty, Sector.Get(startingQuadrantT.Sectors, _startingSectorX, _startingSectorY).Item);
 
             //We moved from our original quadrant, right?
@@ -741,7 +742,7 @@ namespace UnitTests.ShipTests.MovementTests
             //Friendly was set in new location
             //Playership current sector has the ship set in it 
             Assert.AreEqual(SectorItem.Friendly, Sector.Get(playershipQuad.Sectors, 
-                                                            _testMapNoObjects.Playership.Sector.X, _testMapNoObjects.Playership.Sector.Y).Item);
+                                                            this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y).Item);
 
             //is ship in expected location in new quadrant?
             ////indirectly..
@@ -750,17 +751,17 @@ namespace UnitTests.ShipTests.MovementTests
 
             //directly
             //Verifying Sector. Look up sector by playership's coordinates. see if a friendly is there.
-            Assert.AreEqual(SectorItem.Friendly, playershipQuad.Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X &&
-                                                                                                                s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, playershipQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X &&
+                                                                                                                s.Y == this.Game.Map.Playership.Sector.Y).Item);
 
             //Check Ship Quadrant against active. (this really just tests the GetActive() function - this should be a separate test as well)
-            Assert.AreEqual(_testMapNoObjects.Playership.QuadrantDef.X, activeQuad.X, "_testMapNoObjects.Playership.Quadrant.X");
-            Assert.AreEqual(_testMapNoObjects.Playership.QuadrantDef.Y, activeQuad.Y, "_testMapNoObjects.Playership.Quadrant.Y");
+            Assert.AreEqual(this.Game.Map.Playership.QuadrantDef.X, activeQuad.X, "this.Game.Map.Playership.Quadrant.X");
+            Assert.AreEqual(this.Game.Map.Playership.QuadrantDef.Y, activeQuad.Y, "this.Game.Map.Playership.Quadrant.Y");
         }
 
         private void CheckSectorsAfterMovement()
         {
-            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
+            var activeQuad = this.Game.Map.Quadrants.GetActive();
 
             Assert.AreEqual(64, activeQuad.Sectors.Count); //I'd certainly hope that this hasnt changed..
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Blocked by Obstacle");
@@ -768,7 +769,7 @@ namespace UnitTests.ShipTests.MovementTests
             //Ensure starting location is empty
 
             //indirectly
-            Assert.AreNotEqual("44", _testMapNoObjects.Playership.Sector.X + _testMapNoObjects.Playership.Sector.Y.ToString(), "startingShipSectorX");
+            Assert.AreNotEqual("44", this.Game.Map.Playership.Sector.X + this.Game.Map.Playership.Sector.Y.ToString(), "startingShipSectorX");
 
             //directly
 
@@ -779,14 +780,14 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(SectorItem.Empty, Sector.Get(activeQuad.Sectors, _startingSectorX, _startingSectorY).Item);
 
             //indirectly..
-            var found = (_testMapNoObjects.Quadrants.GetActive().Sectors.Where(s => s.Item == SectorItem.Friendly)).Count();
+            var found = (this.Game.Map.Quadrants.GetActive().Sectors.Where(s => s.Item == SectorItem.Friendly)).Count();
             Assert.AreEqual(1, found, "expected to find 1 friendly, not " + found + ".   ");
 
             //Look up sector by playership's coordinates. see if a friendly is there.
-            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == _testMapNoObjects.Playership.Sector.X &&
-                                                                                s.Y == _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, activeQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X &&
+                                                                                s.Y == this.Game.Map.Playership.Sector.Y).Item);
             //same thing.  uses sector.Get functionality to check.
-            Assert.AreEqual(SectorItem.Friendly, Sector.Get(activeQuad.Sectors, _testMapNoObjects.Playership.Sector.X, _testMapNoObjects.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.Friendly, Sector.Get(activeQuad.Sectors, this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y).Item);
 
             Assert.AreEqual(_startingQuadrant.X, _lastQuadX, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, _lastQuadY, "(c)startingQuadrantY");
@@ -794,7 +795,7 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void ClearAllSectors()
         {
-            var activeQuad = _testMapNoObjects.Quadrants.GetActive();
+            var activeQuad = this.Game.Map.Quadrants.GetActive();
 
             //Clear everything. //Remember, when a map is set up, a ship is generated in a random location, and
             for (int i = 0; i < 8; i++)

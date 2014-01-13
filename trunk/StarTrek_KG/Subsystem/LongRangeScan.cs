@@ -4,35 +4,32 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
     //todo: this functionality is currently broken
     //todo: fix hostiles and starbases and stars to test fully
-    public class LongRangeScan : SubSystem_Base, IWrite
+    public class LongRangeScan : SubSystem_Base
     {
-        public LongRangeScan(Map map, Ship shipConnectedTo, Write write)
+        public LongRangeScan(Ship shipConnectedTo, Game game)
         {
-            this.Write = write;
+            this.Game = game;
 
             this.Initialize();
 
             this.ShipConnectedTo = shipConnectedTo;
-            this.Game.Map = map;
             this.Type = SubsystemType.LongRangeScan;
         }
 
         public override void OutputDamagedMessage()
         {
-            this.Write.Resource("LRSDamaged");
-            this.Write.Resource("RepairsUnderway");
+            this.Game.Write.Resource("LRSDamaged");
+            this.Game.Write.Resource("RepairsUnderway");
         }
         public override void OutputRepairedMessage()
         {
-            this.Write.Line("Long range scanner has been repaired.");
+            this.Game.Write.Line("Long range scanner has been repaired.");
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -50,13 +47,13 @@ namespace StarTrek_KG.Subsystem
 
             var myLocation = this.ShipConnectedTo.GetLocation();
 
-            this.Write.SingleLine("-------------------");
+            this.Game.Write.SingleLine("-------------------");
 
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
             {
                 for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
                 {
-                    this.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER + " ");
+                    this.Game.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER + " ");
 
                     var renderingMyLocation = myLocation.Quadrant.X == quadrantX && myLocation.Quadrant.Y == quadrantY;
 
@@ -68,15 +65,15 @@ namespace StarTrek_KG.Subsystem
                     if (!OutOfBounds(quadrantY, quadrantX))
                     {
                         Coordinate quadrantToScan = SetQuadrantToScan(quadrantY, quadrantX, myLocation);
-                        this.GetMapInfoForScanner(this.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+                        this.GetMapInfoForScanner(this.Game.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
                     }
 
-                    this.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
-                    Write.WithNoEndCR(" ");
+                    this.Game.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                    this.Game.Write.WithNoEndCR(" ");
                 }
 
-                this.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
-                this.Write.SingleLine("-------------------");
+                this.Game.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
+                this.Game.Write.SingleLine("-------------------");
             }
         }
 
@@ -151,7 +148,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Debug_Scan_All_Quadrants(bool setScanned)
         {
-            foreach (var quadrant in this.Map.Quadrants)
+            foreach (var quadrant in this.Game.Map.Quadrants)
             {
                 quadrant.Scanned = true; 
             }

@@ -15,6 +15,12 @@ namespace UnitTests.ShipTests.SubSystemTests
         private Torpedoes _photonsToTest;
         private Quadrant _testQuadrant;
 
+        [SetUp]
+        public void Setup()
+        {
+            _photonsToTest = new Torpedoes(_setup.TestMap.Playership, this.Game);
+        }
+
         [Test]
         public void ShootTorpedoOnly()
         {
@@ -158,7 +164,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Constants.DEBUG_MODE = debugMode;
 
 
-            Assert.IsTrue(_setup.TestMap == _photonsToTest.Map);
+            Assert.IsTrue(_setup.TestMap == _photonsToTest.Game.Map);
 
             _photonsToTest.Shoot(7);
 

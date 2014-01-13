@@ -32,7 +32,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             //*************** sector not being created with new quadrant
             _testQuadrant = new Quadrant(this.Game.Map);
 
-            Assert.AreEqual(null, _testQuadrant.Map);
+            Assert.IsInstanceOf<Map>(_testQuadrant.Map);
             this.QuadrantNewAsserts();
             Assert.IsNull(_testQuadrant.Sectors);
         }
@@ -40,11 +40,12 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void NewWithMap()
         {
-            var systemNames = StarTrekKGSettings.GetStarSystems();
+            var baddieNames = new Stack<string>(StarTrekKGSettings.GetShips("Klingon"));
 
             _setup.SetupMapWith1Friendly();
 
-            _testQuadrant = new Quadrant(this.Game.Map);
+            //you need to set ItemsToPopulat
+            _testQuadrant = new Quadrant(this.Game.Map, baddieNames);
 
             //todo: make sure that map is not set up with anyting
 
@@ -72,12 +73,12 @@ namespace UnitTests.ShipTests.QuadrantTests
             var names = new Stack<string>(name);
 
             int index;
-            var newQuadrant = new Quadrant(_setup.TestMap);
-            newQuadrant.Create(new Map(null, _setup.Write), names,
+            var newQuadrant = new Quadrant(_setup.Game.Map);
+            newQuadrant.Create(_setup.Game.Map, names,
                                new Stack<string>(klingonShipNames),
                                new Coordinate(1, 1), out index, null);
 
-            Assert.IsInstanceOf(typeof(Map), _testQuadrant.Map);
+            Assert.IsInstanceOf(typeof (Map), _testQuadrant.Map);
 
             //todo: make sure that map is not set up with anyting
 

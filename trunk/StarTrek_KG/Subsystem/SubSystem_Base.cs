@@ -4,7 +4,6 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -22,9 +21,6 @@ namespace StarTrek_KG.Subsystem
             public double MaxTransfer { get; set; }
             public SubsystemType Type { get; set; }
 
-            public Write Write { get; set; }
-            public Game Game { get; set; }
-
         #endregion
 
         public abstract void OutputDamagedMessage();
@@ -33,15 +29,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Initialize()
         {   
-            if (this.Write == null)
-            {
-                throw new GameException("Property Write is not set for: " + this.Type);
-            }
 
-            if(this.Write == null)
-            {
-                throw new GameException("Property Command is not set for: " + this.Type);
-            }
         }
 
         public virtual void Controls(string command)
@@ -144,14 +132,17 @@ namespace StarTrek_KG.Subsystem
             this.Energy = transfer;
         }
 
-        public ISubsystem For(Ship ship)
+        public ISubsystem For(Ship ship, Game game)
         {
             if (ship == null)
             {
                 throw new GameConfigException("Ship not set up (ISubsystem). ");
             }
 
-            return ship.Subsystems.Single(s => s.Type == this.Type);
+            var subSystem = ship.Subsystems.Single(s => s.Type == this.Type);
+            subSystem.Game = game;
+
+            return subSystem;
         }
     }
 }

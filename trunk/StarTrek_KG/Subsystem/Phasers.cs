@@ -20,7 +20,7 @@ namespace StarTrek_KG.Subsystem
             base.Game = game;
 
             //For subsystem_Base, temporarily
-            this.Write = this.Game.Write; //todo: remove this when all subsystems are converted
+            this.Game.Write = this.Game.Write; //todo: remove this when all subsystems are converted
 
             this.Initialize();
 

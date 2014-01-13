@@ -1,6 +1,5 @@
 ﻿using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Interfaces
 {
@@ -12,10 +11,10 @@ namespace StarTrek_KG.Interfaces
         int Damage { get; set; }
         double MaxTransfer { get; set; }
         int Energy { get; set; }
-        
-        ISubsystem For(Ship ship);
+        Game Game { get; set; }
+        SubsystemType Type { get; set; }    
 
-        SubsystemType Type { get; set; }
+        ISubsystem For(Ship ship, Game game);
 
         void OutputDamagedMessage();
         void OutputRepairedMessage();
