@@ -4,18 +4,19 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
+using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
     public class Subsystems: List<ISubsystem>
     {
-
-        public Subsystems(Playfield.Map map, Ship shipConnectedTo)
+        public Subsystems(Map map, Ship shipConnectedTo)
         {
             // TODO: Complete member initialization
+            var game = new Game(false);
+            game.Map = map;
 
             var write = new Write(map);
-            var game = new Game(false);
             game.Write = write;
 
             this.AddRange(new List<ISubsystem>(){

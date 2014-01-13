@@ -49,7 +49,7 @@ namespace UnitTests.ShipTests.StarbaseTests
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 2)), SectorItem.Starbase)
                                     }
-            }, this.Write));
+            }, this.Game.Write));
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
@@ -91,7 +91,7 @@ namespace UnitTests.ShipTests.StarbaseTests
                                                            _testMapNoObjects.Playership.Sector.X,
                                                            _testMapNoObjects.Playership.Sector.Y).Item);
 
-            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Write);
+            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Game.Write);
             _testMovement.BlockedByObstacle = false;
 
             var sectorItem =

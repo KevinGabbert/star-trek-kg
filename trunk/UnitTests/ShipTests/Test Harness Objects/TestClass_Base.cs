@@ -1,4 +1,5 @@
-﻿using StarTrek_KG.Output;
+﻿using StarTrek_KG;
+using StarTrek_KG.Output;
 
 namespace UnitTests.ShipTests.Test_Harness_Objects
 {
@@ -6,12 +7,12 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
     {
         protected readonly Test_Setup _setup = new Test_Setup();
 
-        public Write Write { get; set; }
+        public Game Game { get; set; }
 
         public TestClass_Base()
         {
-            _setup.Write = new Write(_setup.TestMap);
-            this.Write = _setup.Write;
+            _setup.Game.Write = new Write(_setup.TestMap);
+            this.Game = _setup.Game;
         }
     }
 }

@@ -40,10 +40,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             const double testBoltEnergy = 89.6829;
 
-            var game = new Game(false);
-            game.Write = this.Write;
-
-            var phasers = new Phasers(_setup.TestMap.Playership, game);
+            var phasers = new Phasers(_setup.TestMap.Playership, this.Game);
 
             //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
             phasers.Fire(testBoltEnergy, _setup.TestMap.Playership);

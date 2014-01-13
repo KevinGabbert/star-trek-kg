@@ -11,7 +11,7 @@ using StarTrek_KG.Subsystem;
 namespace StarTrek_KG.Actors
 {
     //TODO: ship.Energy not decrementing after being hit
-    public class Ship : ISystem, IShip, IWrite
+    public class Ship : ISystem, IShip
     {
         //todo: needs access to quadrants and utility and game for subsystem FOR mnemonic to work for DI
         #region Properties
@@ -28,22 +28,18 @@ namespace StarTrek_KG.Actors
 
             public double Energy { get; set; }
             public bool Destroyed { get; set; }
-            public Map Map { get; set; }
             public Type Type { get; set; }
 
-            public Write Write { get; set; }  
+            public Map Map { get; set; }  
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log Log { get; set; } //
 
-
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, Map map, Sector position, Write write)
+        public Ship(string name, Sector position, Map map)
         {
-            this.Write = write;
-
             this.Type = this.GetType();
             this.Map = map;
             this.Sector = position;
@@ -51,7 +47,7 @@ namespace StarTrek_KG.Actors
             this.Name = name;
             this.QuadrantDef = position.QuadrantDef;
             
-            this.Subsystems = new Subsystems(map, this);
+            this.Subsystems = new Subsystems(this.Map, this);
 
             //todo: support the shieldEnergy config setting.
             //If there is a config setting, use it.  otherwise, 0
@@ -84,7 +80,7 @@ namespace StarTrek_KG.Actors
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public void AbsorbHitFrom(IShip attacker, int attackingEnergy) //
         {
-            this.Write.Line(string.Format(this.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
+            this.Map.Write.Line(string.Format(this.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
 
             var shields = this.Shields();
             shields.Energy -= attackingEnergy;
@@ -113,9 +109,10 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                this.Write.Line("No Structural Damage from hit.");
+                this.Map.Write.Line("No Structural Damage from hit.");
             }
         }
+
 
         //todo: create a GetLastQuadrant & GetLastSector
         public Quadrant GetQuadrant()
@@ -123,12 +120,12 @@ namespace StarTrek_KG.Actors
             //todo: get rid of this.Map ?
             var retVal = this.Map.Quadrants.Where(s => s.X == this.QuadrantDef.X && s.Y == this.QuadrantDef.Y).ToList();
 
-            if(retVal == null)
+            if (retVal == null)
             {
                 throw new GameConfigException("Quadrant X: " + this.QuadrantDef.X + " Y: " + this.QuadrantDef.Y + " not found.");
             }
 
-            if (retVal.Count() == 0)
+            if (!retVal.Any())
             {
                 throw new GameConfigException("Quadrant X: " + this.QuadrantDef.X + " Y: " + this.QuadrantDef.Y + " not found.");
             }

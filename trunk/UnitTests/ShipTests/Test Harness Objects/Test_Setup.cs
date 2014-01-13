@@ -11,13 +11,29 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
 {
     public class Test_Setup
     {
-        public Map TestMap { get; set; }
+        public Game Game { get; set; }
         public Navigation TestNavigation { get; set; }
         public Torpedoes TestPhotons { get; set; }
         public Computer TestComputer { get; set; }
         public Computer TestPhasers { get; set; }
 
-        public Write Write { get; set; }
+        public Write Write
+        {
+            get { return this.Game.Write; }
+        }
+
+        public Map TestMap
+        {
+            get
+            {
+                return this.Game.Map;
+            }
+            set
+            {
+                this.Game.Map = value;
+            }
+        }
+
 
         public Test_Setup()
         {
@@ -35,8 +51,8 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             this.SetupMapWith1Friendly();
 
             //add a ship
-            var hostileShip = new Ship("ship1", this.TestMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Write);
-            var hostileShip2 = new Ship("ship2", this.TestMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.Write);
+            var hostileShip = new Ship("ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
+            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
 
             var activeQuad = this.TestMap.Quadrants.GetActive();
             activeQuad.AddShip(hostileShip, hostileShip.Sector);
@@ -57,7 +73,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                      SectorItem.Friendly),
                                                                  //todo: this needs to be in a random spo
                                                              }
-                                        }, this.Write));
+                                        }, this.Game.Write));
 
             this.VerifyMap();
         }
@@ -77,7 +93,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                new Coordinate(0, 1)), SectorItem.Hostile),
                                                        }
-                                  }, this.Write);
+                                  }, this.Game.Write);
             this.VerifyMap();
         }
 
@@ -96,7 +112,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                hostileSector), SectorItem.Hostile),
                                                        }
-            }, this.Write);
+            }, this.Game.Write);
             this.VerifyMap();
         }
 
@@ -109,7 +125,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                 {
                    new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.Friendly)},
               AddStars = false
-            }, this.Write);
+            }, this.Game.Write);
             this.VerifyMap();
         }
 
@@ -124,7 +140,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
                                     }
-            }, this.Write));
+            }, this.Game.Write));
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
@@ -141,13 +157,13 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             {
                 Initialize = true,
                 //GenerateMap = true
-            }, this.Write);
+            }, this.Game.Write);
             this.VerifyMap();
         }
 
         public  void SetupBaseMap()
         {
-            this.TestMap = new Map(null, this.Write);
+            this.TestMap = new Map(null, this.Game.Write);
             this.VerifyMap();
         }
 
@@ -159,7 +175,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             Constants.QUADRANT_MIN = 0;
             Constants.QUADRANT_MAX = 0;
 
-            this.Write = new Write(this.TestMap);
+            this.Game = new Game(false);
 
             TestRunner.GetTestConstants();
 

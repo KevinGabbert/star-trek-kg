@@ -30,9 +30,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
                                                            },
                                           AddStars = false
-                                      }, this.Write);
+                                      }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
             Assert.AreEqual(SubsystemType.LongRangeScan, _testLongRangeScanner.Type);
         }
 
@@ -54,7 +54,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             for (int i = 0; i < 100; i++)
             {
-                this.Write.Console.Write("-");
+                this.Game.Write.Console.Write("-");
                 this.CheckStarsInQuadrant();
             }
         }
@@ -81,9 +81,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                             new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
                                                             SectorItem.Star),
                                                     }
-                                      }, this.Write);
+                                      }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
 
             Quadrant quadrant = Quadrants.Get(_testLRSMap, new Coordinate(0,0));
             int starCount = quadrant.GetStarCount();
@@ -105,9 +105,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                             new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
                                                             SectorItem.Star),
                                                     }
-            }, this.Write);
+            }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
 
             int starbaseCount;
             int starCount;
@@ -130,9 +130,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                     },
                 AddStars = false
-            }, this.Write);
+            }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
             _testLongRangeScanner.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -149,9 +149,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)
                     },
                 AddStars = false
-            }, this.Write);
+            }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
             _testLongRangeScanner.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -168,9 +168,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1), new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1)), SectorItem.Friendly)
                     },
                 AddStars = false
-            }, this.Write);
+            }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
             _testLongRangeScanner.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -191,9 +191,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Hostile)
                     },
                 AddStars = false
-            }, this.Write);
+            }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
 
             var starbaseCount = 0;
             var starCount = 0;
@@ -221,9 +221,9 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
                     },
                     AddStars = false
-            }, this.Write);
+            }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Write);
+            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
 
             var starbaseCount = 0;
             var starCount = 0;
@@ -255,7 +255,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
                     },
                 AddStars = false
-            }, this.Write);
+            }, this.Game.Write);
 
             int starbaseCount;
             int starCount;

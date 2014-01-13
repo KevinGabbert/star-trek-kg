@@ -14,10 +14,12 @@ namespace StarTrek_KG.Playfield
     /// <summary>
     /// A Quadrant in this game is a named area of space. It can contain ships, starbases, or stars. 
     /// </summary>
-    public class Quadrant : Coordinate, IWrite
+    public class Quadrant : Coordinate
     {
         #region Properties
             public string Name { get; set; }
+
+            public Map Map { get; set; }
 
             //TODO: This property needs to be changed to a function, and that function needs to count Hostiles in this quadrant when called
 
@@ -27,7 +29,6 @@ namespace StarTrek_KG.Playfield
             public Sectors Sectors { get; set; }
             public bool Scanned { get; set; }
             public bool Empty { get; set; }
-            public Map Map { get; set; }
 
             private bool _active;
             public bool Active
@@ -47,54 +48,46 @@ namespace StarTrek_KG.Playfield
                 }
             }
 
-            public Write Write { get; set; }     
-
         #endregion
 
-        public Quadrant(Write write)
+        public Quadrant(Map map)
         {
-            this.Write = write;
-
             this.Empty = true;
             this.Name = String.Empty;
+            this.Map = map;
         }
 
-        public Quadrant(Map map, Stack<string> baddieNames, Write write)
+        public Quadrant(Map map, Stack<string> baddieNames)
         {
-            this.Write = write;
-
             this.Empty = true;
             this.Map = map;
             this.Name = String.Empty;
-            this.Create(baddieNames);
+            this.Create(map, baddieNames);
         }
 
 
         //todo: we might want to avoid passing in baddie names and set up baddies later..
-        public Quadrant(Map map, Stack<string> baddieNames, out int nameIndex, Write write)
+        public Quadrant(Map map, Stack<string> baddieNames, out int nameIndex, Game game)
         {
-            this.Write = write;
-
             this.Empty = true;
-            this.Map = map;
-            this.Create(baddieNames, out nameIndex);
+            this.Create(map, baddieNames, out nameIndex);
         }
 
-        public void Create(Stack<string> baddieNames, bool addStars = true)
+        public void Create(Map map, Stack<string> baddieNames, bool addStars = true)
         {
-            this.InitializeSectors(this, new List<Sector>(), baddieNames, this.Map, addStars);
+            this.InitializeSectors(this, new List<Sector>(), baddieNames, map, addStars);
         }
 
-        public Quadrant Create(Stack<string> names, out int nameIndex, bool addStars = true)
+        public Quadrant Create(Map map, Stack<string> names, out int nameIndex, bool addStars = true)
         {
             nameIndex = (Utility.Utility.Random).Next(names.Count);
 
-            var newQuadrant = new Quadrant(this.Map, names, this.Write);
+            var newQuadrant = new Quadrant(this.Map, names);
             newQuadrant.Name = names.Pop();
 
             //fix: error here:
             //fix: sectors are not being created for all quadrants
-            this.InitializeSectors(newQuadrant, new List<Sector>(), names, this.Map, addStars);
+            this.InitializeSectors(newQuadrant, new List<Sector>(), names, map, addStars);
 
             return newQuadrant;
         }
@@ -103,7 +96,6 @@ namespace StarTrek_KG.Playfield
         {
             nameIndex = (Utility.Utility.Random).Next(quadrantNames.Count);
 
-            this.Map = map;
             this.Name = quadrantNames.Pop();
 
             this.X = quadrantXY.X;
@@ -139,7 +131,7 @@ namespace StarTrek_KG.Playfield
             if(addStars)
             {
                 //Randomly throw stars in
-                starsToAdd = Map.AddStars(quadrant, (Utility.Utility.Random).Next(Constants.SECTOR_MAX)); 
+                starsToAdd = this.AddStars(quadrant, (Utility.Utility.Random).Next(Constants.SECTOR_MAX)); 
             }
 
             //This is possible only in the test harness, as app code currently does not call this function with a null
@@ -157,6 +149,90 @@ namespace StarTrek_KG.Playfield
             //        //error.. error.. danger will robinson
             //        //actually, this check should go in a unit test.  dont need to do it here.
             //    }
+        }
+
+        public IEnumerable<Sector> AddStars(Quadrant quadrant, int totalStarsInQuadrant)
+        {
+            Utility.Utility.ResetGreekLetterStack();
+
+            this.CreateStar(quadrant, totalStarsInQuadrant);
+
+            return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
+        }
+
+        public Sector AddStar(Quadrant quadrant)
+        {
+            Utility.Utility.ResetGreekLetterStack();
+
+            const int totalStarsInQuadrant = 1;
+
+            var currentStarName = this.CreateStar(quadrant, totalStarsInQuadrant);
+
+            return quadrant.Sectors.Single(s => s.Item == SectorItem.Star && ((Star)s.Object).Name == currentStarName);
+        }
+
+        private string CreateStar(Quadrant quadrant, int totalStarsInQuadrant)
+        {
+            string currentStarName = "";
+
+            while (totalStarsInQuadrant > 0)
+            {
+                var x = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+                var y = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+
+                //todo: just pass in coordinate and get its item
+                var sector = quadrant.Sectors.Single(s => s.X == x && s.Y == y);
+                var sectorEmpty = sector.Item == SectorItem.Empty;
+
+                if (sectorEmpty)
+                {
+                    if (totalStarsInQuadrant > 0)
+                    {
+                        var newStar = new Star();
+                        bool foundStarName = false;
+
+                        int counter = 0;
+                        while (!foundStarName)
+                        {
+                            //There's a practical max of 9 stars before LRS is broken, so we shouldn't see this while happening more than 9 times for a new star
+                            //unless one is adding stars via debug mode..
+                            counter++;
+                            var newNameLetter = Utility.Utility.RandomGreekLetter.Pop();
+
+                            var starsInQuadrant = quadrant.Sectors.Where(s => s.Object != null && s.Object.Type.Name == "Star").ToList();
+                            var allStarsDontHaveNewDesignation = starsInQuadrant.All(s => ((Star)s.Object).Designation != newNameLetter);
+
+                            if (allStarsDontHaveNewDesignation)
+                            {
+                                foundStarName = true;
+
+                                if (quadrant.Name == null) //todo: why do we have null quadrant names???
+                                {
+                                    quadrant.Name = "UNKNOWN QUADRANT " + newNameLetter + " " + counter; //todo: this could get dupes
+                                }
+
+                                currentStarName = quadrant.Name.ToUpper() + " " + newNameLetter;
+
+                                newStar.Name = currentStarName;
+                                newStar.Designation = newNameLetter;
+                                sector.Item = SectorItem.Star;
+
+                                sector.Object = newStar;
+                                totalStarsInQuadrant--;
+                            }
+
+                            //Assuming we are using the greek alphabet for star names, we don't want to create a lockup.
+                            if (counter > 25)
+                            {
+                                this.Map.Write.Line("Too Many Stars.  Sorry.  Not gonna create more.");
+                                foundStarName = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return currentStarName;
         }
 
         private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y, Stack<string> baddieNames, Map map)
@@ -198,12 +274,12 @@ namespace StarTrek_KG.Playfield
         public void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, Map map)
         {
             var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
-            this.Write.DebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
+            this.Map.Write.DebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
 
             if(itemToPopulate == SectorItem.Hostile)
             {
                 //if a baddie name is passed, then use it.  otherwise
-                var newShip = this.CreateHostileShip(newlyCreatedSector, baddieNames, map);
+                var newShip = this.CreateHostileShip(newlyCreatedSector, baddieNames);
                 quadrant.AddShip(newShip, newlyCreatedSector);
             }
             else
@@ -218,17 +294,17 @@ namespace StarTrek_KG.Playfield
         {
             if (toSector == null)
             {
-                this.Write.DebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
+                this.Map.Write.DebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
                 throw new GameException("No Sector passed. cannot add to Quadrant: " + this.Name);
             }
 
             if (ship == null)
             {
-                this.Write.DebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
+                this.Map.Write.DebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
                 throw new GameException("No ship passed. cannot add to Quadrant: " + this.Name);
             }
 
-            this.Write.DebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
+            this.Map.Write.DebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
 
             var addToSector = this.GetSector(toSector) ?? toSector; //if we can't retrieve it, then it hasn't been created yet, so add to our new variable and the caller of this function can add it if they want
 
@@ -249,7 +325,7 @@ namespace StarTrek_KG.Playfield
             }
             catch(Exception ex)
             {
-                this.Write.DebugLine("unable to add ship to sector " + toSector + ". " + ex.Message);
+                this.Map.Write.DebugLine("unable to add ship to sector " + toSector + ". " + ex.Message);
                 throw new GameException("unable to add ship to sector " + toSector + ". " + ex.Message);
             }
         }
@@ -261,16 +337,16 @@ namespace StarTrek_KG.Playfield
             sectorToAdd.Object = ship;
         }
 
-        private Ship CreateHostileShip(Sector position, Stack<string> listOfBaddies, Map map)
+        private Ship CreateHostileShip(Sector position, Stack<string> listOfBaddies)
         {
             //todo: this should be a random baddie, from the list of baddies in app.config
-            var hostileShip = new Ship(listOfBaddies.Pop(), map, position, this.Write); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
+            var hostileShip = new Ship(listOfBaddies.Pop(), position, this.Map); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
             hostileShip.Sector.X = position.X; 
             hostileShip.Sector.Y = position.Y;
 
             Shields.For(hostileShip).Energy = 300 + (Utility.Utility.Random).Next(200);
 
-            this.Write.DebugLine("Created Ship: " + hostileShip.Name);
+            this.Map.Write.DebugLine("Created Ship: " + hostileShip.Name);
 
             return hostileShip;
         }
@@ -341,7 +417,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                this.Write.Line(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
+                this.Map.Write.Line(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
                 return true;
             }
             return false;

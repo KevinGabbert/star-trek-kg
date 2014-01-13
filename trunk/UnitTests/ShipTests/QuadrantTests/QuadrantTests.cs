@@ -16,9 +16,9 @@ namespace UnitTests.ShipTests.QuadrantTests
         [SetUp]
         public void Setup()
         {
-            _testQuadrant = new Quadrant(this.Write);
+            _testQuadrant = new Quadrant(this.Game.Map);
 
-            _testQuadrant.Map = new Map(null, this.Write);
+            _testQuadrant.Map = new Map(null, this.Game.Write);
             _testQuadrant.Name = "Setup";
             _testQuadrant.Scanned = false;
 
@@ -30,7 +30,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         public void New()
         {
             //*************** sector not being created with new quadrant
-            _testQuadrant = new Quadrant(this.Write);
+            _testQuadrant = new Quadrant(this.Game.Map);
 
             Assert.AreEqual(null, _testQuadrant.Map);
             this.QuadrantNewAsserts();
@@ -44,7 +44,7 @@ namespace UnitTests.ShipTests.QuadrantTests
 
             _setup.SetupMapWith1Friendly();
 
-            _testQuadrant = new Quadrant(_setup.TestMap, new Stack<string>(), this.Write);
+            _testQuadrant = new Quadrant(this.Game.Map);
 
             //todo: make sure that map is not set up with anyting
 
@@ -72,7 +72,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             var names = new Stack<string>(name);
 
             int index;
-            var newQuadrant = new Quadrant(_setup.Write);
+            var newQuadrant = new Quadrant(_setup.TestMap);
             newQuadrant.Create(new Map(null, _setup.Write), names,
                                new Stack<string>(klingonShipNames),
                                new Coordinate(1, 1), out index, null);

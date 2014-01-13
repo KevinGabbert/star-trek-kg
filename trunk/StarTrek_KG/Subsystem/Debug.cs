@@ -114,7 +114,7 @@ namespace StarTrek_KG.Subsystem
 
                     var randomSector = new Sector(new LocationDef(quadX, quadY));
 
-                    var hostileShip = new Ship(testShipNames[0], this.Map, randomSector, this.Write);
+                    var hostileShip = new Ship(testShipNames[0], randomSector, this.Map);
 
                     this.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
@@ -124,7 +124,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "dist":
-                    var sectorWithNewStar = Map.AddStar(this.Map.Quadrants.GetActive());
+                    var sectorWithNewStar = this.Map.Quadrants.GetActive().AddStar(this.Map.Quadrants.GetActive());
                     this.Write.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
                     this.Write.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
                     break;

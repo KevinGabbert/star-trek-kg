@@ -20,7 +20,7 @@ namespace StarTrek_KG.Output
         private int Starbases { get; set; }
         private int Stardate { get; set; }
 
-        public Map Map { get; set; }
+        //public Map Map { get; set; }
 
         //todo: make this non-static so we can test this class..
 
@@ -45,7 +45,7 @@ namespace StarTrek_KG.Output
 
         public Write(Map map)
         {
-            this.Map = map;
+            //this.Map = map;
         }
 
         public Write(int totalHostiles, int starbases, int stardate, int timeRemaining)
@@ -163,7 +163,6 @@ namespace StarTrek_KG.Output
 
         }
 
-
         public void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
         {
             if (renderingMyLocation)
@@ -206,7 +205,7 @@ namespace StarTrek_KG.Output
         //This needs to be a command method that the UI passes values into.
         //Readline is done in UI
 
-        public void Prompt(string shipName, string mapText)
+        public void Prompt(Ship playerShip, string mapText)
         {
             this.Console.Write(mapText);
 
@@ -216,42 +215,42 @@ namespace StarTrek_KG.Output
             var command = readLine.Trim().ToLower();
             switch (command)
             {
-                case "nav": 
-                    Navigation.For(this.Map.Playership).Controls("nav");
+                case "nav":
+                    Navigation.For(playerShip).Controls("nav");
                     break;
 
-                case "srs": 
-                    ShortRangeScan.For(this.Map.Playership).Controls();
+                case "srs":
+                    ShortRangeScan.For(playerShip).Controls();
                     break;
 
-                case "lrs": 
-                    LongRangeScan.For(this.Map.Playership).Controls();
+                case "lrs":
+                    LongRangeScan.For(playerShip).Controls();
                     break;
 
-                case "pha": Phasers.For(this.Map.Playership).Controls(this.Map.Playership);
+                case "pha": Phasers.For(playerShip).Controls(playerShip);
                     break;
 
-                case "tor": 
-                    Torpedoes.For(this.Map.Playership).Controls();
+                case "tor":
+                    Torpedoes.For(playerShip).Controls();
                     break;
 
                 case "she":
 
-                    if (this.ShieldMenu()) break;
+                    if (this.ShieldMenu(playerShip)) break;
                     break;
 
                 case "com":
 
-                    if (this.ComputerMenu()) break;
+                    if (this.ComputerMenu(playerShip)) break;
                     break;
 
                 case "dbg":
-                    if (this.DebugMenu()) break;
+                    if (this.DebugMenu(playerShip)) break;
                     break;
 
                 default: //case "?":
                     this.CreateCommandPanel();
-                    this.Panel(this.GetPanelHead(shipName), ACTIVITY_PANEL);
+                    this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
                     break;
             }
         }
@@ -270,7 +269,7 @@ namespace StarTrek_KG.Output
             this.Console.WriteLine();
         }
 
-        private bool DebugMenu()
+        private bool DebugMenu(Ship playerShip)
         {
             this.Strings(Debug.CONTROL_PANEL);
             this.WithNoEndCR("Enter Debug command: ");
@@ -278,13 +277,13 @@ namespace StarTrek_KG.Output
             //todo: readline needs to be done using an event
             var debugCommand = Console.ReadLine().Trim().ToLower();
 
-            Debug.For(this.Map.Playership).Controls(debugCommand);
+            Debug.For(playerShip).Controls(debugCommand);
             return false;
         }
 
-        private bool ComputerMenu()
+        private bool ComputerMenu(Ship playerShip)
         {
-            if (Computer.For(this.Map.Playership).Damaged()) return true;
+            if (Computer.For(playerShip).Damaged()) return true;
 
             this.Strings(Computer.CONTROL_PANEL);
             this.WithNoEndCR("Enter computer command: ");
@@ -292,18 +291,18 @@ namespace StarTrek_KG.Output
             //todo: readline needs to be done using an event
             var computerCommand = Console.ReadLine().Trim().ToLower();
 
-            Computer.For(this.Map.Playership).Controls(computerCommand);
+            Computer.For(playerShip).Controls(computerCommand);
             return false;
         }
 
-        private bool ShieldMenu()
+        private bool ShieldMenu(Ship playerShip)
         {
-            if (Shields.For(this.Map.Playership).Damaged()) return true;
+            if (Shields.For(playerShip).Damaged()) return true;
 
             Shields.SHIELD_PANEL = new List<string>();
             Shields.SHIELD_PANEL.Add(Environment.NewLine);
 
-            var currentShieldEnergy = Shields.For(this.Map.Playership).Energy;
+            var currentShieldEnergy = Shields.For(playerShip).Energy;
 
             if (currentShieldEnergy > 0)
             {
@@ -322,8 +321,8 @@ namespace StarTrek_KG.Output
             this.WithNoEndCR("Enter shield control command: ");
             var shieldsCommand = Console.ReadLine().Trim().ToLower();
 
-            Shields.For(this.Map.Playership).MaxTransfer = this.Map.Playership.Energy; //todo: this does nothing!
-            Shields.For(this.Map.Playership).Controls(shieldsCommand);
+            Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
+            Shields.For(playerShip).Controls(shieldsCommand);
             return false;
         }
 

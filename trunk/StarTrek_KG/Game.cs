@@ -48,7 +48,9 @@ namespace StarTrek_KG
                                        });
 
                 this.Write = new Write(null);
+                
                 this.Map = new Map(startConfig, this.Write);
+
                 this.Write = new Write(this.Map);
 
                 //We don't want to start game without hostiles
@@ -347,7 +349,8 @@ namespace StarTrek_KG
         /// <returns></returns>
         private bool NewTurn()
         {
-            this.Write.Prompt("Your Ship", this.Map.Text);
+            this.Write.Prompt(this.Map.Playership, this.Map.Text);
+
                 //move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
                 ////Map.GetAllHostiles(this.Map).Count
 
