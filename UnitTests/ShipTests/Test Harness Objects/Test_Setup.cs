@@ -15,7 +15,8 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         public Navigation TestNavigation { get; set; }
         public Torpedoes TestPhotons { get; set; }
         public Computer TestComputer { get; set; }
-        public Computer TestPhasers { get; set; }
+        public Phasers TestPhasers { get; set; }
+        public Shields TestShields { get; set; }
 
         public Write Write
         {
@@ -161,7 +162,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             this.VerifyMap();
         }
 
-        public  void SetupBaseMap()
+        public void SetupBaseMap()
         {
             this.TestMap = new Map(null, this.Game.Write);
             this.VerifyMap();

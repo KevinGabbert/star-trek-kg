@@ -91,12 +91,12 @@ namespace UnitTests.ShipTests.StarbaseTests
                                                            _testMapNoObjects.Playership.Sector.X,
                                                            _testMapNoObjects.Playership.Sector.Y).Item);
 
-            _testMovement = new Movement(_testMapNoObjects, _testMapNoObjects.Playership, this.Game.Write);
+            _testMovement = new Movement(_testMapNoObjects.Playership, this.Game);
             _testMovement.BlockedByObstacle = false;
 
             var sectorItem =
-                Sector.Get(_testMovement.Map.Quadrants.GetActive().Sectors, _testMovement.Map.Playership.Sector.X,
-                                                                       _testMovement.Map.Playership.Sector.Y).Item;
+                Sector.Get(_testMovement.Game.Map.Quadrants.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
+                                                                       _testMovement.Game.Map.Playership.Sector.Y).Item;
             Assert.AreEqual(SectorItem.Friendly, sectorItem);
 
             _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);

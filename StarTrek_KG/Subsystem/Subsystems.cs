@@ -20,13 +20,13 @@ namespace StarTrek_KG.Subsystem
             game.Write = write;
 
             this.AddRange(new List<ISubsystem>(){
-                                     new Debug(map, shipConnectedTo, write),
-                                     new Shields(map, shipConnectedTo, write) { Energy = 0 },
-                                     new Computer(map, shipConnectedTo, write),
-                                     new Navigation(map, shipConnectedTo, write),
-                                     new ShortRangeScan(map, shipConnectedTo, write),
-                                     new LongRangeScan(map, shipConnectedTo, write),
-                                     new Torpedoes(map, shipConnectedTo, write),
+                                     new Debug(shipConnectedTo, game),
+                                     new Shields(shipConnectedTo, game) { Energy = 0 },
+                                     new Computer(shipConnectedTo, game),
+                                     new Navigation(shipConnectedTo, game),
+                                     new ShortRangeScan(shipConnectedTo, game),
+                                     new LongRangeScan(shipConnectedTo, game),
+                                     new Torpedoes(shipConnectedTo, game),
 
 
                                      new Phasers(shipConnectedTo, game) //TODO: get game ref from shipCOnnectedTo

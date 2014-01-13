@@ -349,7 +349,7 @@ namespace StarTrek_KG
         /// <returns></returns>
         private bool NewTurn()
         {
-            this.Write.Prompt(this.Map.Playership, this.Map.Text);
+            this.Write.Prompt(this.Map.Playership, this.Map.Text, this);
 
                 //move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
                 ////Map.GetAllHostiles(this.Map).Count

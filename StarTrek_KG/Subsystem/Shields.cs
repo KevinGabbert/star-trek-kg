@@ -6,23 +6,19 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
-using StarTrek_KG.Playfield;
-
 namespace StarTrek_KG.Subsystem
 {
-    public class Shields : SubSystem_Base, IWrite
+    public class Shields : SubSystem_Base
     {
         public static List<string> SHIELD_PANEL = new List<string>();
 
-        public Shields(Map map, Ship shipConnectedTo, Write write)
+        public Shields(Ship shipConnectedTo, Game game)
         {
-            this.Write = write;
+            this.Game = game;
 
             this.Initialize();
 
             this.ShipConnectedTo = shipConnectedTo;
-            this.Map = map;
             this.Type = SubsystemType.Shields;
             this.Damage = 0;
             this.Energy = 0;
@@ -30,17 +26,17 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            this.Write.Line("Shield control is damaged. Repairs are underway.");
+            this.Game.Write.Line("Shield control is damaged. Repairs are underway.");
         }
 
         public override void OutputRepairedMessage()
         {
-            this.Write.Line("Shield control has been repaired.");
+            this.Game.Write.Line("Shield control has been repaired.");
         }
 
         public override void OutputMalfunctioningMessage()
         {
-            this.Write.Line("The Shields are malfunctioning.");
+            this.Game.Write.Line("The Shields are malfunctioning.");
         }
 
         public override void Controls(string command)
@@ -62,14 +58,14 @@ namespace StarTrek_KG.Subsystem
                     }
                     else
                     {
-                        this.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
+                        this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
                         goto EndControls;
                     }
 
                     break;
 
                 default:
-                    this.Write.Line("Invalid this.Write");
+                    this.Game.Write.Line("Invalid this.Write");
                     return;
             }
 
@@ -80,7 +76,7 @@ namespace StarTrek_KG.Subsystem
 
                 if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
                 {
-                    this.Write.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
+                    this.Game.Write.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
                     goto EndControls;
                 }
 
@@ -93,7 +89,7 @@ namespace StarTrek_KG.Subsystem
                     {
                         //todo: write code to add the difference if they exceed. There is no reason to make people type twice
 
-                        this.Write.Line("Energy to transfer exceeds Shield Max capability.. No Change");
+                        this.Game.Write.Line("Energy to transfer exceeds Shield Max capability.. No Change");
                         goto EndControls;
                     }
 
@@ -107,7 +103,7 @@ namespace StarTrek_KG.Subsystem
                     this.AddEnergy(transfer, adding);
                 }
 
-                this.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
+                this.Game.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                                                 this.Energy,
                                                 this.ShipConnectedTo.Energy));
             }
@@ -118,7 +114,7 @@ namespace StarTrek_KG.Subsystem
         public new int TransferredFromUser()
         {
             double transfer;
-            bool readSuccess = this.Write.PromptUser(String.Format("Enter amount of energy (1--{0}): ", this.MaxTransfer),
+            bool readSuccess = this.Game.Write.PromptUser(String.Format("Enter amount of energy (1--{0}): ", this.MaxTransfer),
                                                  out transfer);
 
             return EnergyValidation(transfer, readSuccess);
@@ -131,20 +127,20 @@ namespace StarTrek_KG.Subsystem
 
             if (tooLittle)
             {
-                this.Write.Line("Cannot Transfer < 1 unit of Energy");
+                this.Game.Write.Line("Cannot Transfer < 1 unit of Energy");
                 return 0;
             }
 
             if (tooMuch)
             {
-                this.Write.Line("Cannot Transfer. Too Much Energy");
+                this.Game.Write.Line("Cannot Transfer. Too Much Energy");
                 return 0;
             }
 
             if (!readSuccess)
             {
                 //todo: tell the user if they are adding too much or too little energy
-                this.Write.Line("Invalid amount of energy.");
+                this.Game.Write.Line("Invalid amount of energy.");
                 return 0;
             }
 

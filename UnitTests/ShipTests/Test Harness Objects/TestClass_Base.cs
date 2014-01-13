@@ -1,5 +1,6 @@
 ﻿using StarTrek_KG;
 using StarTrek_KG.Output;
+using StarTrek_KG.Playfield;
 
 namespace UnitTests.ShipTests.Test_Harness_Objects
 {
@@ -11,7 +12,11 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
 
         public TestClass_Base()
         {
+            _setup.Game.Write = new Write(null);
+            _setup.TestMap = new Map(null, _setup.Game.Write);
+            _setup.TestMap.Write = new Write(_setup.TestMap);
             _setup.Game.Write = new Write(_setup.TestMap);
+
             this.Game = _setup.Game;
         }
     }

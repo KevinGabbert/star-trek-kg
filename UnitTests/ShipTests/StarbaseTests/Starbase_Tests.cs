@@ -4,10 +4,8 @@ using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.StarbaseTests
 {
-    public class Starbase_Tests
+    public class Starbase_Tests : TestClass_Base
     {
-        private readonly Test_Setup _setup = new Test_Setup();
-
         [SetUp]
         public void SetUp()
         {

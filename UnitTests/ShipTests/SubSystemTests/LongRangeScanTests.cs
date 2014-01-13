@@ -14,14 +14,13 @@ namespace UnitTests.ShipTests.SubSystemTests
     public class LongRangeScanTests: TestClass_Base
     {
         private LongRangeScan _testLongRangeScanner;
-        private Map _testLRSMap;
 
         [SetUp]
         public void Setup()
         {
             TestRunner.GetTestConstants();
 
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
                                       {
                                           Initialize = true,
                                           SectorDefs = new SectorDefs
@@ -32,7 +31,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                           AddStars = false
                                       }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             Assert.AreEqual(SubsystemType.LongRangeScan, _testLongRangeScanner.Type);
         }
 
@@ -45,7 +44,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Constants.QUADRANT_MIN = 0;
             Constants.QUADRANT_MAX = 0;
 
-            _testLRSMap = null;
+            this.Game.Map = null;
         }
 
         [Ignore]
@@ -68,7 +67,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
         private void CheckStarsInQuadrant()
         {
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
                                       {
                                           Initialize = true,
                                           AddStars = false,
@@ -83,16 +82,16 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                     }
                                       }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
-            Quadrant quadrant = Quadrants.Get(_testLRSMap, new Coordinate(0,0));
+            Quadrant quadrant = Quadrants.Get(this.Game.Map, new Coordinate(0, 0));
             int starCount = quadrant.GetStarCount();
             Assert.AreEqual(2, starCount);
         }
 
         private void CheckStarsWithScanner()
         {
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
             {
                 Initialize = true,
                 AddStars = false,
@@ -107,12 +106,12 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                     }
             }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
             int starbaseCount;
             int starCount;
             int hostileCount;
-            _testLongRangeScanner.GetMapInfoForScanner(_testLRSMap, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount);
+            _testLongRangeScanner.GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount);
             //pulls count from Quadrant object
 
             Assert.AreEqual(2, starCount);
@@ -122,7 +121,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetInfoFromScanner00()
         {
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -132,7 +131,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             _testLongRangeScanner.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -141,7 +140,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetInfoFromScanner44()
         {
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -151,7 +150,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             _testLongRangeScanner.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -160,7 +159,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetInfoFromScannerMaxMax()
         {
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -170,7 +169,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             _testLongRangeScanner.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -180,7 +179,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetHostileInfoFromScanner()
         {
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -193,12 +192,12 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            _testLongRangeScanner.GetMapInfoForScanner(_testLRSMap, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            _testLongRangeScanner.GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(2, hostileCount);
         }
@@ -207,7 +206,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetStarbaseInfoFromScanner()
         {
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -223,12 +222,12 @@ namespace UnitTests.ShipTests.SubSystemTests
                     AddStars = false
             }, this.Game.Write);
 
-            _testLongRangeScanner = new LongRangeScan(_testLRSMap, _testLRSMap.Playership, this.Game.Write);
+            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            _testLongRangeScanner.GetMapInfoForScanner(_testLRSMap, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            _testLongRangeScanner.GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(5, starbaseCount);
             Assert.AreEqual(0, starCount);
@@ -240,7 +239,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             var game = new Game();
 
-            _testLRSMap = new Map(new GameConfig
+            this.Game.Map = new Map(new GameConfig
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -260,7 +259,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             int starbaseCount;
             int starCount;
             int hostileCount;
-            LongRangeScan.For(_testLRSMap.Playership).GetMapInfoForScanner(_testLRSMap, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            LongRangeScan.For(this.Game.Map.Playership).GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(5, starbaseCount);
         }
@@ -274,7 +273,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            LongRangeScan.For(_testLRSMap.Playership).GetMapInfoForScanner(_testLRSMap, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            LongRangeScan.For(this.Game.Map.Playership).GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.Greater(0, hostileCount);
             Assert.Greater(0, starbaseCount);
