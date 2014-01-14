@@ -19,7 +19,7 @@ namespace UnitTests.GameTests
             
             Assert.IsInstanceOf<Map>(game.Map);
 
-            StarTrekKGSettings.Get = null;
+            (new StarTrekKGSettings()).Get = null;
         }
 
         [TearDown]

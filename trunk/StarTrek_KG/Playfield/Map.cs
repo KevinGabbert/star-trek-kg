@@ -54,7 +54,7 @@ namespace StarTrek_KG.Playfield
                     if (setupOptions.SectorDefs == null)
                     {
                         //todo: then use appConfigSectorDefs  
-                        throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("NoSectorDefsSetUp"));
+                        throw new GameConfigException((new StarTrekKGSettings()).GetSetting<string>("NoSectorDefsSetUp"));
                     }
 
                     this.Initialize(setupOptions.SectorDefs); //Playership is set up here.
@@ -72,7 +72,7 @@ namespace StarTrek_KG.Playfield
             this.GetGlobalInfo();
 
             //This list should match baddie type that is created
-            List<string> quadrantNames = StarTrekKGSettings.GetStarSystems();
+            List<string> quadrantNames = (new StarTrekKGSettings()).GetStarSystems();
 
             this.Write.DebugLine("Got Starsystems");
 
@@ -80,7 +80,7 @@ namespace StarTrek_KG.Playfield
 
             var names = new Stack<string>(quadrantNames.Shuffle());
 
-            var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
+            var klingonShipNames = (new StarTrekKGSettings()).GetShips("Klingon");
 
             this.Write.DebugLine("Got Baddies");
 
@@ -102,7 +102,7 @@ namespace StarTrek_KG.Playfield
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
                 this.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
-                this.Write.Line(StarTrekKGSettings.GetSetting<string>("DebugModeEnd"));
+                this.Write.Line((new StarTrekKGSettings()).GetSetting<string>("DebugModeEnd"));
                 this.Write.Line("");
             }
         }
@@ -125,11 +125,11 @@ namespace StarTrek_KG.Playfield
                 }
                 catch (InvalidOperationException ex)
                 {
-                    throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("InvalidPlayershipSetup") + ex.Message);
+                    throw new GameConfigException((new StarTrekKGSettings()).GetSetting<string>("InvalidPlayershipSetup") + ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("ErrorPlayershipSetup") + ex.Message);
+                    throw new GameConfigException((new StarTrekKGSettings()).GetSetting<string>("ErrorPlayershipSetup") + ex.Message);
                 }
             }
             else
@@ -173,7 +173,7 @@ namespace StarTrek_KG.Playfield
 
                     if (Constants.DEBUG_MODE)
                     {
-                        this.Write.SingleLine(StarTrekKGSettings.GetSetting<string>("DebugAddingNewQuadrant"));
+                        this.Write.SingleLine((new StarTrekKGSettings()).GetSetting<string>("DebugAddingNewQuadrant"));
 
                         this.Write.DisplayPropertiesOf(newQuadrant);
 
@@ -208,12 +208,12 @@ namespace StarTrek_KG.Playfield
         {
             //this.Hostiles = new Hostiles(); //todo: create an initial size the same as hostilesToSetUp
 
-            this.hostilesToSetUp = StarTrekKGSettings.GetSetting<int>("totalHostiles") + (Utility.Utility.Random).Next(6);
-            this.Stardate = StarTrekKGSettings.GetSetting<int>("stardate") + (Utility.Utility.Random).Next(50);
-            this.timeRemaining = StarTrekKGSettings.GetSetting<int>("timeRemaining") + (Utility.Utility.Random).Next(10);
-            this.starbases = StarTrekKGSettings.GetSetting<int>("starbases") + (Utility.Utility.Random).Next(3);
+            this.hostilesToSetUp = (new StarTrekKGSettings()).GetSetting<int>("totalHostiles") + (Utility.Utility.Random).Next(6);
+            this.Stardate = (new StarTrekKGSettings()).GetSetting<int>("stardate") + (Utility.Utility.Random).Next(50);
+            this.timeRemaining = (new StarTrekKGSettings()).GetSetting<int>("timeRemaining") + (Utility.Utility.Random).Next(10);
+            this.starbases = (new StarTrekKGSettings()).GetSetting<int>("starbases") + (Utility.Utility.Random).Next(3);
 
-            this.Text = StarTrekKGSettings.GetSetting<string>("CommandPrompt");
+            this.Text = (new StarTrekKGSettings()).GetSetting<string>("CommandPrompt");
 
             this.Write.DebugLine("HostilesToSetUp: " + hostilesToSetUp);
             this.Write.DebugLine("Stardate: " + Stardate);
@@ -224,17 +224,17 @@ namespace StarTrek_KG.Playfield
         //refactor these to a setup object
         private void SetUpPlayerShip(SectorDef playerShipDef)
         {
-            this.Write.DebugLine(StarTrekKGSettings.GetSetting<string>("DebugSettingUpPlayership"));
+            this.Write.DebugLine((new StarTrekKGSettings()).GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
             if (this.Quadrants == null)
             {
-                throw new GameException(StarTrekKGSettings.GetSetting<string>("QuadrantsNeedToBeSetup1"));
+                throw new GameException((new StarTrekKGSettings()).GetSetting<string>("QuadrantsNeedToBeSetup1"));
             }
 
             //todo: if playershipDef.GetFromConfig then grab info from config.  else set up with default random numbers.
 
-            var playerShipName = StarTrekKGSettings.GetSetting<string>("PlayerShip");
+            var playerShipName = (new StarTrekKGSettings()).GetSetting<string>("PlayerShip");
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
@@ -243,7 +243,7 @@ namespace StarTrek_KG.Playfield
                                       Allegiance = Allegiance.GoodGuy
                                   };
 
-            this.Playership.Energy = StarTrekKGSettings.GetSetting<int>("energy");
+            this.Playership.Energy = (new StarTrekKGSettings()).GetSetting<int>("energy");
 
             this.SetupPlayershipQuadrant(playerShipDef);
 
@@ -301,7 +301,7 @@ namespace StarTrek_KG.Playfield
 
             if(this.Quadrants.Count == 0)
             {
-                throw new ArgumentException(StarTrekKGSettings.GetSetting<string>("QuadrantsNotSetUp"));
+                throw new ArgumentException((new StarTrekKGSettings()).GetSetting<string>("QuadrantsNotSetUp"));
             }
 
             var m = this.Quadrants.Single(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y);
@@ -313,7 +313,7 @@ namespace StarTrek_KG.Playfield
             var torpedoes = Torpedoes.For(this.Playership);
 
             torpedoes.ShipConnectedTo = this.Playership;
-            torpedoes.Count = StarTrekKGSettings.GetSetting<int>("photonTorpedoes");
+            torpedoes.Count = (new StarTrekKGSettings()).GetSetting<int>("photonTorpedoes");
             torpedoes.Damage = 0;
         }
         private void SetupPlayershipShields()
@@ -331,7 +331,7 @@ namespace StarTrek_KG.Playfield
             starshipNAV.ShipConnectedTo = this.Playership;
             starshipNAV.Movement.ShipConnectedTo = this.Playership;
             starshipNAV.Damage = 0;
-            starshipNAV.MaxWarpFactor = StarTrekKGSettings.GetSetting<int>("MaxWarpFactor");
+            starshipNAV.MaxWarpFactor = (new StarTrekKGSettings()).GetSetting<int>("MaxWarpFactor");
             starshipNAV.docked = false;
         }
 

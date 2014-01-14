@@ -35,7 +35,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
 
-            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); ;
+            var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy"); ;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = 89.6829;
@@ -54,7 +54,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2,1));
 
-            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");;
+            var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy");;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = 89.6829;
@@ -71,7 +71,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
 
-            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); 
+            var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy"); 
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = 4000;
@@ -90,7 +90,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
 
-            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy"); ;
+            var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy"); ;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const double testBoltEnergy = -1;
@@ -127,7 +127,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //todo: verify firing ship's starting energy.
 
-            var startingEnergy = StarTrekKGSettings.GetSetting<double>("energy");
+            var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy");
 
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 

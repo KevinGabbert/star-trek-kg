@@ -105,7 +105,7 @@ namespace StarTrek_KG.Subsystem
 
                     //todo: newly appeared ship needs to NOT fire inbetween turns!
 
-                    var testShipNames = StarTrekKGSettings.GetShips("TestFaction").ToList().Shuffle();
+                    var testShipNames = (new StarTrekKGSettings()).GetShips("TestFaction").ToList().Shuffle();
 
                     var quadX = Coordinate.GetRandom();
                     var quadY = Coordinate.GetRandom();

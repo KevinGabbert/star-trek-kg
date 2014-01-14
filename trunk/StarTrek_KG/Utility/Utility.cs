@@ -106,8 +106,8 @@ namespace StarTrek_KG.Utility
         //todo: move to Utility() object
         public static double ShootBeamWeapon(double energyToPowerWeapon, double distance, string deprecationRateConfigKey, string energyAdjustmentConfigKey)
         {
-            double deprecationRate = StarTrekKGSettings.GetSetting<double>(deprecationRateConfigKey);
-            double energyAdjustment = StarTrekKGSettings.GetSetting<double>(energyAdjustmentConfigKey);
+            double deprecationRate = (new StarTrekKGSettings()).GetSetting<double>(deprecationRateConfigKey);
+            double energyAdjustment = (new StarTrekKGSettings()).GetSetting<double>(energyAdjustmentConfigKey);
 
             double deliveredEnergy = StarTrek_KG.Utility.Utility.ComputeBeamWeaponIntensity(energyToPowerWeapon, energyAdjustment, distance, deprecationRate);
 

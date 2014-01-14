@@ -9,8 +9,8 @@ namespace StarTrek_KG.Config
 {
     public class StarTrekKGSettings: ConfigurationSection
     {
-        public static StarTrekKGSettings Get { get; set; }
-        public static StarTrekKGSettings GetConfig()
+        public StarTrekKGSettings Get { get; set; }
+        public new StarTrekKGSettings GetConfig()
         {
             StarTrekKGSettings settings;
 
@@ -90,48 +90,48 @@ namespace StarTrek_KG.Config
 
         #region Helper Methods
 
-        public static List<string> GetShips(string faction)
+        public List<string> GetShips(string faction)
         {
-            StarTrekKGSettings.Reset();
+            this.Reset();
 
-            FactionShips factionShips = StarTrekKGSettings.Get.Factions[faction].FactionShips;
+            FactionShips factionShips = this.Get.Factions[faction].FactionShips;
             var shipNames = (from NameElement shipElement in factionShips select shipElement.name).ToList();
             return shipNames;
         }
 
-        public static List<string> GetStarSystems()
+        public List<string> GetStarSystems()
         {
-            StarTrekKGSettings.Reset();
+            this.Reset();
 
-            var systems = StarTrekKGSettings.Get.StarSystems;
+            var systems = this.Get.StarSystems;
             var systemNames = (from NameElement starSystem in systems select starSystem.name).ToList();
             return systemNames;
         }
 
-        public static string GetText(string textToGet, string textToGet2)
+        public string GetText(string textToGet, string textToGet2)
         {
-            StarTrekKGSettings.Reset();
-            return StarTrekKGSettings.GetText(textToGet) + StarTrekKGSettings.GetText(textToGet2);
+            this.Reset();
+            return this.GetText(textToGet) + this.GetText(textToGet2);
         }
 
-        public static string GetText(string name)
+        public string GetText(string name)
         {
-            StarTrekKGSettings.Reset();
+            this.Reset();
 
-            NameValueElement element = StarTrekKGSettings.Get.ConsoleText[name];
+            NameValueElement element = this.Get.ConsoleText[name];
 
-            var setting = StarTrekKGSettings.CheckAndCastValue<string>(name, element, true);
+            var setting = this.CheckAndCastValue<string>(name, element, true);
 
             return setting;
         }
 
-        public static T GetSetting<T>(string name)
+        public T GetSetting<T>(string name)
         {
-            StarTrekKGSettings.Reset();
+            this.Reset();
 
-            NameValueElement element = StarTrekKGSettings.Get.GameSettings[name];
+            NameValueElement element = this.Get.GameSettings[name];
 
-            var setting = StarTrekKGSettings.CheckAndCastValue<T>(name, element, true);
+            var setting = this.CheckAndCastValue<T>(name, element, true);
 
             return setting;
         }
@@ -139,7 +139,7 @@ namespace StarTrek_KG.Config
         #endregion
 
 
-        private static T CheckAndCastValue<T>(string name, NameValueElement element, bool whiteSpaceIsOk = false)
+        private T CheckAndCastValue<T>(string name, NameValueElement element, bool whiteSpaceIsOk = false)
         {
             T setting;
             if (element != null)
@@ -178,11 +178,11 @@ namespace StarTrek_KG.Config
             }
             return setting;
         }
-        private static void Reset()
+        private void Reset()
         {
-            if (StarTrekKGSettings.Get == null)
+            if (this.Get == null)
             {
-                StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
+                this.Get = this.GetConfig();
             }
         }
     }

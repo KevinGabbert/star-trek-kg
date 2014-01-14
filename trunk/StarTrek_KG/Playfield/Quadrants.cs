@@ -183,7 +183,7 @@ namespace StarTrek_KG.Playfield
 
             this.RemoveShip(shipToRemove.Name);
 
-            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, StarTrekKGSettings.GetText("shipDestroyed")));
+            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, (new StarTrekKGSettings()).GetText("shipDestroyed")));
         }
 
         //private static void DeleteShip(IShip shipToRemove, Map map)

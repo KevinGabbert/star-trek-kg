@@ -85,8 +85,8 @@ namespace StarTrek_KG.Subsystem
         //todo: fix this
         private static Coordinate SetQuadrantToScan(int quadrantY, int quadrantX, Location myLocation)
         {
-            var max = StarTrekKGSettings.GetSetting<int>("QuadrantMax") - 1;
-            var min = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
+            var max = (new StarTrekKGSettings()).GetSetting<int>("QuadrantMax") - 1;
+            var min = (new StarTrekKGSettings()).GetSetting<int>("QUADRANT_MIN");
 
             int divinedQuadX = quadrantX;
             int divinedQuadY = quadrantY;

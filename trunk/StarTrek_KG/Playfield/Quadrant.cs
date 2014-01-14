@@ -417,7 +417,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                this.Map.Write.Line(StarTrekKGSettings.GetSetting<string>("QuadrantsNoHostileShips"));
+                this.Map.Write.Line((new StarTrekKGSettings()).GetSetting<string>("QuadrantsNoHostileShips"));
                 return true;
             }
             return false;
@@ -481,7 +481,7 @@ namespace StarTrek_KG.Playfield
                 }
                 else
                 {
-                    throw new GameException(StarTrekKGSettings.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name);
+                    throw new GameException((new StarTrekKGSettings()).GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name);
                 }
             }
             catch (Exception ex)
@@ -519,7 +519,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException(StarTrekKGSettings.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
+                throw new GameException((new StarTrekKGSettings()).GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
             }
         }
 
@@ -540,7 +540,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException(StarTrekKGSettings.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
+                throw new GameException((new StarTrekKGSettings()).GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
             }
         }
 

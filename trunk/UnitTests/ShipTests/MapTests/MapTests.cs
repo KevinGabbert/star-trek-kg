@@ -68,8 +68,8 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void InitializeQuadrants()
         {
-            var klingonShipNames =  StarTrekKGSettings.GetShips("Klingon");
-            var systemNames = StarTrekKGSettings.GetStarSystems();
+            var klingonShipNames =  (new StarTrekKGSettings()).GetShips("Klingon");
+            var systemNames = (new StarTrekKGSettings()).GetStarSystems();
             _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames),
                                          new SectorDefs());
@@ -84,8 +84,8 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void PopulateWithHostilesAndStarbases()
         {
-            var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
-            var systemNames = StarTrekKGSettings.GetStarSystems();
+            var klingonShipNames = (new StarTrekKGSettings()).GetShips("Klingon");
+            var systemNames = (new StarTrekKGSettings()).GetStarSystems();
 
             _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames),
@@ -227,7 +227,7 @@ namespace UnitTests.ShipTests.MapTests
                 AddStars = false
             }, this.Game.Write));
 
-            var systemNames = StarTrekKGSettings.GetStarSystems();
+            var systemNames = (new StarTrekKGSettings()).GetStarSystems();
             _setup.TestMap.Quadrants.GetActive().InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), _setup.TestMap, false);
 
             Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);  
