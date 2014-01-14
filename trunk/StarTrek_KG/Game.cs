@@ -10,9 +10,11 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG
 {
-    public class Game : IDisposable, IWrite
+    public class Game : IDisposable, IWrite, IConfig
     {
         #region Properties
+
+            public StarTrekKGSettings Config { get; set; }
             public Write Write { get; set; }
 
             public Output.Write Output { get; set; }
@@ -27,32 +29,36 @@ namespace StarTrek_KG
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
             /// and some unsorted crap at the moment..
         /// </summary>
-        public Game(bool startup = true)
+        public Game(StarTrekKGSettings config, bool startup = true)
         {
+            this.Config = config;
+            if(this.Write == null)
+            {
+                this.Write = new Write(config);
+            }
+
             if (startup)
             {
                 //The config file is loaded here, and persisted through the rest of the game. 
                 //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
                 //might try to reload the file. #NotInThisVersion
-                (new StarTrekKGSettings()).Get = (new StarTrekKGSettings()).GetConfig();
+                this.Config.Get = this.Config.GetConfig();
 
                 //These constants need to be localized to Game:
                 this.GetConstants();
 
                 this.PrintSector =
-                    (new Output.PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write));
+                    (new Output.PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config));
 
-                var startConfig = (new GameConfig
+                var startConfig = (new SetupOptions
                                        {
                                            Initialize = true,
                                            SectorDefs = SectorSetup()
                                        });
 
-                this.Write = new Write(null);
-                
-                this.Map = new Map(startConfig, this.Write);
-
-                this.Write = new Write(this.Map);
+                this.Write = new Write(this.Config); 
+                this.Map = new Map(startConfig, this.Write, this.Config);
+                this.Write = new Write(this.Config);
 
                 //We don't want to start game without hostiles
                 if (this.HostileCheck(this.Map))
@@ -62,28 +68,28 @@ namespace StarTrek_KG
                 this.Write.HighlightTextBW(false);
 
                 //todo: why are we creating this PrintSector() class a second time??
-                this.Output = new Output.Write(this.Map.hostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining);   
-                this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write);
+                this.Output = new Output.Write(this.Map.hostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
+                this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config);
             }
         }
 
         private void GetConstants()
         {
-            Constants.DEBUG_MODE = (new StarTrekKGSettings()).GetSetting<bool>("DebugMode");
+            Constants.DEBUG_MODE = this.Config.GetSetting<bool>("DebugMode");
 
             if (Constants.DEBUG_MODE)
             {
                 this.Write.Line("// ---------------- Debug Mode ----------------");
             }
 
-            Constants.SECTOR_MIN = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MAX");
+            Constants.SECTOR_MIN = this.Config.GetSetting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = this.Config.GetSetting<int>("SECTOR_MAX");
 
-            Constants.QUADRANT_MIN = (new StarTrekKGSettings()).GetSetting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = (new StarTrekKGSettings()).GetSetting<int>("QuadrantMax");
+            Constants.QUADRANT_MIN = this.Config.GetSetting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = this.Config.GetSetting<int>("QuadrantMax");
 
-            Constants.SHIELDS_DOWN_LEVEL = (new StarTrekKGSettings()).GetSetting<int>("ShieldsDownLevel");
-            Constants.LOW_ENERGY_LEVEL = (new StarTrekKGSettings()).GetSetting<int>("LowEnergyLevel");  
+            Constants.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
+            Constants.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");  
         }
 
         private SectorDefs SectorSetup()
@@ -177,7 +183,7 @@ namespace StarTrek_KG
         /// </summary>
         public void Run()
         {
-            var keepPlaying = (new StarTrekKGSettings()).GetSetting<bool>("KeepPlaying");
+            var keepPlaying = this.Config.GetSetting<bool>("KeepPlaying");
 
             while (keepPlaying)
             {
@@ -430,7 +436,7 @@ namespace StarTrek_KG
                                                     badGuy.Sector.X,
                                                     badGuy.Sector.Y);
 
-            var seedEnergyToPowerWeapon = (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotSeed")*
+            var seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed")*
                                           (Utility.Utility.Random).NextDouble();
 
             //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()

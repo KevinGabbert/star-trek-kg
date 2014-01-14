@@ -116,7 +116,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Generate_NoIntitialize()
         {
-            _setup.TestMap = new Map(null, this.Game.Write);
+            _setup.TestMap = new Map(null, this.Game.Write, this.Game.Config);
 
             MapTests.NoInitializeAsserts(_setup.TestMap);
         }
@@ -141,12 +141,12 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Generate_WithNoObjects()
         {
-            _setup.TestMap = new Map(new GameConfig()
+            _setup.TestMap = new Map(new SetupOptions()
                         {
                             
                             Initialize = true,
                             SectorDefs = new SectorDefs()
-                        }, this.Game.Write);
+                        }, this.Game.Write, this.Game.Config);
 
             //_setup.TestMap.Quadrants.PopulateSectors(null, _setup.TestMap);
 
@@ -159,12 +159,12 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Generate_WithNoObjectsDefaultCount()
         {
-            _setup.TestMap = new Map(new GameConfig()
+            _setup.TestMap = new Map(new SetupOptions()
             {
                 
                 Initialize = true,
                 SectorDefs = new SectorDefs()
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);
         }
@@ -173,7 +173,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Generate_WithPlayerShip()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -181,7 +181,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                             }
-            }, this.Game.Write)); 
+            }, this.Game.Write, this.Game.Config)); 
 
             //_setup.TestMap.Quadrants.PopulateSectors(_setup.TestMap.GameConfig.SectorDefs, _setup.TestMap);
 
@@ -196,7 +196,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Generate_WithHostiles()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -204,7 +204,7 @@ namespace UnitTests.ShipTests.MapTests
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                     }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
             //_setup.TestMap.Quadrants.PopulateSectors(null, _setup.TestMap);
 
             this.VerifyPlayerShipSettings();
@@ -219,13 +219,13 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void CreateEmptySectors()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
                 SectorDefs = new SectorDefs(),
                 AddStars = false
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             var systemNames = (new StarTrekKGSettings()).GetStarSystems();
             _setup.TestMap.Quadrants.GetActive().InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), _setup.TestMap, false);
@@ -239,12 +239,12 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void EmptyActive()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
                 SectorDefs = new SectorDefs()
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             _setup.TestMap.Quadrants.ClearActive();
 
@@ -255,7 +255,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void CreateSectorItems()
         {
-            _setup.TestMap = new Map(null, this.Game.Write);
+            _setup.TestMap = new Map(null, this.Game.Write, this.Game.Config);
             Assert.IsNull(_setup.TestMap.Quadrants.GetActive().Sectors);
 
             _setup.TestMap.Quadrants.GetActive().Sectors = new Sectors(); //[8, 8];
@@ -282,7 +282,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void IsSectorRegionEmpty()
         {
-            _setup.TestMap = new Map(null, this.Game.Write);
+            _setup.TestMap = new Map(null, this.Game.Write, this.Game.Config);
 
             Assert.IsNull(_setup.TestMap.Quadrants.GetActive().Sectors);
 
@@ -301,7 +301,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Remove()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -310,7 +310,7 @@ namespace UnitTests.ShipTests.MapTests
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                     }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             //Assert.AreEqual(SectorItem.Friendly, _setup.TestMap.GetItem(0, 1, 0, 0)); //verify our newly added friendly ship is on the map
 
@@ -323,7 +323,7 @@ namespace UnitTests.ShipTests.MapTests
 
             //add a ship to remove
             var sector = new Sector(new LocationDef(new Coordinate(testQuadX, testQuadY), new Coordinate(testSectX, testSectY)));
-            var hostileShip = new Ship("this is the ship", sector, this.Game.Map);
+            var hostileShip = new Ship("this is the ship", sector, this.Game.Map,_setup.Config);
 
             _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
                                            q.Y == hostileShip.QuadrantDef.Y).AddShip(hostileShip, sector);
@@ -381,7 +381,7 @@ namespace UnitTests.ShipTests.MapTests
 
             //add a ship
             var ship = new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)));
-            var hostileShip = new Ship("this is the ship", ship, this.Game.Map);
+            var hostileShip = new Ship("this is the ship", ship, this.Game.Map, _setup.Config);
 
             _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
@@ -402,7 +402,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Remove3()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -411,11 +411,11 @@ namespace UnitTests.ShipTests.MapTests
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                 }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Game.Map);
-            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))), this.Game.Map);
+            var hostileShip = new Ship("ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Game.Map, _setup.Config);
+            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))), this.Game.Map, _setup.Config);
 
             _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
             _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip2.Sector);

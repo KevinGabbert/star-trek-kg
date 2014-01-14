@@ -40,7 +40,7 @@ namespace UnitTests.ShipTests.StarbaseTests
 
         private void SetupMapWithStarbase()
         {
-            _testMapNoObjects = (new Map(new GameConfig
+            _testMapNoObjects = (new Map(new SetupOptions
             {
                 Initialize = true,
 
@@ -49,7 +49,7 @@ namespace UnitTests.ShipTests.StarbaseTests
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 2)), SectorItem.Starbase)
                                     }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             //Todo: this is how we would like to add a starbase
             ////add a ship

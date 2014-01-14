@@ -4,7 +4,6 @@ using System.Reflection;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Extensions;
-using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using Console = StarTrek_KG.Utility.Console;
 
@@ -15,23 +14,20 @@ namespace StarTrek_KG.Output
     /// </summary>
     public class Write
     {
+        public StarTrekKGSettings Config { get; set; }
         private int TotalHostiles { get; set; }
         private int TimeRemaining { get; set; }
         private int Starbases { get; set; }
         private int Stardate { get; set; }
 
-        //public Map Map { get; set; }
-
         //todo: make this non-static so we can test this class..
 
         private Console _console;
-
         public Console Console
         {
             get { return _console ?? (_console = new Console()); }
             set { _console = value; }
         }
-
 
         public List<string> ACTIVITY_PANEL = new List<string>();
 
@@ -43,17 +39,18 @@ namespace StarTrek_KG.Output
         //all *print* mnemonics will be changed to Output
         //UI needs to read this text and display it how it wants
 
-        public Write(Map map)
+        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, StarTrekKGSettings config)
         {
-            //this.Map = map;
-        }
-
-        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining)
-        {
+            this.Config = config;
             this.TotalHostiles = totalHostiles;
             this.Starbases = starbases;
             this.Stardate = stardate;
             this.TimeRemaining = timeRemaining;
+        }
+
+        public Write(StarTrekKGSettings config)
+        {
+            this.Config = config;
         }
 
         //missionResult needs to be an enum
@@ -86,7 +83,7 @@ namespace StarTrek_KG.Output
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            this.Console.WriteLine((new StarTrekKGSettings()).GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.Console.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
             this.Console.WriteLine();
         }
 
@@ -120,23 +117,23 @@ namespace StarTrek_KG.Output
 
         public void Resource(string text)
         {
-            this.Console.WriteLine((new StarTrekKGSettings()).GetText(text) + " ");
+            this.Console.WriteLine(this.Config.GetText(text) + " ");
         }
 
         public void ResourceLine(string text)
         {
-            this.Console.WriteLine((new StarTrekKGSettings()).GetText(text));
+            this.Console.WriteLine(this.Config.GetText(text));
             this.Console.WriteLine();
         }
 
         public void ResourceSingleLine(string text)
         {
-            this.Console.WriteLine((new StarTrekKGSettings()).GetText(text));
+            this.Console.WriteLine(this.Config.GetText(text));
         }
 
         public void ResourceLine(string prependText, string text)
         {
-            this.Console.WriteLine(prependText + " " + (new StarTrekKGSettings()).GetText(text));
+            this.Console.WriteLine(prependText + " " + this.Config.GetText(text));
             this.Console.WriteLine();
         }
 

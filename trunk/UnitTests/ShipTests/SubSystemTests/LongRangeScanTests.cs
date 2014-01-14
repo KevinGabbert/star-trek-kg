@@ -20,7 +20,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             TestRunner.GetTestConstants();
 
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
                                       {
                                           Initialize = true,
                                           SectorDefs = new SectorDefs
@@ -29,7 +29,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.Hostile),
                                                            },
                                           AddStars = false
-                                      }, this.Game.Write);
+                                      }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             Assert.AreEqual(SubsystemType.LongRangeScan, _testLongRangeScanner.Type);
@@ -67,7 +67,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
         private void CheckStarsInQuadrant()
         {
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
                                       {
                                           Initialize = true,
                                           AddStars = false,
@@ -80,7 +80,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                             new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
                                                             SectorItem.Star),
                                                     }
-                                      }, this.Game.Write);
+                                      }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
@@ -91,7 +91,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
         private void CheckStarsWithScanner()
         {
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddStars = false,
@@ -104,7 +104,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                             new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
                                                             SectorItem.Star),
                                                     }
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
@@ -121,7 +121,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetInfoFromScanner00()
         {
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -129,7 +129,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                     },
                 AddStars = false
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             _testLongRangeScanner.Controls();
@@ -140,7 +140,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetInfoFromScanner44()
         {
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -148,7 +148,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)
                     },
                 AddStars = false
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             _testLongRangeScanner.Controls();
@@ -159,7 +159,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetInfoFromScannerMaxMax()
         {
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -167,7 +167,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1), new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1)), SectorItem.Friendly)
                     },
                 AddStars = false
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
             _testLongRangeScanner.Controls();
@@ -179,7 +179,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetHostileInfoFromScanner()
         {
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -190,7 +190,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Hostile)
                     },
                 AddStars = false
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
@@ -206,7 +206,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void GetStarbaseInfoFromScanner()
         {
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -220,7 +220,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
                     },
                     AddStars = false
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
@@ -237,9 +237,9 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test(Description = "Fails when run with Fixture")]
         public void GetStarbaseInfoFromScanner2()
         {
-            var game = new Game();
+            var game = new Game((new StarTrekKGSettings()));
 
-            this.Game.Map = new Map(new GameConfig
+            this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -254,7 +254,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
                     },
                 AddStars = false
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
 
             int starbaseCount;
             int starCount;

@@ -20,7 +20,7 @@ namespace UnitTests.ShipTests.MapTests
         {
             TestRunner.GetTestConstants();
 
-            _testMapNoObjects = (new Map(new GameConfig
+            _testMapNoObjects = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -28,7 +28,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
         }
 
@@ -81,7 +81,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void NotDockingLocation2()
         {
-            var map = (new Map(new GameConfig
+            var map = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -89,7 +89,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             Assert.IsFalse(IsDockingLocation(map, 4, 4, 4, 4));
         }

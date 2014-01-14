@@ -29,7 +29,9 @@ namespace StarTrek_KG.Actors
             public bool Destroyed { get; set; }
             public Type Type { get; set; }
 
-            public Map Map { get; set; }  
+            public Map Map { get; set; }
+
+            public StarTrekKGSettings Config { get; set; }  
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log Log { get; set; } //
@@ -37,16 +39,17 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, Sector position, Map map)
+        public Ship(string name, Sector position, Map map, StarTrekKGSettings config)
         {
             this.Type = this.GetType();
+            this.Config = config;
             this.Map = map;
             this.Sector = position;
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
             this.QuadrantDef = position.QuadrantDef;
             
-            this.Subsystems = new Subsystems(this.Map, this);
+            this.Subsystems = new Subsystems(this.Map, this, this.Config);
 
             //todo: support the shieldEnergy config setting.
             //If there is a config setting, use it.  otherwise, 0
@@ -62,7 +65,7 @@ namespace StarTrek_KG.Actors
 
         public void RepairEverything()
         {
-            this.Energy = (new StarTrekKGSettings()).GetSetting<int>("repairEnergy");
+            this.Energy = this.Config.GetSetting<int>("repairEnergy");
 
             this.Subsystems.FullRepair();
         }
@@ -70,7 +73,7 @@ namespace StarTrek_KG.Actors
         public Allegiance GetAllegiance()
         {
             //todo: remove this app setting (pass in as an argument?)
-            var setting = (new StarTrekKGSettings()).GetSetting<string>("Hostile");
+            var setting = this.Config.GetSetting<string>("Hostile");
 
             return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy; //TODO: resource this out
         }

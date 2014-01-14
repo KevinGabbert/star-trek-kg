@@ -5,7 +5,7 @@ namespace StarTrek_KG.Settings
     //we are making this object so that tests that require certain objects setup can have them set up individually.
     //docking tests dont work when starbases are included.
     //movement tests hit obstacles when they are setup automatically
-    public class GameConfig 
+    public class SetupOptions 
     {
         public bool Initialize { get; set; }
 

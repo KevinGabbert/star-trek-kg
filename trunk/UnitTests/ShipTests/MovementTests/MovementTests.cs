@@ -63,7 +63,7 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void reset()
         {
-            this.Game.Map = (new Map(new GameConfig
+            this.Game.Map = (new Map(new SetupOptions
                                          {
 
                                              Initialize = true,
@@ -77,7 +77,7 @@ namespace UnitTests.ShipTests.MovementTests
                                                                   //todo: this needs to be in a random spot
                                                               },
                                              AddStars = false
-                                         }, this.Game.Write));
+                                         }, this.Game.Write, this.Game.Config));
 
             _testMovement = new Movement(this.Game.Map.Playership, this.Game);
             _testMovement.BlockedByObstacle = false;
