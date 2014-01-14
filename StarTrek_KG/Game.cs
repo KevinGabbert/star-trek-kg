@@ -34,7 +34,7 @@ namespace StarTrek_KG
                 //The config file is loaded here, and persisted through the rest of the game. 
                 //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
                 //might try to reload the file. #NotInThisVersion
-                StarTrekKGSettings.Get = StarTrekKGSettings.GetConfig();
+                (new StarTrekKGSettings()).Get = (new StarTrekKGSettings()).GetConfig();
 
                 //These constants need to be localized to Game:
                 this.GetConstants();
@@ -69,21 +69,21 @@ namespace StarTrek_KG
 
         private void GetConstants()
         {
-            Constants.DEBUG_MODE = StarTrekKGSettings.GetSetting<bool>("DebugMode");
+            Constants.DEBUG_MODE = (new StarTrekKGSettings()).GetSetting<bool>("DebugMode");
 
             if (Constants.DEBUG_MODE)
             {
                 this.Write.Line("// ---------------- Debug Mode ----------------");
             }
 
-            Constants.SECTOR_MIN = StarTrekKGSettings.GetSetting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = StarTrekKGSettings.GetSetting<int>("SECTOR_MAX");
+            Constants.SECTOR_MIN = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MIN");
+            Constants.SECTOR_MAX = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MAX");
 
-            Constants.QUADRANT_MIN = StarTrekKGSettings.GetSetting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = StarTrekKGSettings.GetSetting<int>("QuadrantMax");
+            Constants.QUADRANT_MIN = (new StarTrekKGSettings()).GetSetting<int>("QUADRANT_MIN");
+            Constants.QUADRANT_MAX = (new StarTrekKGSettings()).GetSetting<int>("QuadrantMax");
 
-            Constants.SHIELDS_DOWN_LEVEL = StarTrekKGSettings.GetSetting<int>("ShieldsDownLevel");
-            Constants.LOW_ENERGY_LEVEL = StarTrekKGSettings.GetSetting<int>("LowEnergyLevel");  
+            Constants.SHIELDS_DOWN_LEVEL = (new StarTrekKGSettings()).GetSetting<int>("ShieldsDownLevel");
+            Constants.LOW_ENERGY_LEVEL = (new StarTrekKGSettings()).GetSetting<int>("LowEnergyLevel");  
         }
 
         private SectorDefs SectorSetup()
@@ -177,7 +177,7 @@ namespace StarTrek_KG
         /// </summary>
         public void Run()
         {
-            var keepPlaying = StarTrekKGSettings.GetSetting<bool>("KeepPlaying");
+            var keepPlaying = (new StarTrekKGSettings()).GetSetting<bool>("KeepPlaying");
 
             while (keepPlaying)
             {
@@ -430,7 +430,7 @@ namespace StarTrek_KG
                                                     badGuy.Sector.X,
                                                     badGuy.Sector.Y);
 
-            var seedEnergyToPowerWeapon = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed")*
+            var seedEnergyToPowerWeapon = (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotSeed")*
                                           (Utility.Utility.Random).NextDouble();
 
             //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()

@@ -21,9 +21,9 @@ namespace UnitTests.ShipTests
         [Test]
         public void DisruptorShot()
         {
-            Assert.AreEqual(300, StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed"));
-            Assert.AreEqual(11.3, StarTrekKGSettings.GetSetting<double>("DisruptorShotDeprecationLevel"));
-            Assert.AreEqual(1.0, StarTrekKGSettings.GetSetting<double>("DisruptorEnergyAdjustment"));
+            Assert.AreEqual(300, (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotSeed"));
+            Assert.AreEqual(11.3, (new StarTrekKGSettings()).GetSetting<double>("DisruptorShotDeprecationLevel"));
+            Assert.AreEqual(1.0, (new StarTrekKGSettings()).GetSetting<double>("DisruptorEnergyAdjustment"));
 
             for (var i = 1; i < 1000; i++)
             {

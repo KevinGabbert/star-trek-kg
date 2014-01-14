@@ -92,17 +92,17 @@ namespace StarTrek_KG.Subsystem
             //todo: completely redo this
 
             this.Game.Write.Console.WriteLine("");
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSTimeRemaining"), map.timeRemaining);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount());
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSHostilesInQuadrant"), currentQuadrant.GetHostiles().Count);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSStarbases"), map.starbases);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSComputerDamage"), computerDamage);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(StarTrekKGSettings.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSTimeRemaining"), map.timeRemaining);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSHostilesRemaining"), map.Quadrants.GetHostileCount());
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSHostilesInQuadrant"), currentQuadrant.GetHostiles().Count);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSStarbases"), map.starbases);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSShieldsDamage"), Shields.For(ship).Damage);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSComputerDamage"), computerDamage);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
+            this.Game.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
             this.Game.Write.Console.WriteLine();
 
             //foreach (var badGuy in currentQuadrant.Hostiles)

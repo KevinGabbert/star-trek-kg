@@ -54,7 +54,7 @@ namespace StarTrek_KG.Subsystem
 
         public virtual void FullRepair()
         {
-            this.Damage = 0; //TODO: StarTrekKGSettings.GetSetting<int>("this.name");
+            this.Damage = 0; //TODO: (new StarTrekKGSettings()).GetSetting<int>("this.name");
 
             //todo: if this system is not debug, then repair
             this.OutputRepairedMessage();
@@ -76,7 +76,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public void TakeDamage()
         {
-            this.Damage = 1 + (Utility.Utility.Random).Next(StarTrekKGSettings.GetSetting<int>("DamageSeed"));
+            this.Damage = 1 + (Utility.Utility.Random).Next((new StarTrekKGSettings()).GetSetting<int>("DamageSeed"));
 
             //todo: if number is small, then this.OutputMalfunctioningMessage.. else...
             this.OutputDamagedMessage();

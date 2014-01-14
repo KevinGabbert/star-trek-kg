@@ -50,7 +50,7 @@ namespace StarTrek_KG.Subsystem
             //skip whats below
 
 
-            //var seedEnergyToPowerWeapon = StarTrekKGSettings.GetSetting<int>("DisruptorShotSeed") *
+            //var seedEnergyToPowerWeapon = (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotSeed") *
             //                              (Utility.Utility.Random).NextDouble();
 
             ////Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()

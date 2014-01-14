@@ -24,21 +24,21 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
             _setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount"); 
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount"); 
 
             //raise shields
             Shields.For(_setup.TestMap.Playership).SetEnergy(2500); //hopefully a single hit wont be harder than this!
             Assert.AreEqual(2500, Shields.For(_setup.TestMap.Playership).Energy, "Unexpected shield energy level"); //shields charged correctly // todo: do more tests on this in ShieldTests    
 
-            //Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
+            //Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
 
             (new Game()).ALLHostilesAttack(_setup.TestMap);
 
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
             Assert.Less(Shields.For(_setup.TestMap.Playership).Energy, 2500);
-            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "expected no change to ship energy"); 
+            Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "expected no change to ship energy"); 
     
             //Assert that ship has taken 2 hits.
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
@@ -86,7 +86,7 @@ namespace UnitTests.ShipTests.HostileTests
         {
             _setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(StarTrekKGSettings.GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
+            Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
         }
 
         [Ignore("This is a long running test intended to suss out a problem (which is now fixed)")]
@@ -110,7 +110,7 @@ namespace UnitTests.ShipTests.HostileTests
         {
             _setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"), "Ship energy not at expected amount");
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
 
             (new Game()).ALLHostilesAttack(_setup.TestMap);
 
@@ -145,7 +145,7 @@ namespace UnitTests.ShipTests.HostileTests
             //Ship has taken no damage.
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
             Assert.AreEqual(Shields.For(_setup.TestMap.Playership).Energy, 0); //never even needed to raise shields!
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, StarTrekKGSettings.GetSetting<int>("energy"));      
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"));      
         }
 
         [Test]
@@ -416,7 +416,7 @@ namespace UnitTests.ShipTests.HostileTests
 
             Assert.IsInstanceOf<Map>(game.Map);
 
-            StarTrekKGSettings.Get = null;
+            (new StarTrekKGSettings()).Get = null;
 
             _setup.TestMap = this.SetUp3Hostiles();
 

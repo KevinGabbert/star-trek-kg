@@ -43,12 +43,12 @@ namespace StarTrek_KG.Subsystem
 
                 if(subsystem.Type == SubsystemType.Torpedoes)
                 {
-                    ((Torpedoes)subsystem).Count = 10;        //TODO: StarTrekKGSettings.GetSetting<int>("repairTorpedoes");
+                    ((Torpedoes)subsystem).Count = 10;        //TODO: (new StarTrekKGSettings()).GetSetting<int>("repairTorpedoes");
                 }
 
                 if (subsystem.Type == SubsystemType.Navigation)
                 {
-                    ((Navigation)subsystem).docked = true;        //TODO: StarTrekKGSettings.GetSetting<int>("repairDocked");
+                    ((Navigation)subsystem).docked = true;        //TODO: (new StarTrekKGSettings()).GetSetting<int>("repairDocked");
                 }
             }
 

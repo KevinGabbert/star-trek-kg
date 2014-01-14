@@ -4,7 +4,6 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
@@ -63,7 +62,7 @@ namespace StarTrek_KG.Actors
 
         public void RepairEverything()
         {
-            this.Energy = StarTrekKGSettings.GetSetting<int>("repairEnergy");
+            this.Energy = (new StarTrekKGSettings()).GetSetting<int>("repairEnergy");
 
             this.Subsystems.FullRepair();
         }
@@ -71,7 +70,7 @@ namespace StarTrek_KG.Actors
         public Allegiance GetAllegiance()
         {
             //todo: remove this app setting (pass in as an argument?)
-            var setting = StarTrekKGSettings.GetSetting<string>("Hostile");
+            var setting = (new StarTrekKGSettings()).GetSetting<string>("Hostile");
 
             return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy; //TODO: resource this out
         }

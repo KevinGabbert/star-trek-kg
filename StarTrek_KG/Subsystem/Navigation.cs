@@ -35,11 +35,11 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            this.Game.Write.Line(StarTrekKGSettings.GetSetting<string>("WarpEnginesDamaged"));
+            this.Game.Write.Line((new StarTrekKGSettings()).GetSetting<string>("WarpEnginesDamaged"));
         }
         public override void OutputRepairedMessage()
         {
-            this.Game.Write.Line(StarTrekKGSettings.GetSetting<string>("WarpEnginesRepaired"));
+            this.Game.Write.Line((new StarTrekKGSettings()).GetSetting<string>("WarpEnginesRepaired"));
         }
         public override void OutputMalfunctioningMessage()
         {
@@ -49,7 +49,7 @@ namespace StarTrek_KG.Subsystem
         private void SetMaxWarpFactor()
         {
             this.MaxWarpFactor = (int)(0.2 + (Utility.Utility.Random).Next(9)); //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
-            this.Game.Write.Line(string.Format(StarTrekKGSettings.GetSetting<string>("MaxWarpFactorMessage"), this.MaxWarpFactor));
+            this.Game.Write.Line(string.Format((new StarTrekKGSettings()).GetSetting<string>("MaxWarpFactorMessage"), this.MaxWarpFactor));
         }
 
         public override void Controls(string command)
@@ -113,7 +113,7 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo.RepairEverything();
 
-            this.Game.Write.ResourceLine(StarTrekKGSettings.GetSetting<string>("PlayerShip"), "SuccessfullDock");
+            this.Game.Write.ResourceLine((new StarTrekKGSettings()).GetSetting<string>("PlayerShip"), "SuccessfullDock");
         }
 
         //todo: move to Game() object
@@ -140,21 +140,21 @@ namespace StarTrek_KG.Subsystem
             double quadX;
             double quadY;
 
-            this.Game.Write.Line(string.Format("Your Ship" + StarTrekKGSettings.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
+            this.Game.Write.Line(string.Format("Your Ship" + (new StarTrekKGSettings()).GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
 
-            if (!this.Game.Write.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantX"), out quadX)
+            if (!this.Game.Write.PromptUser((new StarTrekKGSettings()).GetSetting<string>("DestinationQuadrantX"), out quadX)
                 || quadX < (Constants.QUADRANT_MIN + 1) 
                 || quadX > Constants.QUADRANT_MAX)
                 {
-                    this.Game.Write.Line(StarTrekKGSettings.GetSetting<string>("InvalidXCoordinate"));
+                    this.Game.Write.Line((new StarTrekKGSettings()).GetSetting<string>("InvalidXCoordinate"));
                     return;
                 }
 
-            if (!this.Game.Write.PromptUser(StarTrekKGSettings.GetSetting<string>("DestinationQuadrantY"), out quadY)
+            if (!this.Game.Write.PromptUser((new StarTrekKGSettings()).GetSetting<string>("DestinationQuadrantY"), out quadY)
                 || quadY < (Constants.QUADRANT_MIN + 1) 
                 || quadY > Constants.QUADRANT_MAX)
                 {
-                    this.Game.Write.Line(StarTrekKGSettings.GetSetting<string>("InvalidYCoordinate"));
+                    this.Game.Write.Line((new StarTrekKGSettings()).GetSetting<string>("InvalidYCoordinate"));
                     return;
                 }
 
@@ -163,7 +163,7 @@ namespace StarTrek_KG.Subsystem
             var qy = ((int)(quadY)) - 1;
             if (qx == thisShip.Quadrant.X && qy == thisShip.Quadrant.Y)
             {
-                this.Game.Write.Line(StarTrekKGSettings.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
+                this.Game.Write.Line((new StarTrekKGSettings()).GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 
@@ -175,7 +175,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException(StarTrekKGSettings.GetSetting<string>("NavigationNotSetUp")); //todo: reflect the name and refactor this to ISubsystem
+                throw new GameConfigException((new StarTrekKGSettings()).GetSetting<string>("NavigationNotSetUp")); //todo: reflect the name and refactor this to ISubsystem
             }
 
             return (Navigation)ship.Subsystems.Single(s => s.Type == SubsystemType.Navigation);

@@ -40,7 +40,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void NewWithMap()
         {
-            var baddieNames = new Stack<string>(StarTrekKGSettings.GetShips("Klingon"));
+            var baddieNames = new Stack<string>((new StarTrekKGSettings()).GetShips("Klingon"));
 
             _setup.SetupMapWith1Friendly();
 
@@ -66,8 +66,8 @@ namespace UnitTests.ShipTests.QuadrantTests
         public void Create()
         {
             var name = new List<string>();
-            var systemNames = StarTrekKGSettings.GetStarSystems();
-            var klingonShipNames = StarTrekKGSettings.GetShips("Klingon");
+            var systemNames = (new StarTrekKGSettings()).GetStarSystems();
+            var klingonShipNames = (new StarTrekKGSettings()).GetShips("Klingon");
             name.Add(systemNames[0]);
 
             var names = new Stack<string>(name);

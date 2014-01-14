@@ -86,7 +86,7 @@ namespace StarTrek_KG.Output
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            this.Console.WriteLine(StarTrekKGSettings.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.Console.WriteLine((new StarTrekKGSettings()).GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
             this.Console.WriteLine();
         }
 
@@ -120,23 +120,23 @@ namespace StarTrek_KG.Output
 
         public void Resource(string text)
         {
-            this.Console.WriteLine(StarTrekKGSettings.GetText(text) + " ");
+            this.Console.WriteLine((new StarTrekKGSettings()).GetText(text) + " ");
         }
 
         public void ResourceLine(string text)
         {
-            this.Console.WriteLine(StarTrekKGSettings.GetText(text));
+            this.Console.WriteLine((new StarTrekKGSettings()).GetText(text));
             this.Console.WriteLine();
         }
 
         public void ResourceSingleLine(string text)
         {
-            this.Console.WriteLine(StarTrekKGSettings.GetText(text));
+            this.Console.WriteLine((new StarTrekKGSettings()).GetText(text));
         }
 
         public void ResourceLine(string prependText, string text)
         {
-            this.Console.WriteLine(prependText + " " + StarTrekKGSettings.GetText(text));
+            this.Console.WriteLine(prependText + " " + (new StarTrekKGSettings()).GetText(text));
             this.Console.WriteLine();
         }
 
