@@ -8,7 +8,7 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Output
 {
-    public class PrintSector: IWrite
+    public class PrintSector: IWrite, IConfig
     {
         private Location Location { get; set; }
         public string Condition { get; set; }
@@ -16,10 +16,13 @@ namespace StarTrek_KG.Output
         private int LowEnergyLevel { get; set; }
 
         public Write Write { get; set; }
+        public StarTrekKGSettings Config { get; set; }
 
-        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write)
+        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write, StarTrekKGSettings config)
         {
+            this.Config = config;
             this.Write = write;
+            this.Write.Config = config;
 
             this.ShieldsDownLevel = shieldsDownLevel;
             this.LowEnergyLevel = lowEnergyLevel;
@@ -49,14 +52,14 @@ namespace StarTrek_KG.Output
             this.Location = location;
 
             this.Write.Console.WriteLine("");
-            this.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
+            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
 
             for (int i = 0; i < 8; i++ )
             {
                 this.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles);
             }
 
-            this.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
+            this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
         private string GetRowIndicator(int row, Map map)
@@ -66,28 +69,28 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSQuadrantIndicator"), Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y));
+                    retVal += String.Format(this.Config.GetText("SRSQuadrantIndicator"), Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y));
                     break;
                 case 1:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSSectorIndicator"), Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y));
+                    retVal += String.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y));
                     break;
                 case 2:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSStardateIndicator"), map.Stardate);
+                    retVal += String.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
                     break;
                 case 3:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
+                    retVal += String.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
                     break;
                 case 4:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSConditionIndicator"), this.Condition);
+                    retVal += String.Format(this.Config.GetText("SRSConditionIndicator"), this.Condition);
                     break;
                 case 5:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSEnergyIndicator"), map.Playership.Energy);
+                    retVal += String.Format(this.Config.GetText("SRSEnergyIndicator"), map.Playership.Energy);
                     break;
                 case 6:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
+                    retVal += String.Format(this.Config.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
                     break;
                 case 7:
-                    retVal += String.Format((new StarTrekKGSettings()).GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
+                    retVal += String.Format(this.Config.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
                     break;
             }
 
@@ -186,12 +189,12 @@ namespace StarTrek_KG.Output
 
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
-            this.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("HostileDetected"),
+            this.Write.Console.WriteLine(this.Config.GetText("HostileDetected"),
                               (quadrant.GetHostiles().Count == 1 ? "" : "s"));
 
             foreach (var hostile in quadrant.GetHostiles())
             {
-                this.Write.Console.WriteLine((new StarTrekKGSettings()).GetText("IDHostile"), hostile.Name);
+                this.Write.Console.WriteLine(this.Config.GetText("IDHostile"), hostile.Name);
             }
 
             this.Write.Console.WriteLine("");

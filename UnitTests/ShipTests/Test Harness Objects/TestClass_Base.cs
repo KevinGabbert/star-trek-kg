@@ -13,9 +13,9 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         public TestClass_Base()
         {
             _setup.Game.Write = new Write(null);
-            _setup.TestMap = new Map(null, _setup.Game.Write);
-            _setup.TestMap.Write = new Write(_setup.TestMap);
-            _setup.Game.Write = new Write(_setup.TestMap);
+            _setup.TestMap = new Map(null, _setup.Game.Write, _setup.Config);
+            _setup.TestMap.Write = new Write(_setup.TestMap.Config);
+            _setup.Game.Write = new Write(_setup.TestMap.Config);
 
             this.Game = _setup.Game;
         }

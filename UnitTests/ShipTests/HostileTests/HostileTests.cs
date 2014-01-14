@@ -34,7 +34,7 @@ namespace UnitTests.ShipTests.HostileTests
 
             Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            (new Game()).ALLHostilesAttack(_setup.TestMap);
+            (new Game((new StarTrekKGSettings()))).ALLHostilesAttack(_setup.TestMap);
 
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
             Assert.Less(Shields.For(_setup.TestMap.Playership).Energy, 2500);
@@ -112,7 +112,7 @@ namespace UnitTests.ShipTests.HostileTests
 
             Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            (new Game()).ALLHostilesAttack(_setup.TestMap);
+            (new Game((new StarTrekKGSettings()))).ALLHostilesAttack(_setup.TestMap);
 
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
 
@@ -151,14 +151,14 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith0Friendlies()
         {
-            var game = (new Game()); //this can make tests break so I throw it in for a check..
+            var game = (new Game((new StarTrekKGSettings()))); //this can make tests break so I throw it in for a check..
 
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs(),
                 AddStars = false
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             var activeQuad = _setup.TestMap.Quadrants.GetActive();
 
@@ -177,7 +177,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith1Friendly()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -186,7 +186,7 @@ namespace UnitTests.ShipTests.HostileTests
                                             {
                                                 new SectorDef(SectorItem.Friendly)
                                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             var activeQuad = _setup.TestMap.Quadrants.GetActive();
 
@@ -209,19 +209,19 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith1Hostile()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
                 
                 SectorDefs = new SectorDefs()
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
 
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map);
+            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map, _setup.Config);
 
             _setup.TestMap.Quadrants[0].AddShip(hostileShip, _setup.TestMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
 
@@ -238,7 +238,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith1HostileAlternate()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -247,7 +247,7 @@ namespace UnitTests.ShipTests.HostileTests
                                             {
                                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.Hostile)
                                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             var hostiles = _setup.TestMap.Quadrants.GetHostiles();
             Assert.AreEqual(1, hostiles.Count);
@@ -263,16 +263,16 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void Remove1Hostile()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs()
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map);
+            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map, _setup.Config);
 
             _setup.TestMap.Quadrants[0].AddShip(hostileShip, _setup.TestMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
 
@@ -301,9 +301,9 @@ namespace UnitTests.ShipTests.HostileTests
 
         private void TestMap3Scenario()
         {
-            var x = new Game();
+            var x = new Game((new StarTrekKGSettings()));
 
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
                 {
                     Initialize = true,
         
@@ -323,7 +323,7 @@ namespace UnitTests.ShipTests.HostileTests
                                                 SectorItem.Hostile)
                                         },
                     AddStars = false
-                }, this.Game.Write));
+                }, this.Game.Write, this.Game.Config));
 
             var activeQuad = _setup.TestMap.Quadrants.GetActive();
 
@@ -359,9 +359,9 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder()
         {
-            var x = (new Game());
+            var x = (new Game((new StarTrekKGSettings())));
 
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -374,7 +374,7 @@ namespace UnitTests.ShipTests.HostileTests
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.Hostile)
                 },
                 AddStars = false
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             var activeQuad = _setup.TestMap.Quadrants.GetActive();
 
@@ -412,7 +412,7 @@ namespace UnitTests.ShipTests.HostileTests
             //fails intermittently..
             //**This test has an interesting error in it..
 
-            var game = new Game();
+            var game = new Game((new StarTrekKGSettings()));
 
             Assert.IsInstanceOf<Map>(game.Map);
 
@@ -448,7 +448,7 @@ namespace UnitTests.ShipTests.HostileTests
 
         private Map SetUp3Hostiles()
         {
-            return (new Map(new GameConfig
+            return (new Map(new SetupOptions
                                 {
                                     Initialize = true,
                                     
@@ -461,7 +461,7 @@ namespace UnitTests.ShipTests.HostileTests
                                                          new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.Hostile)
                                                      },
                                     AddStars = false
-                                }, this.Game.Write));
+                                }, this.Game.Write, this.Game.Config));
         }
 
         /// <summary>
@@ -470,7 +470,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder3()
         {
-            var x = (new Game());
+            var x = (new Game((new StarTrekKGSettings())));
 
             _setup.TestMap = this.SetUp3Hostiles();
 
@@ -510,7 +510,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapWith2HostilesAnotherWay()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
                                    {
                                        Initialize = true,
                                        
@@ -519,14 +519,14 @@ namespace UnitTests.ShipTests.HostileTests
                                             {
                                                 new SectorDef(SectorItem.Friendly)
                                             }
-                                   }, this.Game.Write));
+                                   }, this.Game.Write, this.Game.Config));
 
             var activeQuad = _setup.TestMap.Quadrants.GetActive();
             var activeQuadrant = activeQuad;
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 7))), this.Game.Map);
-            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 6))), this.Game.Map);
+            var hostileShip = new Ship("ship1", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 7))), this.Game.Map, _setup.Config);
+            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 6))), this.Game.Map, _setup.Config);
 
             activeQuadrant.AddShip(hostileShip, hostileShip.Sector);
             activeQuadrant.AddShip(hostileShip2, hostileShip2.Sector);
@@ -549,7 +549,7 @@ namespace UnitTests.ShipTests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -559,14 +559,14 @@ namespace UnitTests.ShipTests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.Hostile)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile2()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -576,14 +576,14 @@ namespace UnitTests.ShipTests.HostileTests
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 7)), SectorItem.Hostile)
                                         }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile3()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -593,14 +593,14 @@ namespace UnitTests.ShipTests.HostileTests
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.Friendly),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 7)), SectorItem.Hostile)
                                         }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile4()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -610,14 +610,14 @@ namespace UnitTests.ShipTests.HostileTests
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.Friendly),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)), SectorItem.Hostile)
                                         }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile5()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -627,14 +627,14 @@ namespace UnitTests.ShipTests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.Hostile)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile6()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -644,14 +644,14 @@ namespace UnitTests.ShipTests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.Friendly),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.Hostile)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile7()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -661,14 +661,14 @@ namespace UnitTests.ShipTests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
                                 new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)), SectorItem.Hostile)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile8()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -678,14 +678,14 @@ namespace UnitTests.ShipTests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.Friendly),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.Hostile)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile9()
         {
-            _setup.TestMap = (new Map(new GameConfig
+            _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 
@@ -695,7 +695,7 @@ namespace UnitTests.ShipTests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.Friendly),
                                 new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)), SectorItem.Hostile)
                             }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
         }
 
         #endregion

@@ -25,7 +25,7 @@
  */
 
 using StarTrek_KG;
-using StarTrek_KG.Output;
+using StarTrek_KG.Config;
 
 namespace StarTrek_Console {
 
@@ -33,7 +33,9 @@ namespace StarTrek_Console {
 
     public static void Main(string[] args)
     {
-        (new Game()).Run();
+        var settingsForWholeGame = (new StarTrekKGSettings());
+
+        (new Game(settingsForWholeGame)).Run();
     } 
   }
 }

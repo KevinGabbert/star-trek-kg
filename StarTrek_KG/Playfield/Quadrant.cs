@@ -340,7 +340,7 @@ namespace StarTrek_KG.Playfield
         private Ship CreateHostileShip(Sector position, Stack<string> listOfBaddies)
         {
             //todo: this should be a random baddie, from the list of baddies in app.config
-            var hostileShip = new Ship(listOfBaddies.Pop(), position, this.Map); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
+            var hostileShip = new Ship(listOfBaddies.Pop(), position, this.Map, this.Map.Config); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
             hostileShip.Sector.X = position.X; 
             hostileShip.Sector.Y = position.Y;
 
@@ -417,7 +417,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                this.Map.Write.Line((new StarTrekKGSettings()).GetSetting<string>("QuadrantsNoHostileShips"));
+                this.Map.Write.Line(this.Map.Config.GetSetting<string>("QuadrantsNoHostileShips"));
                 return true;
             }
             return false;
@@ -481,7 +481,7 @@ namespace StarTrek_KG.Playfield
                 }
                 else
                 {
-                    throw new GameException((new StarTrekKGSettings()).GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name);
+                    throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name);
                 }
             }
             catch (Exception ex)
@@ -519,7 +519,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException((new StarTrekKGSettings()).GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
+                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
             }
         }
 
@@ -540,7 +540,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException((new StarTrekKGSettings()).GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
+                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name + ".");
             }
         }
 

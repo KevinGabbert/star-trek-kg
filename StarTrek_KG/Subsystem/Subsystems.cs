@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
@@ -10,13 +11,13 @@ namespace StarTrek_KG.Subsystem
 {
     public class Subsystems: List<ISubsystem>
     {
-        public Subsystems(Map map, Ship shipConnectedTo)
+        public Subsystems(Map map, Ship shipConnectedTo, StarTrekKGSettings config)
         {
             // TODO: Complete member initialization
-            var game = new Game(false);
+            var game = new Game(config, false);
             game.Map = map;
 
-            var write = new Write(map);
+            var write = new Write(config);
             game.Write = write;
 
             this.AddRange(new List<ISubsystem>(){
@@ -43,12 +44,12 @@ namespace StarTrek_KG.Subsystem
 
                 if(subsystem.Type == SubsystemType.Torpedoes)
                 {
-                    ((Torpedoes)subsystem).Count = 10;        //TODO: (new StarTrekKGSettings()).GetSetting<int>("repairTorpedoes");
+                    ((Torpedoes)subsystem).Count = 10;        //TODO: (this.game.config).GetSetting<int>("repairTorpedoes");
                 }
 
                 if (subsystem.Type == SubsystemType.Navigation)
                 {
-                    ((Navigation)subsystem).docked = true;        //TODO: (new StarTrekKGSettings()).GetSetting<int>("repairDocked");
+                    ((Navigation)subsystem).docked = true;        //TODO: (this.game.config).GetSetting<int>("repairDocked");
                 }
             }
 

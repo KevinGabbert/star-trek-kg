@@ -18,7 +18,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         {
             _testQuadrant = new Quadrant(this.Game.Map);
 
-            _testQuadrant.Map = new Map(null, this.Game.Write);
+            _testQuadrant.Map = new Map(null, this.Game.Write, this.Game.Config);
             _testQuadrant.Name = "Setup";
             _testQuadrant.Scanned = false;
 

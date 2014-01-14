@@ -73,7 +73,7 @@ namespace StarTrek_KG.Playfield
         {
             if (hostiles.Count == 0)
             {
-                (new Write(this.Map)).Line("There are no Hostile ships in this quadrant.");
+                (new Write(this.Map.Config)).Line("There are no Hostile ships in this quadrant.");
                 return true;
             }
             return false;
@@ -183,25 +183,8 @@ namespace StarTrek_KG.Playfield
 
             this.RemoveShip(shipToRemove.Name);
 
-            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, (new StarTrekKGSettings()).GetText("shipDestroyed")));
+            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, this.Map.Config.GetText("shipDestroyed")));
         }
-
-        //private static void DeleteShip(IShip shipToRemove, Map map)
-        //{
-        //    map.Get(shipToRemove.QuadrantDef.X,
-        //            shipToRemove.QuadrantDef.Y,
-        //            shipToRemove.Sector.X,
-        //            shipToRemove.Sector.Y).Item = SectorItem.Empty;
-
-        //    var quadrantToRemoveFrom = map.Quadrants.Single(q => q.X == shipToRemove.QuadrantDef.X &&
-        //                                                         q.Y == shipToRemove.QuadrantDef.Y);
-        //    //todo: NO HOSTILE HERE TO REMOVE??
-        //    quadrantToRemoveFrom.GetHostiles().Remove(quadrantToRemoveFrom.GetHostiles().Where(h => h.Sector.X == shipToRemove.Sector.X &&
-        //                                                                                      h.Sector.Y == shipToRemove.Sector.Y &&
-        //                                                                                      h.Name == shipToRemove.Name).Single());
-
-        //        //Remove from local set of Hostiles.
-        //}
 
         /// <summary>
         /// This is actually placeholder code, as hopefully, one day, there will be a lot of playerships running around, needing removal,

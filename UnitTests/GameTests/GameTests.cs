@@ -15,7 +15,7 @@ namespace UnitTests.GameTests
         {
             //interesting.. this test causes MapWith3HostilesTheConfigWayAddedInDescendingOrder2() to fail when running after this one does
 
-            var game = new Game();
+            var game = new Game((new StarTrekKGSettings()));
             
             Assert.IsInstanceOf<Map>(game.Map);
 

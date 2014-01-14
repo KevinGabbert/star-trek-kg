@@ -80,7 +80,7 @@ namespace StarTrek_KG.Subsystem
                     goto EndControls;
                 }
 
-                var maxEnergy = (Convert.ToInt32((new StarTrekKGSettings()).GetSetting<string>("SHIELDS_MAX")));
+                var maxEnergy = (Convert.ToInt32(this.Game.Config.GetSetting<string>("SHIELDS_MAX")));
                 var totalEnergy = (this.Energy + transfer);
 
                 if (adding && (totalEnergy > maxEnergy))

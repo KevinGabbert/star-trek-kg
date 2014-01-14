@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
@@ -11,6 +12,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
 {
     public class Test_Setup
     {
+        public StarTrekKGSettings Config { get; set; } 
         public Game Game { get; set; }
         public Navigation TestNavigation { get; set; }
         public Torpedoes TestPhotons { get; set; }
@@ -52,8 +54,8 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             this.SetupMapWith1Friendly();
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
-            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
+            var hostileShip = new Ship("ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap, this.Config);
+            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap, this.Config);
 
             var activeQuad = this.TestMap.Quadrants.GetActive();
             activeQuad.AddShip(hostileShip, hostileShip.Sector);
@@ -64,7 +66,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
 
         public void SetupMapWith1Friendly()
         {
-            this.TestMap = (new Map(new GameConfig
+            this.TestMap = (new Map(new SetupOptions
                                         {
                                             Initialize = true,
                                             SectorDefs = new SectorDefs
@@ -74,14 +76,14 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                      SectorItem.Friendly),
                                                                  //todo: this needs to be in a random spo
                                                              }
-                                        }, this.Game.Write));
+                                        }, this.Game.Write, this.Game.Config));
 
             this.VerifyMap();
         }
 
         public void SetupMapWith1Hostile()
         {
-            this.TestMap = new Map(new GameConfig
+            this.TestMap = new Map(new SetupOptions
                                   {
                                       Initialize = true,
                                       SectorDefs = new SectorDefs
@@ -94,13 +96,13 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                new Coordinate(0, 1)), SectorItem.Hostile),
                                                        }
-                                  }, this.Game.Write);
+                                  }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
         }
 
         public void SetupMapWith1HostileAtSector(Coordinate friendlySector, Coordinate hostileSector)
         {
-            this.TestMap = new Map(new GameConfig
+            this.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
@@ -113,26 +115,26 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                hostileSector), SectorItem.Hostile),
                                                        }
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
         }
 
         public void SetupMapWith1FriendlyAtSector(Coordinate friendlySector)
         {
-            this.TestMap = new Map(new GameConfig
+            this.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
                 {
                    new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.Friendly)},
               AddStars = false
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
         }
 
         public void SetupMapWithStarbase()
         {
-            this.TestMap = (new Map(new GameConfig
+            this.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
 
@@ -141,7 +143,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
                                     }
-            }, this.Game.Write));
+            }, this.Game.Write, this.Game.Config));
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
@@ -154,17 +156,17 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
 
         public void SetupNewMapOnly()
         {
-            this.TestMap = new Map(new GameConfig
+            this.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 //GenerateMap = true
-            }, this.Game.Write);
+            }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
         }
 
         public void SetupBaseMap()
         {
-            this.TestMap = new Map(null, this.Game.Write);
+            this.TestMap = new Map(null, this.Game.Write, this.Game.Config);
             this.VerifyMap();
         }
 
@@ -176,7 +178,8 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             Constants.QUADRANT_MIN = 0;
             Constants.QUADRANT_MAX = 0;
 
-            this.Game = new Game(false);
+            this.Game = new Game((new StarTrekKGSettings()), false);
+            this.Config = Game.Config;
 
             TestRunner.GetTestConstants();
 
