@@ -3,6 +3,7 @@ using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -10,9 +11,9 @@ using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests.Test_Harness_Objects
 {
-    public class Test_Setup
+    public class Test_Setup: IConfig
     {
-        public StarTrekKGSettings Config { get; set; } 
+        public IStarTrekKGSettings Config { get; set; } 
         public Game Game { get; set; }
         public Navigation TestNavigation { get; set; }
         public Torpedoes TestPhotons { get; set; }
@@ -36,7 +37,6 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                 this.Game.Map = value;
             }
         }
-
 
         public Test_Setup()
         {
@@ -106,15 +106,15 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs
-                                                       {
-                                                           new SectorDef(
-                                                               new LocationDef(new Coordinate(0, 0),
-                                                                               friendlySector),
-                                                               SectorItem.Friendly),
-                                                           new SectorDef(
-                                                               new LocationDef(new Coordinate(0, 0),
-                                                                               hostileSector), SectorItem.Hostile),
-                                                       }
+                                        {
+                                            new SectorDef(
+                                                new LocationDef(new Coordinate(0, 0),
+                                                                friendlySector),
+                                                SectorItem.Friendly),
+                                            new SectorDef(
+                                                new LocationDef(new Coordinate(0, 0),
+                                                                hostileSector), SectorItem.Hostile),
+                                        }
             }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -16,9 +15,9 @@ namespace StarTrek_KG.Output
         private int LowEnergyLevel { get; set; }
 
         public Write Write { get; set; }
-        public StarTrekKGSettings Config { get; set; }
+        public IStarTrekKGSettings Config { get; set; }
 
-        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write, StarTrekKGSettings config)
+        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Write = write;

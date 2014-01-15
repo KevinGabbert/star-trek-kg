@@ -118,7 +118,7 @@ namespace StarTrek_KG.Subsystem
 
                     //todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
                     this.Game.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
-                    this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + hostileShip.Shields().Energy + " ");
+                    this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
                     break;
 
                 case "dist":
