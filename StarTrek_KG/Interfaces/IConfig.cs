@@ -1,9 +1,7 @@
-﻿using StarTrek_KG.Config;
-
-namespace StarTrek_KG.Interfaces
+﻿namespace StarTrek_KG.Interfaces
 {
-    interface IConfig
+    public interface IConfig
     {
-        StarTrekKGSettings Config { get; set; }
+        IStarTrekKGSettings Config { get; set; }
     }
 }

@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IStarTrekKGSettings.cs" />
     <Compile Include="Interfaces\IWrite.cs" />
     <Compile Include="Config\Collections\Factions.cs" />
     <Compile Include="Config\Collections\NameAllegiances.cs" />

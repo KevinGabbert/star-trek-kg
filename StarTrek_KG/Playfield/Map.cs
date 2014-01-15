@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
@@ -27,7 +26,7 @@ namespace StarTrek_KG.Playfield
             public int starbases { get; set; }
             public string Text { get; set; }
             public Write Write { get; set; }
-            public StarTrekKGSettings Config { get; set; }
+            public IStarTrekKGSettings Config { get; set; }
 
         #endregion
 
@@ -38,7 +37,7 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(SetupOptions setupOptions, Write write, StarTrekKGSettings config)
+        public Map(SetupOptions setupOptions, Write write, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Write = write;

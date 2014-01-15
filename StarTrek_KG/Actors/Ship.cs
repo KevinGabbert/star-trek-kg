@@ -20,31 +20,29 @@ namespace StarTrek_KG.Actors
 
             //todo: create function GetSector() to replace this (will query map.quadrants.active for ship)
             public Sector Sector { get; set; } //This is a ship's location in a sector
-
-            public string Name { get; set; }
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
+            public Type Type { get; set; }
+            public Map Map { get; set; }
+            public IStarTrekKGSettings Config { get; set; }
 
+            public string Name { get; set; }
             public double Energy { get; set; }
             public bool Destroyed { get; set; }
-            public Type Type { get; set; }
 
-            public Map Map { get; set; }
-
-            public StarTrekKGSettings Config { get; set; }  
-
-            ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
+        ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log Log { get; set; } //
 
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, Sector position, Map map, StarTrekKGSettings config)
+        public Ship(string name, Sector position, Map map, IStarTrekKGSettings config)
         {
+            this.Config = (IStarTrekKGSettings)this.CheckParam(config);
+            this.Map = (Map)this.CheckParam(map);
+            this.Sector = (Sector)this.CheckParam(position);
+
             this.Type = this.GetType();
-            this.Config = config;
-            this.Map = map;
-            this.Sector = position;
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
             this.QuadrantDef = position.QuadrantDef;
@@ -58,9 +56,16 @@ namespace StarTrek_KG.Actors
             //refactor from Game.GetGlobalInfo()
         }
 
-        public Shields Shields()
+        private object CheckParam(object prop)
         {
-            return (Shields) this.Subsystems.Single(s => s.Type == SubsystemType.Shields);
+            if (prop == null)
+            {
+                throw new GameException("New Ship Config is null");
+            }
+            else
+            {
+                return prop;
+            }
         }
 
         public void RepairEverything()
@@ -72,10 +77,24 @@ namespace StarTrek_KG.Actors
 
         public Allegiance GetAllegiance()
         {
-            //todo: remove this app setting (pass in as an argument?)
             var setting = this.Config.GetSetting<string>("Hostile");
 
-            return setting == "Bad Guy" ? Allegiance.GoodGuy : Allegiance.BadGuy; //TODO: resource this out
+            Allegiance returnVal;
+
+            switch (setting)
+            {
+                case "BadGuy":
+                    returnVal = Allegiance.BadGuy;
+                    break;
+                case "GoodGuy":
+                    returnVal = Allegiance.GoodGuy;
+                    break;
+                default:
+                    returnVal = Allegiance.Indeterminate;
+                    break;
+            }
+
+            return returnVal;
         }
           
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
@@ -84,7 +103,7 @@ namespace StarTrek_KG.Actors
         {
             this.Map.Write.Line(string.Format(this.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
 
-            var shields = this.Shields();
+            var shields = Shields.For(this);
             shields.Energy -= attackingEnergy;
 
             if (shields.Energy < 0)
@@ -114,7 +133,6 @@ namespace StarTrek_KG.Actors
                 this.Map.Write.Line("No Structural Damage from hit.");
             }
         }
-
 
         //todo: create a GetLastQuadrant & GetLastSector
         public Quadrant GetQuadrant()

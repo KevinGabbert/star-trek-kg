@@ -4,6 +4,7 @@ using System.Reflection;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Extensions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
 using Console = StarTrek_KG.Utility.Console;
 
@@ -12,9 +13,9 @@ namespace StarTrek_KG.Output
     /// <summary>
     /// todo: the goal here is to be able to save all output to a file for later printing..
     /// </summary>
-    public class Write
+    public class Write: IConfig
     {
-        public StarTrekKGSettings Config { get; set; }
+        public IStarTrekKGSettings Config { get; set; }
         private int TotalHostiles { get; set; }
         private int TimeRemaining { get; set; }
         private int Starbases { get; set; }
@@ -39,7 +40,7 @@ namespace StarTrek_KG.Output
         //all *print* mnemonics will be changed to Output
         //UI needs to read this text and display it how it wants
 
-        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, StarTrekKGSettings config)
+        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.TotalHostiles = totalHostiles;
@@ -48,7 +49,7 @@ namespace StarTrek_KG.Output
             this.TimeRemaining = timeRemaining;
         }
 
-        public Write(StarTrekKGSettings config)
+        public Write(IStarTrekKGSettings config)
         {
             this.Config = config;
         }

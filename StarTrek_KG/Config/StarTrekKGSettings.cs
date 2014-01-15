@@ -4,10 +4,11 @@ using System;
 using System.Linq;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Config
 {
-    public class StarTrekKGSettings: ConfigurationSection
+    public class StarTrekKGSettings: ConfigurationSection, IStarTrekKGSettings
     {
         public StarTrekKGSettings Get { get; set; }
         public new StarTrekKGSettings GetConfig()
@@ -43,7 +44,7 @@ namespace StarTrek_KG.Config
             return settings ?? new StarTrekKGSettings();
         }
 
-        #region Collections
+        #region Collections in Config file
 
         [ConfigurationProperty("StarSystems")]
         [ConfigurationCollection(typeof(Names), AddItemName = "StarSystem")]
@@ -86,7 +87,6 @@ namespace StarTrek_KG.Config
         }
 
         #endregion
-
 
         #region Helper Methods
 
@@ -138,8 +138,7 @@ namespace StarTrek_KG.Config
 
         #endregion
 
-
-        private T CheckAndCastValue<T>(string name, NameValueElement element, bool whiteSpaceIsOk = false)
+        public T CheckAndCastValue<T>(string name, NameValueElement element, bool whiteSpaceIsOk = false)
         {
             T setting;
             if (element != null)
@@ -178,7 +177,8 @@ namespace StarTrek_KG.Config
             }
             return setting;
         }
-        private void Reset()
+
+        public void Reset()
         {
             if (this.Get == null)
             {

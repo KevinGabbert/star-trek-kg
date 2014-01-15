@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
@@ -14,7 +13,7 @@ namespace StarTrek_KG
     {
         #region Properties
 
-            public StarTrekKGSettings Config { get; set; }
+            public IStarTrekKGSettings Config { get; set; }
             public Write Write { get; set; }
 
             public Output.Write Output { get; set; }
@@ -29,7 +28,7 @@ namespace StarTrek_KG
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
             /// and some unsorted crap at the moment..
         /// </summary>
-        public Game(StarTrekKGSettings config, bool startup = true)
+        public Game(IStarTrekKGSettings config, bool startup = true)
         {
             this.Config = config;
             if(this.Write == null)

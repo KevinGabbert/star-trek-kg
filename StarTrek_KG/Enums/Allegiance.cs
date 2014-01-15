@@ -5,10 +5,10 @@ namespace StarTrek_KG.Enums
     {
         GoodGuy,
         BadGuy,
+        Indeterminate
 
         //not supported yet
         //Ally,
         //Axis,
-        //Indeterminate
     };
 }
