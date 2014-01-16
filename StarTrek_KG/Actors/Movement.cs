@@ -21,7 +21,7 @@ namespace StarTrek_KG.Actors
 
         public void Execute(double direction, double distance, double distanceEntered, out int lastQuadX, out int lastQuadY)
         {
-            Sector playerShipSector = this.ShipConnectedTo.Sector;
+            ISector playerShipSector = this.ShipConnectedTo.Sector;
             Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
 
             lastQuadY = playershipQuadrant.Y;

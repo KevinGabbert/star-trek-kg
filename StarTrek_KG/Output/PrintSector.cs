@@ -14,10 +14,10 @@ namespace StarTrek_KG.Output
         private int ShieldsDownLevel { get; set; }
         private int LowEnergyLevel { get; set; }
 
-        public Write Write { get; set; }
+        public IOutputWrite Write { get; set; }
         public IStarTrekKGSettings Config { get; set; }
 
-        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, Write write, IStarTrekKGSettings config)
+        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, IOutputWrite write, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Write = write;

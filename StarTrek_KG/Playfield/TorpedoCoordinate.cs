@@ -1,4 +1,4 @@
-﻿using System;
+﻿using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {
@@ -33,7 +33,7 @@ namespace StarTrek_KG.Playfield
         {
         }
 
-        public VectorCoordinate(Coordinate xy)
+        public VectorCoordinate(ICoordinate xy)
         {
             this.X = xy.X;
             this.Y = xy.Y;

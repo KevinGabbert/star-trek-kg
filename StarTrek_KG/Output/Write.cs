@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
@@ -13,13 +12,13 @@ namespace StarTrek_KG.Output
     /// <summary>
     /// todo: the goal here is to be able to save all output to a file for later printing..
     /// </summary>
-    public class Write: IConfig
+    public class Write: IConfig, IOutputWrite
     {
         public IStarTrekKGSettings Config { get; set; }
-        private int TotalHostiles { get; set; }
-        private int TimeRemaining { get; set; }
-        private int Starbases { get; set; }
-        private int Stardate { get; set; }
+        public int TotalHostiles { get; set; }
+        public int TimeRemaining { get; set; }
+        public int Starbases { get; set; }
+        public int Stardate { get; set; }
 
         //todo: make this non-static so we can test this class..
 

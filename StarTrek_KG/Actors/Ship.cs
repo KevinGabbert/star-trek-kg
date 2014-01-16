@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -19,7 +18,7 @@ namespace StarTrek_KG.Actors
             public Coordinate QuadrantDef { get; set; }
 
             //todo: create function GetSector() to replace this (will query map.quadrants.active for ship)
-            public Sector Sector { get; set; } //This is a ship's location in a sector
+            public ISector Sector { get; set; } //This is a ship's location in a sector
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
             public Type Type { get; set; }
@@ -30,17 +29,17 @@ namespace StarTrek_KG.Actors
             public double Energy { get; set; }
             public bool Destroyed { get; set; }
 
-        ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
+            ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log Log { get; set; } //
 
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, Sector position, Map map, IStarTrekKGSettings config)
+        public Ship(string name, ISector position, Map map, IStarTrekKGSettings config)
         {
-            this.Config = (IStarTrekKGSettings)this.CheckParam(config);
-            this.Map = (Map)this.CheckParam(map);
-            this.Sector = (Sector)this.CheckParam(position);
+            this.Map = (Map)CheckParam(map);
+            this.Config = (IStarTrekKGSettings)CheckParam(config);
+            this.Sector = (ISector)CheckParam(position);
 
             this.Type = this.GetType();
             this.Allegiance = this.GetAllegiance(); 
@@ -56,11 +55,11 @@ namespace StarTrek_KG.Actors
             //refactor from Game.GetGlobalInfo()
         }
 
-        private object CheckParam(object prop)
+        private static object CheckParam(object prop)
         {
             if (prop == null)
             {
-                throw new GameException("New Ship Config is null");
+                throw new GameException("New Ship param is null");
             }
             else
             {
@@ -108,29 +107,35 @@ namespace StarTrek_KG.Actors
 
             if (shields.Energy < 0)
             {
-                shields.Energy = 0; //for the benefit of the output message telling the user that they have no shields. )
-
-                bool assignedDamage = this.Subsystems.TakeDamageIfAppropriate(attackingEnergy);
-                if (!assignedDamage)
-                {
-                    //this means there was nothing left to damage.  Blow the ship up.
-                    this.Energy = 0;
-                    this.Destroyed = true;
-                }
-                else
-                {
-                    //It hurts more when you have no shields.  This is a balance point
-                    this.Energy = this.Energy - (attackingEnergy * 3); //todo: make this multiplier an app.config setting //todo: write a test to verify this behavior.
-
-                    if (this.Energy < 0)
-                    {
-                        this.Destroyed = true;
-                    }
-                }
+                this.TakeDamageOrDestroyShip(attackingEnergy, shields);
             }
             else
             {
                 this.Map.Write.Line("No Structural Damage from hit.");
+            }
+        }
+
+        private void TakeDamageOrDestroyShip(int attackingEnergy, System shields)
+        {
+            shields.Energy = 0; //for the benefit of the output message telling the user that they have no shields. )
+
+            bool assignedDamage = this.Subsystems.TakeDamageIfWeCan(attackingEnergy);
+            if (!assignedDamage)
+            {
+                //this means there was nothing left to damage.  Blow the ship up.
+                this.Energy = 0;
+                this.Destroyed = true;
+            }
+            else
+            {
+                //It hurts more when you have no shields.  This is a balance point
+                this.Energy = this.Energy - (attackingEnergy *3 ); //todo: resource this out
+                    //todo: make this multiplier an app.config setting //todo: write a test to verify this behavior.
+
+                if (this.Energy < 0)
+                {
+                    this.Destroyed = true;
+                }
             }
         }
 

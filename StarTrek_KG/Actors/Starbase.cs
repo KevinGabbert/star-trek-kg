@@ -7,7 +7,7 @@ namespace StarTrek_KG.Actors
     //TODO: Not Implemented Yet..
     public class Starbase : ISystem, IShip
     {
-        public Sector Sector
+        public ISector Sector
         {
             get { throw new NotImplementedException(); }
         }

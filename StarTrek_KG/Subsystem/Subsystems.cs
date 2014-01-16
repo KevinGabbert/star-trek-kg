@@ -65,7 +65,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public bool TakeDamageIfAppropriate(int boltStrength)
+        public bool TakeDamageIfWeCan(int boltStrength)
         {
             bool retVal = false; 
 

@@ -10,7 +10,7 @@ namespace StarTrek_KG.Playfield
     /// <summary>
     /// A Sector in this game is an empty XY position in a quadrant.  Only 1 item can occupy a sector at a time.
     /// </summary>
-    public class Sector: Coordinate //todo: this should be called SectorItems (or quadrantItems)
+    public class Sector: Coordinate, ISector //todo: this should be called SectorItems (or quadrantItems)
     {
         public static Sector FromCoordinate(Coordinate coordinateToConvert)
         {
@@ -103,7 +103,7 @@ namespace StarTrek_KG.Playfield
             return "Sector: " + this.X + ", " + this.Y;
         }
 
-        internal void IncrementBy(VectorCoordinate coordinate)
+        public void IncrementBy(VectorCoordinate coordinate)
         {
             this._enforceBoundsChecking = false;
 

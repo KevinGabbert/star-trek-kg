@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -14,7 +13,7 @@ namespace StarTrek_KG.Playfield
         #region Properties
 
             public Map Map { get; set; }
-            public Write Write { get; set; }
+            public IOutputWrite Write { get; set; }
 
             /// <summary>
             /// Movement.Execute and Map.SetupPlayership are the only places this is set
@@ -22,7 +21,7 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-        public Quadrants(Map map, Write write)
+        public Quadrants(Map map, IOutputWrite write)
         {
             this.Write = write;
             this.Map = map;

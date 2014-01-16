@@ -8,7 +8,7 @@ namespace StarTrek_KG.Actors
         //Not Implemented yet..
         //on construct, set my gravity to be reeel high
         //(basically), this affects how many sectors around the black hole can pull the ship in
-        public Sector Sector
+        public ISector Sector
         {
             get { throw new global::System.NotImplementedException(); }
         }

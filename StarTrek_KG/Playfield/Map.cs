@@ -25,7 +25,7 @@ namespace StarTrek_KG.Playfield
             public int timeRemaining { get; set; }
             public int starbases { get; set; }
             public string Text { get; set; }
-            public Write Write { get; set; }
+            public IOutputWrite Write { get; set; }
             public IStarTrekKGSettings Config { get; set; }
 
         #endregion
@@ -37,7 +37,7 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(SetupOptions setupOptions, Write write, IStarTrekKGSettings config)
+        public Map(SetupOptions setupOptions, IOutputWrite write, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Write = write;

@@ -14,7 +14,7 @@ namespace StarTrek_KG
         #region Properties
 
             public IStarTrekKGSettings Config { get; set; }
-            public Write Write { get; set; }
+            public IOutputWrite Write { get; set; }
 
             public Output.Write Output { get; set; }
             public Output.PrintSector PrintSector { get; set; }
