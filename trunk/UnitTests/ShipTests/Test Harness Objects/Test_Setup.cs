@@ -21,7 +21,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         public Phasers TestPhasers { get; set; }
         public Shields TestShields { get; set; }
 
-        public Write Write
+        public IOutputWrite Write
         {
             get { return this.Game.Write; }
         }

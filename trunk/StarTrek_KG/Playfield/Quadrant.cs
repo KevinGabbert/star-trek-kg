@@ -290,7 +290,7 @@ namespace StarTrek_KG.Playfield
             quadrant.Sectors.Add(newlyCreatedSector);
         }
 
-        public void AddShip(IShip ship, Sector toSector)
+        public void AddShip(IShip ship, ISector toSector)
         {
             if (toSector == null)
             {
@@ -555,7 +555,7 @@ namespace StarTrek_KG.Playfield
             return Sectors.Count(sector => sector.Item == SectorItem.Star);
         }
 
-        public Sector GetSector(Coordinate coordinate)
+        public ISector GetSector(ICoordinate coordinate)
         {
             return this.Sectors.FirstOrDefault(sector => sector.X == coordinate.X && sector.Y == coordinate.Y);
         }

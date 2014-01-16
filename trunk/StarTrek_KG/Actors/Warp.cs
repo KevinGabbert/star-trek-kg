@@ -1,7 +1,6 @@
 ﻿using System;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Playfield;
 
@@ -9,9 +8,9 @@ namespace StarTrek_KG.Actors
 {
     public class Warp: IWrite
     {
-        public Write Write { get; set; }     
+        public IOutputWrite Write { get; set; }
 
-        public Warp(Write output)
+        public Warp(IOutputWrite output)
         {
             this.Write = output;
 

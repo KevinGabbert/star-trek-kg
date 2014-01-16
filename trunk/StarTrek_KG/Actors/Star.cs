@@ -11,7 +11,7 @@ namespace StarTrek_KG.Actors
             this.Type = this.GetType();
         }
 
-        public Sector Sector
+        public ISector Sector
         {
             get { throw new global::System.NotImplementedException(); }
         }

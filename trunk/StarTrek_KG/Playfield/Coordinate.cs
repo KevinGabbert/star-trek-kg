@@ -1,9 +1,10 @@
 ﻿using StarTrek_KG.Config;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Coordinate
+    public class Coordinate : ICoordinate
     {
         protected bool _enforceBoundsChecking = true;
 

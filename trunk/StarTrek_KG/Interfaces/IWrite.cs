@@ -1,9 +1,7 @@
-﻿using StarTrek_KG.Output;
-
-namespace StarTrek_KG.Interfaces
+﻿namespace StarTrek_KG.Interfaces
 {
     public interface IWrite
     {
-        Write Write { get; set; }
+        IOutputWrite Write { get; set; }
     }
 }
