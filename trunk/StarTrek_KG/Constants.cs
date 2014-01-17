@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StarTrek_KG
 {
-    public class Constants
+    public static class Constants
     {
         public const string EMPTY = "   ";
         public const string PLAYERSHIP = "<*>";

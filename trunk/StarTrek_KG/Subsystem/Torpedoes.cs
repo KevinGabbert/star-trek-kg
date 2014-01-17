@@ -81,7 +81,7 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            var angle = Utility.Utility.ComputeAngle(this.Game.Map, direction);
+            var angle = Utility.Utility.ComputeAngle(direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Game.Map, torpedoStartingLocation.Quadrant);
@@ -132,10 +132,6 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
                 this.Game.Write.Line(string.Format("  [{0},{1}]", newLocation.Sector.X, newLocation.Sector.Y));
                 lastPosition.Update(newLocation);
-            }
-            else
-            {
-                //throw new GameException("!!!!!!!");
             }
 
             Torpedoes.DebugTrack(newLocation);
@@ -303,7 +299,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public new static Torpedoes For(Ship ship)
+        public static Torpedoes For(Ship ship)
         {
             if (ship == null)
             {

@@ -61,10 +61,7 @@ namespace StarTrek_KG.Actors
             {
                 throw new GameException("New Ship param is null");
             }
-            else
-            {
-                return prop;
-            }
+            return prop;
         }
 
         public void RepairEverything()

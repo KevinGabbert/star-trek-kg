@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
@@ -159,7 +158,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Console.WriteLine();
         }
 
-        public new static Computer For(Ship ship)
+        public static Computer For(Ship ship)
         {
             if (ship == null)
             {

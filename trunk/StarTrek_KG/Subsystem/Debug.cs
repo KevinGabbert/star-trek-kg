@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Utility;
 
@@ -143,7 +141,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public new static Debug For(Ship ship)
+        public static Debug For(Ship ship)
         {
             if (ship == null)
             {

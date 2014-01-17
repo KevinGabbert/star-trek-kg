@@ -93,7 +93,7 @@ namespace StarTrek_KG.Subsystem
             var destroyedShips = new List<IShip>();
             foreach (var badGuyShip in this.Game.Map.Quadrants.GetActive().GetHostiles())
             {
-                Location location = this.Game.Map.Playership.GetLocation();
+                Location location = this.ShipConnectedTo.GetLocation();
 
                 double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
 
@@ -107,7 +107,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool PromptUserForPhaserEnergy(out double phaserEnergy)
         {
-            return this.Game.Write.PromptUser(String.Format("Enter phaser energy (1--{0}): ", this.Game.Map.Playership.Energy), out phaserEnergy);
+            return this.Game.Write.PromptUser(String.Format("Enter phaser energy (1--{0}): ", this.ShipConnectedTo.Energy), out phaserEnergy);
         }
 
         //todo: move to Utility() object
@@ -137,7 +137,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public new static Phasers For(Ship ship)
+        public static Phasers For(Ship ship)
         {
             if (ship == null)
             {
