@@ -68,6 +68,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         {
             this.TestMap = (new Map(new SetupOptions
                                         {
+                                            AddStars = false,
                                             Initialize = true,
                                             SectorDefs = new SectorDefs
                                                              {
@@ -85,6 +86,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         {
             this.TestMap = new Map(new SetupOptions
                                   {
+                                      AddStars = false,
                                       Initialize = true,
                                       SectorDefs = new SectorDefs
                                                        {
@@ -104,6 +106,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         {
             this.TestMap = new Map(new SetupOptions
             {
+                AddStars = false,
                 Initialize = true,
                 SectorDefs = new SectorDefs
                                         {
@@ -136,6 +139,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         {
             this.TestMap = (new Map(new SetupOptions
             {
+                AddStars = false,
                 Initialize = true,
 
                 SectorDefs = new SectorDefs
@@ -158,6 +162,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         {
             this.TestMap = new Map(new SetupOptions
             {
+                AddStars = false,
                 Initialize = true,
                 //GenerateMap = true
             }, this.Game.Write, this.Game.Config);
