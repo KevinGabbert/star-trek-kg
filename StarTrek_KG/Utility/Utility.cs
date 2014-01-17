@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using StarTrek_KG.Config;
-using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Utility
 {
@@ -86,7 +85,7 @@ namespace StarTrek_KG.Utility
             return direction;
         }
 
-        public static double ComputeAngle(Map map, double direction) // todo: can this be refactored with nav computeangle?
+        public static double ComputeAngle(double direction) // todo: can this be refactored with nav computeangle?
         {
             var angle = -(Math.PI * (direction - 1.0) / 4.0);
 

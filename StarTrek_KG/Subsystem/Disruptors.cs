@@ -30,7 +30,7 @@ namespace StarTrek_KG.Subsystem
 
         //todo: Under Construction
         //This will be the first subsystem that will 
-        public int Execute(Location targetLocation) //Playership.GetLocation();
+        public int Execute(Location targetLocation) 
         {
             IShip thisShip = this.ShipConnectedTo;
 
@@ -57,9 +57,9 @@ namespace StarTrek_KG.Subsystem
             ////todo: the -1 should be the ship energy you want to allocate
             //var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
 
-            //var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
+            //var shieldsValueBeforeHit = Shields.For(this.ShipConnectedTo).Energy;
 
-            //map.Playership.AbsorbHitFrom(badGuy, attackingEnergy);
+            //this.ShipConnectedTo.AbsorbHitFrom(badGuy, attackingEnergy);
 
             //Game.ReportShieldsStatus(map, shieldsValueBeforeHit);
 

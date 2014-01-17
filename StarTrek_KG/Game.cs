@@ -182,10 +182,12 @@ namespace StarTrek_KG
         /// </summary>
         public void Run()
         {
-            var keepPlaying = this.Config.GetSetting<bool>("KeepPlaying");
+            bool keepPlaying = true;
 
             while (keepPlaying)
             {
+                keepPlaying = this.Config.GetSetting<bool>("KeepPlaying");
+
                 this.PlayOnce();
                 this.gameOver = false;
             }

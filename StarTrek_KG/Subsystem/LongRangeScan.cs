@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
@@ -154,7 +153,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public new static LongRangeScan For(Ship ship)
+        public static LongRangeScan For(Ship ship)
         {
             if (ship == null)
             {

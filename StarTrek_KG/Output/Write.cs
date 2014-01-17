@@ -233,16 +233,16 @@ namespace StarTrek_KG.Output
 
                 case "she":
 
-                    if (this.ShieldMenu(playerShip)) break;
+                    this.ShieldMenu(playerShip);
                     break;
 
                 case "com":
 
-                    if (this.ComputerMenu(playerShip)) break;
+                    this.ComputerMenu(playerShip);
                     break;
 
                 case "dbg":
-                    if (this.DebugMenu(playerShip)) break;
+                    this.DebugMenu(playerShip);
                     break;
 
                 default: //case "?":
@@ -266,7 +266,7 @@ namespace StarTrek_KG.Output
             this.Console.WriteLine();
         }
 
-        private bool DebugMenu(Ship playerShip)
+        private void DebugMenu(Ship playerShip)
         {
             this.Strings(Debug.CONTROL_PANEL);
             this.WithNoEndCR("Enter Debug command: ");
@@ -275,12 +275,11 @@ namespace StarTrek_KG.Output
             var debugCommand = Console.ReadLine().Trim().ToLower();
 
             Debug.For(playerShip).Controls(debugCommand);
-            return false;
         }
 
-        private bool ComputerMenu(Ship playerShip)
+        private void ComputerMenu(Ship playerShip)
         {
-            if (Computer.For(playerShip).Damaged()) return true;
+            if (Computer.For(playerShip).Damaged()) return;
 
             this.Strings(Computer.CONTROL_PANEL);
             this.WithNoEndCR("Enter computer command: ");
@@ -289,12 +288,11 @@ namespace StarTrek_KG.Output
             var computerCommand = Console.ReadLine().Trim().ToLower();
 
             Computer.For(playerShip).Controls(computerCommand);
-            return false;
         }
 
-        private bool ShieldMenu(Ship playerShip)
+        private void ShieldMenu(IShip playerShip)
         {
-            if (Shields.For(playerShip).Damaged()) return true;
+            if (Shields.For(playerShip).Damaged()) return;
 
             Shields.SHIELD_PANEL = new List<string>();
             Shields.SHIELD_PANEL.Add(Environment.NewLine);
@@ -320,7 +318,6 @@ namespace StarTrek_KG.Output
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
             Shields.For(playerShip).Controls(shieldsCommand);
-            return false;
         }
 
         public string GetPanelHead(string shipName)

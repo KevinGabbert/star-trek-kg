@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Output;
@@ -55,7 +54,7 @@ namespace StarTrek_KG.Subsystem
             quadrant.Scanned = true;
         }
 
-        public new static ShortRangeScan For(Ship ship)
+        public static ShortRangeScan For(Ship ship)
         {
             if (ship == null)
             {
