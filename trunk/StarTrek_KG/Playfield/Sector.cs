@@ -12,22 +12,13 @@ namespace StarTrek_KG.Playfield
     /// </summary>
     public class Sector: Coordinate, ISector //todo: this should be called SectorItems (or quadrantItems)
     {
-        public static Sector FromCoordinate(Coordinate coordinateToConvert)
-        {
-            var newSector = new Sector();
-            newSector.X = coordinateToConvert.X;
-            newSector.Y = coordinateToConvert.Y;
-
-            return newSector;
-        }
-
         #region Properties
 
             //TODO: get rid of enum. 
             //TODO: A SectorItem needs to be the *actual* object held.  (a star, or ship (I want a starbase to be a type of ship so it can have hitpoints, shield, be hostile, and fight back.))
             public SectorItem Item { get; set; }
             public ISectorObject Object { get; set; }
-
+            public SectorType Type { get; set; }
             public Coordinate QuadrantDef { get; set; } //needed.  so it can set ship coordinate
 
         #endregion
@@ -36,11 +27,12 @@ namespace StarTrek_KG.Playfield
 
         public Sector()
         {
-            
+            this.Type = SectorType.Space;
         }
 
         public Sector(LocationDef location)
         {
+            this.Type = SectorType.Space;
             this.X = location.Sector.X;
             this.Y = location.Sector.Y;
             this.QuadrantDef = location.Quadrant;
@@ -48,6 +40,7 @@ namespace StarTrek_KG.Playfield
 
         public Sector(SectorDef sectorDef)
         {
+            this.Type = SectorType.Space;
             this.X = sectorDef.Sector.X;
             this.Y = sectorDef.Sector.Y;
             this.QuadrantDef = sectorDef.QuadrantDef;
@@ -116,5 +109,15 @@ namespace StarTrek_KG.Playfield
                 this.Y = y;
             }
         }
+
+        public static Sector FromCoordinate(Coordinate coordinateToConvert)
+        {
+            var newSector = new Sector();
+            newSector.X = coordinateToConvert.X;
+            newSector.Y = coordinateToConvert.Y;
+
+            return newSector;
+        }
+
     }
 }

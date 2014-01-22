@@ -28,6 +28,7 @@ namespace StarTrek_KG.Interfaces
         void WithNoEndCR(string stringToOutput);
         void DisplayPropertiesOf(object @object);
         void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount);
+        void RenderNebula(bool renderingMyLocation);
         void CreateCommandPanel();
         void Prompt(Ship playerShip, string mapText, Game game);
         void Panel(string panelHead, IEnumerable<string> strings);

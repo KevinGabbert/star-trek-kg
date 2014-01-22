@@ -111,7 +111,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             int starbaseCount;
             int starCount;
             int hostileCount;
-            _testLongRangeScanner.GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount);
+            _testLongRangeScanner.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount);
             //pulls count from Quadrant object
 
             Assert.AreEqual(2, starCount);
@@ -197,7 +197,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            _testLongRangeScanner.GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            _testLongRangeScanner.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(2, hostileCount);
         }
@@ -227,7 +227,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            _testLongRangeScanner.GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            _testLongRangeScanner.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(5, starbaseCount);
             Assert.AreEqual(0, starCount);
@@ -259,7 +259,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             int starbaseCount;
             int starCount;
             int hostileCount;
-            LongRangeScan.For(this.Game.Map.Playership).GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            LongRangeScan.For(this.Game.Map.Playership).Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(5, starbaseCount);
         }
@@ -273,7 +273,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            LongRangeScan.For(this.Game.Map.Playership).GetMapInfoForScanner(this.Game.Map, new Coordinate(0, 0), out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            LongRangeScan.For(this.Game.Map.Playership).Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.Greater(0, hostileCount);
             Assert.Greater(0, starbaseCount);

@@ -57,17 +57,28 @@ namespace StarTrek_KG.Subsystem
                     var renderingMyLocation = myLocation.Quadrant.X == quadrantX && myLocation.Quadrant.Y == quadrantY;
 
                     //todo: turn these into props.
-                    int starbaseCount = -1;
-                    int starCount = -1;
-                    int hostileCount = -1;
 
                     if (!OutOfBounds(quadrantY, quadrantX))
                     {
-                        Coordinate quadrantToScan = SetQuadrantToScan(quadrantY, quadrantX, myLocation);
-                        this.GetMapInfoForScanner(this.Game.Map, quadrantToScan, out hostileCount, out starbaseCount, out starCount);
-                    }
+                        Quadrant quadrantToScan = Quadrants.Get(this.Game.Map, this.CoordinateToScan(quadrantY, quadrantX));
 
-                    this.Game.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                        if (quadrantToScan.Type != QuadrantType.Nebulae)
+                        {
+                            int starbaseCount = -1;
+                            int starCount = -1;
+                            int hostileCount = -1;
+
+                            this.Execute(quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+
+                            this.Game.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount,
+                                hostileCount);
+                        }
+                        else
+                        {
+                            this.Game.Write.RenderNebula(renderingMyLocation);
+                        }
+                    }
+  
                     this.Game.Write.WithNoEndCR(" ");
                 }
 
@@ -78,11 +89,12 @@ namespace StarTrek_KG.Subsystem
 
         private bool OutOfBounds(int quadrantY, int quadrantX)
         {
-            return quadrantX < 0 || quadrantY < 0 || quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX;
+            return (quadrantX < 0 || quadrantY < 0 || quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX) &&
+                (quadrantY >= 0 && quadrantX >= 0 && quadrantY < Constants.QUADRANT_MAX && quadrantX < Constants.QUADRANT_MAX);
         }
 
         //todo: fix this
-        private Coordinate SetQuadrantToScan(int quadrantY, int quadrantX, Location myLocation)
+        private Coordinate CoordinateToScan(int quadrantY, int quadrantX)
         {
             var max = (this.Game.Config).GetSetting<int>("QuadrantMax") - 1;
             var min = (this.Game.Config).GetSetting<int>("QUADRANT_MIN");
@@ -120,29 +132,23 @@ namespace StarTrek_KG.Subsystem
             return quadrantToScan;
         }
 
-        public int GetMapInfoForScanner(Map map, Coordinate quadrant,
-                                                        out int hostileCount,
-                                                        out int starbaseCount,
-                                                        out int starCount)
+        public void Execute(Quadrant quadrantToScan,
+                                    out int hostileCount,
+                                    out int starbaseCount,
+                                    out int starCount)
         {
             hostileCount = 0;
             starbaseCount = 0;
             starCount = 0;
 
-            if (quadrant.Y >= 0 &&
-                quadrant.X >= 0 &&
-                quadrant.Y < Constants.QUADRANT_MAX &&
-                quadrant.X < Constants.QUADRANT_MAX)
+            if (quadrantToScan.Type != QuadrantType.Nebulae)
             {
-                Quadrant quadrantToScan = Quadrants.Get(map, quadrant);
-
                 hostileCount = quadrantToScan.GetHostiles().Count;
                 starbaseCount = quadrantToScan.GetStarbaseCount();
                 starCount = quadrantToScan.GetStarCount();
-
-                quadrantToScan.Scanned = true;
             }
-            return hostileCount;
+
+            quadrantToScan.Scanned = true;  
         }
 
         public void Debug_Scan_All_Quadrants(bool setScanned)

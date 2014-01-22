@@ -177,6 +177,22 @@ namespace StarTrek_KG.Output
             }
         }
 
+        public void RenderNebula(bool renderingMyLocation)
+        {
+            if (renderingMyLocation)
+            {
+                this.HighlightTextBW(true);
+            }
+
+            this.WithNoEndCR("N");
+            this.WithNoEndCR("N");
+            this.WithNoEndCR("N");
+
+            if (renderingMyLocation)
+            {
+                this.HighlightTextBW(false);
+            }
+        }
 
 
         public void CreateCommandPanel()
