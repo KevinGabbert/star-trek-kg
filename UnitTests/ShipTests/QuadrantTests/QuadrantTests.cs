@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
 using UnitTests.ShipTests.Test_Harness_Objects;
 
@@ -117,7 +118,8 @@ namespace UnitTests.ShipTests.QuadrantTests
             Assert.AreEqual(0, _testQuadrant.X);
             Assert.AreEqual(0, _testQuadrant.Y);
             Assert.AreEqual(true, _testQuadrant.Empty);
-            //Assert.AreEqual(0, _testQuadrant.GetHostiles().Count); //This would rightfully return an exception
+
+            Assert.Throws(Is.TypeOf<GameException>().And.Message.EqualTo("No Sectors Set up in Quadrant: "), () => _testQuadrant.GetHostiles());
         }
 
         [Ignore]

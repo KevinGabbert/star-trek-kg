@@ -55,6 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\QuadrantType.cs" />
+    <Compile Include="Enums\SectorType.cs" />
     <Compile Include="Interfaces\ICoordinate.cs" />
     <Compile Include="Interfaces\IOutputWrite.cs" />
     <Compile Include="Interfaces\ISector.cs" />
