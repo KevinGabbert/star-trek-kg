@@ -177,6 +177,23 @@ namespace StarTrek_KG.Output
             }
         }
 
+        public void RenderUnscannedQuadrant(bool renderingMyLocation)
+        {
+            if (renderingMyLocation)
+            {
+                this.HighlightTextBW(true);
+            }
+
+            this.WithNoEndCR(" ");
+            this.WithNoEndCR("?");
+            this.WithNoEndCR(" ");
+
+            if (renderingMyLocation)
+            {
+                this.HighlightTextBW(false);
+            }
+        }
+
         public void RenderNebula(bool renderingMyLocation)
         {
             if (renderingMyLocation)
@@ -193,7 +210,6 @@ namespace StarTrek_KG.Output
                 this.HighlightTextBW(false);
             }
         }
-
 
         public void CreateCommandPanel()
         {

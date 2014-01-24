@@ -5,6 +5,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Subsystem;
@@ -59,7 +60,8 @@ namespace StarTrek_KG.Playfield
 
         public Quadrant(Map map, bool isNebulae = false)
         {
-            this.Type = QuadrantType.GalacticSpace;
+            this.Type = isNebulae ? QuadrantType.Nebulae : QuadrantType.GalacticSpace;
+           
             this.Empty = true;
             this.Name = String.Empty;
             this.Map = map;
@@ -71,37 +73,51 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
             this.Name = String.Empty;
 
-            this.Create(map, baddieNames, isNebulae);
+            this.Create(baddieNames, isNebulae);
         }
 
         //todo: we might want to avoid passing in baddie names and set up baddies later..
-        public Quadrant(Map map, Stack<string> baddieNames, out int nameIndex, bool isNebulae = false)
+        public Quadrant(Map map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = false, bool isNebulae = false)
         {
             this.Type = QuadrantType.GalacticSpace;
             this.Empty = true;
-            this.Create(map, baddieNames, out nameIndex, isNebulae);
+
+            this.Create(map, quadrantNames, baddieNames, out nameIndex, addStars, isNebulae);
         }
 
-        public void Create(Map map, Stack<string> baddieNames, bool addStars = true, bool makeNebulae = false)
+        public Quadrant(Map map, Stack<string> baddieNames, bool addStars = true, bool isNebulae = false)
         {
-            this.InitializeSectors(this, new List<Sector>(), baddieNames, map, addStars, makeNebulae);
+            this.Empty = true;
+            this.Map = map;
+            this.Name = String.Empty;
+
+            this.Create(baddieNames, addStars, isNebulae);
         }
 
-        public Quadrant Create(Map map, Stack<string> names, out int nameIndex, bool addStars = true, bool makeNebulae = false)
+        private void Create(Stack<string> baddieNames, bool addStars = true, bool makeNebulae = false)
         {
-            nameIndex = (Utility.Utility.Random).Next(names.Count);
+            if (this.Map == null)
+            {
+                throw new GameException("Set Map before calling this function");
+            }
 
-            var newQuadrant = new Quadrant(this.Map, names);
-            newQuadrant.Name = names.Pop();
-
-            //fix: error here:
-            //fix: sectors are not being created for all quadrants
-            this.InitializeSectors(newQuadrant, new List<Sector>(), names, map, addStars, makeNebulae);
-
-            return newQuadrant;
+            this.InitializeSectors(this, new List<Sector>(), baddieNames, addStars, makeNebulae);
         }
 
-        public Quadrant Create(Map map, Stack<string> quadrantNames, Stack<String> baddieNames, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false)
+        public void Create(Map map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = true, bool makeNebulae = false)
+        {
+            nameIndex = (Utility.Utility.Random).Next(baddieNames.Count);
+
+            this.Map = map;
+            this.InitializeSectors(this, new List<Sector>(), baddieNames, addStars, makeNebulae);
+
+            if (quadrantNames != null)
+            {
+                this.Name = quadrantNames.Pop();
+            }
+        }
+
+        public Quadrant Create(Stack<string> quadrantNames, Stack<String> baddieNames, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false)
         {
             nameIndex = (Utility.Utility.Random).Next(quadrantNames.Count);
 
@@ -117,7 +133,7 @@ namespace StarTrek_KG.Playfield
                 itemsInQuadrant = itemsToPopulate.Where(i => i.QuadrantDef.X == this.X && i.QuadrantDef.Y == this.Y).ToList();
             }
 
-            this.InitializeSectors(this, itemsInQuadrant, baddieNames, map, addStars, isNebulae);
+            this.InitializeSectors(this, itemsInQuadrant, baddieNames, addStars, isNebulae);
 
             return this;
         }
@@ -125,7 +141,6 @@ namespace StarTrek_KG.Playfield
         public void InitializeSectors(Quadrant quadrant, 
                                       List<Sector> itemsToPopulate, 
                                       Stack<string> baddieNames, 
-                                      Map map, 
                                       bool addStars,
                                       bool makeNebulae = false)
         {
@@ -136,7 +151,7 @@ namespace StarTrek_KG.Playfield
             {
                 for (var y = 0; y < Constants.SECTOR_MAX; y++)
                 {
-                    this.PopulateMatchingItem(quadrant, itemsToPopulate, x, y, baddieNames, map);
+                    this.PopulateMatchingItem(quadrant, itemsToPopulate, x, y, baddieNames);
                 }
             }
 
@@ -148,7 +163,7 @@ namespace StarTrek_KG.Playfield
 
             if (makeNebulae)
             {
-                this.TransformIntoNebulae(quadrant);
+                quadrant.TransformIntoNebulae();
             }
 
             ////This is possible only in the test harness, as app code currently does not call this function with a null
@@ -175,25 +190,6 @@ namespace StarTrek_KG.Playfield
             this.CreateStars(quadrant, totalStarsInQuadrant);
 
             return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
-        }
-
-        /// <summary>
-        /// This will populate the entire quadrant with Nebulae.
-        /// A sector that is of type: nebula can still have sector items in it, but you might not be able to see it on the SRS
-        /// </summary>
-        /// <param name="quadrant"></param>
-        private void TransformIntoNebulae(Quadrant quadrant)
-        {
-            //todo: later, find a way to name all contigious nebula sectors
-            //(probably make a Nebulae Object that consists of an IEnumerable<Nebula> and give it a name prop
-            //Utility.Utility.ResetGreekLetterStack();
-
-            foreach (Sector sector in quadrant.Sectors)
-            {
-                sector.Type = SectorType.Nebula;
-            }
-
-            quadrant.Type = QuadrantType.Nebulae;
         }
 
         public Sector AddStar(Quadrant quadrant)
@@ -272,7 +268,7 @@ namespace StarTrek_KG.Playfield
             return currentStarName;
         }
 
-        private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y, Stack<string> baddieNames, Map map)
+        private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y, Stack<string> baddieNames)
         {
 
             //if (quadrant.X == 1 && quadrant.Y == 1)
@@ -280,7 +276,7 @@ namespace StarTrek_KG.Playfield
             //    var i = 0;
             //}
 
-            SectorItem sectorItemToPopulate = SectorItem.Empty;
+            var sectorItemToPopulate = SectorItem.Empty;
 
             try
             {
@@ -305,10 +301,10 @@ namespace StarTrek_KG.Playfield
                 //throw new GameException(ex.Message);
             }
 
-            this.AddSector(quadrant, x, y, sectorItemToPopulate, baddieNames, map);
+            this.AddSector(quadrant, x, y, sectorItemToPopulate, baddieNames);
         }
 
-        public void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, Map map)
+        public void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames)
         {
             var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
             this.Map.Write.DebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);

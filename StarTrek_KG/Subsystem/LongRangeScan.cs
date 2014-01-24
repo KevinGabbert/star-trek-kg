@@ -58,9 +58,12 @@ namespace StarTrek_KG.Subsystem
 
                     //todo: turn these into props.
 
-                    if (!OutOfBounds(quadrantY, quadrantX))
+                    var outOfBounds = OutOfBounds(quadrantY, quadrantX);
+
+                    if (!outOfBounds)
                     {
-                        Quadrant quadrantToScan = Quadrants.Get(this.Game.Map, this.CoordinateToScan(quadrantY, quadrantX));
+                        Quadrant quadrantToScan = Quadrants.Get(this.Game.Map,
+                            this.CoordinateToScan(quadrantY, quadrantX));
 
                         if (quadrantToScan.Type != QuadrantType.Nebulae)
                         {
@@ -78,6 +81,10 @@ namespace StarTrek_KG.Subsystem
                             this.Game.Write.RenderNebula(renderingMyLocation);
                         }
                     }
+                    else
+                    {
+                        this.Game.Write.WithNoEndCR("^^^");
+                    }
   
                     this.Game.Write.WithNoEndCR(" ");
                 }
@@ -89,8 +96,13 @@ namespace StarTrek_KG.Subsystem
 
         private bool OutOfBounds(int quadrantY, int quadrantX)
         {
-            return (quadrantX < 0 || quadrantY < 0 || quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX) &&
-                (quadrantY >= 0 && quadrantX >= 0 && quadrantY < Constants.QUADRANT_MAX && quadrantX < Constants.QUADRANT_MAX);
+            var inTheNegative = quadrantX < 0 || quadrantY < 0;
+            var maxxed = quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX;
+
+            var yOnMap = quadrantY >= 0 && quadrantY < Constants.QUADRANT_MAX;
+            var xOnMap = quadrantX >= 0 && quadrantX < Constants.QUADRANT_MAX;
+
+            return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }
 
         //todo: fix this

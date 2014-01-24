@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.StarbaseTests
 {

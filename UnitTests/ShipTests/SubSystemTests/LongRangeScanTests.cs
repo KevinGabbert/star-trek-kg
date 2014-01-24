@@ -6,15 +6,12 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
     [TestFixture]
     public class LongRangeScanTests: TestClass_Base
     {
-        private LongRangeScan _testLongRangeScanner;
-
         [SetUp]
         public void Setup()
         {
@@ -31,8 +28,8 @@ namespace UnitTests.ShipTests.SubSystemTests
                                           AddStars = false
                                       }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
-            Assert.AreEqual(SubsystemType.LongRangeScan, _testLongRangeScanner.Type);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            Assert.AreEqual(SubsystemType.LongRangeScan, _setup.TestLongRangeScan.Type);
         }
 
         [TearDown]
@@ -82,7 +79,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                     }
                                       }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
             Quadrant quadrant = Quadrants.Get(this.Game.Map, new Coordinate(0, 0));
             int starCount = quadrant.GetStarCount();
@@ -106,12 +103,12 @@ namespace UnitTests.ShipTests.SubSystemTests
                                                     }
             }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
             int starbaseCount;
             int starCount;
             int hostileCount;
-            _testLongRangeScanner.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount);
+            _setup.TestLongRangeScan.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount);
             //pulls count from Quadrant object
 
             Assert.AreEqual(2, starCount);
@@ -131,8 +128,8 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
-            _testLongRangeScanner.Controls();
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
         }
@@ -150,8 +147,8 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
-            _testLongRangeScanner.Controls();
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
         }
@@ -169,8 +166,8 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
-            _testLongRangeScanner.Controls();
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
         }
@@ -192,12 +189,12 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            _testLongRangeScanner.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            _setup.TestLongRangeScan.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(2, hostileCount);
         }
@@ -222,12 +219,12 @@ namespace UnitTests.ShipTests.SubSystemTests
                     AddStars = false
             }, this.Game.Write, this.Game.Config);
 
-            _testLongRangeScanner = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
             var starbaseCount = 0;
             var starCount = 0;
             var hostileCount = 0;
-            _testLongRangeScanner.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
+            _setup.TestLongRangeScan.Execute(this.Game.Map.Quadrants[0], out hostileCount, out starbaseCount, out starCount); //pulls count from Quadrant object
 
             Assert.AreEqual(5, starbaseCount);
             Assert.AreEqual(0, starCount);
@@ -283,9 +280,9 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void ControlsDamaged()
         {
-            _testLongRangeScanner.Damage = 47;
-            _testLongRangeScanner.Controls();
-            Assert.IsTrue(_testLongRangeScanner.Damaged());
+            _setup.TestLongRangeScan.Damage = 47;
+            _setup.TestLongRangeScan.Controls();
+            Assert.IsTrue(_setup.TestLongRangeScan.Damaged());
         }
     }
 }

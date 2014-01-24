@@ -7,7 +7,6 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 
 using System.Linq;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.MovementTests
 {

@@ -9,7 +9,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 
-namespace UnitTests.ShipTests.Test_Harness_Objects
+namespace UnitTests.ShipTests
 {
     public class Test_Setup: IConfig
     {
@@ -20,6 +20,7 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
         public Computer TestComputer { get; set; }
         public Phasers TestPhasers { get; set; }
         public Shields TestShields { get; set; }
+        public LongRangeScan TestLongRangeScan { get; set; }
 
         public IOutputWrite Write
         {
@@ -101,6 +102,26 @@ namespace UnitTests.ShipTests.Test_Harness_Objects
                                   }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
         }
+
+        //public void SetupMapWith1HostileInNebula()
+        //{
+        //    this.TestMap = new Map(new SetupOptions
+        //    {
+        //        AddStars = false,
+        //        Initialize = true,
+        //        SectorDefs = new SectorDefs
+        //                                               {
+        //                                                   new SectorDef(
+        //                                                       new LocationDef(new Coordinate(0, 0),
+        //                                                                       new Coordinate(0, 0)),
+        //                                                       SectorItem.Friendly),
+        //                                                   new SectorDef(
+        //                                                       new LocationDef(new Coordinate(0, 0),
+        //                                                                       new Coordinate(0, 1)), SectorItem.Hostile),
+        //                                               }
+        //    }, this.Game.Write, this.Game.Config);
+        //    this.VerifyMap();
+        //}
 
         public void SetupMapWith1HostileAtSector(Coordinate friendlySector, Coordinate hostileSector)
         {

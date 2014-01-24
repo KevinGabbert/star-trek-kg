@@ -57,6 +57,7 @@
     <Compile Include="ShipTests\MovementTests\MovementTests.cs" />
     <Compile Include="ShipTests\OutputTests.cs" />
     <Compile Include="ShipTests\QuadrantTests\NebulaTests.cs" />
+    <Compile Include="ShipTests\QuadrantTests\QuadrantTests_Base.cs" />
     <Compile Include="ShipTests\ShipObjectTests\SubsystemSetup.cs" />
     <Compile Include="ShipTests\ShipObjectTests\Test_ShipObject.cs" />
     <Compile Include="ShipTests\StarbaseTests\DockingTests.cs" />
