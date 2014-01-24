@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Subsystem;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {

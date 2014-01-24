@@ -10,7 +10,6 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Utility;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.MapTests
 {
@@ -228,7 +227,7 @@ namespace UnitTests.ShipTests.MapTests
             }, this.Game.Write, this.Game.Config));
 
             var systemNames = (new StarTrekKGSettings()).GetStarSystems();
-            _setup.TestMap.Quadrants.GetActive().InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), _setup.TestMap, false);
+            _setup.TestMap.Quadrants.GetActive().InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), false);
 
             Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);  
 

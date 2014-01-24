@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {

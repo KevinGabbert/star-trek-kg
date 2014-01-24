@@ -2,7 +2,6 @@
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Playfield;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests
 {

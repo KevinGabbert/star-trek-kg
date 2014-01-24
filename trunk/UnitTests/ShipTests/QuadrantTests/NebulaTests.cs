@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Extensions;
+using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
-using UnitTests.ShipTests.Test_Harness_Objects;
+using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests.QuadrantTests
 {
-    public class NebulaTests: TestClass_Base
+    public class NebulaTests: QuadrantTests_Base
     {
-        Quadrant _testQuadrant;
-
         [SetUp]
         public void Setup()
         {
@@ -25,7 +27,10 @@ namespace UnitTests.ShipTests.QuadrantTests
             _testQuadrant.Y = 0;
         }
 
+        //todo: These are going to require that output is read
+
         //todo: verify LRS returns "N N N"
+
         //todo: verify SRS returns random "+ - + -"
         //todo: verify SRS returns nearby objects resolving correctly
         //todo: verify SRS returns multiple echoes of baddies
@@ -34,49 +39,138 @@ namespace UnitTests.ShipTests.QuadrantTests
         public void New()
         {
             //*************** sector not being created with new quadrant
-            _testQuadrant = new Quadrant(this.Game.Map);
+            _testQuadrant = new Quadrant(this.Game.Map, true);
 
             Assert.IsInstanceOf<Map>(_testQuadrant.Map);
+            
             this.QuadrantNewAsserts();
-            Assert.IsNull(_testQuadrant.Sectors);
+
+            Assert.AreEqual(QuadrantType.Nebulae, _testQuadrant.Type);
         }
 
         [Test]
         public void NewWithMap()
         {
             var baddieNames = new Stack<string>((new StarTrekKGSettings()).GetShips("Klingon"));
+            var quadrantNames = new Stack<string>((new StarTrekKGSettings()).GetStarSystems());
 
             _setup.SetupMapWith1Friendly();
 
             int nameIndex;
-            _testQuadrant = new Quadrant(this.Game.Map, baddieNames, out nameIndex, true);
+            _testQuadrant = new Quadrant(_setup.TestMap, quadrantNames, baddieNames, out nameIndex, false, true);
 
             //todo: make sure that map is not set up with anyting
 
             Assert.IsInstanceOf(typeof(Map), _testQuadrant.Map);
+            Assert.AreEqual(QuadrantType.Nebulae, _testQuadrant.Type);
 
-            Assert.AreEqual(string.Empty, _testQuadrant.Name);
+            Assert.AreEqual("Zeta Alpha", _testQuadrant.Name);
             Assert.IsInstanceOf<Sectors>(_testQuadrant.Sectors);
             Assert.AreEqual(false, _testQuadrant.Scanned);
             Assert.AreEqual(0, _testQuadrant.X);
             Assert.AreEqual(0, _testQuadrant.Y);
             Assert.AreEqual(true, _testQuadrant.Empty);
-            Assert.AreEqual(QuadrantType.Nebulae, _testQuadrant.Type);
-
             Assert.IsNotNull(_testQuadrant.Sectors);
         }
 
-        private void QuadrantNewAsserts()
+        [Test]
+        public void LRSOutputWithNebula()
         {
-            Assert.AreEqual(string.Empty, _testQuadrant.Name);
-            Assert.IsNull(_testQuadrant.Sectors);
-            Assert.AreEqual(false, _testQuadrant.Scanned);
-            Assert.AreEqual(0, _testQuadrant.X);
-            Assert.AreEqual(0, _testQuadrant.Y);
-            Assert.AreEqual(true, _testQuadrant.Empty);
+            //to fix this we might need to do the pattern in test_shipobject
+
+            const bool setupNebula = true;
+            this.SetupQuadrant(setupNebula);
+
+            _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
+
+            var mockedWrite = new Mock<IOutputWrite>();
+            _setup.Game.Write = mockedWrite.Object;
+
+            _setup.TestLongRangeScan.Controls();
+
+            mockedWrite.Verify(s => s.RenderNebula(It.IsAny<bool>()), Times.Exactly(1));
+        }
+
+        [Ignore]
+        [Test]
+        public void LRSOutputWithNNN()
+        {
+            //to fix this we might need to do the pattern in test_shipobject
+
+            //const bool setupNebula = true;
+            //this.SetupQuadrant(setupNebula);
+
+            //_setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
+
+            //var mockedWrite = new Mock<IOutputWrite>();
+            //_setup.Game.Write = mockedWrite.Object;
+
+            //_setup.TestLongRangeScan.Controls();
+
+            //mockedWrite.Verify(s => s.RenderNebula(It.IsAny<bool>()), Times.Exactly(1));
+        }
+
+        [Test]
+        public void LRSScanNebulaCountsOnly()
+        {
+            const bool setupNebula = true;
+            this.SetupQuadrant(setupNebula); 
+
             Assert.AreEqual(QuadrantType.Nebulae, _testQuadrant.Type);
 
-            Assert.AreEqual(0, _testQuadrant.GetHostiles().Count);
+            foreach (var sector in _testQuadrant.Sectors)
+            {
+                Assert.AreEqual(SectorType.Nebula, sector.Type, "Expected Nebula at Sector[" + sector.X + "," + sector.Y + "]");
+            }
+
+            this.VerifyScanResults(0);
+        }
+
+        [Test]
+        public void LRSScanNonNebulaCountsOnly()
+        {
+            const bool setupNebula = false;
+            this.SetupQuadrant(setupNebula); 
+
+            Assert.AreEqual(QuadrantType.GalacticSpace, _testQuadrant.Type);
+
+            foreach (var sector in _testQuadrant.Sectors)
+            {
+                Assert.AreEqual(SectorType.Space, sector.Type, "Expected Empty Space at Sector[" + sector.X + "," + sector.Y + "]");
+            }
+
+            this.VerifyScanResults(1);
+        }
+
+        private void VerifyScanResults(int expectedBaddies)
+        {
+            var hostilesReallyInQuadrant = _testQuadrant.GetHostiles().Count;
+            Assert.AreEqual(1, hostilesReallyInQuadrant);
+
+            _setup.TestLongRangeScan = new LongRangeScan(_setup.TestMap.Playership, _setup.Game);
+
+            var starbaseCount = 0;
+            var starCount = 0;
+            var hostileCount = 0;
+
+            _setup.TestLongRangeScan.Execute(_testQuadrant, out hostileCount, out starbaseCount, out starCount);
+                //pulls count from Quadrant object
+
+            Assert.AreEqual(expectedBaddies, hostileCount);
+        }
+
+        private void SetupQuadrant(bool withNebula)
+        {
+            _setup.SetupMapWith1Hostile();
+
+            //Assert.AreEqual(1, _setup.TestMap.Quadrants.GetActive());
+
+            _testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+
+            if (withNebula)
+            {
+                _testQuadrant.TransformIntoNebulae();
+            }
         }
     }
 }

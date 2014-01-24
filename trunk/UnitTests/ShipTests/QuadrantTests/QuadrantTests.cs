@@ -5,26 +5,22 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
-using UnitTests.ShipTests.Test_Harness_Objects;
 
 namespace UnitTests.ShipTests.QuadrantTests
 {
     [TestFixture]
-    public class QuadrantTests: TestClass_Base
+    public class QuadrantTests: QuadrantTests_Base
     {
-        Quadrant _testQuadrant;
-
         [SetUp]
         public void Setup()
         {
-            _testQuadrant = new Quadrant(this.Game.Map);
+            base._testQuadrant = new Quadrant(this.Game.Map);
 
-            _testQuadrant.Map = new Map(null, this.Game.Write, this.Game.Config);
-            _testQuadrant.Name = "Setup";
-            _testQuadrant.Scanned = false;
-
-            _testQuadrant.X = 0;
-            _testQuadrant.Y = 0;
+            base._testQuadrant.Map = new Map(null, this.Game.Write, this.Game.Config);
+            base._testQuadrant.Name = "Setup";
+            base._testQuadrant.Scanned = false;
+            base._testQuadrant.X = 0;
+            base._testQuadrant.Y = 0;
         }
     
         [Test]
@@ -34,7 +30,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             _testQuadrant = new Quadrant(this.Game.Map);
 
             Assert.IsInstanceOf<Map>(_testQuadrant.Map);
-            this.QuadrantNewAsserts();
+            base.QuadrantNewAsserts();
             Assert.IsNull(_testQuadrant.Sectors);
         }
 
@@ -46,7 +42,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             _setup.SetupMapWith1Friendly();
 
             //you need to set ItemsToPopulat
-            _testQuadrant = new Quadrant(this.Game.Map, baddieNames);
+            _testQuadrant = new Quadrant(this.Game.Map, baddieNames, false);
 
             //todo: make sure that map is not set up with anyting
 
@@ -75,7 +71,7 @@ namespace UnitTests.ShipTests.QuadrantTests
 
             int index;
             var newQuadrant = new Quadrant(_setup.Game.Map);
-            newQuadrant.Create(_setup.Game.Map, names,
+            newQuadrant.Create(names,
                                new Stack<string>(klingonShipNames),
                                new Coordinate(1, 1), out index, null);
 
@@ -109,18 +105,6 @@ namespace UnitTests.ShipTests.QuadrantTests
         //todo: call InitializeSectors() and pass empty list<sector>
         //todo: call InitializeSectors() and put in duplicate sectors
         //todo: test AddSector() item XY mismatch
-
-        private void QuadrantNewAsserts()
-        {
-            Assert.AreEqual(string.Empty, _testQuadrant.Name);
-            Assert.IsNull(_testQuadrant.Sectors);
-            Assert.AreEqual(false, _testQuadrant.Scanned);
-            Assert.AreEqual(0, _testQuadrant.X);
-            Assert.AreEqual(0, _testQuadrant.Y);
-            Assert.AreEqual(true, _testQuadrant.Empty);
-
-            Assert.Throws(Is.TypeOf<GameException>().And.Message.EqualTo("No Sectors Set up in Quadrant: "), () => _testQuadrant.GetHostiles());
-        }
 
         [Ignore]
         [Test]

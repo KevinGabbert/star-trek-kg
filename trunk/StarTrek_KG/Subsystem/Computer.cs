@@ -132,35 +132,15 @@ namespace StarTrek_KG.Subsystem
                     //todo: this needs to be refactored with LRS!
 
                     this.Game.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER);
-                    int starbaseCount = -1;
-                    int starCount = -1;
-                    int hostileCount = -1;
 
                     var quadrant = Playfield.Quadrants.Get(quadrants, new Coordinate(quadrantUB, quadrantLB));
                     if (quadrant.Scanned)
                     {
-                        if (quadrant.Type != QuadrantType.Nebulae)
-                        {
-                            starbaseCount = quadrant.GetStarbaseCount();
-                            starCount = quadrant.GetStarCount();
-                            hostileCount = quadrant.GetHostiles().Count();
-                        }
-
-                        bool renderingMyLocation = false;
-
-                        if (myLocation.Quadrant.Scanned)
-                        {
-                            renderingMyLocation = myLocation.Quadrant.X == quadrantUB && myLocation.Quadrant.Y == quadrantLB;
-                        }
-
-                        if (quadrant.Type != QuadrantType.Nebulae)
-                        {
-                            this.Game.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
-                        }
-                        else
-                        {
-                            this.Game.Write.RenderNebula(renderingMyLocation);
-                        }
+                        this.RenderScannedQuadrant(quadrant, myLocation, quadrantUB, quadrantLB);
+                    }
+                    else
+                    {
+                        this.Game.Write.RenderUnscannedQuadrant(myLocation.Quadrant.X == quadrantUB && myLocation.Quadrant.Y == quadrantLB); //renderingMyLocation todo: refactor with other calls for that.
                     }
                 }
 
@@ -169,6 +149,36 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.Game.Write.Console.WriteLine();
+        }
+
+        private void RenderScannedQuadrant(Quadrant quadrant, Location myLocation, int quadrantUB, int quadrantLB)
+        {
+            int starbaseCount = -1;
+            int starCount = -1;
+            int hostileCount = -1;
+
+            if (quadrant.Type != QuadrantType.Nebulae)
+            {
+                starbaseCount = quadrant.GetStarbaseCount();
+                starCount = quadrant.GetStarCount();
+                hostileCount = quadrant.GetHostiles().Count();
+            }
+
+            bool renderingMyLocation = false;
+
+            if (myLocation.Quadrant.Scanned)
+            {
+                renderingMyLocation = myLocation.Quadrant.X == quadrantUB && myLocation.Quadrant.Y == quadrantLB;
+            }
+
+            if (quadrant.Type != QuadrantType.Nebulae)
+            {
+                this.Game.Write.RenderQuadrantCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+            }
+            else
+            {
+                this.Game.Write.RenderNebula(renderingMyLocation);
+            }
         }
 
         public static Computer For(Ship ship)

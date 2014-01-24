@@ -2,7 +2,7 @@
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
-namespace UnitTests.ShipTests.Test_Harness_Objects
+namespace UnitTests.ShipTests
 {
     public class TestClass_Base
     {
