@@ -150,6 +150,17 @@ namespace StarTrek_KG.Utility
                 RandomGreekLetter.Push(greekLetter);
             }
         }
+
+        public static string NebulaUnit()
+        {
+            const int places = 3;
+            Double totalpossibilities = Math.Pow(2, places);
+            double exitNumber = Utility.Random.Next(Convert.ToInt32(totalpossibilities));
+
+            var nebulaPattern = Convert.ToString(Convert.ToInt32(exitNumber), 2).PadLeft(places, '0').Replace('0', '-').Replace('1', '+');
+
+            return nebulaPattern;
+        }
     }
 
 

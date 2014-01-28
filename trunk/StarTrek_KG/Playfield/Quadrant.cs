@@ -7,7 +7,6 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Playfield
@@ -77,21 +76,12 @@ namespace StarTrek_KG.Playfield
         }
 
         //todo: we might want to avoid passing in baddie names and set up baddies later..
-        public Quadrant(Map map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = false, bool isNebulae = false)
+        public Quadrant(Map map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = false, bool makeNebulae = false)
         {
             this.Type = QuadrantType.GalacticSpace;
             this.Empty = true;
 
-            this.Create(map, quadrantNames, baddieNames, out nameIndex, addStars, isNebulae);
-        }
-
-        public Quadrant(Map map, Stack<string> baddieNames, bool addStars = true, bool isNebulae = false)
-        {
-            this.Empty = true;
-            this.Map = map;
-            this.Name = String.Empty;
-
-            this.Create(baddieNames, addStars, isNebulae);
+            this.Create(map, quadrantNames, baddieNames, out nameIndex, addStars, makeNebulae);
         }
 
         private void Create(Stack<string> baddieNames, bool addStars = true, bool makeNebulae = false)
@@ -117,7 +107,7 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public Quadrant Create(Stack<string> quadrantNames, Stack<String> baddieNames, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false)
+        public void Create(Stack<string> quadrantNames, Stack<String> baddieNames, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false)
         {
             nameIndex = (Utility.Utility.Random).Next(quadrantNames.Count);
 
@@ -134,8 +124,6 @@ namespace StarTrek_KG.Playfield
             }
 
             this.InitializeSectors(this, itemsInQuadrant, baddieNames, addStars, isNebulae);
-
-            return this;
         }
 
         public void InitializeSectors(Quadrant quadrant, 

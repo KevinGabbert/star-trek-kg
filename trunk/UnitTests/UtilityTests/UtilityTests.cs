@@ -1,12 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using NUnit.Framework;
+using StarTrek_KG.Utility;
 
 namespace UnitTests.UtilityTests
 {
-    class UtilityTests
+    [TestFixture]
+    public class UtilityTests
     {
         //todo: test star assignment method
+
+        [Test]
+        public void TestSRSNebulaGeneration()
+        {
+
+            var x = "";
+
+            for (int i = 0; i < 10; i++)
+            {
+                x += Utility.NebulaUnit();
+            }
+        }
     }
 }
