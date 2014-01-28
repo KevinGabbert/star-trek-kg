@@ -35,7 +35,7 @@ namespace StarTrek_KG.Playfield
             return i.Single();
         }
 
-        public static Quadrant Get(List<Quadrant> quadrants, Coordinate quadrant)
+        public static Quadrant Get(IEnumerable<Quadrant> quadrants, Coordinate quadrant)
         {
             Quadrant retVal = null;
 

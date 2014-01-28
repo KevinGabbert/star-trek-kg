@@ -51,11 +51,20 @@ namespace StarTrek_KG.Output
             this.Location = location;
 
             this.Write.Console.WriteLine("");
-            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrant.Name);
+
+            var quadrantName = quadrant.Name;
+            var isNebula = (quadrant.Type == QuadrantType.Nebulae);
+
+            if (isNebula)
+            {
+                quadrantName += " Nebula"; //todo: resource out.
+            }
+
+            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrantName);
 
             for (int i = 0; i < 8; i++ )
             {
-                this.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles);
+                this.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles, isNebula);
             }
 
             this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
@@ -96,7 +105,7 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles)
+        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles, bool isNebula)
         {
             for (var column = 0; column < Constants.SECTOR_MAX; column++)
             {
@@ -104,7 +113,9 @@ namespace StarTrek_KG.Output
                 switch (item)
                 {
                     case SectorItem.Empty:
-                        sb.Append(Constants.EMPTY);
+
+                        sb.Append(isNebula ? Utility.Utility.NebulaUnit() : Constants.EMPTY);
+
                         break;
 
                     case SectorItem.Friendly:
