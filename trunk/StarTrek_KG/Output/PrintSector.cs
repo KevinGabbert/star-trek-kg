@@ -27,7 +27,7 @@ namespace StarTrek_KG.Output
             this.LowEnergyLevel = lowEnergyLevel;
         }
 
-        public void Print(Quadrant quadrant, Map map)
+        public void SRSPrintSector(Quadrant quadrant, Map map)
         {
             var condition = this.GetCurrentCondition(quadrant, map);
 
@@ -36,7 +36,7 @@ namespace StarTrek_KG.Output
             bool docked = Navigation.For(map.Playership).docked;
 
             CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
-            this.OutputWarnings(quadrant, map, docked);
+            this.OutputSRSWarnings(quadrant, map, docked);
         }
 
         private void CreateViewScreen(Quadrant quadrant,
@@ -185,7 +185,7 @@ namespace StarTrek_KG.Output
             return condition;
         }
 
-        private void OutputWarnings(Quadrant quadrant, Map map, bool docked)
+        private void OutputSRSWarnings(Quadrant quadrant, Map map, bool docked)
         {
             if (quadrant.GetHostiles().Count > 0)
             {
@@ -193,10 +193,22 @@ namespace StarTrek_KG.Output
             }
             else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
             {
-                Write.ResourceLine("LowEnergyLevel");
+                this.Write.ResourceLine("LowEnergyLevel");
+            }
+
+            if (quadrant.Type == QuadrantType.Nebulae)
+            {
+                this.Write.SingleLine("");
+                this.Write.ResourceLine("NebulaWarning");
+            }
+
+            if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
+            {
+                this.Write.ResourceLine("ShieldsDown");
             }
         }
 
+        //todo: this function needs to be part of SRS
         private void ScanHostile(Quadrant quadrant, Map map, bool docked)
         {
             this.Write.Console.WriteLine(this.Config.GetText("HostileDetected"),
@@ -208,11 +220,6 @@ namespace StarTrek_KG.Output
             }
 
             this.Write.Console.WriteLine("");
-
-            if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
-            {
-                Write.ResourceLine("ShieldsDown");
-            }
         }
     }
 }

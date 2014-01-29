@@ -44,8 +44,21 @@ namespace StarTrek_KG.Subsystem
         {
             if (Damaged()) return;
 
-            var myLocation = this.ShipConnectedTo.GetLocation();
+            Location myLocation = this.ShipConnectedTo.GetLocation();
+            bool currentlyInNebula = myLocation.Quadrant.Type == QuadrantType.Nebulae;
 
+            if (!currentlyInNebula)
+            {
+                this.RunLRSScan(myLocation);
+            }
+            else
+            {
+                this.Game.Write.SingleLine("Long Range Scan inoperative while in Nebula.");
+            }
+        }
+
+        private void RunLRSScan(Location myLocation)
+        {
             this.Game.Write.SingleLine("-------------------");
 
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
@@ -54,7 +67,8 @@ namespace StarTrek_KG.Subsystem
                 {
                     this.Game.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER + " ");
 
-                    var renderingMyLocation = myLocation.Quadrant.X == quadrantX && myLocation.Quadrant.Y == quadrantY;
+                    var renderingMyLocation = myLocation.Quadrant.X == quadrantX &&
+                                              myLocation.Quadrant.Y == quadrantY;
 
                     //todo: turn these into props.
 
@@ -83,9 +97,9 @@ namespace StarTrek_KG.Subsystem
                     }
                     else
                     {
-                        this.Game.Write.WithNoEndCR("^^^");
+                        this.Game.Write.WithNoEndCR(this.Game.Config.GetSetting<string>("GalacticBorder"));
                     }
-  
+
                     this.Game.Write.WithNoEndCR(" ");
                 }
 
@@ -108,8 +122,8 @@ namespace StarTrek_KG.Subsystem
         //todo: fix this
         private Coordinate CoordinateToScan(int quadrantY, int quadrantX)
         {
-            var max = (this.Game.Config).GetSetting<int>("QuadrantMax") - 1;
-            var min = (this.Game.Config).GetSetting<int>("QUADRANT_MIN");
+            var max = this.Game.Config.GetSetting<int>("QuadrantMax") - 1;
+            var min = this.Game.Config.GetSetting<int>("QUADRANT_MIN");
 
             int divinedQuadX = quadrantX;
             int divinedQuadY = quadrantY;
@@ -167,7 +181,7 @@ namespace StarTrek_KG.Subsystem
         {
             foreach (var quadrant in this.Game.Map.Quadrants)
             {
-                quadrant.Scanned = true; 
+                quadrant.Scanned = setScanned;
             }
         }
 
