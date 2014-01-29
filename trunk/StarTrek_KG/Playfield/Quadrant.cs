@@ -258,12 +258,6 @@ namespace StarTrek_KG.Playfield
 
         private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y, Stack<string> baddieNames)
         {
-
-            //if (quadrant.X == 1 && quadrant.Y == 1)
-            //{
-            //    var i = 0;
-            //}
-
             var sectorItemToPopulate = SectorItem.Empty;
 
             try
@@ -273,7 +267,18 @@ namespace StarTrek_KG.Playfield
                     if (itemsToPopulate.Count > 0)
                     {
                         Sector sectorToPopulate = itemsToPopulate.SingleOrDefault(i => i.X == x && i.Y == y);
-                        sectorItemToPopulate = sectorToPopulate == null ? SectorItem.Empty : sectorToPopulate.Item;
+
+                        if (sectorToPopulate != null)
+                        {
+                            if ((quadrant.Type != QuadrantType.Nebulae) && (sectorToPopulate.Item != SectorItem.Starbase))
+                                {
+                                    sectorItemToPopulate = sectorToPopulate.Item;
+                                }
+                        }
+                        else
+                        {
+                            sectorItemToPopulate = SectorItem.Empty;
+                        }
 
                         //todo: plop item down on map
 
