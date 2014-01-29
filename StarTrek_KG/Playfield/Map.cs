@@ -144,12 +144,12 @@ namespace StarTrek_KG.Playfield
             this.Quadrants = new Quadrants(this, this.Write);
 
             //Friendlies are added separately
-            List<Sector> itemsToPopulateThatAreNotFriendlies = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.Friendly).ToList();
+            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.Friendly).ToList();
 
-            this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotFriendlies.Count + " Quadrants: " + this.Quadrants.Count);
+            this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Quadrants: " + this.Quadrants.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
-            this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulateThatAreNotFriendlies);
+            this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulateThatAreNotPlayerShip);
         }
 
         private void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate)
@@ -168,7 +168,7 @@ namespace StarTrek_KG.Playfield
                     var quadrantXY = new Coordinate(quadrantX, quadrantY);
 
 
-                    bool isNebulae = Utility.Utility.Random.Next(21) == 20; //todo pull this setting from config
+                    bool isNebulae = Utility.Utility.Random.Next(11) == 10; //todo pull this setting from config
                     newQuadrant.Create(names, baddieNames, quadrantXY, out index, itemsToPopulate,
                                        this.GameConfig.AddStars, isNebulae);
 

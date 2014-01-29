@@ -107,6 +107,9 @@ namespace StarTrek_KG
         /// <returns></returns>
         private SectorDefs DefaultHardcodedSetup()
         {
+
+            //todo: get rid of this.  generate on the fly!
+
             return new SectorDefs
                        {
                            //This tells us what Types of items will be generated at start.  if Coordinates are passed, that is an
