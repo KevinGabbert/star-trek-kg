@@ -401,7 +401,7 @@ namespace StarTrek_KG.Output
             attackerSectorX = attacker.Sector.X.ToString();
             attackerSectorY = attacker.Sector.Y.ToString();
 
-            Utility.Utility.AdjustIfNebula(attacker.GetQuadrant(), ref attackerSectorX, ref attackerSectorY);
+            Utility.Utility.HideXorYIfNebula(attacker.GetQuadrant(), ref attackerSectorX, ref attackerSectorY);
 
             return String.Format("Your Ship has been hit by " + attacker.Name + " at sector [{0},{1}].", attackerSectorX, attackerSectorY);
         }

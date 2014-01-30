@@ -167,7 +167,6 @@ namespace StarTrek_KG.Playfield
                     var newQuadrant = new Quadrant(this);
                     var quadrantXY = new Coordinate(quadrantX, quadrantY);
 
-
                     bool isNebulae = Utility.Utility.Random.Next(11) == 10; //todo pull this setting from config
                     newQuadrant.Create(names, baddieNames, quadrantXY, out index, itemsToPopulate,
                                        this.GameConfig.AddStars, isNebulae);

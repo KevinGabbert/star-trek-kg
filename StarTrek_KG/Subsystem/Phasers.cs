@@ -125,16 +125,42 @@ namespace StarTrek_KG.Subsystem
             badGuyShields.Energy -= (int) deliveredEnergy;
             if (badGuyShields.Energy <= 0)
             {
-                badGuyShip.Destroyed = true;
-
-                //Phasers hit all ships on a single turn, so this builds up a list of destroyed ships
-                destroyedShips.Add(badGuyShip);
+                Phasers.DestroyBadGuy(destroyedShips, badGuyShip);
             }
             else
             {
-                this.Game.Write.Line(string.Format("Hit " + badGuyShip.Name + " at sector [{0},{1}]. " + badGuyShip.Name + " shield strength down to {2}.",
-                                  (badGuyShip.Sector.X), (badGuyShip.Sector.Y), badGuyShields.Energy));
+                this.DamageBadGuy(badGuyShip, badGuyShields);
             }
+        }
+
+        private void DamageBadGuy(IShip badGuyShip, Shields badGuyShields)
+        {
+            string badGuyShipSectorX = badGuyShip.Sector.X.ToString();
+            string badGuyShipSectorY = badGuyShip.Sector.Y.ToString();
+
+            string badGuyShipName = badGuyShip.Name;
+            string badguyShieldEnergy = badGuyShields.Energy.ToString();
+
+            if (badGuyShip.GetQuadrant().Type == QuadrantType.Nebulae)
+            {
+                badGuyShipName = "Unknown Hostile Ship";
+                badguyShieldEnergy = "Unknown level";
+            }
+
+            Utility.Utility.HideXorYIfNebula(badGuyShip.GetQuadrant(), ref badGuyShipSectorX, ref badGuyShipSectorY);
+
+            this.Game.Write.Line(
+                string.Format(
+                    "Hit " + badGuyShipName + " at sector [{0},{1}]. " + badGuyShipName + " shield strength now at {2}.",
+                    badGuyShipSectorX, badGuyShipSectorY, badguyShieldEnergy));
+        }
+
+        private static void DestroyBadGuy(ICollection<IShip> destroyedShips, IShip badGuyShip)
+        {
+            badGuyShip.Destroyed = true;
+
+            //Phasers hit all ships on a single turn, so this builds up a list of destroyed ships
+            destroyedShips.Add(badGuyShip);
         }
 
         public static Phasers For(Ship ship)
