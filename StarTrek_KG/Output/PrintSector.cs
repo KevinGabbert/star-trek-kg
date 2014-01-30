@@ -189,7 +189,7 @@ namespace StarTrek_KG.Output
         {
             if (quadrant.GetHostiles().Count > 0)
             {
-                this.ScanHostile(quadrant, map, docked);
+                this.SRSScanHostile(quadrant, map, docked);
             }
             else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
             {
@@ -209,7 +209,7 @@ namespace StarTrek_KG.Output
         }
 
         //todo: this function needs to be part of SRS
-        private void ScanHostile(Quadrant quadrant, Map map, bool docked)
+        private void SRSScanHostile(Quadrant quadrant, Map map, bool docked)
         {
             this.Write.Console.WriteLine(this.Config.GetText("HostileDetected"),
                               (quadrant.GetHostiles().Count == 1 ? "" : "s"));
