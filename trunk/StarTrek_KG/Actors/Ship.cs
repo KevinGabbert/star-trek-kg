@@ -3,6 +3,7 @@ using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
@@ -95,9 +96,13 @@ namespace StarTrek_KG.Actors
           
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
-        public void AbsorbHitFrom(IShip attacker, int attackingEnergy) //
+        public void AbsorbHitFrom(IShip attacker, int attackingEnergy) 
         {
-            this.Map.Write.Line(string.Format(this.Name + " hit by " + attacker.Name + " at sector [{0},{1}].... ", (attacker.Sector.X), (attacker.Sector.Y)));
+            string attackerSectorX;
+            string attackerSectorY;
+            string hitMessage = Write.ShipHitMessage(attacker, out attackerSectorX, out attackerSectorY);
+
+            this.Map.Write.Line(hitMessage);
 
             var shields = Shields.For(this);
             shields.Energy -= attackingEnergy;

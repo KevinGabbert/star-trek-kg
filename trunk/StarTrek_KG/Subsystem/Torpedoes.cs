@@ -299,7 +299,7 @@ namespace StarTrek_KG.Subsystem
 
                 direction = Utility.Utility.AdjustIfNebula(thisQuadrant, direction, ref shipSectorX, ref shipSectorY);
 
-                this.Game.Write.Line(string.Format("Direction {2}: Hostile ship in sector [{0},{1}].", shipSectorX, shipSectorY, direction));
+                this.Game.Write.Line(string.Format("Hostile ship in sector [{0},{1}]. Direction {2}: ", shipSectorX, shipSectorY, direction));
             }
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Utility
@@ -164,13 +165,22 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
-
         public static string AdjustIfNebula(Quadrant thisQuadrant, string direction, ref string shipSectorX, ref string shipSectorY)
         {
             if (thisQuadrant.Type == QuadrantType.Nebulae)
             {
-                direction = "Unknown";
+                direction = "Unknown, due to interference";
+            }
 
+            Utility.AdjustIfNebula(thisQuadrant, ref shipSectorX, ref shipSectorY);
+
+            return direction;
+        }
+
+        public static void AdjustIfNebula(Quadrant thisQuadrant, ref string shipSectorX, ref string shipSectorY)
+        {
+            if (thisQuadrant.Type == QuadrantType.Nebulae)
+            {
                 switch (StarTrek_KG.Utility.Utility.Random.Next(2))
                 {
                     case 0:
@@ -185,7 +195,6 @@ namespace StarTrek_KG.Utility
                         break;
                 }
             }
-            return direction;
         }
     }
 
