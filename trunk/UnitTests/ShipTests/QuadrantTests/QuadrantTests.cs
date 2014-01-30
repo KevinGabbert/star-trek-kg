@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
 
 namespace UnitTests.ShipTests.QuadrantTests
