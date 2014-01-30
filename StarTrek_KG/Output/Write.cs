@@ -396,6 +396,16 @@ namespace StarTrek_KG.Output
             return false;
         }
 
+        public static string ShipHitMessage(IShip attacker, out string attackerSectorX, out string attackerSectorY)
+        {
+            attackerSectorX = attacker.Sector.X.ToString();
+            attackerSectorY = attacker.Sector.Y.ToString();
+
+            Utility.Utility.AdjustIfNebula(attacker.GetQuadrant(), ref attackerSectorX, ref attackerSectorY);
+
+            return String.Format("Your Ship has been hit by " + attacker.Name + " at sector [{0},{1}].", attackerSectorX, attackerSectorY);
+        }
+
     }
 }
 

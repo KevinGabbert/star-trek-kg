@@ -92,6 +92,11 @@ namespace StarTrek_KG.Actors
             }
         }
 
+        public Quadrant GetQuadrant()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public Type Type()
         {

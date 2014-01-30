@@ -3,6 +3,7 @@ using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
+using W = StarTrek_KG.Output.Write;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
@@ -454,14 +455,14 @@ namespace StarTrek_KG
             this.ReportShieldsStatus(map, shieldsValueBeforeHit);
         }
 
-        private void AttackDockedPlayership(IShip badGuy)
+        private void AttackDockedPlayership(IShip attacker)
         {
-            this.Write.Line(
-                String.Format(
-                    "Your Ship has been hit by " + badGuy.Name + " at sector [{0},{1}]. No damage due to starbase shields.",
-                    (badGuy.Sector.X), (badGuy.Sector.Y)));
-        }
+            string attackerSectorX;
+            string attackerSectorY;
+            string hitMessage = W.ShipHitMessage(attacker, out attackerSectorX, out attackerSectorY);
 
+            this.Write.Line(hitMessage + " No damage due to starbase shields.");
+        }
 
         //todo: move this to a report object?
         public void ReportShieldsStatus(Map map, int shieldsValueBeforeHit)
