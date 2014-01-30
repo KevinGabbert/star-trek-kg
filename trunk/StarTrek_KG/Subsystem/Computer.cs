@@ -66,7 +66,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "tor":
-                    Torpedoes.For(this.ShipConnectedTo).Calculator(this.Game.Map);
+                    Torpedoes.For(this.ShipConnectedTo).Calculator();
                     break;
 
                 case "bas":

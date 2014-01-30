@@ -275,7 +275,7 @@ namespace StarTrek_KG.Subsystem
         }
 
         //todo: move to Utility() object
-        public void Calculator(Map map)
+        public void Calculator()
         {
             this.Game.Write.Line("");
 
@@ -293,9 +293,13 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var ship in thisQuadrantHostiles)
             {
-                this.Game.Write.Line(string.Format("Direction {2:#.##}: Hostile ship in sector [{0},{1}].",
-                                  (ship.Sector.X), (ship.Sector.Y),
-                                  Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y)));
+                string shipSectorX = (ship.Sector.X).ToString();
+                string shipSectorY = (ship.Sector.Y).ToString();
+                string direction = string.Format("{0:#.##}", Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y));
+
+                direction = Utility.Utility.AdjustIfNebula(thisQuadrant, direction, ref shipSectorX, ref shipSectorY);
+
+                this.Game.Write.Line(string.Format("Direction {2}: Hostile ship in sector [{0},{1}].", shipSectorX, shipSectorY, direction));
             }
         }
 

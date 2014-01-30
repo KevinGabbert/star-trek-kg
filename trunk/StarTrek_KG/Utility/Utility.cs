@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using StarTrek_KG.Config;
+using StarTrek_KG.Enums;
+using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Utility
 {
@@ -160,6 +162,30 @@ namespace StarTrek_KG.Utility
             var nebulaPattern = Convert.ToString(Convert.ToInt32(exitNumber), 2).PadLeft(places, '0').Replace('0', '-').Replace('1', '+');
 
             return nebulaPattern;
+        }
+
+
+        public static string AdjustIfNebula(Quadrant thisQuadrant, string direction, ref string shipSectorX, ref string shipSectorY)
+        {
+            if (thisQuadrant.Type == QuadrantType.Nebulae)
+            {
+                direction = "Unknown";
+
+                switch (StarTrek_KG.Utility.Utility.Random.Next(2))
+                {
+                    case 0:
+                        shipSectorX = "?";
+                        break;
+                    case 1:
+                        shipSectorY = "?";
+                        break;
+                    default:
+                        shipSectorX = "??";
+                        shipSectorY = "??";
+                        break;
+                }
+            }
+            return direction;
         }
     }
 
