@@ -86,6 +86,13 @@ namespace StarTrek_KG.Subsystem
 
         private void Execute(double phaserEnergy)
         {
+            var inNebula = this.ShipConnectedTo.GetQuadrant().Type == QuadrantType.Nebulae;
+
+            if (inNebula)
+            {
+                this.Game.Write.Line("Due to the Nebula, phaser effectiveness will be reduced.");
+            }
+
             this.Game.Write.Line("Firing phasers..."); //todo: pull from config
 
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
@@ -97,7 +104,7 @@ namespace StarTrek_KG.Subsystem
 
                 double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
 
-                double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate", "PhaserEnergyAdjustment");
+                double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate", "PhaserEnergyAdjustment", inNebula);
 
                 this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }

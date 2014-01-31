@@ -106,14 +106,26 @@ namespace StarTrek_KG.Utility
         }
 
         //todo: move to Utility() object
-        public static double ShootBeamWeapon(double energyToPowerWeapon, double distance, string deprecationRateConfigKey, string energyAdjustmentConfigKey)
+        public static double ShootBeamWeapon(double energyToPowerWeapon, double distance, string deprecationRateConfigKey, string energyAdjustmentConfigKey, bool inNebula)
         {
-            double deprecationRate = (new StarTrekKGSettings()).GetSetting<double>(deprecationRateConfigKey);
-            double energyAdjustment = (new StarTrekKGSettings()).GetSetting<double>(energyAdjustmentConfigKey);
+            var deprecationRate = (new StarTrekKGSettings()).GetSetting<double>(deprecationRateConfigKey);
+            var energyAdjustment = (new StarTrekKGSettings()).GetSetting<double>(energyAdjustmentConfigKey);
 
-            double deliveredEnergy = StarTrek_KG.Utility.Utility.ComputeBeamWeaponIntensity(energyToPowerWeapon, energyAdjustment, distance, deprecationRate);
+            double actualDeprecationRate;
 
-            return deliveredEnergy;
+            if (inNebula)
+            {
+                actualDeprecationRate = deprecationRate / 2;
+            }
+            else
+            {
+                actualDeprecationRate = deprecationRate;
+            }
+
+            double deliveredEnergy = StarTrek_KG.Utility.Utility.ComputeBeamWeaponIntensity(energyToPowerWeapon, energyAdjustment, distance, actualDeprecationRate);
+            double actualDeliveredEnergy = (deliveredEnergy < 0) ? 0 : deliveredEnergy;
+
+            return actualDeliveredEnergy;
         }
 
         public static void ResetGreekLetterStack()
