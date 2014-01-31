@@ -142,9 +142,6 @@ namespace StarTrek_KG.Subsystem
 
         private void DamageBadGuy(IShip badGuyShip, Shields badGuyShields)
         {
-            string badGuyShipSectorX = badGuyShip.Sector.X.ToString();
-            string badGuyShipSectorY = badGuyShip.Sector.Y.ToString();
-
             string badGuyShipName = badGuyShip.Name;
             string badguyShieldEnergy = badGuyShields.Energy.ToString();
 
@@ -154,12 +151,12 @@ namespace StarTrek_KG.Subsystem
                 badguyShieldEnergy = "Unknown level";
             }
 
-            Utility.Utility.HideXorYIfNebula(badGuyShip.GetQuadrant(), ref badGuyShipSectorX, ref badGuyShipSectorY);
+            var badGuy = Utility.Utility.HideXorYIfNebula(badGuyShip.GetQuadrant(), badGuyShip.Sector.X.ToString(), badGuyShip.Sector.Y.ToString());
 
             this.Game.Write.Line(
                 string.Format(
                     "Hit " + badGuyShipName + " at sector [{0},{1}]. " + badGuyShipName + " shield strength now at {2}.",
-                    badGuyShipSectorX, badGuyShipSectorY, badguyShieldEnergy));
+                    badGuy.X, badGuy.Y, badguyShieldEnergy));
         }
 
         private static void DestroyBadGuy(ICollection<IShip> destroyedShips, IShip badGuyShip)

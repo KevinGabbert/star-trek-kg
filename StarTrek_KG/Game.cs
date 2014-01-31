@@ -464,9 +464,7 @@ namespace StarTrek_KG
 
         private void AttackDockedPlayership(IShip attacker)
         {
-            string attackerSectorX;
-            string attackerSectorY;
-            string hitMessage = W.ShipHitMessage(attacker, out attackerSectorX, out attackerSectorY);
+            string hitMessage = W.ShipHitMessage(attacker);
 
             this.Write.Line(hitMessage + " No damage due to starbase shields.");
         }

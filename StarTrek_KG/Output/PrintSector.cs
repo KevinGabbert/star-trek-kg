@@ -189,7 +189,7 @@ namespace StarTrek_KG.Output
         {
             if (quadrant.GetHostiles().Count > 0)
             {
-                this.SRSScanHostile(quadrant, map, docked);
+                this.SRSScanHostile(quadrant);
             }
             else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
             {
@@ -209,14 +209,23 @@ namespace StarTrek_KG.Output
         }
 
         //todo: this function needs to be part of SRS
-        private void SRSScanHostile(Quadrant quadrant, Map map, bool docked)
+        private void SRSScanHostile(Quadrant quadrant)
         {
             this.Write.Console.WriteLine(this.Config.GetText("HostileDetected"),
                               (quadrant.GetHostiles().Count == 1 ? "" : "s"));
 
+            bool inNebula = quadrant.Type == QuadrantType.Nebulae;
+
             foreach (var hostile in quadrant.GetHostiles())
             {
-                this.Write.Console.WriteLine(this.Config.GetText("IDHostile"), hostile.Name);
+                var hostileName = hostile.Name;
+
+                if (inNebula)
+                {
+                    hostileName = "Unknown";
+                }
+
+                this.Write.Console.WriteLine(this.Config.GetText("IDHostile"), hostileName);
             }
 
             this.Write.Console.WriteLine("");
