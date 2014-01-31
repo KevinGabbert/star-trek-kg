@@ -107,7 +107,14 @@ namespace StarTrek_KG.Actors
             var shields = Shields.For(this);
             shields.Energy -= attackingEnergy;
 
-            if (shields.Energy < 0)
+            bool shieldsWorking = (this.GetQuadrant().Type != QuadrantType.Nebulae);
+
+            if (!shieldsWorking)
+            {
+                this.Map.Write.Line("Shields ineffective due to interference from Nebula");
+            }
+
+            if ((shields.Energy < 0) || shieldsWorking)
             {
                 this.TakeDamageOrDestroyShip(attackingEnergy, shields);
             }
@@ -119,6 +126,13 @@ namespace StarTrek_KG.Actors
 
         private void TakeDamageOrDestroyShip(int attackingEnergy, System shields)
         {
+            //reclaim any energy back to the ship.  'cause we are nice like that.
+            if (shields.Energy > 0)
+            {
+                this.Map.Write.Line("Reclaiming shield energy back to ship.");
+                this.Energy += shields.Energy;
+            }
+
             shields.Energy = 0; //for the benefit of the output message telling the user that they have no shields. )
 
             bool assignedDamage = this.Subsystems.TakeDamageIfWeCan(attackingEnergy);
@@ -131,7 +145,7 @@ namespace StarTrek_KG.Actors
             else
             {
                 //It hurts more when you have no shields.  This is a balance point
-                this.Energy = this.Energy - (attackingEnergy *3 ); //todo: resource this out
+                this.Energy = this.Energy - (attackingEnergy * 3 ); //todo: resource this out
                     //todo: make this multiplier an app.config setting //todo: write a test to verify this behavior.
 
                 if (this.Energy < 0)

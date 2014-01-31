@@ -27,17 +27,44 @@ namespace UnitTests.ShipTests
 
             for (var i = 1; i < 1000; i++)
             {
-                var oneSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 1, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
-                var twoSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 2, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
-                var fourSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 4, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
-                var sevenSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 7, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
-                var eightSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 8, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment");
+                var oneSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 1, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", false);
+                var twoSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 2, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", false);
+                var fourSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 4, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", false);
+                var sevenSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 7, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", false);
+                var eightSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 8, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", false);
 
-                Assert.Less(oneSector, 290, "iteration: " + i);
-                Assert.Less(twoSector, 247, "iteration: " + i);
-                Assert.Less(fourSector, 194, "iteration: " + i);
-                Assert.Less(sevenSector, 115, "iteration: " + i);
-                Assert.Less(eightSector, 88, "iteration: " + i);
+                Assert.AreEqual(oneSector, 273, "iteration: " + i);
+                Assert.AreEqual(twoSector, 246, "iteration: " + i);
+                Assert.AreEqual(fourSector, 193, "iteration: " + i);
+                Assert.AreEqual(sevenSector, 114, "iteration: " + i);
+                Assert.AreEqual(eightSector, 87, "iteration: " + i);
+            }
+        }
+
+        /// <summary>
+        /// The only point behind this test was to understand the limit.
+        /// Apparently, currently using a hardcoded seed of 300, and a distanceDeprecationLevel of 11.3
+        /// </summary>
+        [Test]
+        public void DisruptorShotInNebula()
+        {
+            Assert.AreEqual(300, (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotSeed"));
+            Assert.AreEqual(11.3, (new StarTrekKGSettings()).GetSetting<double>("DisruptorShotDeprecationLevel"));
+            Assert.AreEqual(1.0, (new StarTrekKGSettings()).GetSetting<double>("DisruptorEnergyAdjustment"));
+
+            for (var i = 1; i < 1000; i++)
+            {
+                var oneSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 1, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", true);
+                var twoSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 2, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", true);
+                var fourSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 4, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", true);
+                var sevenSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 7, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", true);
+                var eightSector = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(300, 8, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", true);
+
+                Assert.AreEqual(oneSector, 246, "iteration: " + i);
+                Assert.AreEqual(twoSector, 193, "iteration: " + i);
+                Assert.AreEqual(fourSector, 87, "iteration: " + i);
+                Assert.AreEqual(sevenSector, 0, "iteration: " + i);
+                Assert.AreEqual(eightSector, 0, "iteration: " + i);
             }
         }
     }

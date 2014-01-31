@@ -64,19 +64,30 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    this.Game.Write.Line("Invalid this.Write");
                     return;
             }
 
-            var transfer = this.TransferredFromUser();
+            if (this.ShipConnectedTo.GetQuadrant().Type == QuadrantType.Nebulae)
+            {
+                this.Game.Write.Line("Energy cannot be added to shields while in a nebula.");
+            }
+            else
+            {
+                var transfer = this.TransferredFromUser();
+                this.TransferEnergy(transfer, adding);
+            }
 
+            EndControls:;
+        }
+
+        private void TransferEnergy(int transfer, bool adding)
+        {
             if (transfer > 0)
             {
-
                 if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
                 {
                     this.Game.Write.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
-                    goto EndControls;
+                    return;
                 }
 
                 var maxEnergy = (Convert.ToInt32(this.Game.Config.GetSetting<string>("SHIELDS_MAX")));
@@ -89,13 +100,13 @@ namespace StarTrek_KG.Subsystem
                         //todo: write code to add the difference if they exceed. There is no reason to make people type twice
 
                         this.Game.Write.Line("Energy to transfer exceeds Shield Max capability.. No Change");
-                        goto EndControls;
+                        return;
                     }
 
                     if (totalEnergy <= maxEnergy || !adding)
                     {
                         this.AddEnergy(totalEnergy, adding); //todo: add limit on ship energy level 
-                    } 
+                    }
                 }
                 else
                 {
@@ -103,11 +114,9 @@ namespace StarTrek_KG.Subsystem
                 }
 
                 this.Game.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
-                                                this.Energy,
-                                                this.ShipConnectedTo.Energy));
+                    this.Energy,
+                    this.ShipConnectedTo.Energy));
             }
-
-            EndControls:;
         }
 
         public new int TransferredFromUser()

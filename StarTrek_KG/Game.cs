@@ -444,9 +444,16 @@ namespace StarTrek_KG
             var seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed")*
                                           (Utility.Utility.Random).NextDouble();
 
+            var inNebula = badGuy.GetQuadrant().Type == QuadrantType.Nebulae;
+
+            if (inNebula)
+            {
+                this.Write.Line("Due to the Nebula, hostile weapon effectiveness is reduced.");
+            }
+
             //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()
             //todo: the -1 should be the ship energy you want to allocate
-            var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment"); 
+            var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula); 
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
