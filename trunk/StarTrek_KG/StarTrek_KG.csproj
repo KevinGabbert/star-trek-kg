@@ -83,6 +83,7 @@
     <Compile Include="Interfaces\ISystem.cs" />
     <Compile Include="Interfaces\IConfig.cs" />
     <Compile Include="Output\PrintSector.cs" />
+    <Compile Include="Playfield\OutputCoordinate.cs" />
     <Compile Include="Playfield\TorpedoCoordinate.cs" />
     <Compile Include="Structs\NonNullable.cs" />
     <Compile Include="Actors\BlackHole.cs" />

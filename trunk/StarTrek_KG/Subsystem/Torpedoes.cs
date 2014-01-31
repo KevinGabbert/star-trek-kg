@@ -130,7 +130,11 @@ namespace StarTrek_KG.Subsystem
             if (Torpedoes.LastPositionAintNewPosition(newLocation, lastPosition))
             {
                 this.Game.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
-                this.Game.Write.Line(string.Format("  [{0},{1}]", newLocation.Sector.X, newLocation.Sector.Y));
+
+                var outputCoordinate = Utility.Utility.HideXorYIfNebula(this.ShipConnectedTo.GetQuadrant(), newLocation.Sector.X.ToString(), newLocation.Sector.Y.ToString());
+
+                this.Game.Write.Line(string.Format("  [{0},{1}]", outputCoordinate.X, outputCoordinate.Y));
+
                 lastPosition.Update(newLocation);
             }
 
@@ -297,7 +301,7 @@ namespace StarTrek_KG.Subsystem
                 string shipSectorY = (ship.Sector.Y).ToString();
                 string direction = string.Format("{0:#.##}", Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y));
 
-                direction = Utility.Utility.AdjustIfNebula(thisQuadrant, direction, ref shipSectorX, ref shipSectorY);
+                direction = Utility.Utility.AdjustIfNebula(thisQuadrant, direction, shipSectorX, shipSectorY);
 
                 this.Game.Write.Line(string.Format("Hostile ship in sector [{0},{1}]. Direction {2}: ", shipSectorX, shipSectorY, direction));
             }

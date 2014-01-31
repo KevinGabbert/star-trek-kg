@@ -98,9 +98,7 @@ namespace StarTrek_KG.Actors
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public void AbsorbHitFrom(IShip attacker, int attackingEnergy) 
         {
-            string attackerSectorX;
-            string attackerSectorY;
-            string hitMessage = Write.ShipHitMessage(attacker, out attackerSectorX, out attackerSectorY);
+            string hitMessage = Write.ShipHitMessage(attacker);
 
             this.Map.Write.Line(hitMessage);
 

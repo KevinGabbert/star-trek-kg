@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
@@ -396,16 +397,14 @@ namespace StarTrek_KG.Output
             return false;
         }
 
-        public static string ShipHitMessage(IShip attacker, out string attackerSectorX, out string attackerSectorY)
+        public static string ShipHitMessage(IShip attacker)
         {
-            attackerSectorX = attacker.Sector.X.ToString();
-            attackerSectorY = attacker.Sector.Y.ToString();
+            var attackerSector = Utility.Utility.HideXorYIfNebula(attacker.GetQuadrant(), attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
 
-            Utility.Utility.HideXorYIfNebula(attacker.GetQuadrant(), ref attackerSectorX, ref attackerSectorY);
+            string attackerName = attacker.GetQuadrant().Type == QuadrantType.Nebulae ? "Unknown Ship" : attacker.Name;
 
-            return String.Format("Your Ship has been hit by " + attacker.Name + " at sector [{0},{1}].", attackerSectorX, attackerSectorY);
+            return String.Format("Your Ship has been hit by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }
-
     }
 }
 

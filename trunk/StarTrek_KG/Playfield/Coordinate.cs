@@ -52,12 +52,6 @@ namespace StarTrek_KG.Playfield
             this.Y = y;
         }
 
-        public static Coordinate New(int y, int x)
-        {
-            var coordinate = new Coordinate(x, y);
-            return coordinate;
-        }
-
         public static Coordinate GetRandom()
         {
             return new Coordinate((Utility.Utility.Random).Next(Constants.SECTOR_MAX),

@@ -177,36 +177,38 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
-        public static string AdjustIfNebula(Quadrant thisQuadrant, string direction, ref string shipSectorX, ref string shipSectorY)
+        public static string AdjustIfNebula(Quadrant thisQuadrant, string direction, string shipSectorX, string shipSectorY)
         {
             if (thisQuadrant.Type == QuadrantType.Nebulae)
             {
                 direction = "Unknown, due to interference";
             }
 
-            Utility.HideXorYIfNebula(thisQuadrant, ref shipSectorX, ref shipSectorY);
+            Utility.HideXorYIfNebula(thisQuadrant, shipSectorX, shipSectorY);
 
             return direction;
         }
 
-        public static void HideXorYIfNebula(Quadrant thisQuadrant, ref string shipSectorX, ref string shipSectorY)
+        public static OutputCoordinate HideXorYIfNebula(Quadrant thisQuadrant, string x, string y)
         {
             if (thisQuadrant.Type == QuadrantType.Nebulae)
             {
                 switch (StarTrek_KG.Utility.Utility.Random.Next(2))
                 {
                     case 0:
-                        shipSectorX = "?";
+                        x = "?";
                         break;
                     case 1:
-                        shipSectorY = "?";
+                        y = "?";
                         break;
                     default:
-                        shipSectorX = "??";
-                        shipSectorY = "??";
+                        x = "??";
+                        y = "??";
                         break;
                 }
             }
+
+            return new OutputCoordinate(x, y);
         }
     }
 
