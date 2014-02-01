@@ -255,7 +255,8 @@ namespace StarTrek_KG.Playfield
             return currentStarName;
         }
 
-        private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y, Stack<string> baddieNames)
+        private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
+            Stack<string> baddieNames)
         {
             var sectorItemToPopulate = SectorItem.Empty;
 
@@ -269,10 +270,16 @@ namespace StarTrek_KG.Playfield
 
                         if (sectorToPopulate != null)
                         {
-                            if ((quadrant.Type != QuadrantType.Nebulae) && (sectorToPopulate.Item != SectorItem.Starbase))
-                                {
-                                    sectorItemToPopulate = sectorToPopulate.Item;
-                                }
+                            if ((quadrant.Type == QuadrantType.Nebulae) &&
+                                (sectorToPopulate.Item == SectorItem.Starbase))
+                            {
+                                sectorItemToPopulate = SectorItem.Empty;
+                            }
+                            else
+
+                            {
+                                sectorItemToPopulate = sectorToPopulate.Item;
+                            }
                         }
                         else
                         {

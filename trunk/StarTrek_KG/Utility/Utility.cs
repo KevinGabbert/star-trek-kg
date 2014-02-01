@@ -177,14 +177,17 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
-        public static string AdjustIfNebula(Quadrant thisQuadrant, string direction, string shipSectorX, string shipSectorY)
+        public static string AdjustIfNebula(Quadrant thisQuadrant, string direction, ref string shipSectorX, ref string shipSectorY)
         {
             if (thisQuadrant.Type == QuadrantType.Nebulae)
             {
                 direction = "Unknown, due to interference";
             }
 
-            Utility.HideXorYIfNebula(thisQuadrant, shipSectorX, shipSectorY);
+            var result = Utility.HideXorYIfNebula(thisQuadrant, shipSectorX, shipSectorY);
+
+            shipSectorX = result.X;
+            shipSectorY = result.Y;
 
             return direction;
         }
