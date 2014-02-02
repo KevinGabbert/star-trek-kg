@@ -21,10 +21,10 @@ namespace StarTrek_KG.Interfaces
         int HostilesToSetUp { get; set; }
 
         void Initialize(SetupOptions setupOptions);
-        void Initialize(SectorDefs sectorDefs);
+        void Initialize(SectorDefs sectorDefs, bool generateWithNebulae);
         void SetupFriendlies(SectorDefs sectorDefs);
-        void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs);
-        void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate);
+        void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs, bool generateWithNebulae);
+        void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate, bool generateWithNebulae);
         IEnumerable<Sector> AddStarbases();
 
         /// <summary>

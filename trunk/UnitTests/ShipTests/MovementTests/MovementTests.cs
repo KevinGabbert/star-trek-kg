@@ -66,7 +66,7 @@ namespace UnitTests.ShipTests.MovementTests
                                          {
 
                                              Initialize = true,
-
+                                             AddNebulae = false,
                                              SectorDefs = new SectorDefs
                                                               {
                                                                   new SectorDef(

@@ -29,7 +29,7 @@ namespace StarTrek_KG
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
             /// and some unsorted crap at the moment..
         /// </summary>
-        public Game(IStarTrekKGSettings config, bool startup = true)
+            public Game(IStarTrekKGSettings config, bool startup = true, bool generateWithNebulae = true)
         {
             this.Config = config;
             if(this.Write == null)
@@ -53,6 +53,7 @@ namespace StarTrek_KG
                 var startConfig = (new SetupOptions
                                        {
                                            Initialize = true,
+                                           AddNebulae = false,
                                            SectorDefs = SectorSetup()
                                        });
 
@@ -347,7 +348,7 @@ namespace StarTrek_KG
                     this.Write.DebugLine("Game Over.. Restarting.");
 
                     //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
-                    this.Map.Initialize(this.Map.GameConfig.SectorDefs); //we gonna start over
+                    this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
 
                     break;
                 }

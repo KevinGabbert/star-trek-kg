@@ -16,6 +16,13 @@ namespace StarTrek_KG.Settings
             set { _addStars = value; }
         }
 
+        private bool _addNebulae = true;
+        public bool AddNebulae
+        {
+            get { return _addNebulae; }
+            set { _addNebulae = value; }
+        }
+
         /// <summary>
         /// The plan here is to be able to start the game by throwing in all objects required for game with XY values
         /// </summary>

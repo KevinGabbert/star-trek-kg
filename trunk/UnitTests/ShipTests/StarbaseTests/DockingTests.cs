@@ -42,7 +42,7 @@ namespace UnitTests.ShipTests.StarbaseTests
             _testMapNoObjects = (new Map(new SetupOptions
             {
                 Initialize = true,
-
+                AddNebulae = false,
                 SectorDefs = new SectorDefs
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo

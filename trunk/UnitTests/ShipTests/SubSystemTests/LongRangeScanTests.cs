@@ -19,6 +19,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             this.Game.Map = new Map(new SetupOptions
                                       {
+                                          AddNebulae = true,
                                           Initialize = true,
                                           SectorDefs = new SectorDefs
                                                            {
@@ -66,6 +67,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             this.Game.Map = new Map(new SetupOptions
                                       {
+                                          AddNebulae = false,
                                           Initialize = true,
                                           AddStars = false,
                                           SectorDefs = new SectorDefs
@@ -206,6 +208,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
+                AddNebulae = false,
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),
@@ -239,6 +242,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
+                AddNebulae = false,
                 SectorDefs = new SectorDefs
                     {
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly),

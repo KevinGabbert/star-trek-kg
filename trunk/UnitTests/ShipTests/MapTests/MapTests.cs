@@ -71,7 +71,7 @@ namespace UnitTests.ShipTests.MapTests
             var systemNames = (new StarTrekKGSettings()).GetStarSystems();
             _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames),
-                                         new SectorDefs());
+                                         new SectorDefs(), false);
 
             Assert.IsInstanceOf(typeof(Map), _setup.TestMap);
             Assert.Greater(_setup.TestMap.Quadrants.Count, 63); //todo: currently these reside in constants, but will be moving to app.config
@@ -88,7 +88,7 @@ namespace UnitTests.ShipTests.MapTests
 
             _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames),
-                                         null);
+                                         null, false);
             //Quadrant.Populate(_setup.TestMap);
 
             Assert.Greater(_setup.TestMap.Quadrants.Count, 63); //currently these reside in constants, but will be moving to app.config
@@ -198,7 +198,7 @@ namespace UnitTests.ShipTests.MapTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 SectorDefs = new SectorDefs
                                     {
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
@@ -221,7 +221,7 @@ namespace UnitTests.ShipTests.MapTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 SectorDefs = new SectorDefs(),
                 AddStars = false
             }, this.Game.Write, this.Game.Config));
@@ -241,7 +241,7 @@ namespace UnitTests.ShipTests.MapTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 SectorDefs = new SectorDefs()
             }, this.Game.Write, this.Game.Config));
 
@@ -303,7 +303,7 @@ namespace UnitTests.ShipTests.MapTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                                     {
@@ -404,7 +404,7 @@ namespace UnitTests.ShipTests.MapTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                 {
