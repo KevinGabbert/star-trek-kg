@@ -1,9 +1,9 @@
-﻿using Moq;
+﻿using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
@@ -12,18 +12,24 @@ namespace UnitTests.ShipTests.ShipObjectTests
     [TestFixture]
     public class Test_ShipObject
     {
-        private Mock<Map> _mockMap;
+        private Mock<IMap> _mockMap;
         private Mock<IOutputWrite> _mockWrite;
         private Mock<ISector> _mockSector;
         private Mock<IStarTrekKGSettings> _mockSettings;
+        //private Mock<IQuadrants> _mockQuadrants;
+       
 
         [SetUp]
         public void Setup()
         {
-            _mockMap = new Mock<Map>();
+            _mockMap = new Mock<IMap>();
             _mockWrite = new Mock<IOutputWrite>();
             _mockSector = new Mock<ISector>();
             _mockSettings = new Mock<IStarTrekKGSettings>();
+            //_mockQuadrants = new Mock<IQuadrants>();
+
+            //_mockMap.Object.Quadrants = _mockQuadrants.Object;
+            _mockMap.Setup(m => m.Quadrants).Returns(new Quadrants(_mockMap.Object, _mockWrite.Object));
         }
 
         [Test]
@@ -66,6 +72,8 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("blah Blah Blah!!!");
 
             var shipToTest = new Ship("TestShip", _mockSector.Object, _mockMap.Object, _mockSettings.Object);
+
+
             Shields.For(shipToTest).Energy = 100;  //this is syntactic sugar for: ship.Subsystems.Single(s => s.Type == SubsystemType.Shields);
 
             Assert.AreEqual(100, Shields.For(shipToTest).Energy);

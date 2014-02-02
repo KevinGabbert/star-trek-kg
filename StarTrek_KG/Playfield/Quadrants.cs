@@ -8,11 +8,11 @@ using StarTrek_KG.Output;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Quadrants: List<Quadrant>, IWrite
+    public class Quadrants: List<Quadrant>
     {
         #region Properties
 
-            public Map Map { get; set; }
+            public IMap Map { get; set; }
             public IOutputWrite Write { get; set; }
 
             /// <summary>
@@ -21,7 +21,7 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-        public Quadrants(Map map, IOutputWrite write)
+        public Quadrants(IMap map, IOutputWrite write)
         {
             this.Write = write;
             this.Map = map;
@@ -29,7 +29,7 @@ namespace StarTrek_KG.Playfield
 
         //todo: query quadrants for number of hostiles (change quadrants to a collection!) and get rid of "totalHostiles variable)
 
-        public static Quadrant Get(Map map, Coordinate quadrant)
+        public static Quadrant Get(IMap map, Coordinate quadrant)
         {
             var i = map.Quadrants.Where(q => q.X == quadrant.X && q.Y == quadrant.Y);
             return i.Single();
@@ -96,11 +96,11 @@ namespace StarTrek_KG.Playfield
             return allHostiles;
         }
 
-        public void Remove(List<IShip> shipsToRemove, Map map)
+        public void Remove(IEnumerable<IShip> shipsToRemove)
         {
             foreach (var ship in shipsToRemove)
             {
-                this.Remove(ship, map);
+                this.Remove(ship);
             }
         }
 
@@ -166,10 +166,10 @@ namespace StarTrek_KG.Playfield
             return sectorToDeleteShip;
         }
 
-        public void Remove(IShip shipToRemove, Map map)
+        public void Remove(IShip shipToRemove)
         {
             //linq through quadrants and sectors to remove all ships that have the same details as Ship
-            Coordinate shipToRemoveQuadrant = shipToRemove.QuadrantDef;
+            Coordinate shipToRemoveQuadrant = shipToRemove.Coordinate;
 
             if(shipToRemoveQuadrant == null)
             {
@@ -193,7 +193,7 @@ namespace StarTrek_KG.Playfield
         /// <param name="shipToRemoveQuadrant"></param>
         private static void CheckForPlayershipRemoval(Map map, Coordinate shipToRemoveQuadrant)
         {
-            var playerShipQuadrant = map.Playership.QuadrantDef;
+            var playerShipQuadrant = map.Playership.Coordinate;
 
             if (playerShipQuadrant.X == shipToRemoveQuadrant.X &&
                 playerShipQuadrant.Y == shipToRemoveQuadrant.Y)

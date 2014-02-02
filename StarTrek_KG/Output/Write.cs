@@ -399,9 +399,10 @@ namespace StarTrek_KG.Output
 
         public static string ShipHitMessage(IShip attacker)
         {
-            var attackerSector = Utility.Utility.HideXorYIfNebula(attacker.GetQuadrant(), attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
+            var attackerQuadrant = attacker.GetQuadrant();
+            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerQuadrant, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
 
-            string attackerName = attacker.GetQuadrant().Type == QuadrantType.Nebulae ? "Unknown Ship" : attacker.Name;
+            string attackerName = attackerQuadrant.Type == QuadrantType.Nebulae ? "Unknown Ship" : attacker.Name;
 
             return String.Format("Your Ship has been hit by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }

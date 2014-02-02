@@ -192,8 +192,8 @@ namespace UnitTests.ShipTests.HostileTests
             Assert.AreEqual(64, activeQuad.Sectors.Count);
 
             //Playership's quadrant has been set correctly..
-            Assert.AreEqual(_setup.TestMap.Playership.QuadrantDef.X, activeQuad.X);
-            Assert.AreEqual(_setup.TestMap.Playership.QuadrantDef.Y, activeQuad.Y);
+            Assert.AreEqual(_setup.TestMap.Playership.Coordinate.X, activeQuad.X);
+            Assert.AreEqual(_setup.TestMap.Playership.Coordinate.Y, activeQuad.Y);
 
             //Check to see if Playership has been assigned to a sector in the active quadrant.
 

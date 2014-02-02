@@ -120,14 +120,14 @@ namespace UnitTests.ShipTests.MapTests
             MapTests.NoInitializeAsserts(_setup.TestMap);
         }
 
-        public static void NoInitializeAsserts(Map testMap)
+        public static void NoInitializeAsserts(IMap testMap)
         {
             Assert.IsInstanceOf(typeof (Map), testMap);
             Assert.IsNull(testMap.Quadrants);
             Assert.IsNotInstanceOf(typeof (Ship), testMap.Playership);
             Assert.IsNotInstanceOf(typeof (Quadrant), testMap.Quadrants);
 
-            Assert.AreEqual(testMap.hostilesToSetUp, 0);
+            Assert.AreEqual(testMap.HostilesToSetUp, 0);
             Assert.AreEqual(testMap.Stardate, 0);
             Assert.AreEqual(testMap.timeRemaining, 0);
             Assert.AreEqual(testMap.starbases, 0);
@@ -324,16 +324,16 @@ namespace UnitTests.ShipTests.MapTests
             var sector = new Sector(new LocationDef(new Coordinate(testQuadX, testQuadY), new Coordinate(testSectX, testSectY)));
             var hostileShip = new Ship("this is the ship", sector, this.Game.Map,_setup.Config);
 
-            _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
-                                           q.Y == hostileShip.QuadrantDef.Y).AddShip(hostileShip, sector);
+            _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.Coordinate.X &&
+                                           q.Y == hostileShip.Coordinate.Y).AddShip(hostileShip, sector);
 
             _setup.TestMap.Quadrants.Single(q => q.X == testQuadX &&
                                            q.Y == testQuadY).Sectors.Single(s => s.X == testSectX &&
                                                                                  s.Y == testSectY).Item = SectorItem.Hostile;
             //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
 
-            var hostiles1 = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
-                                                           q.Y == hostileShip.QuadrantDef.Y).GetHostiles();
+            var hostiles1 = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.Coordinate.X &&
+                                                           q.Y == hostileShip.Coordinate.Y).GetHostiles();
 
             var verifiedShip = hostiles1.Single(s => s.Sector.X == sector.X && s.Sector.Y == sector.Y && s.Name == "this is the ship");
             Assert.IsNotNull(verifiedShip);
@@ -342,8 +342,8 @@ namespace UnitTests.ShipTests.MapTests
             Assert.AreEqual(SectorItem.Hostile, sectorItemBefore); //verify our newly added ship is on the map
 
             //verify our newly added ship is in the Hostiles list
-            var shipToRemove = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.QuadrantDef.X &&
-                                                              q.Y == hostileShip.QuadrantDef.Y).GetHostiles().Single(h => 
+            var shipToRemove = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.Coordinate.X &&
+                                                              q.Y == hostileShip.Coordinate.Y).GetHostiles().Single(h => 
                                                                                    h.Sector.X == hostileShip.Sector.X &&
                                                                                    h.Sector.Y == hostileShip.Sector.Y &&
                                                                                    h.Allegiance == Allegiance.BadGuy &&
@@ -351,7 +351,7 @@ namespace UnitTests.ShipTests.MapTests
             Assert.IsInstanceOf<Ship>(shipToRemove);
 
             //todo: verify with assert that map is set up with sectors and quadrants
-            _setup.TestMap.Quadrants.Remove(hostileShip, _setup.TestMap);
+            _setup.TestMap.Quadrants.Remove(hostileShip);
 
             var sectorItemAfter = _setup.TestMap.GetItem(testQuadX, testQuadY, testSectX, testSectY);
             Assert.AreEqual(SectorItem.Empty, sectorItemAfter);
@@ -488,7 +488,7 @@ namespace UnitTests.ShipTests.MapTests
             Assert.IsInstanceOf(typeof(List<IShip>), _setup.TestMap.Quadrants.GetActive().GetHostiles());
             Assert.AreEqual(0, _setup.TestMap.Quadrants.GetActive().GetHostiles().Count);
 
-            Assert.Greater(_setup.TestMap.hostilesToSetUp, -1);
+            Assert.Greater(_setup.TestMap.HostilesToSetUp, -1);
             Assert.Greater(_setup.TestMap.Stardate, -1);
             Assert.Greater(_setup.TestMap.timeRemaining, -1);
             Assert.Greater(_setup.TestMap.starbases, -1);        

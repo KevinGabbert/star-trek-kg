@@ -3,6 +3,7 @@ using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
@@ -116,7 +117,7 @@ namespace StarTrek_KG.Subsystem
         }
 
         //todo: move to Game() object
-        private void TakeAttackDamageOrRepair(Map map, int lastQuadY, int lastQuadX)
+        private void TakeAttackDamageOrRepair(IMap map, int lastQuadY, int lastQuadX)
         {
             var thisShip = this.ShipConnectedTo.GetLocation();
             var baddiesHangingAround = Quadrants.Get(map, thisShip.Quadrant).GetHostiles().Count > 0;
@@ -132,7 +133,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public void Calculator(Map map)
+        public void Calculator()
         {
             var thisShip = this.ShipConnectedTo.GetLocation();
 

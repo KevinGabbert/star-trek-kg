@@ -3,6 +3,7 @@ using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
@@ -74,7 +75,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "nav":
-                    Navigation.For(this.ShipConnectedTo).Calculator(this.Game.Map);
+                    Navigation.For(this.ShipConnectedTo).Calculator();
                     break;
 
                 default:
@@ -86,7 +87,7 @@ namespace StarTrek_KG.Subsystem
 
         //output this as KeyValueCollection that the UI can display as it likes.
 
-        public void PrintCurrentStatus(Map map, int computerDamage, Ship ship, Quadrant currentQuadrant)
+        public void PrintCurrentStatus(IMap map, int computerDamage, Ship ship, Quadrant currentQuadrant)
         {
             //todo: completely redo this
 

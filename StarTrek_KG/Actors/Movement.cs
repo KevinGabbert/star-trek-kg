@@ -220,7 +220,7 @@ namespace StarTrek_KG.Actors
         private Quadrant SetShipLocation(double x, double y)
         {
             var shipSector = this.ShipConnectedTo.Sector;
-            var shipQuadrant = this.ShipConnectedTo.QuadrantDef;
+            var shipQuadrant = this.ShipConnectedTo.Coordinate;
 
             shipSector.X = ((int)Math.Round(x)) % 8;
             shipSector.Y = ((int)Math.Round(y)) % 8;

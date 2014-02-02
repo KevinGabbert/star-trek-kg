@@ -16,14 +16,14 @@ namespace StarTrek_KG.Actors
         #region Properties
 
             //todo: (maybe) create function GetQuadrant() to replace this (will query map.quadrants for ship)
-            public Coordinate QuadrantDef { get; set; }
+            public Coordinate Coordinate { get; set; }
 
             //todo: create function GetSector() to replace this (will query map.quadrants.active for ship)
             public ISector Sector { get; set; } //This is a ship's location in a sector
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
             public Type Type { get; set; }
-            public Map Map { get; set; }
+            public IMap Map { get; set; }
             public IStarTrekKGSettings Config { get; set; }
 
             public string Name { get; set; }
@@ -36,16 +36,22 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, ISector position, Map map, IStarTrekKGSettings config)
+        public Ship(string name, ISector position, IMap map, IStarTrekKGSettings config)
         {
             this.Map = (Map)CheckParam(map);
+
+            if (this.Map.Quadrants == null)
+            {
+                throw new GameException("Map not set up with quadrants");
+            }
+
             this.Config = (IStarTrekKGSettings)CheckParam(config);
             this.Sector = (ISector)CheckParam(position);
 
             this.Type = this.GetType();
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
-            this.QuadrantDef = position.QuadrantDef;
+            this.Coordinate = position.QuadrantDef;
             
             this.Subsystems = new Subsystems(this.Map, this, this.Config);
 
@@ -157,16 +163,16 @@ namespace StarTrek_KG.Actors
         public Quadrant GetQuadrant()
         {
             //todo: get rid of this.Map ?
-            var retVal = this.Map.Quadrants.Where(s => s.X == this.QuadrantDef.X && s.Y == this.QuadrantDef.Y).ToList();
+            var retVal = this.Map.Quadrants.Where(s => s.X == this.Coordinate.X && s.Y == this.Coordinate.Y).ToList();
 
             if (retVal == null)
             {
-                throw new GameConfigException("Quadrant X: " + this.QuadrantDef.X + " Y: " + this.QuadrantDef.Y + " not found.");
+                throw new GameConfigException("Quadrant X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
             }
 
             if (!retVal.Any())
             {
-                throw new GameConfigException("Quadrant X: " + this.QuadrantDef.X + " Y: " + this.QuadrantDef.Y + " not found.");
+                throw new GameConfigException("Quadrant X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
             }
 
             return retVal.Single();

@@ -77,7 +77,7 @@ namespace StarTrek_KG.Playfield
             return "Coordinate: " + this.X + ", " + this.Y;
         }
 
-        internal void Update(Location newLocation)
+        public void Update(Location newLocation)
         {
             this.X = newLocation.Sector.X;
             this.Y = newLocation.Sector.Y;

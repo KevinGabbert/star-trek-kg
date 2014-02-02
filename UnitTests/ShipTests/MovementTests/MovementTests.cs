@@ -97,7 +97,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             #endregion
 
-            _startingQuadrant = new Coordinate(this.Game.Map.Playership.QuadrantDef.X, this.Game.Map.Playership.QuadrantDef.Y); //random
+            _startingQuadrant = new Coordinate(this.Game.Map.Playership.Coordinate.X, this.Game.Map.Playership.Coordinate.Y); //random
 
             _startingSectorX = this.Game.Map.Playership.Sector.X; //4;
             _startingSectorY = this.Game.Map.Playership.Sector.Y; //4;
@@ -700,8 +700,8 @@ namespace UnitTests.ShipTests.MovementTests
 
             Assert.AreEqual(1, x);
 
-            Assert.AreEqual(_startingQuadrant.X, this.Game.Map.Playership.QuadrantDef.X, "startingQuadrantX");
-            Assert.AreEqual(_startingQuadrant.Y, this.Game.Map.Playership.QuadrantDef.Y, "startingQuadrantY");
+            Assert.AreEqual(_startingQuadrant.X, this.Game.Map.Playership.Coordinate.X, "startingQuadrantX");
+            Assert.AreEqual(_startingQuadrant.Y, this.Game.Map.Playership.Coordinate.Y, "startingQuadrantY");
 
             Assert.AreEqual(4, this.Game.Map.Playership.Sector.X, "startingShipSectorX");
             Assert.AreEqual(4, this.Game.Map.Playership.Sector.Y, "startingShipSectorY");
@@ -754,8 +754,8 @@ namespace UnitTests.ShipTests.MovementTests
                                                                                                                 s.Y == this.Game.Map.Playership.Sector.Y).Item);
 
             //Check Ship Quadrant against active. (this really just tests the GetActive() function - this should be a separate test as well)
-            Assert.AreEqual(this.Game.Map.Playership.QuadrantDef.X, activeQuad.X, "this.Game.Map.Playership.Quadrant.X");
-            Assert.AreEqual(this.Game.Map.Playership.QuadrantDef.Y, activeQuad.Y, "this.Game.Map.Playership.Quadrant.Y");
+            Assert.AreEqual(this.Game.Map.Playership.Coordinate.X, activeQuad.X, "this.Game.Map.Playership.Quadrant.X");
+            Assert.AreEqual(this.Game.Map.Playership.Coordinate.Y, activeQuad.Y, "this.Game.Map.Playership.Quadrant.Y");
         }
 
         private void CheckSectorsAfterMovement()

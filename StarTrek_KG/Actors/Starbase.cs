@@ -80,7 +80,7 @@ namespace StarTrek_KG.Actors
         }
 
 
-        public Coordinate QuadrantDef
+        public Coordinate Coordinate
         {
             get
             {

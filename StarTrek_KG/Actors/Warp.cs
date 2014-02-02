@@ -60,7 +60,7 @@ namespace StarTrek_KG.Actors
             }
             return false;
         }
-        public bool EngageWarp(double direction, double distance, out int lastQuadY, out int lastQuadX, Map map)
+        public bool EngageWarp(double direction, double distance, out int lastQuadY, out int lastQuadX, IMap map)
         {
             var distanceEntered = distance;
             var success = this.EnergySubtracted(map.Playership, ref distance);
