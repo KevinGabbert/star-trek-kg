@@ -27,7 +27,7 @@ namespace UnitTests.ShipTests
             get { return this.Game.Write; }
         }
 
-        public Map TestMap
+        public IMap TestMap
         {
             get
             {

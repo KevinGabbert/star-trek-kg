@@ -27,7 +27,7 @@ namespace StarTrek_KG.Output
             this.LowEnergyLevel = lowEnergyLevel;
         }
 
-        public void SRSPrintSector(Quadrant quadrant, Map map)
+        public void SRSPrintSector(Quadrant quadrant, IMap map)
         {
             var condition = this.GetCurrentCondition(quadrant, map);
 
@@ -40,7 +40,7 @@ namespace StarTrek_KG.Output
         }
 
         private void CreateViewScreen(Quadrant quadrant,
-                                             Map map,
+                                             IMap map,
                                              int totalHostiles,
                                              string condition,
                                              Location location,
@@ -70,7 +70,7 @@ namespace StarTrek_KG.Output
             this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
-        private string GetRowIndicator(int row, Map map)
+        private string GetRowIndicator(int row, IMap map)
         {
             string retVal = " ";
 
@@ -169,7 +169,7 @@ namespace StarTrek_KG.Output
             sb.Length = 0;
         }
 
-        private string GetCurrentCondition(Quadrant quadrant, Map map)
+        private string GetCurrentCondition(IQuadrant quadrant, IMap map)
         {
             var condition = "GREEN";
 
@@ -185,7 +185,7 @@ namespace StarTrek_KG.Output
             return condition;
         }
 
-        private void OutputSRSWarnings(Quadrant quadrant, Map map, bool docked)
+        private void OutputSRSWarnings(Quadrant quadrant, IMap map, bool docked)
         {
             if (quadrant.GetHostiles().Count > 0)
             {

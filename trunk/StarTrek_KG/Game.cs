@@ -19,7 +19,7 @@ namespace StarTrek_KG
 
             public Output.Write Output { get; set; }
             public Output.PrintSector PrintSector { get; set; }
-            public Map Map { get; set; }
+            public IMap Map { get; set; }
 
             public bool gameOver;
 
@@ -68,7 +68,7 @@ namespace StarTrek_KG
                 this.Write.HighlightTextBW(false);
 
                 //todo: why are we creating this PrintSector() class a second time??
-                this.Output = new Output.Write(this.Map.hostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
+                this.Output = new Output.Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
                 this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config);
             }
         }
@@ -166,7 +166,7 @@ namespace StarTrek_KG
         //    return false;
         //}
 
-        private bool HostileCheck(Map map)
+        private bool HostileCheck(IMap map)
         {
             if (!map.Quadrants.GetHostiles().Any())
             {
@@ -375,7 +375,7 @@ namespace StarTrek_KG
             return gameOver;
         }
 
-        public void MoveTimeForward(Map map, Coordinate lastQuadrant, Coordinate quadrant)
+        public void MoveTimeForward(IMap map, Coordinate lastQuadrant, Coordinate quadrant)
         {
             if (lastQuadrant.X != quadrant.X || lastQuadrant.Y != quadrant.Y)
             {
@@ -398,7 +398,7 @@ namespace StarTrek_KG
         /// TODO: this needs to be changed.  after destruction, it appears to take several method returns to realize that we are dead.
         /// </summary>
         /// <returns></returns>
-        public bool ALLHostilesAttack(Map map)
+        public bool ALLHostilesAttack(IMap map)
         {
             //todo:rewrite this.
             //this is called from torpedo control/phaser control, and navigation control
@@ -421,7 +421,7 @@ namespace StarTrek_KG
             return false;
         }
 
-        private void HostileAttacks(Map map, IShip badGuy)
+        private void HostileAttacks(IMap map, IShip badGuy)
         {
             if (Navigation.For(map.Playership).docked)
             {
@@ -433,7 +433,7 @@ namespace StarTrek_KG
             }
         }
 
-        private void AttackNonDockedPlayership(Map map, IShip badGuy)
+        private void AttackNonDockedPlayership(IMap map, IShip badGuy)
         {
             var playerShipLocation = map.Playership.GetLocation();
             var distance = Utility.Utility.Distance(playerShipLocation.Sector.X,
@@ -465,7 +465,7 @@ namespace StarTrek_KG
         }
 
         //todo: move this to a report object?
-        public void ReportShieldsStatus(Map map, int shieldsValueBeforeHit)
+        public void ReportShieldsStatus(IMap map, int shieldsValueBeforeHit)
         {
             var shieldsValueAfterHit = Shields.For(map.Playership).Energy;
 

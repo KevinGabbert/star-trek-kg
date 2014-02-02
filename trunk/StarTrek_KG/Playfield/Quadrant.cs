@@ -13,13 +13,13 @@ namespace StarTrek_KG.Playfield
     /// <summary>
     /// A Quadrant in this game is a named area of space. It can contain ships, starbases, or stars. 
     /// </summary>
-    public class Quadrant : Coordinate
+    public class Quadrant : Coordinate, IQuadrant
     {
         #region Properties
             public QuadrantType Type { get; set; }
             public string Name { get; set; }
 
-            public Map Map { get; set; }
+            public IMap Map { get; set; }
 
             //TODO: This property needs to be changed to a function, and that function needs to count Hostiles in this quadrant when called
 
@@ -56,7 +56,7 @@ namespace StarTrek_KG.Playfield
             this.Y = coordinate.Y;
         }
 
-        public Quadrant(Map map, bool isNebulae = false)
+        public Quadrant(IMap map, bool isNebulae = false)
         {
             this.Type = isNebulae ? QuadrantType.Nebulae : QuadrantType.GalacticSpace;
            
@@ -65,7 +65,7 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
         }
 
-        public Quadrant(Map map, Stack<string> baddieNames, bool isNebulae = false)
+        public Quadrant(IMap map, Stack<string> baddieNames, bool isNebulae = false)
         {
             this.Empty = true;
             this.Map = map;
@@ -75,7 +75,7 @@ namespace StarTrek_KG.Playfield
         }
 
         //todo: we might want to avoid passing in baddie names and set up baddies later..
-        public Quadrant(Map map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = false, bool makeNebulae = false)
+        public Quadrant(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = false, bool makeNebulae = false)
         {
             this.Type = QuadrantType.GalacticSpace;
             this.Empty = true;
@@ -83,7 +83,7 @@ namespace StarTrek_KG.Playfield
             this.Create(map, quadrantNames, baddieNames, out nameIndex, addStars, makeNebulae);
         }
 
-        private void Create(Stack<string> baddieNames, bool addStars = true, bool makeNebulae = false)
+        public void Create(Stack<string> baddieNames, bool addStars = true, bool makeNebulae = false)
         {
             if (this.Map == null)
             {
@@ -93,7 +93,7 @@ namespace StarTrek_KG.Playfield
             this.InitializeSectors(this, new List<Sector>(), baddieNames, addStars, makeNebulae);
         }
 
-        public void Create(Map map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = true, bool makeNebulae = false)
+        public void Create(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, out int nameIndex, bool addStars = true, bool makeNebulae = false)
         {
             nameIndex = (Utility.Utility.Random).Next(baddieNames.Count);
 
@@ -190,7 +190,7 @@ namespace StarTrek_KG.Playfield
             return quadrant.Sectors.Single(s => s.Item == SectorItem.Star && ((Star)s.Object).Name == currentStarName);
         }
 
-        private string CreateStars(Quadrant quadrant, int totalStarsInQuadrant, SectorType starSectorType = SectorType.StarSystem)
+        public string CreateStars(Quadrant quadrant, int totalStarsInQuadrant, SectorType starSectorType = SectorType.StarSystem)
         {
             string currentStarName = "";
 
@@ -255,7 +255,7 @@ namespace StarTrek_KG.Playfield
             return currentStarName;
         }
 
-        private void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
+        public void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
             Stack<string> baddieNames)
         {
             var sectorItemToPopulate = SectorItem.Empty;
@@ -369,7 +369,7 @@ namespace StarTrek_KG.Playfield
             sectorToAdd.Object = ship;
         }
 
-        private Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies)
+        public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies)
         {
             //todo: this should be a random baddie, from the list of baddies in app.config
             var hostileShip = new Ship(listOfBaddies.Pop(), position, this.Map, this.Map.Config); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
@@ -396,7 +396,7 @@ namespace StarTrek_KG.Playfield
         //public static void Populate(Map map)
         //{
         //    var starbases = map.starbases;  //todo: once starbases are a list, then  
-        //    var hostiles = map.hostilesToSetUp;
+        //    var hostiles = map.HostilesToSetUp;
 
         //    while (hostiles > 0 || starbases > 0)
         //    {
@@ -577,7 +577,7 @@ namespace StarTrek_KG.Playfield
         }
 
 
-        internal int GetStarbaseCount()
+        public int GetStarbaseCount()
         {
             return Sectors.Count(sector => sector.Item == SectorItem.Starbase);
         }

@@ -4,13 +4,12 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
-using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Subsystem
 {
     public class Subsystems: List<ISubsystem>
     {
-        public Subsystems(Map map, Ship shipConnectedTo, IStarTrekKGSettings config)
+        public Subsystems(IMap map, Ship shipConnectedTo, IStarTrekKGSettings config)
         {
             // TODO: Complete member initialization
             var game = new Game(config, false);

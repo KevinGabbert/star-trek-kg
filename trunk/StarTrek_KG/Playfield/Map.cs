@@ -12,7 +12,7 @@ using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Playfield
 {
-    public class Map: IConfig
+    public class Map: IMap
     {
         #region Properties
 
@@ -26,10 +26,9 @@ namespace StarTrek_KG.Playfield
             public string Text { get; set; }
             public IOutputWrite Write { get; set; }
             public IStarTrekKGSettings Config { get; set; }
+            public int HostilesToSetUp { get; set; }
 
         #endregion
-
-        public int hostilesToSetUp;
 
         public Map()
         {
@@ -43,7 +42,7 @@ namespace StarTrek_KG.Playfield
             this.Initialize(setupOptions);
         }
 
-        private void Initialize(SetupOptions setupOptions)
+        public void Initialize(SetupOptions setupOptions)
         {
             this.GameConfig = setupOptions;
 
@@ -107,7 +106,7 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        private void SetupFriendlies(SectorDefs sectorDefs)
+        public void SetupFriendlies(SectorDefs sectorDefs)
         {
             //if we have > 0 friendlies with XYs, then we will place them.
             //if we have at least 1 friendly with no XY, then config will be used to generate that type of ship.
@@ -152,7 +151,7 @@ namespace StarTrek_KG.Playfield
             this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulateThatAreNotPlayerShip);
         }
 
-        private void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate)
+        public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate)
         {
             if (Constants.QUADRANT_MAX == 0)
             {
@@ -187,12 +186,12 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        private IEnumerable<Sector> AddStarbases()
+        public IEnumerable<Sector> AddStarbases()
         {
             throw new NotImplementedException();
         }
 
-        //private static List<Sector> GetQuadrantObjects(int starbases, int hostilesToSetUp)
+        //private static List<Sector> GetQuadrantObjects(int starbases, int HostilesToSetUp)
         //{
         //    var quadrantObjects = new List<Sector>();
 
@@ -208,23 +207,23 @@ namespace StarTrek_KG.Playfield
         /// </summary>
         public void GetGlobalInfo()
         {
-            //this.Hostiles = new Hostiles(); //todo: create an initial size the same as hostilesToSetUp
+            //this.Hostiles = new Hostiles(); //todo: create an initial size the same as HostilesToSetUp
 
-            this.hostilesToSetUp = this.Config.GetSetting<int>("totalHostiles") + (Utility.Utility.Random).Next(6);
+            this.HostilesToSetUp = this.Config.GetSetting<int>("totalHostiles") + (Utility.Utility.Random).Next(6);
             this.Stardate = this.Config.GetSetting<int>("stardate") + (Utility.Utility.Random).Next(50);
             this.timeRemaining = this.Config.GetSetting<int>("timeRemaining") + (Utility.Utility.Random).Next(10);
             this.starbases = this.Config.GetSetting<int>("starbases") + (Utility.Utility.Random).Next(3);
 
             this.Text = this.Config.GetSetting<string>("CommandPrompt");
 
-            this.Write.DebugLine("HostilesToSetUp: " + hostilesToSetUp);
+            this.Write.DebugLine("HostilesToSetUp: " + this.HostilesToSetUp);
             this.Write.DebugLine("Stardate: " + Stardate);
-            this.Write.DebugLine("timeRemaining: " + hostilesToSetUp);
-            this.Write.DebugLine("starbases: " + hostilesToSetUp);
+            this.Write.DebugLine("timeRemaining: " + this.HostilesToSetUp);
+            this.Write.DebugLine("starbases: " + this.HostilesToSetUp);
         }
 
         //refactor these to a setup object
-        private void SetUpPlayerShip(SectorDef playerShipDef)
+        public void SetUpPlayerShip(SectorDef playerShipDef)
         {
             this.Write.DebugLine(this.Config.GetSetting<string>("DebugSettingUpPlayership"));
 
@@ -254,7 +253,7 @@ namespace StarTrek_KG.Playfield
             this.Playership.Destroyed = false;
         }
 
-        private void SetupSubsystems()
+        public void SetupSubsystems()
         {
             this.GetSubsystemSetupFromConfig();
 
@@ -277,7 +276,7 @@ namespace StarTrek_KG.Playfield
             Phasers.For(this.Playership).ShipConnectedTo = this.Playership;
         }
 
-        private void GetSubsystemSetupFromConfig()
+        public void GetSubsystemSetupFromConfig()
         {
             //TODO: Finish this
 
@@ -294,7 +293,7 @@ namespace StarTrek_KG.Playfield
             //}
         }
 
-        private void SetupPlayershipQuadrant(SectorDef playerShipDef)
+        public void SetupPlayershipQuadrant(SectorDef playerShipDef)
         {
             if (playerShipDef.QuadrantDef == null)
             {
@@ -307,10 +306,11 @@ namespace StarTrek_KG.Playfield
             }
 
             var m = this.Quadrants.Single(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y);
-            this.Playership.QuadrantDef = new Coordinate(m.X, m.Y);
+            this.Playership.Coordinate = new Coordinate(m.X, m.Y);
             this.Playership.GetQuadrant().Active = true;
         }
-        private void SetupPlayershipTorpedoes()
+
+        public void SetupPlayershipTorpedoes()
         {
             var torpedoes = Torpedoes.For(this.Playership);
 
@@ -318,7 +318,8 @@ namespace StarTrek_KG.Playfield
             torpedoes.Count = this.Config.GetSetting<int>("photonTorpedoes");
             torpedoes.Damage = 0;
         }
-        private void SetupPlayershipShields()
+
+        public void SetupPlayershipShields()
         {
             var starshipShields = Shields.For(this.Playership);
 
@@ -326,7 +327,8 @@ namespace StarTrek_KG.Playfield
             starshipShields.Energy = 0;
             starshipShields.Damage = 0;
         }
-        private void SetupPlayershipNav()
+
+        public void SetupPlayershipNav()
         {
             var starshipNAV = Navigation.For(this.Playership);
 
@@ -409,15 +411,15 @@ namespace StarTrek_KG.Playfield
             return item;
         }
 
-        public void RemoveAllDestroyedShips(Map map, List<IShip> destroyedShips)
+        public void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips)
         {
-            map.Quadrants.Remove(destroyedShips, map);
+            map.Quadrants.Remove(destroyedShips);
             map.Quadrants.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
         }
 
-        public void RemoveTargetFromSector(Map map, IShip ship)
+        public void RemoveTargetFromSector(IMap map, IShip ship)
         {
-            map.Quadrants.Remove(ship, map);
+            map.Quadrants.Remove(ship);
         }
 
         //todo: finish this
@@ -462,7 +464,7 @@ namespace StarTrek_KG.Playfield
         /// Removes all friendlies fromevery sector in the entire map.
         /// </summary>
         /// <param name="map"></param>
-        public void RemoveAllFriendlies(Map map)
+        public void RemoveAllFriendlies(IMap map)
         {
             var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
 
@@ -476,7 +478,7 @@ namespace StarTrek_KG.Playfield
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        public void SetFriendly(Map map)
+        public void SetFriendly(IMap map)
         {
             //zip through all sectors in all quadrants.  remove any friendlies
 

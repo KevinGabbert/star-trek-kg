@@ -211,8 +211,8 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        private bool HitSomethingElse(Map map,
-                                      Quadrant quadrant, 
+        private bool HitSomethingElse(IMap map,
+                                      IQuadrant quadrant, 
                                       int newY, 
                                       int newX)
         {

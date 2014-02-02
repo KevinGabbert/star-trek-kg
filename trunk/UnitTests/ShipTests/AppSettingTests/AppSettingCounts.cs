@@ -21,7 +21,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfSettings()
         {
-            Assert.AreEqual(64, config.Get.GameSettings.Count);
+            Assert.AreEqual(65, config.Get.GameSettings.Count);
         }
 
         [Test]
@@ -35,15 +35,14 @@ namespace UnitTests.ShipTests.AppSettingTests
         public void CountOfFactions()
         {
 
-            Assert.AreEqual(4, config.Get.Factions.Count);
+            Assert.AreEqual(5, config.Get.Factions.Count);
         }
 
 
         [Test]
         public void CountOfConsoleText()
         {
-
-            Assert.AreEqual(212, config.Get.ConsoleText.Count);
+            Assert.AreEqual(213, config.Get.ConsoleText.Count);
         }
     }
 }

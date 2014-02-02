@@ -12,7 +12,7 @@ namespace StarTrek_KG.Interfaces
         Allegiance Allegiance { get; set; }
         bool Destroyed { get; set; }
         Subsystems Subsystems { get; set; }
-        Coordinate QuadrantDef { get; set; }
+        Coordinate Coordinate { get; set; }
 
         Quadrant GetQuadrant();
     }
