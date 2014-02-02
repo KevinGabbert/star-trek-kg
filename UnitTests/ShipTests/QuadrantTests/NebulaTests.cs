@@ -75,19 +75,17 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void LRSOutputWithNebula()
         {
-            //to fix this we might need to do the pattern in test_shipobject
-
             const bool setupNebula = true;
             this.SetupQuadrant(setupNebula);
-
-            _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
 
             var mockedWrite = new Mock<IOutputWrite>();
             _setup.Game.Write = mockedWrite.Object;
 
+            _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
+
             _setup.TestLongRangeScan.Controls();
 
-            mockedWrite.Verify(s => s.RenderNebula(It.IsAny<bool>()), Times.Exactly(1));
+            mockedWrite.Verify(s => s.SingleLine("Long Range Scan inoperative while in Nebula."), Times.Exactly(1));
         }
 
         [Ignore]

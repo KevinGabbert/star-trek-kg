@@ -46,8 +46,8 @@ namespace UnitTests.ShipTests
 
         private void VerifyMap()
         {
-            Assert.IsInstanceOf(typeof(Map), this.TestMap);
-            Assert.IsInstanceOf(typeof(Write), this.TestMap.Write);
+            Assert.IsNotNull(this.TestMap);
+            Assert.IsNotNull(this.TestMap.Write);
         }
 
         public void SetupMapWith2Hostiles()

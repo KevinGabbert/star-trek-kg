@@ -107,7 +107,7 @@ namespace UnitTests.ShipTests.QuadrantTests
 
         [Ignore]
         [Test]
-        private void VerifyNumberingSystem()
+        public void VerifyNumberingSystem()
         {
             //go through all quadrants and verify that 1. it is numbered right, 2. that there is 1 of each.
         }

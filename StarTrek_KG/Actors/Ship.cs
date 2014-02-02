@@ -36,22 +36,30 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, ISector position, IMap map, IStarTrekKGSettings config)
+        public Ship(string name, ISector sector, IMap map, IStarTrekKGSettings config)
         {
-            this.Map = (Map)CheckParam(map);
+            this.Map = (IMap)CheckParam(map);
 
             if (this.Map.Quadrants == null)
             {
                 throw new GameException("Map not set up with quadrants");
             }
-
+            
             this.Config = (IStarTrekKGSettings)CheckParam(config);
-            this.Sector = (ISector)CheckParam(position);
+
+            if (sector.QuadrantDef == null)
+            {
+                throw new GameConfigException("Ship has no sector.QuadrantDef set up.");
+            }
+            else
+            {
+                this.Coordinate = sector.QuadrantDef;
+                this.Sector = (ISector)CheckParam(sector);
+            }
 
             this.Type = this.GetType();
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
-            this.Coordinate = position.QuadrantDef;
             
             this.Subsystems = new Subsystems(this.Map, this, this.Config);
 
@@ -172,7 +180,14 @@ namespace StarTrek_KG.Actors
 
             if (!retVal.Any())
             {
-                throw new GameConfigException("Quadrant X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
+                if (this.Coordinate == null)
+                {
+                    throw new GameConfigException("Coordinate not found for ship. Ship has no location set up anywhere..");
+                }
+                else
+                {
+                    throw new GameConfigException("Quadrant X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
+                }
             }
 
             return retVal.Single();
