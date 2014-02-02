@@ -29,7 +29,7 @@ namespace StarTrek_KG
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
             /// and some unsorted crap at the moment..
         /// </summary>
-            public Game(IStarTrekKGSettings config, bool startup = true, bool generateWithNebulae = true)
+            public Game(IStarTrekKGSettings config, bool startup = true)
         {
             this.Config = config;
             if(this.Write == null)
@@ -53,7 +53,7 @@ namespace StarTrek_KG
                 var startConfig = (new SetupOptions
                                        {
                                            Initialize = true,
-                                           AddNebulae = false,
+                                           AddNebulae = true,
                                            SectorDefs = SectorSetup()
                                        });
 
