@@ -69,6 +69,7 @@ namespace UnitTests.ShipTests
         {
             this.TestMap = (new Map(new SetupOptions
                                         {
+                                            AddNebulae = false,
                                             AddStars = false,
                                             Initialize = true,
                                             SectorDefs = new SectorDefs

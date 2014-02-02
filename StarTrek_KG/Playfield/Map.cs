@@ -56,7 +56,7 @@ namespace StarTrek_KG.Playfield
                         throw new GameConfigException(this.Config.GetSetting<string>("NoSectorDefsSetUp"));
                     }
 
-                    this.Initialize(setupOptions.SectorDefs); //Playership is set up here.
+                    this.Initialize(setupOptions.SectorDefs, setupOptions.AddNebulae); //Playership is set up here.
                 }
 
                 //if (setupOptions.GenerateMap)
@@ -66,7 +66,7 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public void Initialize(SectorDefs sectorDefs)
+        public void Initialize(SectorDefs sectorDefs, bool generateWithNebulae)
         {
             this.GetGlobalInfo();
 
@@ -86,7 +86,7 @@ namespace StarTrek_KG.Playfield
             var baddieNames = new Stack<string>(klingonShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
-            this.InitializeQuadrantsWithBaddies(names, baddieNames, sectorDefs);
+            this.InitializeQuadrantsWithBaddies(names, baddieNames, sectorDefs, generateWithNebulae);
 
             this.Write.DebugLine("Intialized quadrants with Baddies");
 
@@ -138,7 +138,7 @@ namespace StarTrek_KG.Playfield
         }
 
         //Creates a 2D array of quadrants.  This is how all of our game pieces will be moving around.
-        public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs)
+        public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs, bool generateWithNebulae)
         {
             this.Quadrants = new Quadrants(this, this.Write);
 
@@ -148,10 +148,10 @@ namespace StarTrek_KG.Playfield
             this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Quadrants: " + this.Quadrants.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
-            this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulateThatAreNotPlayerShip);
+            this.GenerateSquareGalaxy(names, baddieNames, itemsToPopulateThatAreNotPlayerShip, generateWithNebulae);
         }
 
-        public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate)
+        public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate, bool generateWithNebula)
         {
             if (Constants.QUADRANT_MAX == 0)
             {
@@ -166,7 +166,12 @@ namespace StarTrek_KG.Playfield
                     var newQuadrant = new Quadrant(this);
                     var quadrantXY = new Coordinate(quadrantX, quadrantY);
 
-                    bool isNebulae = Utility.Utility.Random.Next(11) == 10; //todo pull this setting from config
+                    bool isNebulae = false;
+                    if (generateWithNebula)
+                    {
+                        isNebulae = Utility.Utility.Random.Next(11) == 10; //todo pull this setting from config
+                    }
+
                     newQuadrant.Create(names, baddieNames, quadrantXY, out index, itemsToPopulate,
                                        this.GameConfig.AddStars, isNebulae);
 

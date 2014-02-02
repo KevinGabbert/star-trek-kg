@@ -118,7 +118,7 @@ namespace StarTrek_KG.Actors
                 this.Map.Write.Line("Shields ineffective due to interference from Nebula");
             }
 
-            if ((shields.Energy < 0) || shieldsWorking)
+            if ((shields.Energy < 0) || !shieldsWorking)
             {
                 this.TakeDamageOrDestroyShip(attackingEnergy, shields);
             }

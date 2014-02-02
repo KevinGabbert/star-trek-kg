@@ -22,7 +22,7 @@ namespace UnitTests.ShipTests.MapTests
             _testMapNoObjects = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
@@ -83,7 +83,7 @@ namespace UnitTests.ShipTests.MapTests
             var map = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 SectorDefs = new SectorDefs
                             {
                                 new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)

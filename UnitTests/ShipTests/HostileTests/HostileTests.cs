@@ -37,7 +37,7 @@ namespace UnitTests.ShipTests.HostileTests
 
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
             Assert.Less(Shields.For(_setup.TestMap.Playership).Energy, 2500);
-            Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "expected no change to ship energy"); 
+            Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "expected no change to ship energy. Ship should have been protected by shields."); 
     
             //Assert that ship has taken 2 hits.
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
@@ -240,7 +240,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                                             {
@@ -264,6 +264,7 @@ namespace UnitTests.ShipTests.HostileTests
         {
             _setup.TestMap = (new Map(new SetupOptions
             {
+                AddNebulae = false,
                 Initialize = true,
                 SectorDefs = new SectorDefs()
             }, this.Game.Write, this.Game.Config));
@@ -305,7 +306,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
                 {
                     Initialize = true,
-        
+                    AddNebulae = false,
                     SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(
@@ -363,7 +364,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                 {
@@ -450,7 +451,7 @@ namespace UnitTests.ShipTests.HostileTests
             return (new Map(new SetupOptions
                                 {
                                     Initialize = true,
-                                    
+                                    AddNebulae = false,
                                     
                                     SectorDefs = new SectorDefs
                                                      {
@@ -512,7 +513,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
                                    {
                                        Initialize = true,
-                                       
+                                       AddNebulae = false,
                                        
                                        SectorDefs = new SectorDefs
                                             {
@@ -551,7 +552,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                             {
@@ -568,7 +569,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                                         {
@@ -585,7 +586,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                                         {
@@ -602,7 +603,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                                         {
@@ -619,7 +620,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                             {
@@ -636,7 +637,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                             {
@@ -653,7 +654,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                             {
@@ -670,7 +671,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                             {
@@ -687,7 +688,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,
-                
+                AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
                             {
