@@ -28,6 +28,13 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockSettings = new Mock<IStarTrekKGSettings>();
             _mockCoordinate = new Mock<ICoordinate>();
             _mockMap.Setup(m => m.Quadrants).Returns(new Quadrants(_mockMap.Object, _mockWrite.Object));
+
+            var quadrants = new Quadrants(_mockMap.Object, _mockWrite.Object);
+            quadrants.Add(new Quadrant(new Coordinate()));
+
+            _mockMap.Setup(m => m.Quadrants).Returns(quadrants);
+            _mockMap.Setup(m => m.Write).Returns(_mockWrite.Object);
+            _mockSector.Setup(c => c.QuadrantDef).Returns(new Coordinate());
         }
 
         [Test]
@@ -68,13 +75,6 @@ namespace UnitTests.ShipTests.ShipObjectTests
         public void Test_AbsorbHit_NoDamage()
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("blah Blah Blah!!!");
-
-            var quadrants = new Quadrants(_mockMap.Object, _mockWrite.Object);
-            quadrants.Add(new Quadrant(new Coordinate()));
-
-            _mockMap.Setup(m => m.Quadrants).Returns(quadrants);
-            _mockMap.Setup(m => m.Write).Returns(_mockWrite.Object);
-            _mockSector.Setup(c => c.QuadrantDef).Returns(new Coordinate());
 
             var shipToTest = new Ship("TestShip", _mockSector.Object, _mockMap.Object, _mockSettings.Object);
 
