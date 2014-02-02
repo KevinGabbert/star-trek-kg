@@ -4,6 +4,7 @@ using NUnit.Framework;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 
@@ -16,8 +17,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
         private Mock<IOutputWrite> _mockWrite;
         private Mock<ISector> _mockSector;
         private Mock<IStarTrekKGSettings> _mockSettings;
-        //private Mock<IQuadrants> _mockQuadrants;
-       
+        private Mock<ICoordinate> _mockCoordinate;
 
         [SetUp]
         public void Setup()
@@ -26,9 +26,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockWrite = new Mock<IOutputWrite>();
             _mockSector = new Mock<ISector>();
             _mockSettings = new Mock<IStarTrekKGSettings>();
-            //_mockQuadrants = new Mock<IQuadrants>();
-
-            //_mockMap.Object.Quadrants = _mockQuadrants.Object;
+            _mockCoordinate = new Mock<ICoordinate>();
             _mockMap.Setup(m => m.Quadrants).Returns(new Quadrants(_mockMap.Object, _mockWrite.Object));
         }
 
@@ -71,8 +69,14 @@ namespace UnitTests.ShipTests.ShipObjectTests
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("blah Blah Blah!!!");
 
-            var shipToTest = new Ship("TestShip", _mockSector.Object, _mockMap.Object, _mockSettings.Object);
+            var quadrants = new Quadrants(_mockMap.Object, _mockWrite.Object);
+            quadrants.Add(new Quadrant(new Coordinate()));
 
+            _mockMap.Setup(m => m.Quadrants).Returns(quadrants);
+            _mockMap.Setup(m => m.Write).Returns(_mockWrite.Object);
+            _mockSector.Setup(c => c.QuadrantDef).Returns(new Coordinate());
+
+            var shipToTest = new Ship("TestShip", _mockSector.Object, _mockMap.Object, _mockSettings.Object);
 
             Shields.For(shipToTest).Energy = 100;  //this is syntactic sugar for: ship.Subsystems.Single(s => s.Type == SubsystemType.Shields);
 
@@ -90,12 +94,11 @@ namespace UnitTests.ShipTests.ShipObjectTests
             Assert.AreEqual(50, Shields.For(shipToTest).Energy);
 
             //Verifications of Output to User
-
             _mockSector.Verify(s => s.X, Times.Exactly(1));
             _mockSector.Verify(s => s.Y, Times.Exactly(1));
 
             _mockWrite.Verify(w => w.Line(It.IsAny<string>()), Times.Exactly(2));
-            _mockWrite.Verify(w => w.Line("TestShip hit by The attacking Ship at sector [-2,-3].... "), Times.AtLeastOnce());
+            _mockWrite.Verify(w => w.Line("Your Ship has been hit by The attacking Ship at sector [-2,-3]."), Times.AtLeastOnce());
             _mockWrite.Verify(w => w.Line("No Structural Damage from hit."), Times.Once());
         }
 
