@@ -120,7 +120,30 @@ namespace StarTrek_KG.Subsystem
                     this.Game.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
                     this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
                     break;
+                case "disb":
+ 
+                    //var quadX = Coordinate.GetRandom();
+                    //var quadY = Coordinate.GetRandom();
 
+                    //var randomSector = new Sector(new LocationDef(quadX, quadY));
+
+                    //this.Game.Map.Config = this.Game.Config;
+
+                    //var starbase = new Starbase("starbaseAlpha", this.Game.Map, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
+
+                    var activeQuad = this.Game.Map.Quadrants.GetActive();
+
+                    //activeQuad[randomSector].Item = SectorItem.Starbase;
+                    //activeQuad.AddShip(starbase, starbase.Sector);
+
+                    //var hostileShip = new Ship(testShipNames[0], randomSector, this.Game.Map);
+
+                    //this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+
+                    ////todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
+                    //this.Game.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
+                    //this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
+                    break;
                 case "dist":
                     var sectorWithNewStar = this.Game.Map.Quadrants.GetActive().AddStar(this.Game.Map.Quadrants.GetActive());
                     this.Game.Write.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");

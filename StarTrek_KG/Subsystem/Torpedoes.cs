@@ -276,7 +276,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool StarbaseEmergencyMessageAttempt()
         {
-            throw new NotImplementedException();
+            return (Utility.Utility.Random.Next(2) == 1);
         }
 
         private void DestroyStarbase(IMap map, int newY, int newX, Sector qLocation)
@@ -287,7 +287,7 @@ namespace StarTrek_KG.Subsystem
             qLocation.Item = SectorItem.Empty;
 
             //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
-            this.Game.Write.Line(string.Format("A Federation starbase at sector [{0},{1}] has been destroyed!",
+            this.Game.Write.Line(string.Format("You have destroyed A Federation starbase! (at sector [{0},{1}])",
                 newX, newY));
 
             //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
