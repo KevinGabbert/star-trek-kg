@@ -26,6 +26,7 @@ namespace StarTrek_KG.Interfaces
         void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, SectorDefs sectorDefs, bool generateWithNebulae);
         void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, List<Sector> itemsToPopulate, bool generateWithNebulae);
         IEnumerable<Sector> AddStarbases();
+        IEnumerable<IShip> GetAllFederationShips();
 
         /// <summary>
         /// This will eventually be moved into each individual object
@@ -68,5 +69,7 @@ namespace StarTrek_KG.Interfaces
         void SetFriendly(IMap map);
 
         string ToString();
+
+        void AddHostileFederationShipsToExistingMap();
     }
 }

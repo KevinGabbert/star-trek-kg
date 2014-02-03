@@ -55,8 +55,8 @@ namespace UnitTests.ShipTests
             this.SetupMapWith1Friendly();
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap, this.Config);
-            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap, this.Config);
+            var hostileShip = new Ship("ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
+            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
 
             var activeQuad = this.TestMap.Quadrants.GetActive();
             activeQuad.AddShip(hostileShip, hostileShip.Sector);

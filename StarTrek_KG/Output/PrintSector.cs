@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -109,13 +110,13 @@ namespace StarTrek_KG.Output
         {
             for (var column = 0; column < Constants.SECTOR_MAX; column++)
             {
-                var item = Sector.Get(sectors, row, column).Item;
-                switch (item)
+                var sector = Sector.Get(sectors, row, column);
+
+                switch (sector.Item)
                 {
                     case SectorItem.Empty:
 
                         sb.Append(isNebula ? Utility.Utility.NebulaUnit() : Constants.EMPTY);
-
                         break;
 
                     case SectorItem.Friendly:
@@ -139,6 +140,12 @@ namespace StarTrek_KG.Output
                         {
                             this.Write.Console.WriteLine("bug. hostile not removed from display.");
                         }
+
+                        //todo: hostile feds look like: ++-
+                        //if (sector.Object.Faction == Faction.Federation)
+                        //{
+                        //    sb.Append(Constants.FEDERATION);
+                        //}
 
                         sb.Append(Constants.HOSTILE);
                         break;
