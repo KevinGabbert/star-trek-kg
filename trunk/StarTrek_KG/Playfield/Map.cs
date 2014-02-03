@@ -244,7 +244,7 @@ namespace StarTrek_KG.Playfield
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
-            this.Playership = new Ship(playerShipName, startingSector, this, this.Config)
+            this.Playership = new Ship(playerShipName, startingSector, this)
                                   {
                                       Allegiance = Allegiance.GoodGuy
                                   };
@@ -513,5 +513,62 @@ namespace StarTrek_KG.Playfield
 
             return returnVal;
         }
+
+
+        /// <summary>
+        /// Adds a random number of federation ships to the map
+        /// </summary>
+        public void AddHostileFederationShipsToExistingMap()
+        {
+            var federationShipNames = this.Config.GetShips("Federation");
+            var federaleNames = new Stack<string>(federationShipNames.Shuffle());
+
+            foreach (var quadrant in this.Quadrants)
+            {
+                if (Utility.Utility.Random.Next(20) == 19) //todo: resource this out.
+                {
+                    if (!quadrant.GetHostiles().Any()) //we don't want to mix with Klingons just yet..
+                    {
+                        var numberOfHostileFeds = Utility.Utility.Random.Next(2);
+
+                        for (int i = 0; i < numberOfHostileFeds; i++)
+                        {
+                            //todo: refactor to Quadrant object
+                            //var sectorToAddTo = this.GetUnoccupiedRandomSector(quadrant);
+                            //this.AddHostileFederale(sectorToAddTo, federaleNames);
+                        }
+                    }
+                }
+            }
+        }
+
+        private ISector GetUnoccupiedRandomSector(IQuadrant quadrant)
+        {
+            var randomCoordinate = new Coordinate();
+            //get random coordinate
+
+            ISector sector = quadrant.GetSector(randomCoordinate);
+            var x = sector.Item == SectorItem.Empty;
+
+            if (x == false)
+            {
+                //x = get random coordinate
+                sector = quadrant.GetSector(randomCoordinate);
+            }
+
+            return sector;
+        }
+
+        private void AddHostileFederale(ISector sector, Stack<string> federaleNames)
+        {
+            var newPissedOffFederale = new Ship(federaleNames.Pop(), sector, this);
+            //sector.AddShip(newPissedOffFederale, sector);
+        }
+
+        public IEnumerable<IShip> GetAllFederationShips()
+        {
+            //todo: finish this.
+            return new List<Ship>();
+        } 
     }
 }

@@ -36,7 +36,7 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, ISector sector, IMap map, IStarTrekKGSettings config)
+        public Ship(string name, ISector sector, IConfig map)
         {
             this.Map = (IMap)CheckParam(map);
 
@@ -44,8 +44,13 @@ namespace StarTrek_KG.Actors
             {
                 throw new GameException("Map not set up with quadrants");
             }
+
+            if (this.Map.Config == null)
+            {
+                throw new GameException("Map not set up with Config");
+            }
             
-            this.Config = (IStarTrekKGSettings)CheckParam(config);
+            this.Config = (IStarTrekKGSettings)CheckParam(map.Config);
 
             if (sector.QuadrantDef == null)
             {

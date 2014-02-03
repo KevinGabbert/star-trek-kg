@@ -372,7 +372,7 @@ namespace StarTrek_KG.Playfield
         public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies)
         {
             //todo: this should be a random baddie, from the list of baddies in app.config
-            var hostileShip = new Ship(listOfBaddies.Pop(), position, this.Map, this.Map.Config); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
+            var hostileShip = new Ship(listOfBaddies.Pop(), position, this.Map); //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
             hostileShip.Sector.X = position.X; 
             hostileShip.Sector.Y = position.Y;
 

@@ -110,7 +110,9 @@ namespace StarTrek_KG.Subsystem
 
                     var randomSector = new Sector(new LocationDef(quadX, quadY));
 
-                    var hostileShip = new Ship(testShipNames[0], randomSector, this.Game.Map, this.Game.Config);
+                    this.Game.Map.Config = this.Game.Config;
+
+                    var hostileShip = new Ship(testShipNames[0], randomSector, this.Game.Map);
 
                     this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 

@@ -220,7 +220,7 @@ namespace UnitTests.ShipTests.HostileTests
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map, _setup.Config);
+            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map);
 
             _setup.TestMap.Quadrants[0].AddShip(hostileShip, _setup.TestMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
 
@@ -272,7 +272,7 @@ namespace UnitTests.ShipTests.HostileTests
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map, _setup.Config);
+            var hostileShip = new Ship("ship1", new Sector(locationDef), this.Game.Map);
 
             _setup.TestMap.Quadrants[0].AddShip(hostileShip, _setup.TestMap.Quadrants[0].Sectors.Get(new Coordinate(1, 7)));
 
@@ -525,8 +525,8 @@ namespace UnitTests.ShipTests.HostileTests
             var activeQuadrant = activeQuad;
 
             //add a ship
-            var hostileShip = new Ship("ship1", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 7))), this.Game.Map, _setup.Config);
-            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 6))), this.Game.Map, _setup.Config);
+            var hostileShip = new Ship("ship1", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 7))), this.Game.Map);
+            var hostileShip2 = new Ship("ship2", new Sector(new LocationDef(activeQuadrant, new Coordinate(1, 6))), this.Game.Map);
 
             activeQuadrant.AddShip(hostileShip, hostileShip.Sector);
             activeQuadrant.AddShip(hostileShip2, hostileShip2.Sector);
