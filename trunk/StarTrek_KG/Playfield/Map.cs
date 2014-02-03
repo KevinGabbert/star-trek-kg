@@ -514,7 +514,6 @@ namespace StarTrek_KG.Playfield
             return returnVal;
         }
 
-
         /// <summary>
         /// Adds a random number of federation ships to the map
         /// </summary>
@@ -525,7 +524,7 @@ namespace StarTrek_KG.Playfield
 
             foreach (var quadrant in this.Quadrants)
             {
-                if (Utility.Utility.Random.Next(20) == 19) //todo: resource this out.
+                if (Utility.Utility.Random.Next(5) == 1) //todo: resource this out.
                 {
                     if (!quadrant.GetHostiles().Any()) //we don't want to mix with Klingons just yet..
                     {
@@ -534,8 +533,8 @@ namespace StarTrek_KG.Playfield
                         for (int i = 0; i < numberOfHostileFeds; i++)
                         {
                             //todo: refactor to Quadrant object
-                            //var sectorToAddTo = this.GetUnoccupiedRandomSector(quadrant);
-                            //this.AddHostileFederale(sectorToAddTo, federaleNames);
+                            ISector sectorToAddTo = this.GetUnoccupiedRandomSector(quadrant);
+                            this.AddHostileFederale(quadrant, sectorToAddTo, federaleNames);
                         }
                     }
                 }
@@ -544,25 +543,34 @@ namespace StarTrek_KG.Playfield
 
         private ISector GetUnoccupiedRandomSector(IQuadrant quadrant)
         {
-            var randomCoordinate = new Coordinate();
-            //get random coordinate
+            var randomCoordinate = GetRandomCoordinate();
 
             ISector sector = quadrant.GetSector(randomCoordinate);
-            var x = sector.Item == SectorItem.Empty;
+            var sectorIsEmpty = (sector.Item == SectorItem.Empty);
 
-            if (x == false)
+            if (!sectorIsEmpty)
             {
-                //x = get random coordinate
-                sector = quadrant.GetSector(randomCoordinate);
+                sector = this.GetUnoccupiedRandomSector(quadrant);
             }
 
             return sector;
         }
 
-        private void AddHostileFederale(ISector sector, Stack<string> federaleNames)
+        private static Coordinate GetRandomCoordinate()
+        {
+            var x = Utility.Utility.Random.Next(Constants.SECTOR_MIN);
+            var y = Utility.Utility.Random.Next(Constants.SECTOR_MAX);
+
+            var randomCoordinate = new Coordinate(x, y);
+            return randomCoordinate;
+        }
+
+        private void AddHostileFederale(IQuadrant quadrant, ISector sector, Stack<string> federaleNames)
         {
             var newPissedOffFederale = new Ship(federaleNames.Pop(), sector, this);
-            //sector.AddShip(newPissedOffFederale, sector);
+            quadrant.AddShip(newPissedOffFederale, sector);
+
+            this.Write.Line("Comm Reports a Federation starship has warped into Quadrant: " + quadrant.Name);
         }
 
         public IEnumerable<IShip> GetAllFederationShips()
