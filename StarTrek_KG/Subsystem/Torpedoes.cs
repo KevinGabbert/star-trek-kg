@@ -181,10 +181,16 @@ namespace StarTrek_KG.Subsystem
             var hostilesInQuadrant = thisQuadrant.GetHostiles();
             IShip hostileInSector = hostilesInQuadrant.SingleOrDefault(hostileShip => hostileShip.Sector.X == newX &&
                                                                                       hostileShip.Sector.Y == newY);
-
             if (hostileInSector != null)
             {
+                if (hostileInSector.Name.StartsWith("NCC-"))
+                {
+                    //todo: refactor Map.AddHostileFederationShipsToExistingMap so that we can just add 2
+                    //todo: also add this code (and refactor) to Phasers subsystem
+                }
+
                 this.Game.Map.RemoveTargetFromSector(this.Game.Map, hostileInSector);
+
                 return true;
             }
 
@@ -241,13 +247,17 @@ namespace StarTrek_KG.Subsystem
 
                     if (emergencyMessageSuccess)
                     {
-                        this.Game.Write.Line("Before its destruction, the starbase was able to send off an emergency message to starfleet.");
+                        this.Game.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
                         this.Game.Write.Line("Federation Ships will now shoot you on sight!");
 
                         if (!map.GetAllFederationShips().Any()) //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
                         {
                             map.AddHostileFederationShipsToExistingMap();
                         }
+                    }
+                    else
+                    {
+                        this.Game.Write.Line("Starbase was destroyed before getting out a distress call.");
                     }
 
                     return true;
@@ -279,7 +289,7 @@ namespace StarTrek_KG.Subsystem
             return (Utility.Utility.Random.Next(2) == 1);
         }
 
-        private void DestroyStarbase(IMap map, int newY, int newX, Sector qLocation)
+        private void DestroyStarbase(IMap map, int newY, int newX, ISector qLocation)
         {
             map.starbases--;
 

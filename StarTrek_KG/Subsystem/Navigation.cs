@@ -120,10 +120,15 @@ namespace StarTrek_KG.Subsystem
         private void TakeAttackDamageOrRepair(IMap map, int lastQuadY, int lastQuadX)
         {
             var thisShip = this.ShipConnectedTo.GetLocation();
-            var baddiesHangingAround = Quadrants.Get(map, thisShip.Quadrant).GetHostiles().Count > 0;
-            var stillInThisQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
 
-            if (baddiesHangingAround && stillInThisQuadrant)
+            var hostiles = Quadrants.Get(map, thisShip.Quadrant).GetHostiles();
+            var baddiesHangingAround = hostiles.Count > 0;
+
+            var hostileFedsInQuadrant = hostiles.Any(h => h.Name.StartsWith("NCC-")); //todo: Cheap.  Use a property for this.
+
+            var stillInSameQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
+
+            if ((baddiesHangingAround && stillInSameQuadrant) || hostileFedsInQuadrant)
             {  
                 this.Game.ALLHostilesAttack(this.Game.Map);
             }
