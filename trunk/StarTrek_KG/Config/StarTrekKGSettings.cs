@@ -99,6 +99,15 @@ namespace StarTrek_KG.Config
             return shipNames;
         }
 
+        public List<string> GetThreats(string faction)
+        {
+            this.Reset();
+
+            FactionThreats factionThreats = this.Get.Factions[faction].FactionThreats;
+            var threats = (from SeverityValueElement threatElement in factionThreats select threatElement.value).ToList();
+            return threats;
+        }
+
         public List<string> GetStarSystems()
         {
             this.Reset();

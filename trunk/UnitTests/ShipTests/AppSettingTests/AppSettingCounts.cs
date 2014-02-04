@@ -38,6 +38,18 @@ namespace UnitTests.ShipTests.AppSettingTests
             Assert.AreEqual(5, config.Get.Factions.Count);
         }
 
+        [Test]
+        public void CountOfFactionShips()
+        {
+            Assert.AreEqual(1141, config.Get.Factions["Federation"].FactionShips.Count);
+        }
+
+        [Test]
+        public void CountOfFactionThreats()
+        {
+            Assert.AreEqual(7, config.Get.Factions["Federation"].FactionThreats.Count);
+        }
+
 
         [Test]
         public void CountOfConsoleText()

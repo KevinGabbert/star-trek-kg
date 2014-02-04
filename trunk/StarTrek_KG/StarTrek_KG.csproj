@@ -55,6 +55,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Collections\SeverityValues.cs" />
+    <Compile Include="Config\Collections\FactionThreats.cs" />
+    <Compile Include="Config\Elements\SeverityValueElement.cs" />
     <Compile Include="Enums\QuadrantType.cs" />
     <Compile Include="Enums\SectorType.cs" />
     <Compile Include="Extensions\QuadrantExtensions.cs" />

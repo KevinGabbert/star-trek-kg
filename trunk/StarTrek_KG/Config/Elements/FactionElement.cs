@@ -5,6 +5,16 @@ namespace StarTrek_KG.Config.Elements
 {
     public class FactionElement : NameAllegianceElement
     {
+        [ConfigurationProperty("FactionThreats", IsDefaultCollection = true)]
+        [ConfigurationCollection(typeof(FactionThreats), AddItemName = "FactionThreat")]
+        public FactionThreats FactionThreats
+        {
+            get
+            {
+                return (FactionThreats)base["FactionThreats"];
+            }
+        }
+
         [ConfigurationProperty("FactionShips", IsDefaultCollection = true)]
         [ConfigurationCollection(typeof(FactionShips), AddItemName = "FactionShip")]
         public FactionShips FactionShips
