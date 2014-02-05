@@ -28,6 +28,8 @@ namespace StarTrek_KG.Playfield
             public IStarTrekKGSettings Config { get; set; }
             public int HostilesToSetUp { get; set; }
 
+            public string DefaultHostile { get; set; }
+
         #endregion
 
         public Map()
@@ -35,10 +37,11 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(SetupOptions setupOptions, IOutputWrite write, IStarTrekKGSettings config)
+        public Map(SetupOptions setupOptions, IOutputWrite write, IStarTrekKGSettings config, string defaultHostile = "Klingon")
         {
             this.Config = config;
             this.Write = write;
+            this.DefaultHostile = defaultHostile;
             this.Initialize(setupOptions);
         }
 
@@ -79,7 +82,7 @@ namespace StarTrek_KG.Playfield
 
             var names = new Stack<string>(quadrantNames.Shuffle());
 
-            var klingonShipNames = this.Config.GetShips("Klingon");
+            var klingonShipNames = this.Config.GetShips(this.DefaultHostile);
 
             this.Write.DebugLine("Got Baddies");
 
@@ -87,7 +90,7 @@ namespace StarTrek_KG.Playfield
             var klingonBaddieNames = new Stack<string>(klingonShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
-            this.InitializeQuadrantsWithBaddies(names, klingonBaddieNames, "Klingon", sectorDefs, generateWithNebulae);
+            this.InitializeQuadrantsWithBaddies(names, klingonBaddieNames, this.DefaultHostile, sectorDefs, generateWithNebulae);
 
             this.Write.DebugLine("Intialized quadrants with Baddies");
 
@@ -515,6 +518,26 @@ namespace StarTrek_KG.Playfield
             return returnVal;
         }
 
+        public void AddACoupleHostileFederationShipsToExistingMap()
+        {
+            var federationShipNames = this.Config.GetShips("Federation");
+            var federaleNames = new Stack<string>(federationShipNames.Shuffle());
+
+            foreach (var quadrant in this.Quadrants)
+            {
+                var hostilesInQuad = quadrant.GetHostiles();
+                if (hostilesInQuad.Any()) //we don't want to mix with Klingons just yet..
+                {
+                    var klingons = hostilesInQuad.Where(h => h.Faction == "Klingon");
+
+                    if (!klingons.Any())
+                    {
+                        this.AddHostilesToQuadrant(quadrant, federaleNames);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Adds a random number of federation ships to the map
         /// </summary>
@@ -529,16 +552,21 @@ namespace StarTrek_KG.Playfield
                 {
                     if (!quadrant.GetHostiles().Any()) //we don't want to mix with Klingons just yet..
                     {
-                        var numberOfHostileFeds = Utility.Utility.Random.Next(2);
-
-                        for (int i = 0; i < numberOfHostileFeds; i++)
-                        {
-                            //todo: refactor to Quadrant object
-                            ISector sectorToAddTo = this.GetUnoccupiedRandomSector(quadrant);
-                            this.AddHostileFederale(quadrant, sectorToAddTo, federaleNames);
-                        }
+                        this.AddHostilesToQuadrant(quadrant, federaleNames);
                     }
                 }
+            }
+        }
+
+        private void AddHostilesToQuadrant(IQuadrant quadrant, Stack<string> federaleNames)
+        {
+            var numberOfHostileFeds = Utility.Utility.Random.Next(2);
+
+            for (int i = 0; i < numberOfHostileFeds; i++)
+            {
+                //todo: refactor to Quadrant object
+                ISector sectorToAddTo = this.GetUnoccupiedRandomSector(quadrant);
+                this.AddHostileFederale(quadrant, sectorToAddTo, federaleNames);
             }
         }
 
