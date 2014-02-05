@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Management.Instrumentation;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
@@ -481,6 +482,14 @@ namespace StarTrek_KG
                     this.Write.SingleLine(String.Format(" Shields dropped to {0}.", Shields.For(map.Playership).Energy));
                 }
             }
+        }
+
+        internal void EnemiesWillNowTaunt()
+        {
+            var currentQuadrant = this.Map.Playership.GetQuadrant();
+
+            //all enemies in playership quadrant will now taunt you
+            throw new NotImplementedException();
         }
     }
 }
