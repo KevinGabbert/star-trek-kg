@@ -404,6 +404,11 @@ namespace StarTrek_KG.Output
 
             string attackerName = attackerQuadrant.Type == QuadrantType.Nebulae ? "Unknown Ship" : attacker.Name;
 
+            if (attacker.Faction == "Federation")
+            {
+                attackerName = Game.GetFederationShipName(attacker);
+            }
+
             return String.Format("Your Ship has been hit by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }
     }

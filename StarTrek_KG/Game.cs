@@ -5,6 +5,7 @@ using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
+using StarTrek_KG.Utility;
 using W = StarTrek_KG.Output.Write;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -485,23 +486,66 @@ namespace StarTrek_KG
             }
         }
 
-        internal void EnemiesWillNowTaunt()
+        /// <summary>
+        /// All enemies in PlayerShip's quadrant shall now commence to unclog their noses in the general direction of the player.
+        /// </summary>
+        public void EnemiesWillNowTaunt()
         {
             var currentQuadrant = this.Map.Playership.GetQuadrant();
-
             var hostilesInQuadrant = currentQuadrant.GetHostiles();
-
-            //get a list of each faction in quadrant
 
             foreach (var ship in hostilesInQuadrant)
             {
-                //get ship faction
-                string faction; //=ship.faction
-                //var x = this.Config.GetThreats(faction);
+                var currentFaction = ship.Faction;
+                string currentShipName;
+
+                switch (currentFaction)
+                {
+                    case "Federation":
+                        //"NCC-500 U.S.S. Saladin  Saladin-class"
+                        //"NCC-500 U.S.S. FirstName SecondName  Saladin-class"
+
+                        currentShipName = GetFederationShipName(ship);
+                        break;
+                    default:
+                        currentShipName = ship.Name;
+                        break;
+                }
+
+                //this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now
+                string currentThreat = string.Format(this.Config.GetThreats(currentFaction).Shuffle().First(), currentShipName);
+
+                this.Write.Line(currentThreat);     
+            }
+        }
+
+        public static string GetFederationShipName(IShip ship)
+        {
+            int USS = ship.Name.IndexOf("U.S.S.");
+            int spaceAfterGivenName = 0;
+
+            var nameLength = ship.Name.Length;
+
+            for (int i = nameLength; i > 0; i--)
+            {
+                var currentChar = ship.Name.Substring(i - 1, 1);
+                if (currentChar == " ")
+                {
+                    spaceAfterGivenName = i;
+                    break;
+                }
             }
 
-            //all enemies in playership quadrant will now taunt you
-            throw new NotImplementedException();
+            string currentShipName = ship.Name.Substring(USS, spaceAfterGivenName - USS).Trim();
+            return currentShipName;
+        }
+
+        public static string GetFederationShipRegistration(IShip ship)
+        {
+            int USS = ship.Name.IndexOf("U.S.S.");
+
+            string currentShipName = ship.Name.Substring(0, USS).Trim();
+            return currentShipName;
         }
     }
 }

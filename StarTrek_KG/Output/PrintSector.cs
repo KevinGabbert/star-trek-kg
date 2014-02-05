@@ -232,6 +232,11 @@ namespace StarTrek_KG.Output
                     hostileName = "Unknown";
                 }
 
+                if (hostile.Faction == "Federation")
+                {
+                    hostileName = Game.GetFederationShipName(hostile) + " " + Game.GetFederationShipRegistration(hostile);
+                }
+
                 this.Write.Console.WriteLine(this.Config.GetText("IDHostile"), hostileName);
             }
 

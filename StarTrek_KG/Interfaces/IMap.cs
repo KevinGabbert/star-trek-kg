@@ -71,5 +71,6 @@ namespace StarTrek_KG.Interfaces
         string ToString();
 
         void AddHostileFederationShipsToExistingMap();
+        void AddACoupleHostileFederationShipsToExistingMap();
     }
 }

@@ -186,8 +186,7 @@ namespace StarTrek_KG.Subsystem
             {
                 if (hostileInSector.Name.StartsWith("NCC-"))
                 {
-                    //todo: refactor Map.AddHostileFederationShipsToExistingMap so that we can just add 2
-                    //todo: also add this code (and refactor) to Phasers subsystem
+                    this.Game.Map.AddACoupleHostileFederationShipsToExistingMap();
                 }
 
                 this.Game.Map.RemoveTargetFromSector(this.Game.Map, hostileInSector);
@@ -251,10 +250,10 @@ namespace StarTrek_KG.Subsystem
                         this.Game.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
                         this.Game.Write.Line("Federation Ships will now shoot you on sight!");
 
-                        if (!map.GetAllFederationShips().Any()) //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
-                        {
+                        //if (!map.GetAllFederationShips().Any()) //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
+                        //{
                             map.AddHostileFederationShipsToExistingMap();
-                        }
+                        //}
                     }
                     else
                     {

@@ -104,6 +104,26 @@ namespace UnitTests.ShipTests
             this.VerifyMap();
         }
 
+        public void SetupMapWith1FedHostile()
+        {
+            this.TestMap = new Map(new SetupOptions
+            {
+                AddStars = false,
+                Initialize = true,
+                SectorDefs = new SectorDefs
+                                            {
+                                                new SectorDef(
+                                                    new LocationDef(new Coordinate(0, 0),
+                                                                    new Coordinate(0, 0)),
+                                                    SectorItem.Friendly),
+                                                new SectorDef(
+                                                    new LocationDef(new Coordinate(0, 0),
+                                                                    new Coordinate(0, 1)), SectorItem.Hostile),
+                                            }
+            }, this.Game.Write, this.Game.Config, "Federation");
+            this.VerifyMap();
+        }
+
         //public void SetupMapWith1HostileInNebula()
         //{
         //    this.TestMap = new Map(new SetupOptions

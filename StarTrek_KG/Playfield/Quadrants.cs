@@ -182,7 +182,15 @@ namespace StarTrek_KG.Playfield
 
             this.RemoveShip(shipToRemove.Name);
 
-            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemove.Name, this.Map.Config.GetText("shipDestroyed")));
+            string shipToRemoveName = shipToRemove.Name;
+
+            if (shipToRemove.Faction == "Federation")
+            {
+                shipToRemoveName = Game.GetFederationShipName(shipToRemove);
+                this.Map.AddACoupleHostileFederationShipsToExistingMap();
+            }
+
+            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemoveName, this.Map.Config.GetText("shipDestroyed")));
         }
 
         /// <summary>
