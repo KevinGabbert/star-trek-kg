@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
@@ -112,7 +113,7 @@ namespace StarTrek_KG.Subsystem
 
                     this.Game.Map.Config = this.Game.Config;
 
-                    var hostileShip = new Ship(testShipNames[0], randomSector, this.Game.Map);
+                    var hostileShip = new Ship("Klingon", testShipNames[0], randomSector, this.Game.Map);
 
                     this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 

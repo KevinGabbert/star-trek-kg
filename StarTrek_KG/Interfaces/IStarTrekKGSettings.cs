@@ -28,6 +28,7 @@ namespace StarTrek_KG.Interfaces
 
         new StarTrekKGSettings GetConfig();
         List<string> GetShips(string faction);
+        List<string> GetThreats(string faction);
         List<string> GetStarSystems();
         string GetText(string textToGet, string textToGet2);
         string GetText(string name);

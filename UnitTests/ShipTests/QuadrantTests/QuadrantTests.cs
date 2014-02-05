@@ -41,7 +41,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             _setup.SetupMapWith1Friendly();
 
             //you need to set ItemsToPopulat
-            _testQuadrant = new Quadrant(this.Game.Map, baddieNames, false);
+            _testQuadrant = new Quadrant(this.Game.Map, baddieNames, "", false);
 
             //todo: make sure that map is not set up with anyting
 
@@ -71,7 +71,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             int index;
             var newQuadrant = new Quadrant(_setup.Game.Map);
             newQuadrant.Create(names,
-                               new Stack<string>(klingonShipNames),
+                               new Stack<string>(klingonShipNames), "", 
                                new Coordinate(1, 1), out index, null);
 
             Assert.IsInstanceOf(typeof (Map), _testQuadrant.Map);

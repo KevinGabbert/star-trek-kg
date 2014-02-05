@@ -27,6 +27,7 @@ namespace StarTrek_KG.Actors
             public IStarTrekKGSettings Config { get; set; }
 
             public string Name { get; set; }
+            public string Faction { get; set; }
             public double Energy { get; set; }
             public bool Destroyed { get; set; }
 
@@ -36,7 +37,7 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string name, ISector sector, IConfig map)
+        public Ship(string faction, string name, ISector sector, IConfig map)
         {
             this.Map = (IMap)CheckParam(map);
 
@@ -65,6 +66,7 @@ namespace StarTrek_KG.Actors
             this.Type = this.GetType();
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
+            this.Faction = faction;
             
             this.Subsystems = new Subsystems(this.Map, this, this.Config);
 
