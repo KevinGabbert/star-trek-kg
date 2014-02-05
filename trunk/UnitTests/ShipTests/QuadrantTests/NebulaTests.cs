@@ -56,7 +56,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             _setup.SetupMapWith1Friendly();
 
             int nameIndex;
-            _testQuadrant = new Quadrant(_setup.TestMap, quadrantNames, baddieNames, out nameIndex, false, true);
+            _testQuadrant = new Quadrant(_setup.TestMap, quadrantNames, baddieNames, "", out nameIndex, false, true);
 
             //todo: make sure that map is not set up with anyting
 

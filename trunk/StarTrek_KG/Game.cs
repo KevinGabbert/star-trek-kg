@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Management.Instrumentation;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
@@ -487,6 +488,17 @@ namespace StarTrek_KG
         internal void EnemiesWillNowTaunt()
         {
             var currentQuadrant = this.Map.Playership.GetQuadrant();
+
+            var hostilesInQuadrant = currentQuadrant.GetHostiles();
+
+            //get a list of each faction in quadrant
+
+            foreach (var ship in hostilesInQuadrant)
+            {
+                //get ship faction
+                string faction; //=ship.faction
+                //var x = this.Config.GetThreats(faction);
+            }
 
             //all enemies in playership quadrant will now taunt you
             throw new NotImplementedException();
