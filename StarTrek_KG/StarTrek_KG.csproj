@@ -45,6 +45,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -60,6 +61,7 @@
     <Compile Include="Config\Elements\SeverityValueElement.cs" />
     <Compile Include="Enums\QuadrantType.cs" />
     <Compile Include="Enums\SectorType.cs" />
+    <Compile Include="Experimental.cs" />
     <Compile Include="Extensions\QuadrantExtensions.cs" />
     <Compile Include="Interfaces\ICoordinate.cs" />
     <Compile Include="Interfaces\IOutputWrite.cs" />

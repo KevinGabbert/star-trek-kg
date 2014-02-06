@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;                // for Debug
 using System.Drawing;                    // for Color (add reference to  System.Drawing assembly)
-using System.Runtime.InteropServices;    // for StructLayout
+using System.Runtime.InteropServices; // for StructLayout
+using NUnit.Framework;
 
 namespace UnitTests.Experimental
 {
@@ -9,10 +10,10 @@ namespace UnitTests.Experimental
     // Modified by MercuryP with color specifications
     // Use this code in any way you want
 
-    internal class SetScreenColorsDemo
+    public class SetScreenColorsDemo
     {
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool SetConsoleScreenBufferInfoEx(
+        private static extern bool SetConsoleScreenBufferInfoEx(
             IntPtr ConsoleOutput,
             CONSOLE_SCREEN_BUFFER_INFO_EX ConsoleScreenBufferInfoEx
             );
@@ -40,7 +41,7 @@ namespace UnitTests.Experimental
 
             internal COLORREF(Color color)
             {
-                ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
+                ColorDWORD = (uint) color.R + (((uint) color.G) << 8) + (((uint) color.B) << 16);
             }
 
             internal COLORREF(uint r, uint g, uint b)
@@ -50,13 +51,13 @@ namespace UnitTests.Experimental
 
             internal Color GetColor()
             {
-                return Color.FromArgb((int)(0x000000FFU & ColorDWORD),
-                   (int)(0x0000FF00U & ColorDWORD) >> 8, (int)(0x00FF0000U & ColorDWORD) >> 16);
+                return Color.FromArgb((int) (0x000000FFU & ColorDWORD),
+                    (int) (0x0000FF00U & ColorDWORD) >> 8, (int) (0x00FF0000U & ColorDWORD) >> 16);
             }
 
             internal void SetColor(Color color)
             {
-                ColorDWORD = (uint)color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
+                ColorDWORD = (uint) color.R + (((uint) color.G) << 8) + (((uint) color.B) << 16);
             }
         }
 
@@ -89,17 +90,19 @@ namespace UnitTests.Experimental
             internal COLORREF white;
         }
 
-        const int STD_OUTPUT_HANDLE = -11;                                        // per WinBase.h
-        internal static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);    // per WinBase.h
+        private const int STD_OUTPUT_HANDLE = -11; // per WinBase.h
+        internal static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1); // per WinBase.h
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetStdHandle(int nStdHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool GetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput, ref CONSOLE_SCREEN_BUFFER_INFO_EX csbe);
+        private static extern bool GetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput,
+            ref CONSOLE_SCREEN_BUFFER_INFO_EX csbe);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput, ref CONSOLE_SCREEN_BUFFER_INFO_EX csbe);
+        private static extern bool SetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput,
+            ref CONSOLE_SCREEN_BUFFER_INFO_EX csbe);
 
         /***            C prototype:
         #include <Windows.h>
@@ -135,8 +138,8 @@ namespace UnitTests.Experimental
         public static int SetColor(ConsoleColor color, uint r, uint g, uint b)
         {
             CONSOLE_SCREEN_BUFFER_INFO_EX csbe = new CONSOLE_SCREEN_BUFFER_INFO_EX();
-            csbe.cbSize = (int)Marshal.SizeOf(csbe);                    // 96 = 0x60
-            IntPtr hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);    // 7
+            csbe.cbSize = (int) Marshal.SizeOf(csbe); // 96 = 0x60
+            IntPtr hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE); // 7
             if (hConsoleOutput == INVALID_HANDLE_VALUE)
             {
                 return Marshal.GetLastWin32Error();
@@ -226,8 +229,10 @@ namespace UnitTests.Experimental
             int irc = SetScreenColors(screenTextColor, screenBackgroundColor);
             Debug.Assert(irc == 0, "SetScreenColors failed, Win32Error code = " + irc + " = 0x" + irc.ToString("x"));
 
-            Debug.WriteLine("LargestWindowHeight=" + Console.LargestWindowHeight + " LargestWindowWidth=" + Console.LargestWindowWidth);
-            Debug.WriteLine("BufferHeight=" + Console.BufferHeight + " WindowHeight=" + Console.WindowHeight + " BufferWidth=" + Console.BufferWidth + " WindowWidth=" + Console.WindowWidth);
+            Debug.WriteLine("LargestWindowHeight=" + Console.LargestWindowHeight + " LargestWindowWidth=" +
+                            Console.LargestWindowWidth);
+            Debug.WriteLine("BufferHeight=" + Console.BufferHeight + " WindowHeight=" + Console.WindowHeight +
+                            " BufferWidth=" + Console.BufferWidth + " WindowWidth=" + Console.WindowWidth);
             //// these are relative to the buffer, not the screen:
             //Debug.WriteLine("WindowTop=" + Console.WindowTop + " WindowLeft=" + Console.WindowLeft);
             Debug.WriteLine("ForegroundColor=" + Console.ForegroundColor + " BackgroundColor=" + Console.BackgroundColor);
@@ -243,6 +248,16 @@ namespace UnitTests.Experimental
 
             // It's best to use SetColor for the purpose of choosing the 16 colors you want the console to be able to display, then use
             // Console.BackgroundColor and Console.ForegrondColor to choose among them.
+        }
+    }
+
+    [TestFixture]
+    public class TestClass
+    {
+        [Test]
+        public void Test1()
+        {
+            SetScreenColorsDemo.SetScreenColors(Color.DarkOrange, Color.SeaGreen);
         }
     }
 }
