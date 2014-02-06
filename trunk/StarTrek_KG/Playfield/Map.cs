@@ -597,6 +597,8 @@ namespace StarTrek_KG.Playfield
         private void AddHostileFederale(IQuadrant quadrant, ISector sector, Stack<string> federaleNames)
         {
             var newPissedOffFederale = new Ship("Federation", federaleNames.Pop(), sector, this);
+            Shields.For(newPissedOffFederale).Energy = Utility.Utility.Random.Next(100, 500); //todo: resource those numbers out
+
             quadrant.AddShip(newPissedOffFederale, sector);
 
             this.Write.Line("Comm Reports a Federation starship has warped into Quadrant: " + quadrant.Name);
