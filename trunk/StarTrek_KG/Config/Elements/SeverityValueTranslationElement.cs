@@ -2,7 +2,7 @@
 
 namespace StarTrek_KG.Config.Elements
 {
-    public class SeverityValueElement : ConfigurationElement
+    public class SeverityValueTranslationElement : ConfigurationElement
     {
         [ConfigurationProperty("severity", IsRequired = true)]
         public string severity
@@ -19,6 +19,15 @@ namespace StarTrek_KG.Config.Elements
             get
             {
                 return this["value"] as string;
+            }
+        }
+
+        [ConfigurationProperty("translation", IsRequired = false)]
+        public string translation
+        {
+            get
+            {
+                return this["translation"] as string;
             }
         }
     }

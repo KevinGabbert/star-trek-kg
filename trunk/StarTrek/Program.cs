@@ -40,7 +40,6 @@ namespace StarTrek_Console {
         //SetScreenColorsApp.SetScreenColors(Color.Black, Color.Orange);
         //SetScreenColorsApp.SetScreenColors(Color.Blue, Color.Black);
 
-
         //Console.ForegroundColor = ConsoleColor.Black;
 
         var settingsForWholeGame = (new StarTrekKGSettings());

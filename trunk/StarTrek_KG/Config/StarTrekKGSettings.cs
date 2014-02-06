@@ -104,7 +104,7 @@ namespace StarTrek_KG.Config
             this.Reset();
 
             FactionThreats factionThreats = this.Get.Factions[faction].FactionThreats;
-            var threats = (from SeverityValueElement threatElement in factionThreats select threatElement.value).ToList();
+            var threats = (from SeverityValueTranslationElement threatElement in factionThreats select threatElement.value).ToList();
             return threats;
         }
 
