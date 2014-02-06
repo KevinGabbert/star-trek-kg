@@ -418,6 +418,9 @@ namespace StarTrek_KG
                     {
                         this.HostileAttacks(map, badGuy);
                     }
+
+                    this.EnemiesWillNowTaunt();
+
                     return true;
                 }
             }
@@ -491,13 +494,17 @@ namespace StarTrek_KG
         /// </summary>
         public void EnemiesWillNowTaunt()
         {
+            //todo: move this to communications subsystem eventually
             var currentQuadrant = this.Map.Playership.GetQuadrant();
             var hostilesInQuadrant = currentQuadrant.GetHostiles();
+            string currentThreat = "";
 
             foreach (var ship in hostilesInQuadrant)
             {
                 var currentFaction = ship.Faction;
-                string currentShipName;
+                string currentShipName = null;
+
+                this.Write.Line("");
 
                 switch (currentFaction)
                 {
@@ -507,14 +514,21 @@ namespace StarTrek_KG
 
                         currentShipName = GetFederationShipName(ship);
                         break;
+
+                    case "Klingon":
+                        this.Write.Line(string.Format("Klingon ship at {0} sends the following message: ", "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
+
+                        break;
+
                     default:
+                        this.Write.Line(string.Format("Hostile at {0} sends the following message: ", "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
                         currentShipName = ship.Name;
                         break;
                 }
 
                 //this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now
-                string currentThreat = string.Format(this.Config.GetThreats(currentFaction).Shuffle().First(), currentShipName);
-
+                currentThreat += string.Format(this.Config.GetThreats(currentFaction).Shuffle().First(), currentShipName);
+                
                 this.Write.Line(currentThreat);     
             }
         }

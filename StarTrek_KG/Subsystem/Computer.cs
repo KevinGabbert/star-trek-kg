@@ -17,7 +17,8 @@ namespace StarTrek_KG.Subsystem
                                                     "sta = Status Report",
                                                     "tor = Photon Torpedo Calculator",
                                                     "bas = Starbase Calculator",
-                                                    "nav = Navigation Calculator"
+                                                    "nav = Navigation Calculator",
+                                                    "tlm = Translate Last Message"
                                                 };
 
         public Computer(Ship shipConnectedTo, Game game)
@@ -76,6 +77,10 @@ namespace StarTrek_KG.Subsystem
 
                 case "nav":
                     Navigation.For(this.ShipConnectedTo).Calculator();
+                    break;
+
+                case "tlm":
+                    this.Game.Write.Line("Translation Feature not installed yet.. Sorry");
                     break;
 
                 default:

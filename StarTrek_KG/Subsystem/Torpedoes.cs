@@ -71,7 +71,6 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.Shoot(direction);
-            this.Game.EnemiesWillNowTaunt();
         }
 
         public void Shoot(double direction)

@@ -82,7 +82,6 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line("");
 
             this.Fire(phaserEnergy, shipFiringPhasers);
-            this.Game.EnemiesWillNowTaunt();
         }
 
         private void Execute(double phaserEnergy)

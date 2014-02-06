@@ -114,6 +114,7 @@ namespace StarTrek_KG.Subsystem
                     this.Game.Map.Config = this.Game.Config;
 
                     var hostileShip = new Ship("Klingon", testShipNames[0], randomSector, this.Game.Map);
+                    Shields.For(hostileShip).Energy = Utility.Utility.Random.Next(100, 200); //todo: resource those numbers out
 
                     this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
