@@ -3,7 +3,7 @@ using StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config.Collections
 {
-    public class FactionShips : RegistryNameTypeClasses
+    public class RegistryNameTypeClasses: ConfigurationElementCollection
     {
         public RegistryNameTypeClassElement this[int index]
         {
@@ -47,5 +47,13 @@ namespace StarTrek_KG.Config.Collections
         {
             return ((RegistryNameTypeClassElement)element).name;
         }
+
+        //public override ConfigurationElementCollectionType CollectionType
+        //{
+        //    get
+        //    {
+        //        return ConfigurationElementCollectionType.BasicMap;
+        //    }
+        //}
     }
 }

@@ -56,8 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Collections\ResgistryNameTypeClasses.cs" />
     <Compile Include="Config\Collections\SeverityValues.cs" />
     <Compile Include="Config\Collections\FactionThreats.cs" />
+    <Compile Include="Config\Elements\NameElement.cs" />
     <Compile Include="Config\Elements\SeverityValueTranslationElement.cs" />
     <Compile Include="Enums\QuadrantType.cs" />
     <Compile Include="Enums\SectorType.cs" />
@@ -76,7 +78,7 @@
     <Compile Include="Config\Elements\FactionElement.cs" />
     <Compile Include="Config\Collections\Names.cs" />
     <Compile Include="Config\Collections\NameValues.cs" />
-    <Compile Include="Config\Elements\NameElement.cs" />
+    <Compile Include="Config\Elements\RegistryNameTypeClassElement.cs" />
     <Compile Include="Config\Elements\NameAllegianceElement.cs" />
     <Compile Include="Config\Elements\NameValueElement.cs" />
     <Compile Include="Config\StarTrekKGSettings.cs" />
