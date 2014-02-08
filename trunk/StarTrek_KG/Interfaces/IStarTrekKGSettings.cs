@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using StarTrek_KG.Config;
 using StarTrek_KG.Config.Collections;
@@ -29,7 +30,7 @@ namespace StarTrek_KG.Interfaces
 
         new StarTrekKGSettings GetConfig();
         List<string> GetShips(Faction faction);
-        List<string> GetThreats(Faction faction);
+        List<FactionThreat> GetThreats(Faction faction);
         List<string> GetStarSystems();
         string GetText(string textToGet, string textToGet2);
         string GetText(string name);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management.Instrumentation;
 using StarTrek_KG.Config;
@@ -26,6 +27,8 @@ namespace StarTrek_KG
             public Output.PrintSector PrintSector { get; set; }
             public IMap Map { get; set; }
 
+            public bool StarbasesAreHostile { get; set; } //todo: temporary until Starbase object is created
+            public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
             public bool gameOver;
 
         #endregion
@@ -34,7 +37,7 @@ namespace StarTrek_KG
             /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
             /// and some unsorted crap at the moment..
         /// </summary>
-            public Game(IStarTrekKGSettings config, bool startup = true)
+        public Game(IStarTrekKGSettings config, bool startup = true)
         {
             this.Config = config;
             if(this.Write == null)
@@ -48,6 +51,8 @@ namespace StarTrek_KG
                 //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
                 //might try to reload the file. #NotInThisVersion
                 this.Config.Get = this.Config.GetConfig();
+
+                this.LatestTaunts = new List<FactionThreat>();
 
                 //These constants need to be localized to Game:
                 this.GetConstants();
@@ -501,6 +506,8 @@ namespace StarTrek_KG
             var hostilesInQuadrant = currentQuadrant.GetHostiles();
             string currentThreat = "";
 
+            this.LatestTaunts = new List<FactionThreat>();
+
             foreach (var ship in hostilesInQuadrant)
             {
                 var currentFaction = ship.Faction;
@@ -533,9 +540,13 @@ namespace StarTrek_KG
                     currentShipName = ship.Name;
                 }
 
+                FactionThreat randomThreat = this.Config.GetThreats(currentFaction).Shuffle().First();
+
                 //this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now
-                currentThreat += string.Format(this.Config.GetThreats(currentFaction).Shuffle().First(), currentShipName);
-                
+                currentThreat += string.Format(randomThreat.Threat, currentShipName);
+
+                this.LatestTaunts.Add(randomThreat);
+
                 this.Write.Line(currentThreat);     
             }
         }
