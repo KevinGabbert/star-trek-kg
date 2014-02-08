@@ -155,13 +155,13 @@ namespace StarTrek_KG.Actors
             if (photonsScavenged > 0)
             {
                 Torpedoes.For(this).Count += photonsScavenged;
-                scavengedText = photonsScavenged + " Photon Torpedoes scavenged ";
+                scavengedText = photonsScavenged + " Photon Torpedoes found ";
             }
 
             if (energyScavenged > 0)
             {
                 this.Energy += energyScavenged;
-                scavengedText = energyScavenged + " Energy scavenged ";
+                scavengedText = energyScavenged + " Energy found ";
             }
 
             this.Map.Write.Line(scavengedText + "from destroyed " + scavengedFrom + " debris field. ");
