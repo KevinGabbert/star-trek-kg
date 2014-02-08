@@ -7,6 +7,7 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.ShipTests.ShipObjectTests
 {
@@ -44,7 +45,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("GoodGuy");
 
-            var shipToTest = new Ship("", "TestShip", _mockSector.Object, _mockMap.Object);
+            var shipToTest = new Ship(Faction.Klingon, "TestShip", _mockSector.Object, _mockMap.Object);
 
             Assert.IsInstanceOf<Ship>(shipToTest);
             Assert.AreEqual(Allegiance.GoodGuy, shipToTest.Allegiance);
@@ -53,7 +54,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
         [Test]
         public void Basic_Instantiation32()
         {
-            var shipToTest = new Ship("", "TestShip", _mockSector.Object, _mockMap.Object)
+            var shipToTest = new Ship(Faction.Klingon, "TestShip", _mockSector.Object, _mockMap.Object)
             {
                 Allegiance = Allegiance.GoodGuy
             };
@@ -67,7 +68,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("blah Blah Blah!!!");
 
-            var shipToTest = new Ship("", "TestShip", _mockSector.Object, _mockMap.Object);
+            var shipToTest = new Ship(Faction.Klingon, "TestShip", _mockSector.Object, _mockMap.Object);
 
             Assert.IsInstanceOf<Ship>(shipToTest);
             Assert.AreEqual(Allegiance.Indeterminate, shipToTest.Allegiance);
@@ -78,7 +79,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("blah Blah Blah!!!");
 
-            var shipToTest = new Ship("", "TestShip", _mockSector.Object, _mockMap.Object);
+            var shipToTest = new Ship(Faction.Klingon, "TestShip", _mockSector.Object, _mockMap.Object);
 
             Shields.For(shipToTest).Energy = 100;  //this is syntactic sugar for: ship.Subsystems.Single(s => s.Type == SubsystemType.Shields);
 
@@ -90,7 +91,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockSector.Setup(s => s.X).Returns(-2);
             _mockSector.Setup(s => s.Y).Returns(-3);
 
-            var attacker = new Ship("", "The attacking Ship", _mockSector.Object, _mockMap.Object);
+            var attacker = new Ship(Faction.Klingon, "The attacking Ship", _mockSector.Object, _mockMap.Object);
             shipToTest.AbsorbHitFrom(attacker, 50);
 
             Assert.AreEqual(50, Shields.For(shipToTest).Energy);

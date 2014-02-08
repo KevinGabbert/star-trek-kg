@@ -110,6 +110,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.Game.Map.RemoveAllDestroyedShips(this.Game.Map, destroyedShips);//remove from Hostiles collection
+            this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
         }
 
         private bool PromptUserForPhaserEnergy(out double phaserEnergy)

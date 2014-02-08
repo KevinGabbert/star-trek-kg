@@ -7,6 +7,7 @@ using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.ShipTests.QuadrantTests
 {
@@ -50,13 +51,13 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void NewWithMap()
         {
-            var baddieNames = new Stack<string>((new StarTrekKGSettings()).GetShips("Klingon"));
+            var baddieNames = new Stack<string>((new StarTrekKGSettings()).GetShips(Faction.Klingon));
             var quadrantNames = new Stack<string>((new StarTrekKGSettings()).GetStarSystems());
 
             _setup.SetupMapWith1Friendly();
 
             int nameIndex;
-            _testQuadrant = new Quadrant(_setup.TestMap, quadrantNames, baddieNames, "", out nameIndex, false, true);
+            _testQuadrant = new Quadrant(_setup.TestMap, quadrantNames, baddieNames, null, out nameIndex, false, true);
 
             //todo: make sure that map is not set up with anyting
 

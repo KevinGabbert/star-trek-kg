@@ -5,6 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -124,7 +125,7 @@ namespace StarTrek_KG.Subsystem
             var hostiles = Quadrants.Get(map, thisShip.Quadrant).GetHostiles();
             var baddiesHangingAround = hostiles.Count > 0;
 
-            var hostileFedsInQuadrant = hostiles.Any(h => h.Name.StartsWith("NCC-")); //todo: Cheap.  Use a property for this.
+            var hostileFedsInQuadrant = hostiles.Any(h => h.Faction == Faction.Federation); //todo: Cheap.  Use a property for this.
 
             var stillInSameQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
 

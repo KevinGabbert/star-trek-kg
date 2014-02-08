@@ -7,6 +7,7 @@ using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Playfield
 {
@@ -65,7 +66,7 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
         }
 
-        public Quadrant(IMap map, Stack<string> baddieNames, string stockBaddieFaction, bool isNebulae = false)
+        public Quadrant(IMap map, Stack<string> baddieNames, Faction stockBaddieFaction, bool isNebulae = false)
         {
             this.Empty = true;
             this.Map = map;
@@ -75,7 +76,7 @@ namespace StarTrek_KG.Playfield
         }
 
         //todo: we might want to avoid passing in baddie names and set up baddies later..
-        public Quadrant(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, string stockBaddieFaction, out int nameIndex, bool addStars = false, bool makeNebulae = false)
+        public Quadrant(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, Faction stockBaddieFaction, out int nameIndex, bool addStars = false, bool makeNebulae = false)
         {
             this.Type = QuadrantType.GalacticSpace;
             this.Empty = true;
@@ -83,7 +84,7 @@ namespace StarTrek_KG.Playfield
             this.Create(map, quadrantNames, baddieNames, stockBaddieFaction, out nameIndex, addStars, makeNebulae);
         }
 
-        public void Create(Stack<string> baddieNames, string stockBaddieFaction, bool addStars = true, bool makeNebulae = false)
+        public void Create(Stack<string> baddieNames, Faction stockBaddieFaction, bool addStars = true, bool makeNebulae = false)
         {
             if (this.Map == null)
             {
@@ -93,7 +94,7 @@ namespace StarTrek_KG.Playfield
             this.InitializeSectors(this, new List<Sector>(), baddieNames, stockBaddieFaction, addStars, makeNebulae);
         }
 
-        public void Create(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, string stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false)
+        public void Create(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, Faction stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false)
         {
             nameIndex = (Utility.Utility.Random).Next(baddieNames.Count);
 
@@ -106,7 +107,7 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public void Create(Stack<string> quadrantNames, Stack<String> baddieNames, string stockBaddieFaction, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false)
+        public void Create(Stack<string> quadrantNames, Stack<String> baddieNames, Faction stockBaddieFaction, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false)
         {
             nameIndex = (Utility.Utility.Random).Next(quadrantNames.Count);
 
@@ -128,7 +129,7 @@ namespace StarTrek_KG.Playfield
         public void InitializeSectors(Quadrant quadrant, 
                                       List<Sector> itemsToPopulate, 
                                       Stack<string> baddieNames,
-                                      string stockBaddieFaction,
+                                      Faction stockBaddieFaction,
                                       bool addStars,
                                       bool makeNebulae = false)
         {
@@ -257,7 +258,7 @@ namespace StarTrek_KG.Playfield
         }
 
         public void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
-            Stack<string> baddieNames, string stockBaddieFaction)
+            Stack<string> baddieNames, Faction stockBaddieFaction)
         {
             var sectorItemToPopulate = SectorItem.Empty;
 
@@ -304,7 +305,7 @@ namespace StarTrek_KG.Playfield
             this.AddSector(quadrant, x, y, sectorItemToPopulate, baddieNames, stockBaddieFaction);
         }
 
-        public void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> stockBaddieNames, string stockBaddieFaction)
+        public void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> stockBaddieNames, Faction stockBaddieFaction)
         {
             var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
             this.Map.Write.DebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
@@ -377,7 +378,7 @@ namespace StarTrek_KG.Playfield
         /// <param name="listOfBaddies"></param>
         /// <param name="stockBaddieFaction"></param>
         /// <returns></returns>
-        public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, string stockBaddieFaction)
+        public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, Faction stockBaddieFaction)
         {
             //todo: modify this to populate more than a single baddie faction
 

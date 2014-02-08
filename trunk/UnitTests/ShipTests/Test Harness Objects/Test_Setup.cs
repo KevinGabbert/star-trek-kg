@@ -4,10 +4,10 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.ShipTests
 {
@@ -55,8 +55,8 @@ namespace UnitTests.ShipTests
             this.SetupMapWith1Friendly();
 
             //add a ship
-            var hostileShip = new Ship("", "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
-            var hostileShip2 = new Ship("", "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
+            var hostileShip = new Ship(Faction.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
+            var hostileShip2 = new Ship(Faction.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
 
             var activeQuad = this.TestMap.Quadrants.GetActive();
             activeQuad.AddShip(hostileShip, hostileShip.Sector);
@@ -120,7 +120,7 @@ namespace UnitTests.ShipTests
                                                     new LocationDef(new Coordinate(0, 0),
                                                                     new Coordinate(0, 1)), SectorItem.Hostile),
                                             }
-            }, this.Game.Write, this.Game.Config, "Federation");
+            }, this.Game.Write, this.Game.Config, Faction.Federation);
             this.VerifyMap();
         }
 

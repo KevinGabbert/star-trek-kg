@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Config;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.ShipTests.AppSettingTests
 {
@@ -41,13 +42,13 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfFactionShips()
         {
-            Assert.AreEqual(1141, config.Get.Factions["Federation"].FactionShips.Count);
+            Assert.AreEqual(1141, config.Get.Factions[Faction.Federation.ToString()].FactionShips.Count);
         }
 
         [Test]
         public void CountOfFactionThreats()
         {
-            Assert.AreEqual(7, config.Get.Factions["Federation"].FactionThreats.Count);
+            Assert.AreEqual(7, config.Get.Factions[Faction.Federation.ToString()].FactionThreats.Count);
         }
 
 

@@ -9,6 +9,7 @@ using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
+using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
 
 namespace UnitTests.ShipTests.MapTests
@@ -67,10 +68,10 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void InitializeQuadrants()
         {
-            var klingonShipNames =  (new StarTrekKGSettings()).GetShips("Klingon");
+            var klingonShipNames = (new StarTrekKGSettings()).GetShips(Faction.Klingon);
             var systemNames = (new StarTrekKGSettings()).GetStarSystems();
             _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
-                                         new Stack<string>(klingonShipNames), "", 
+                                         new Stack<string>(klingonShipNames), null, 
                                          new SectorDefs(), false);
 
             Assert.IsInstanceOf(typeof(Map), _setup.TestMap);
@@ -83,11 +84,11 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void PopulateWithHostilesAndStarbases()
         {
-            var klingonShipNames = (new StarTrekKGSettings()).GetShips("Klingon");
+            var klingonShipNames = (new StarTrekKGSettings()).GetShips(Faction.Klingon);
             var systemNames = (new StarTrekKGSettings()).GetStarSystems();
 
             _setup.TestMap.InitializeQuadrantsWithBaddies(new Stack<string>(systemNames),
-                                         new Stack<string>(klingonShipNames), "", 
+                                         new Stack<string>(klingonShipNames), null, 
                                          null, false);
             //Quadrant.Populate(_setup.TestMap);
 
@@ -227,7 +228,7 @@ namespace UnitTests.ShipTests.MapTests
             }, this.Game.Write, this.Game.Config));
 
             var systemNames = (new StarTrekKGSettings()).GetStarSystems();
-            _setup.TestMap.Quadrants.GetActive().InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), "", false);
+            _setup.TestMap.Quadrants.GetActive().InitializeSectors(_setup.TestMap.Quadrants.GetActive(), null, new Stack<string>(systemNames), null, false);
 
             Assert.AreEqual(64, _setup.TestMap.Quadrants.GetActive().Sectors.Count);  
 
@@ -322,7 +323,7 @@ namespace UnitTests.ShipTests.MapTests
 
             //add a ship to remove
             var sector = new Sector(new LocationDef(new Coordinate(testQuadX, testQuadY), new Coordinate(testSectX, testSectY)));
-            var hostileShip = new Ship("", "this is the ship", sector, this.Game.Map);
+            var hostileShip = new Ship(Faction.Klingon, "this is the ship", sector, this.Game.Map);
 
             _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.Coordinate.X &&
                                            q.Y == hostileShip.Coordinate.Y).AddShip(hostileShip, sector);
@@ -380,7 +381,7 @@ namespace UnitTests.ShipTests.MapTests
 
             //add a ship
             var ship = new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)));
-            var hostileShip = new Ship("", "this is the ship", ship, this.Game.Map);
+            var hostileShip = new Ship(Faction.Klingon, "this is the ship", ship, this.Game.Map);
 
             _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
@@ -413,8 +414,8 @@ namespace UnitTests.ShipTests.MapTests
             }, this.Game.Write, this.Game.Config));
 
             //add a ship
-            var hostileShip = new Ship("", "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Game.Map);
-            var hostileShip2 = new Ship("", "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))), this.Game.Map);
+            var hostileShip = new Ship(Faction.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Game.Map);
+            var hostileShip2 = new Ship(Faction.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))), this.Game.Map);
 
             _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
             _setup.TestMap.Quadrants.GetActive().AddShip(hostileShip2, hostileShip2.Sector);

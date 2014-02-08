@@ -6,6 +6,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -183,12 +184,18 @@ namespace StarTrek_KG.Subsystem
                                                                                       hostileShip.Sector.Y == newY);
             if (hostileInSector != null)
             {
-                if (hostileInSector.Name.StartsWith("NCC-"))
+                this.Game.Map.RemoveTargetFromSector(this.Game.Map, hostileInSector);
+
+                if (hostileInSector.Faction == Faction.Federation)
                 {
                     this.Game.Map.AddACoupleHostileFederationShipsToExistingMap();
+                    this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
                 }
 
-                this.Game.Map.RemoveTargetFromSector(this.Game.Map, hostileInSector);
+                if (hostileInSector.Faction == Faction.Klingon)
+                {
+                    this.ShipConnectedTo.Scavenge(ScavengeType.OtherShip);
+                }
 
                 return true;
             }
@@ -298,6 +305,8 @@ namespace StarTrek_KG.Subsystem
             //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
             this.Game.Write.Line(string.Format("You have destroyed A Federation starbase! (at sector [{0},{1}])",
                 newX, newY));
+
+            this.ShipConnectedTo.Scavenge(ScavengeType.Starbase);
 
             //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
             //todo: a concerted effort of 4? torpedoes will destroy an unshielded starbase.

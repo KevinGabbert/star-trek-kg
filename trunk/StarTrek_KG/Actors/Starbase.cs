@@ -1,6 +1,7 @@
 ﻿using System;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Actors
 {
@@ -66,7 +67,7 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        public string Faction { get; set; }
+        public Faction Faction { get; set; }
 
 
         public Subsystem.Subsystems Subsystems

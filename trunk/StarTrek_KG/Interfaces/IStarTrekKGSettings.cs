@@ -3,6 +3,7 @@ using System.Configuration;
 using StarTrek_KG.Config;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Interfaces
 {
@@ -27,8 +28,8 @@ namespace StarTrek_KG.Interfaces
         NameValues GameSettings { get; }
 
         new StarTrekKGSettings GetConfig();
-        List<string> GetShips(string faction);
-        List<string> GetThreats(string faction);
+        List<string> GetShips(Faction faction);
+        List<string> GetThreats(Faction faction);
         List<string> GetStarSystems();
         string GetText(string textToGet, string textToGet2);
         string GetText(string name);
