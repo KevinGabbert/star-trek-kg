@@ -101,7 +101,7 @@ namespace StarTrek_KG.Config
             return shipNames;
         }
 
-        public List<string> GetThreats(Faction faction)
+        public List<FactionThreat> GetThreats(Faction faction)
         {
             if (faction == null)
             {
@@ -110,8 +110,12 @@ namespace StarTrek_KG.Config
 
             this.Reset();
 
-            FactionThreats factionThreats = this.Get.Factions[faction.ToString()].FactionThreats;
-            var threats = (from SeverityValueTranslationElement threatElement in factionThreats select threatElement.value).ToList();
+            FactionThreats factionThreatCollection = this.Get.Factions[faction.ToString()].FactionThreats;
+
+            IEnumerable<SeverityValueTranslationElement> threatElements = (from SeverityValueTranslationElement threatElement in factionThreatCollection select threatElement).ToList();
+
+            var threats = threatElements.Select(factionThreat => new FactionThreat(factionThreat.value, factionThreat.translation)) .ToList();
+
             return threats;
         }
 

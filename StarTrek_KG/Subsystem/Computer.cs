@@ -80,7 +80,14 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "tlm":
-                    this.Game.Write.Line("Translation Feature not installed yet.. Sorry");
+
+                    this.Game.Write.Line("Comms was able to translate the latest transmissions: ");
+
+                    foreach (FactionThreat taunt in this.Game.LatestTaunts)
+                    {
+                        this.Game.Write.Line(taunt.Translation);
+                    }
+
                     break;
 
                 default:

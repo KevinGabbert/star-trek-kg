@@ -61,6 +61,7 @@
     <Compile Include="Config\Collections\FactionThreats.cs" />
     <Compile Include="Config\Elements\NameElement.cs" />
     <Compile Include="Config\Elements\SeverityValueTranslationElement.cs" />
+    <Compile Include="FactionThreat.cs" />
     <Compile Include="TypeSafeEnums\Faction.cs" />
     <Compile Include="Enums\ScavengeType.cs" />
     <Compile Include="Enums\QuadrantType.cs" />
