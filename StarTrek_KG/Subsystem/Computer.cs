@@ -85,7 +85,7 @@ namespace StarTrek_KG.Subsystem
 
                     foreach (FactionThreat taunt in this.Game.LatestTaunts)
                     {
-                        this.Game.Write.Line(taunt.Translation);
+                        this.Game.Write.Line(taunt.Translation == "" ? "No Translation required." : taunt.Translation);
                     }
 
                     break;
