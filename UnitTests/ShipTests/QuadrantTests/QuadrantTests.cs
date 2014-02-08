@@ -4,6 +4,7 @@ using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.ShipTests.QuadrantTests
 {
@@ -36,12 +37,12 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void NewWithMap()
         {
-            var baddieNames = new Stack<string>((new StarTrekKGSettings()).GetShips("Klingon"));
+            var baddieNames = new Stack<string>((new StarTrekKGSettings()).GetShips(Faction.Klingon));
 
             _setup.SetupMapWith1Friendly();
 
             //you need to set ItemsToPopulat
-            _testQuadrant = new Quadrant(this.Game.Map, baddieNames, "", false);
+            _testQuadrant = new Quadrant(this.Game.Map, baddieNames, null, false);
 
             //todo: make sure that map is not set up with anyting
 
@@ -63,7 +64,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         {
             var name = new List<string>();
             var systemNames = (new StarTrekKGSettings()).GetStarSystems();
-            var klingonShipNames = (new StarTrekKGSettings()).GetShips("Klingon");
+            var klingonShipNames = (new StarTrekKGSettings()).GetShips(Faction.Klingon);
             name.Add(systemNames[0]);
 
             var names = new Stack<string>(name);
@@ -71,7 +72,7 @@ namespace UnitTests.ShipTests.QuadrantTests
             int index;
             var newQuadrant = new Quadrant(_setup.Game.Map);
             newQuadrant.Create(names,
-                               new Stack<string>(klingonShipNames), "", 
+                               new Stack<string>(klingonShipNames), null, 
                                new Coordinate(1, 1), out index, null);
 
             Assert.IsInstanceOf(typeof (Map), _testQuadrant.Map);

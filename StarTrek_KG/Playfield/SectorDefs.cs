@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {

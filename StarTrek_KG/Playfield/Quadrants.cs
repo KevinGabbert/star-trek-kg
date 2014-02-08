@@ -5,6 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Playfield
 {
@@ -184,7 +185,7 @@ namespace StarTrek_KG.Playfield
 
             string shipToRemoveName = shipToRemove.Name;
 
-            if (shipToRemove.Faction == "Federation")
+            if (shipToRemove.Faction == Faction.Federation)
             {
                 shipToRemoveName = Game.GetFederationShipName(shipToRemove);
                 this.Map.AddACoupleHostileFederationShipsToExistingMap();

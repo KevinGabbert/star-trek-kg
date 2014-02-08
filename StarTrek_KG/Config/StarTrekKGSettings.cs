@@ -4,7 +4,9 @@ using System;
 using System.Linq;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
+using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Config
 {
@@ -90,20 +92,25 @@ namespace StarTrek_KG.Config
 
         #region Helper Methods
 
-        public List<string> GetShips(string faction)
+        public List<string> GetShips(Faction faction)
         {
             this.Reset();
 
-            FactionShips factionShips = this.Get.Factions[faction].FactionShips;
+            FactionShips factionShips = this.Get.Factions[faction.ToString()].FactionShips;
             var shipNames = (from RegistryNameTypeClassElement shipElement in factionShips select shipElement.name).ToList();
             return shipNames;
         }
 
-        public List<string> GetThreats(string faction)
+        public List<string> GetThreats(Faction faction)
         {
+            if (faction == null)
+            {
+                throw new GameException("null faction");
+            }
+
             this.Reset();
 
-            FactionThreats factionThreats = this.Get.Factions[faction].FactionThreats;
+            FactionThreats factionThreats = this.Get.Factions[faction.ToString()].FactionThreats;
             var threats = (from SeverityValueTranslationElement threatElement in factionThreats select threatElement.value).ToList();
             return threats;
         }

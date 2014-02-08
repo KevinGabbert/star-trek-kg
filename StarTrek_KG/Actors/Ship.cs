@@ -6,6 +6,7 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Actors
 {
@@ -27,7 +28,7 @@ namespace StarTrek_KG.Actors
             public IStarTrekKGSettings Config { get; set; }
 
             public string Name { get; set; }
-            public string Faction { get; set; }
+            public Faction Faction { get; set; }
             public double Energy { get; set; }
             public bool Destroyed { get; set; }
 
@@ -37,9 +38,14 @@ namespace StarTrek_KG.Actors
             //todo: get current quadrant of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(string faction, string name, ISector sector, IConfig map)
+        public Ship(Faction faction, string name, ISector sector, IConfig map)
         {
             this.Map = (IMap)CheckParam(map);
+
+            if (faction == null)
+            {
+                throw new GameException("null faction for Ship Creation.  *Everyone* has a Faction!");
+            }
 
             if (this.Map.Quadrants == null)
             {
@@ -113,6 +119,52 @@ namespace StarTrek_KG.Actors
             }
 
             return returnVal;
+        }
+
+        public void Scavenge(ScavengeType scavengeType)
+        {
+            int photonsScavenged = 0;
+            int energyScavenged = 0;
+            string scavengedFrom = "";
+
+            switch (scavengeType)
+            {
+                case ScavengeType.Starbase:
+                    photonsScavenged = Utility.Utility.Random.Next(10); //todo: resource out this number
+                    energyScavenged = Utility.Utility.Random.Next(2500); //todo: resource out this number
+                    scavengedFrom = "Starbase";
+                    break;
+
+                case ScavengeType.FederationShip:
+                    photonsScavenged = Utility.Utility.Random.Next(5); //todo: resource out this number
+                    energyScavenged = Utility.Utility.Random.Next(750); //todo: resource out this number
+                    scavengedFrom = "Federation starship";
+                    break;
+
+                case ScavengeType.OtherShip:
+                    photonsScavenged = Utility.Utility.Random.Next(2); //todo: resource out this number
+                    energyScavenged = Utility.Utility.Random.Next(100); //todo: resource out this number
+                    scavengedFrom = "ship";
+                    break;
+            }
+
+            //seem like a lot? well.. you are taking on the ENTIRE FEDERATION!  You will need it!
+
+            var scavengedText = "";
+
+            if (photonsScavenged > 0)
+            {
+                Torpedoes.For(this).Count += photonsScavenged;
+                scavengedText = photonsScavenged + " Photon Torpedoes scavenged ";
+            }
+
+            if (energyScavenged > 0)
+            {
+                this.Energy += energyScavenged;
+                scavengedText = energyScavenged + " Energy scavenged ";
+            }
+
+            this.Map.Write.Line(scavengedText + "from destroyed " + scavengedFrom + " debris field. ");
         }
           
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D

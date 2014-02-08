@@ -3,8 +3,10 @@ using System.Linq;
 using System.Management.Instrumentation;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
+using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
 using W = StarTrek_KG.Output.Write;
 using StarTrek_KG.Playfield;
@@ -502,28 +504,33 @@ namespace StarTrek_KG
             foreach (var ship in hostilesInQuadrant)
             {
                 var currentFaction = ship.Faction;
+
+                if (currentFaction == null)
+                {
+                    throw new GameException("null faction for taunt");
+                }
+
                 string currentShipName = null;
 
                 this.Write.Line("");
 
-                switch (currentFaction)
+                if (currentFaction == Faction.Federation)
                 {
-                    case "Federation":
-                        //"NCC-500 U.S.S. Saladin  Saladin-class"
-                        //"NCC-500 U.S.S. FirstName SecondName  Saladin-class"
+                    //"NCC-500 U.S.S. Saladin  Saladin-class"
+                    //"NCC-500 U.S.S. FirstName SecondName  Saladin-class"
 
-                        currentShipName = GetFederationShipName(ship);
-                        break;
-
-                    case "Klingon":
-                        this.Write.Line(string.Format("Klingon ship at {0} sends the following message: ", "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
-
-                        break;
-
-                    default:
-                        this.Write.Line(string.Format("Hostile at {0} sends the following message: ", "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
-                        currentShipName = ship.Name;
-                        break;
+                    currentShipName = GetFederationShipName(ship);
+                }
+                else if (currentFaction == Faction.Klingon)
+                {
+                    this.Write.Line(string.Format("Klingon ship at {0} sends the following message: ",
+                        "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
+                }
+                else
+                {
+                    this.Write.Line(string.Format("Hostile at {0} sends the following message: ",
+                        "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
+                    currentShipName = ship.Name;
                 }
 
                 //this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now

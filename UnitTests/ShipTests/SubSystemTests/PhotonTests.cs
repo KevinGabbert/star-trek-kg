@@ -35,6 +35,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(9, _photonsToTest.Count);
         }
 
+        [Ignore("slow running.. Don't know why.")]
         [Test]
         public void ShootHostileMultiple()
         {

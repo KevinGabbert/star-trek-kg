@@ -8,6 +8,7 @@ using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Playfield
@@ -28,7 +29,7 @@ namespace StarTrek_KG.Playfield
             public IStarTrekKGSettings Config { get; set; }
             public int HostilesToSetUp { get; set; }
 
-            public string DefaultHostile { get; set; }
+            public Faction DefaultHostile { get; set; }
 
         #endregion
 
@@ -37,11 +38,13 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(SetupOptions setupOptions, IOutputWrite write, IStarTrekKGSettings config, string defaultHostile = "Klingon")
+        public Map(SetupOptions setupOptions, IOutputWrite write, IStarTrekKGSettings config, Faction defaultHostile = null)
         {
             this.Config = config;
             this.Write = write;
-            this.DefaultHostile = defaultHostile;
+
+            this.DefaultHostile = defaultHostile ?? Faction.Klingon;
+
             this.Initialize(setupOptions);
         }
 
@@ -142,7 +145,7 @@ namespace StarTrek_KG.Playfield
         }
 
         //Creates a 2D array of quadrants.  This is how all of our game pieces will be moving around.
-        public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, string stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae)
+        public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, Faction stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae)
         {
             this.Quadrants = new Quadrants(this, this.Write);
 
@@ -155,7 +158,7 @@ namespace StarTrek_KG.Playfield
             this.GenerateSquareGalaxy(names, baddieNames, stockBaddieFaction, itemsToPopulateThatAreNotPlayerShip, generateWithNebulae);
         }
 
-        public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, string stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebula)
+        public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, Faction stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebula)
         {
             if (Constants.QUADRANT_MAX == 0)
             {
@@ -248,7 +251,7 @@ namespace StarTrek_KG.Playfield
 
             var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
-            this.Playership = new Ship("Federation", playerShipName, startingSector, this)
+            this.Playership = new Ship(Faction.Federation, playerShipName, startingSector, this)
                                   {
                                       Allegiance = Allegiance.GoodGuy
                                   };
@@ -520,7 +523,7 @@ namespace StarTrek_KG.Playfield
 
         public void AddACoupleHostileFederationShipsToExistingMap()
         {
-            var federationShipNames = this.Config.GetShips("Federation");
+            var federationShipNames = this.Config.GetShips(Faction.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
             foreach (var quadrant in this.Quadrants)
@@ -528,7 +531,7 @@ namespace StarTrek_KG.Playfield
                 var hostilesInQuad = quadrant.GetHostiles();
                 if (hostilesInQuad.Any()) //we don't want to mix with Klingons just yet..
                 {
-                    var klingons = hostilesInQuad.Where(h => h.Faction == "Klingon");
+                    var klingons = hostilesInQuad.Where(h => h.Faction == Faction.Klingon);
 
                     if (!klingons.Any())
                     {
@@ -543,7 +546,7 @@ namespace StarTrek_KG.Playfield
         /// </summary>
         public void AddHostileFederationShipsToExistingMap()
         {
-            var federationShipNames = this.Config.GetShips("Federation");
+            var federationShipNames = this.Config.GetShips(Faction.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
             foreach (var quadrant in this.Quadrants)
@@ -596,7 +599,7 @@ namespace StarTrek_KG.Playfield
 
         private void AddHostileFederale(IQuadrant quadrant, ISector sector, Stack<string> federaleNames)
         {
-            var newPissedOffFederale = new Ship("Federation", federaleNames.Pop(), sector, this);
+            var newPissedOffFederale = new Ship(Faction.Federation, federaleNames.Pop(), sector, this);
             Shields.For(newPissedOffFederale).Energy = Utility.Utility.Random.Next(100, 500); //todo: resource those numbers out
 
             quadrant.AddShip(newPissedOffFederale, sector);

@@ -6,6 +6,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Output
@@ -404,7 +405,7 @@ namespace StarTrek_KG.Output
 
             string attackerName = attackerQuadrant.Type == QuadrantType.Nebulae ? "Unknown Ship" : attacker.Name;
 
-            if (attacker.Faction == "Federation")
+            if (attacker.Faction == Faction.Federation)
             {
                 attackerName = Game.GetFederationShipName(attacker);
             }

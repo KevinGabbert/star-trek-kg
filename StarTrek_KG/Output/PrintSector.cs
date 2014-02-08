@@ -5,6 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
@@ -232,7 +233,7 @@ namespace StarTrek_KG.Output
                     hostileName = "Unknown";
                 }
 
-                if (hostile.Faction == "Federation")
+                if (hostile.Faction == Faction.Federation)
                 {
                     hostileName = Game.GetFederationShipName(hostile) + " " + Game.GetFederationShipRegistration(hostile);
                 }
