@@ -587,7 +587,6 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-
         public int GetStarbaseCount()
         {
             return Sectors.Count(sector => sector.Item == SectorItem.Starbase);

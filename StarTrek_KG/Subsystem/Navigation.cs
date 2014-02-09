@@ -129,7 +129,7 @@ namespace StarTrek_KG.Subsystem
 
             var stillInSameQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
 
-            if ((baddiesHangingAround && stillInSameQuadrant) || hostileFedsInQuadrant)
+            if ((baddiesHangingAround && stillInSameQuadrant) || hostileFedsInQuadrant || this.Game.StarbasesAreHostile)
             {
                 this.Game.ALLHostilesAttack(this.Game.Map);
             }
