@@ -81,11 +81,13 @@ namespace StarTrek_KG.Subsystem
 
                 case "tlm":
 
-                    this.Game.Write.Line("Comms was able to translate the latest transmissions: ");
-
-                    foreach (FactionThreat taunt in this.Game.LatestTaunts)
+                    if (this.Game.LatestTaunts != null && this.Game.LatestTaunts.Count > 0)
                     {
-                        this.Game.Write.Line(taunt.Translation == "" ? "No Translation required." : taunt.Translation);
+                        TranslateLatestTaunt();
+                    }
+                    else
+                    {
+                        this.Game.Write.Line("Nothing to translate..");
                     }
 
                     break;
@@ -93,6 +95,18 @@ namespace StarTrek_KG.Subsystem
                 default:
                     this.Game.Write.Line("Invalid computer this.Write");
                     break;
+            }
+        }
+
+        private void TranslateLatestTaunt()
+        {
+            this.Game.Write.Line("Comms was able to translate the latest transmissions: ");
+
+            foreach (FactionThreat taunt in this.Game.LatestTaunts)
+            {
+                this.Game.Write.Line(taunt.Translation == ""
+                    ? "No Translation required."
+                    : taunt.Translation);
             }
         }
 

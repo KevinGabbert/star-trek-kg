@@ -6,6 +6,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -30,7 +31,7 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            this.Game.Write.Line("Phasers are damaged. Repairs are underway.");
+            this.Game.Write.Line("Phasers damaged.");
         }
 
         public override void OutputRepairedMessage()
@@ -116,7 +117,20 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.Game.Map.RemoveAllDestroyedShips(this.Game.Map, destroyedShips);//remove from Hostiles collection
-            this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
+
+            foreach (var destroyedShip in destroyedShips)
+            {
+                if(destroyedShip.Faction == Faction.Federation)
+                {
+                    this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
+                }
+                else
+                {
+                    this.ShipConnectedTo.Scavenge(ScavengeType.OtherShip);
+                }
+
+                //todo: add else if for starbase when the time comes
+            }
         }
 
         private bool PromptUserForPhaserEnergy(out double phaserEnergy)

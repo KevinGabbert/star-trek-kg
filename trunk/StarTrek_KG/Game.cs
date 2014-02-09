@@ -540,45 +540,56 @@ namespace StarTrek_KG
 
             foreach (var ship in hostilesInQuadrant)
             {
-                var currentFaction = ship.Faction;
+                bool tauntLikely = Utility.Utility.Random.Next(5) == 1; //todo: resource this out.
 
-                if (currentFaction == null)
+                if (tauntLikely)
                 {
-                    throw new GameException("null faction for taunt");
+                    currentThreat = SingleEnemyTaunt(ship, currentThreat);
                 }
-
-                string currentShipName = null;
-
-                this.Write.Line("");
-
-                if (currentFaction == Faction.Federation)
-                {
-                    //"NCC-500 U.S.S. Saladin  Saladin-class"
-                    //"NCC-500 U.S.S. FirstName SecondName  Saladin-class"
-
-                    currentShipName = GetFederationShipName(ship);
-                }
-                else if (currentFaction == Faction.Klingon)
-                {
-                    this.Write.Line(string.Format("Klingon ship at {0} sends the following message: ",
-                        "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
-                }
-                else
-                {
-                    this.Write.Line(string.Format("Hostile at {0} sends the following message: ",
-                        "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
-                    currentShipName = ship.Name;
-                }
-
-                FactionThreat randomThreat = this.Config.GetThreats(currentFaction).Shuffle().First();
-
-                //this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now
-                currentThreat += string.Format(randomThreat.Threat, currentShipName);
-
-                this.LatestTaunts.Add(randomThreat);
-
-                this.Write.Line(currentThreat);     
             }
+        }
+
+        private string SingleEnemyTaunt(IShip ship, string currentThreat)
+        {
+            var currentFaction = ship.Faction;
+
+            if (currentFaction == null)
+            {
+                throw new GameException("null faction for taunt");
+            }
+
+            string currentShipName = null;
+
+            this.Write.Line("");
+
+            if (currentFaction == Faction.Federation)
+            {
+                //"NCC-500 U.S.S. Saladin  Saladin-class"
+                //"NCC-500 U.S.S. FirstName SecondName  Saladin-class"
+
+                currentShipName = GetFederationShipName(ship);
+            }
+            else if (currentFaction == Faction.Klingon)
+            {
+                this.Write.Line(string.Format("Klingon ship at {0} sends the following message: ",
+                    "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
+            }
+            else
+            {
+                this.Write.Line(string.Format("Hostile at {0} sends the following message: ",
+                    "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
+                currentShipName = ship.Name;
+            }
+
+            FactionThreat randomThreat = this.Config.GetThreats(currentFaction).Shuffle().First();
+
+            //this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now
+            currentThreat += string.Format(randomThreat.Threat, currentShipName);
+
+            this.LatestTaunts.Add(randomThreat);
+
+            this.Write.Line(currentThreat);
+            return currentThreat;
         }
 
         public static string GetFederationShipName(IShip ship)
