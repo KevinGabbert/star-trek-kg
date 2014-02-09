@@ -191,7 +191,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                this.Map.Write.Line("No Structural Damage from hit.");
+                this.Map.Write.Line("No Damage.");
             }
         }
 
@@ -207,6 +207,8 @@ namespace StarTrek_KG.Actors
             shields.Energy = 0; //for the benefit of the output message telling the user that they have no shields. )
 
             bool assignedDamage = this.Subsystems.TakeDamageIfWeCan(attackingEnergy);
+
+            this.Map.Write.Line("Energy is now at: " + this.Energy);
             if (!assignedDamage)
             {
                 //this means there was nothing left to damage.  Blow the ship up.

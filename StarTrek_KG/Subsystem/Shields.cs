@@ -25,7 +25,7 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            this.Game.Write.Line("Shield control is damaged. Repairs are underway.");
+            this.Game.Write.Line("Shield control damaged.");
         }
 
         public override void OutputRepairedMessage()

@@ -44,6 +44,46 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
         }
 
+        [Test]
+        public void ALLHostilesAttack_ShipUndocked_WithNoShields()
+        {
+            //todo:  verify that quadrants are set up correctly.
+            //todo: This test does not run alone.  what do the other tests set up that this needs?  why don't thea other tests tear down their stuff?
+
+            //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
+            _setup.SetupMapWith1Hostile();
+
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
+
+            Shields.For(_setup.TestMap.Playership).SetEnergy(0); 
+
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
+
+            const int expectedHitsTilldestruction = 4;
+            for (int i = 0; i < 100; i++)
+            {
+                var testGame = (new Game((new StarTrekKGSettings())));
+
+                TakeShots(testGame, expectedHitsTilldestruction);
+            }
+
+            //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
+        }
+
+        private void TakeShots(Game testGame, int expectedHitsTilldestruction)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                testGame.ALLHostilesAttack(_setup.TestMap);
+
+                if (_setup.TestMap.Playership.Destroyed)
+                {
+                    break;
+                }
+                Assert.Less(i, expectedHitsTilldestruction);
+            }
+        }
+
         [Ignore("Test here that shields go lower when Playership is hit")]
         [Test]
         public void ALLHostilesAttack_ShipUndocked_WithShields2()

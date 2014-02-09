@@ -24,7 +24,6 @@ namespace StarTrek_KG.Subsystem
         public override void OutputDamagedMessage()
         {
             this.Game.Write.Resource("LRSDamaged");
-            this.Game.Write.Resource("RepairsUnderway");
         }
         public override void OutputRepairedMessage()
         {

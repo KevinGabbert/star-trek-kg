@@ -29,7 +29,7 @@ namespace StarTrek_KG.Subsystem
 
         public override void OutputDamagedMessage()
         {
-            this.Game.Write.Line("Photon torpedo control is damaged. Repairs are underway. ");
+            this.Game.Write.Line("Photon torpedo control is damaged.");
         }
 
         public override void OutputRepairedMessage()
