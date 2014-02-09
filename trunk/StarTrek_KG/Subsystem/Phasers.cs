@@ -47,11 +47,11 @@ namespace StarTrek_KG.Subsystem
         {
             if (!this.EnergyCheckFail(energyToFire, shipFiringPhasers))
             {
-                shipFiringPhasers.Energy = this.ShipConnectedTo.Energy -= energyToFire;
-                Phasers.For(this.ShipConnectedTo).Execute(energyToFire);
-
                 //todo: move to Game() object
                 this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
+
+                shipFiringPhasers.Energy = this.ShipConnectedTo.Energy -= energyToFire;
+                Phasers.For(this.ShipConnectedTo).Execute(energyToFire);
             }
             else
             {
@@ -103,10 +103,16 @@ namespace StarTrek_KG.Subsystem
                 Location location = this.ShipConnectedTo.GetLocation();
 
                 double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
-
                 double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate", "PhaserEnergyAdjustment", inNebula);
 
                 this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
+            }
+
+            if (this.Game.StarbasesAreHostile)
+            {
+                //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
+                //for what its worth, Starbases will have a lot more power!
+                this.Game.Write.Line("Starbases cannot be hit with phasers.. Yet..");
             }
 
             this.Game.Map.RemoveAllDestroyedShips(this.Game.Map, destroyedShips);//remove from Hostiles collection
