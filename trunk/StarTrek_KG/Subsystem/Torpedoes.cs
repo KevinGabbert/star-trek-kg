@@ -306,6 +306,8 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line(string.Format("You have destroyed A Federation starbase! (at sector [{0},{1}])",
                 newX, newY));
 
+            this.Game.StarbasesAreHostile = true;
+
             this.ShipConnectedTo.Scavenge(ScavengeType.Starbase);
 
             //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.

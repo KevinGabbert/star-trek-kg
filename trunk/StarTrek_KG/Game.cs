@@ -39,6 +39,7 @@ namespace StarTrek_KG
         /// </summary>
         public Game(IStarTrekKGSettings config, bool startup = true)
         {
+            this.StarbasesAreHostile = false;  //todo: resource this out.
             this.Config = config;
             if(this.Write == null)
             {
@@ -417,6 +418,19 @@ namespace StarTrek_KG
             var activeQuadrant = map.Quadrants.GetActive();
             var hostilesAttacking = activeQuadrant.GetHostiles();
 
+            //If there is a starbase in the Active quadrant, and game.StarbasesAreHostile then call thisHostileAttacks
+            if (this.StarbasesAreHostile)
+            {
+                var starbasesAttacking = activeQuadrant.GetStarbaseCount();
+
+                for (int i = 0; i < starbasesAttacking; i++)
+                {
+                    //todo: modify starbase to be its own ship object on the map
+                    //this is a little bit of a cheat, saying that the playership is attacking itself, but until the starbase is its own object, this should be fine
+                    this.HostileAttacks(map, map.Playership);
+                }
+            }
+
             if (hostilesAttacking != null)//todo: remove this.
             {
                 if (hostilesAttacking.Count > 0)
@@ -437,7 +451,7 @@ namespace StarTrek_KG
 
         private void HostileAttacks(IMap map, IShip badGuy)
         {
-            if (Navigation.For(map.Playership).docked)
+            if (Navigation.For(map.Playership).docked && !this.StarbasesAreHostile)
             {
                 this.AttackDockedPlayership(badGuy);
             }
@@ -553,22 +567,53 @@ namespace StarTrek_KG
 
         public static string GetFederationShipName(IShip ship)
         {
-            int USS = ship.Name.IndexOf("U.S.S.");
-            int spaceAfterGivenName = 0;
+            string currentShipName = ship.Name;
 
-            var nameLength = ship.Name.Length;
-
-            for (int i = nameLength; i > 0; i--)
+            if (currentShipName == "Starbase")
             {
-                var currentChar = ship.Name.Substring(i - 1, 1);
-                if (currentChar == " ")
-                {
-                    spaceAfterGivenName = i;
-                    break;
-                }
+                return currentShipName;
             }
 
-            string currentShipName = ship.Name.Substring(USS, spaceAfterGivenName - USS).Trim();
+            if (currentShipName == "Enterprise")
+            {
+                return "Starbase";
+            }
+
+            try
+            {
+                int USS = ship.Name.IndexOf("U.S.S.");
+                int spaceAfterGivenName = 0;
+
+                var nameLength = ship.Name.Length;
+
+                for (int i = nameLength; i > 0; i--)
+                {
+                    var currentChar = ship.Name.Substring(i - 1, 1);
+                    if (currentChar == " ")
+                    {
+                        spaceAfterGivenName = i;
+                        break;
+                    }
+                }
+
+                currentShipName = ship.Name.Substring(USS, spaceAfterGivenName - USS).Trim();
+                return currentShipName;
+            }
+            catch (Exception)
+            {
+                //HACK: At present, starbase name won't parse because I have it so that you are shooting yourself.  :D
+                //todo: make starbase its own object
+                //if (currentShipName == this.Map.Playership.Name)
+                //{
+                    ship.Name = "Unknown";
+                //}
+                //else
+                //{
+                //    //yeah, something else broke.  tell the world.
+                //    throw;
+                //}
+            }
+
             return currentShipName;
         }
 
