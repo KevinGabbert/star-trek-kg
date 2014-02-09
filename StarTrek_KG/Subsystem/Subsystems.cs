@@ -45,7 +45,7 @@ namespace StarTrek_KG.Subsystem
 
                 if (subsystem.Type == SubsystemType.Navigation)
                 {
-                    ((Navigation)subsystem).docked = true;        //TODO: (this.game.config).GetSetting<int>("repairDocked");
+                    ((Navigation)subsystem).Docked = true;        //TODO: (this.game.config).GetSetting<int>("repairDocked");
                 }
             }
 
@@ -97,19 +97,22 @@ namespace StarTrek_KG.Subsystem
             bool wasDamaged = false;
             List<ISubsystem> remainingSubsystems = this.FindAll(s => !s.Damaged()); //at present.. Damaged() is true if subsystem has any damage value
 
-            if (remainingSubsystems.Count > 0)
+            if (remainingSubsystems.Count > 1) //debug is ignored by all code, so we will never have less than 1
             {
                 var rand = Utility.Utility.Random;
                 ISubsystem subSystemToDamage = null;
 
-               while (subSystemToDamage == null || subSystemToDamage.Type == SubsystemType.Debug)
-               {
+                while (subSystemToDamage == null)
+                {
                     subSystemToDamage = remainingSubsystems[rand.Next(remainingSubsystems.Count - 1)];
-               }
+                }
 
-               subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
+                if (subSystemToDamage.Type != SubsystemType.Debug)
+                {
+                    subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
 
-               wasDamaged = true;
+                    wasDamaged = true;
+                }
             }
             else
             {

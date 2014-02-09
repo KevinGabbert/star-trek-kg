@@ -412,26 +412,23 @@ namespace StarTrek_KG
         /// <returns></returns>
         public bool ALLHostilesAttack(IMap map)
         {
-            //todo:rewrite this.
+            //todo: centralize this.
             //this is called from torpedo control/phaser control, and navigation control
 
+            var returnValue = false;
             var activeQuadrant = map.Quadrants.GetActive();
             var hostilesAttacking = activeQuadrant.GetHostiles();
 
-            //If there is a starbase in the Active quadrant, and game.StarbasesAreHostile then call thisHostileAttacks
-            if (this.StarbasesAreHostile)
-            {
-                var starbasesAttacking = activeQuadrant.GetStarbaseCount();
+            this.HostileStarbasesAttack(map, activeQuadrant);
 
-                for (int i = 0; i < starbasesAttacking; i++)
-                {
-                    //todo: modify starbase to be its own ship object on the map
-                    //this is a little bit of a cheat, saying that the playership is attacking itself, but until the starbase is its own object, this should be fine
-                    this.HostileAttacks(map, map.Playership);
-                }
-            }
+            returnValue = HostileShipsAttack(map, hostilesAttacking, returnValue);
 
-            if (hostilesAttacking != null)//todo: remove this.
+            return returnValue;
+        }
+
+        private bool HostileShipsAttack(IMap map, ICollection<IShip> hostilesAttacking, bool returnValue)
+        {
+            if (hostilesAttacking != null) //todo: remove this.
             {
                 if (hostilesAttacking.Count > 0)
                 {
@@ -442,16 +439,35 @@ namespace StarTrek_KG
 
                     this.EnemiesWillNowTaunt();
 
-                    return true;
+                    returnValue = true;
                 }
             }
+            return returnValue;
+        }
 
-            return false;
+        private void HostileStarbasesAttack(IMap map, IQuadrant activeQuadrant)
+        {
+            if (this.StarbasesAreHostile)
+            {
+                var starbasesAttacking = activeQuadrant.GetStarbaseCount();
+
+                for (int i = 0; i < starbasesAttacking; i++)
+                {
+                    //todo: modify starbase to be its own ship object on the map
+                    //HACK: this is a little bit of a cheat, saying that the playership is attacking itself, but until the starbase is its own object, this should be fine
+                    this.HostileAttacks(map, map.Playership);
+
+                    //cause starbases are bastards like that.  hey.. You started it!
+                    this.HostileAttacks(map, map.Playership);
+
+                    //todo: when starbases are their own object, they will fire once.. it will just hurt more.
+                }
+            }
         }
 
         private void HostileAttacks(IMap map, IShip badGuy)
         {
-            if (Navigation.For(map.Playership).docked && !this.StarbasesAreHostile)
+            if (Navigation.For(map.Playership).Docked && !this.StarbasesAreHostile)
             {
                 this.AttackDockedPlayership(badGuy);
             }
@@ -501,11 +517,11 @@ namespace StarTrek_KG
             {
                 if (shieldsValueAfterHit == 0)
                 {
-                    this.Write.SingleLine(" Shields are Down.");
+                    this.Write.SingleLine("Shields are Down.");
                 }
                 else
                 {
-                    this.Write.SingleLine(String.Format(" Shields dropped to {0}.", Shields.For(map.Playership).Energy));
+                    this.Write.SingleLine(String.Format("Shields dropped to {0}.", Shields.For(map.Playership).Energy));
                 }
             }
         }

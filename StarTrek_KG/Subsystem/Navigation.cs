@@ -13,7 +13,7 @@ namespace StarTrek_KG.Subsystem
     {
         #region Properties
 
-            public bool docked { get; set; } //todo: move this to ship
+            public bool Docked { get; set; } //todo: move this to ship
             public int MaxWarpFactor { get; set; }
 
             public Warp Warp { get; set; }
@@ -91,12 +91,18 @@ namespace StarTrek_KG.Subsystem
             //todo: upon arriving in quadrant, all damaged controls need to be enumerated
         }
 
-        private void RepairOrTakeDamage(int lastQuadX, int lastQuadY) 
+        private void RepairOrTakeDamage(int lastQuadX, int lastQuadY)
         {
+            this.Docked = false;
+
             Location thisShip = this.ShipConnectedTo.GetLocation();
 
-            docked = this.Game.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Game.Map.Quadrants.GetActive().Sectors);
-            if (docked)
+            if (!this.Game.StarbasesAreHostile) //No Docking allowed if they hate you.
+            {
+                this.Docked = this.Game.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Game.Map.Quadrants.GetActive().Sectors);
+            }
+
+            if (Docked)
             {
                 this.SuccessfulDockWithStarbase();
             }

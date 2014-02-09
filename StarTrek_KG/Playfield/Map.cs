@@ -348,7 +348,7 @@ namespace StarTrek_KG.Playfield
             starshipNAV.Movement.ShipConnectedTo = this.Playership;
             starshipNAV.Damage = 0;
             starshipNAV.MaxWarpFactor = this.Config.GetSetting<int>("MaxWarpFactor");
-            starshipNAV.docked = false;
+            starshipNAV.Docked = false;
         }
 
         /// <summary>
@@ -528,17 +528,27 @@ namespace StarTrek_KG.Playfield
 
             foreach (var quadrant in this.Quadrants)
             {
-                var hostilesInQuad = quadrant.GetHostiles();
-                if (hostilesInQuad.Any()) //we don't want to mix with Klingons just yet..
-                {
-                    var klingons = hostilesInQuad.Where(h => h.Faction == Faction.Klingon);
+                var added = AddHostileFedToEmptyQuadrant(quadrant, federaleNames);
+                if (added) break; //we found an empty quad to dump new fed ships into..
+            }
+        }
 
-                    if (!klingons.Any())
-                    {
-                        this.AddHostilesToQuadrant(quadrant, federaleNames);
-                    }
+        private bool AddHostileFedToEmptyQuadrant(IQuadrant quadrant, Stack<string> federaleNames)
+        {
+            var hostilesInQuad = quadrant.GetHostiles();
+            if (hostilesInQuad.Any()) //we don't want to mix with Klingons just yet..
+            {
+                var klingons = hostilesInQuad.Where(h => h.Faction == Faction.Klingon);
+
+                if (!klingons.Any())
+                {
+                    this.AddHostilesToQuadrant(quadrant, federaleNames);
+
+                    //we are only doing this once..
+                    return true;
                 }
             }
+            return false;
         }
 
         /// <summary>

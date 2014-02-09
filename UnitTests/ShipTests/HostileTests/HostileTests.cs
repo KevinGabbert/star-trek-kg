@@ -138,7 +138,7 @@ namespace UnitTests.ShipTests.HostileTests
             _setup.SetupMapWith2Hostiles();
 
             //cheating so we can cover this line
-            Navigation.For(_setup.TestMap.Playership).docked = true;
+            Navigation.For(_setup.TestMap.Playership).Docked = true;
 
             this.Game.ALLHostilesAttack(_setup.TestMap);
 

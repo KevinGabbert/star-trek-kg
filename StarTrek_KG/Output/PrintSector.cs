@@ -35,7 +35,7 @@ namespace StarTrek_KG.Output
 
             Location myLocation = map.Playership.GetLocation();
             int totalHostiles = map.Quadrants.GetHostileCount();
-            bool docked = Navigation.For(map.Playership).docked;
+            bool docked = Navigation.For(map.Playership).Docked;
 
             CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
             this.OutputSRSWarnings(quadrant, map, docked);

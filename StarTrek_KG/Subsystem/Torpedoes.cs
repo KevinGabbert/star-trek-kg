@@ -82,6 +82,8 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
+            this.Game.ALLHostilesAttack(this.Game.Map);
+
             var angle = Utility.Utility.ComputeAngle(direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
@@ -173,6 +175,7 @@ namespace StarTrek_KG.Subsystem
                 this.Game.ALLHostilesAttack(this.Game.Map);
                 return true;
             }
+
             return false;
         }
 
@@ -254,16 +257,21 @@ namespace StarTrek_KG.Subsystem
                     if (emergencyMessageSuccess)
                     {
                         this.Game.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
-                        this.Game.Write.Line("Federation Ships will now shoot you on sight!");
+                        this.Game.Write.Line("Federation Ships and starbases will now shoot you on sight!");
 
-                        //if (!map.GetAllFederationShips().Any()) //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
-                        //{
-                            map.AddHostileFederationShipsToExistingMap();
-                        //}
+                        this.Game.StarbasesAreHostile = true;
+
+                        //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
+                        map.AddHostileFederationShipsToExistingMap();
                     }
                     else
                     {
                         this.Game.Write.Line("Starbase was destroyed before getting out a distress call.");
+
+                        if (!this.Game.StarbasesAreHostile)
+                        {
+                            this.Game.Write.Line("For now, no one will know of this..");
+                        }
                     }
 
                     return true;
@@ -306,8 +314,6 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line(string.Format("You have destroyed A Federation starbase! (at sector [{0},{1}])",
                 newX, newY));
 
-            this.Game.StarbasesAreHostile = true;
-
             this.ShipConnectedTo.Scavenge(ScavengeType.Starbase);
 
             //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
@@ -333,6 +339,13 @@ namespace StarTrek_KG.Subsystem
 
             var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
             var thisQuadrantHostiles = thisQuadrant.GetHostiles();
+
+            //todo: once starbases are an object, then they are merely another hostile.  Delete this IF and the rest of the code should work fine.
+            if (thisQuadrant.GetStarbaseCount() > 0)
+            {
+                //todo: this will go away when starbases are made into an object
+                this.Game.Write.Line("Hostile Starbases cannot be targeted.. yet.");
+            }
 
             if (thisQuadrantHostiles.Count == 0)
             {
