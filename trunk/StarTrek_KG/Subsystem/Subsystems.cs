@@ -95,9 +95,9 @@ namespace StarTrek_KG.Subsystem
         public bool DamageRandomSubsystem()
         {
             bool wasDamaged = false;
-            List<ISubsystem> remainingSubsystems = this.FindAll(s => !s.Damaged()); //at present.. Damaged() is true if subsystem has any damage value
+            List<ISubsystem> remainingSubsystems = this.FindAll(s => !s.Damaged() && s.Type != SubsystemType.Debug); //at present.. Damaged() is true if subsystem has any damage value
 
-            if (remainingSubsystems.Count > 1) //debug is ignored by all code, so we will never have less than 1
+            if (remainingSubsystems.Count > 0) //debug is ignored by all code, so we will never have less than 1
             {
                 var rand = Utility.Utility.Random;
                 ISubsystem subSystemToDamage = null;
@@ -107,12 +107,9 @@ namespace StarTrek_KG.Subsystem
                     subSystemToDamage = remainingSubsystems[rand.Next(remainingSubsystems.Count - 1)];
                 }
 
-                if (subSystemToDamage.Type != SubsystemType.Debug)
-                {
-                    subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
+                subSystemToDamage.TakeDamage(); //todo: subSystemToDamage.TakeDamage(boltStrength); 
 
-                    wasDamaged = true;
-                }
+                wasDamaged = true;
             }
             else
             {
