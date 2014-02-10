@@ -5,6 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -30,19 +31,6 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Computer;
             this.Damage = 0;
-        }
-
-        public override void OutputDamagedMessage()
-        {
-            this.Game.Write.Line("The main computer has been Damaged.");
-        }
-        public override void OutputRepairedMessage()
-        {
-            this.Game.Write.Line("The main computer has been repaired.");
-        }
-        public override void OutputMalfunctioningMessage()
-        {
-            this.Game.Write.Line("The Main Computer is malfunctioning.");
         }
 
         public override void Controls(string command)

@@ -5,6 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -17,20 +18,6 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.ShortRangeScan;
-        }
-
-        public override void OutputDamagedMessage()
-        {
-            this.Game.Write.Resource("SRSDamaged");
-            this.Game.Write.Line("Hint: You can use some computer functions to navigate without SRS"); //todo: can we make hints dismissable?
-        }
-        public override void OutputRepairedMessage()
-        {
-            this.Game.Write.Line("Short range scanner has been repaired.");
-        }
-        public override void OutputMalfunctioningMessage()
-        {
-            throw new NotImplementedException();
         }
 
         public override void Controls(string command)

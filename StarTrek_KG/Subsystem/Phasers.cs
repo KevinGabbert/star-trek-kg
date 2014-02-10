@@ -29,21 +29,6 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.Phasers;
         }
 
-        public override void OutputDamagedMessage()
-        {
-            this.Game.Write.Line("Phasers damaged.");
-        }
-
-        public override void OutputRepairedMessage()
-        {
-            this.Game.Write.Line("Phasers have been repaired.");
-        }
-
-        public override void OutputMalfunctioningMessage()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Fire(double energyToFire, IShip shipFiringPhasers)
         {
             if (!this.EnergyCheckFail(energyToFire, shipFiringPhasers))

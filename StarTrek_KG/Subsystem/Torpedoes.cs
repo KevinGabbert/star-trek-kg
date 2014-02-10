@@ -27,21 +27,6 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.Torpedoes;
         }
 
-        public override void OutputDamagedMessage()
-        {
-            this.Game.Write.Line("Photon torpedo control is damaged.");
-        }
-
-        public override void OutputRepairedMessage()
-        {
-            this.Game.Write.Line("Photon torpedo controls have been repaired. ");
-        }
-
-        public override void OutputMalfunctioningMessage()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Controls(string command)
         {
             this.Controls();

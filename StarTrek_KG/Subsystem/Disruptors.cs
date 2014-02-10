@@ -13,21 +13,6 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo = shipConnectedTo;
         }
 
-        public override void OutputDamagedMessage()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void OutputRepairedMessage()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void OutputMalfunctioningMessage()
-        {
-            throw new NotImplementedException();
-        }
-
         //todo: Under Construction
         //This will be the first subsystem that will 
         public int Execute(Location targetLocation) 
