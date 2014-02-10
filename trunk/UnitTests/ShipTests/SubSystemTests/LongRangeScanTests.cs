@@ -1,11 +1,11 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {

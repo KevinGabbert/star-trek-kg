@@ -34,19 +34,6 @@ namespace StarTrek_KG.Subsystem
             this.Movement = new Movement(shipConnectedTo, game);
         }
 
-        public override void OutputDamagedMessage()
-        {
-            this.Game.Write.Line(this.Game.Config.GetSetting<string>("WarpEnginesDamaged"));
-        }
-        public override void OutputRepairedMessage()
-        {
-            this.Game.Write.Line(this.Game.Config.GetSetting<string>("WarpEnginesRepaired"));
-        }
-        public override void OutputMalfunctioningMessage()
-        {
-            throw new NotImplementedException();
-        }
-
         private void SetMaxWarpFactor()
         {
             this.MaxWarpFactor = (int)(0.2 + (Utility.Utility.Random).Next(9)); //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor

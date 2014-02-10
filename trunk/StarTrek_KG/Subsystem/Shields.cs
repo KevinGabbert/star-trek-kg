@@ -5,6 +5,8 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.TypeSafeEnums;
+
 namespace StarTrek_KG.Subsystem
 {
     public class Shields : SubSystem_Base
@@ -21,21 +23,6 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.Shields;
             this.Damage = 0;
             this.Energy = 0;
-        }
-
-        public override void OutputDamagedMessage()
-        {
-            this.Game.Write.Line("Shield control damaged.");
-        }
-
-        public override void OutputRepairedMessage()
-        {
-            this.Game.Write.Line("Shield control has been repaired.");
-        }
-
-        public override void OutputMalfunctioningMessage()
-        {
-            this.Game.Write.Line("The Shields are malfunctioning.");
         }
 
         public override void Controls(string command)

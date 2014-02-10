@@ -54,22 +54,6 @@ namespace StarTrek_KG.Subsystem
             this.Damage = 0;
         }
 
-        public override void OutputDamagedMessage()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void OutputRepairedMessage()
-        {
-            //todo: don't call this. throws exception when this subsystem is not damaged
-            //throw new NotImplementedException();
-        }
-
-        public override void OutputMalfunctioningMessage()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Controls(string command)
         {
             switch (command.ToLower())

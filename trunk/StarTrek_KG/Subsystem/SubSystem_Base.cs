@@ -1,14 +1,15 @@
 ﻿using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
     //todo: make it so that a subsystem can be shut off at will
     //todo: subsystems use energy
     //todo: introduce the concept of damage control.  Repairs can be prioritized through a panel
+
     /// <summary>
     /// Subsystems exist to take damage.  any workflow activity needs to move out.
     /// </summary>
@@ -22,11 +23,20 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public abstract void OutputDamagedMessage();
-        public abstract void OutputRepairedMessage();
-        public abstract void OutputMalfunctioningMessage();
+        public virtual void OutputDamagedMessage()
+        {
+            this.Game.Write.Line(this.Type + " Damaged.");
+        }
+        public virtual void OutputRepairedMessage()
+        {
+            this.Game.Write.Line(this.Type + " Repaired.");
+        }
+        public virtual void OutputMalfunctioningMessage()
+        {
+            this.Game.Write.Line(this.Type + " Malfunctioning.");
+        }
 
-        public void Initialize()
+        protected void Initialize()
         {   
 
         }

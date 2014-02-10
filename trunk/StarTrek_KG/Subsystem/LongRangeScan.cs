@@ -4,6 +4,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -19,19 +20,6 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.LongRangeScan;
-        }
-
-        public override void OutputDamagedMessage()
-        {
-            this.Game.Write.Resource("LRSDamaged");
-        }
-        public override void OutputRepairedMessage()
-        {
-            this.Game.Write.Line("Long range scanner has been repaired.");
-        }
-        public override void OutputMalfunctioningMessage()
-        {
-            throw new NotImplementedException();
         }
 
         public override void Controls(string command)
