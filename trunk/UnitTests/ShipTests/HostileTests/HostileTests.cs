@@ -80,7 +80,7 @@ namespace UnitTests.ShipTests.HostileTests
                 {
                     break;
                 }
-                Assert.Less(i, expectedHitsTilldestruction);
+                Assert.LessOrEqual(i, expectedHitsTilldestruction);
             }
         }
 

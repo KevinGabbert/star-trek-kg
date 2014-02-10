@@ -16,10 +16,6 @@ namespace StarTrek_KG.Interfaces
 
         ISubsystem For(Ship ship, Game game);
 
-        void OutputDamagedMessage();
-        void OutputRepairedMessage();
-        void OutputMalfunctioningMessage();
-
         void Controls(string command); //A common feature of this method is this is where you recieve damage
         
         bool Damaged();  //This is where you find out if you are damaged

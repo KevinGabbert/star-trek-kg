@@ -31,7 +31,7 @@ namespace StarTrek_KG.Output
             set { _console = value; }
         }
 
-        public List<string> ACTIVITY_PANEL = new List<string>();
+        public List<string> ACTIVITY_PANEL  { get; set; }
 
         //TODO:  Have Game expose and raise an output event
         //Have UI subscribe to it.
@@ -43,6 +43,7 @@ namespace StarTrek_KG.Output
 
         public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config)
         {
+            this.ACTIVITY_PANEL = new List<string>();
             this.Config = config;
             this.TotalHostiles = totalHostiles;
             this.Starbases = starbases;
@@ -52,6 +53,7 @@ namespace StarTrek_KG.Output
 
         public Write(IStarTrekKGSettings config)
         {
+            this.ACTIVITY_PANEL = new List<string>();
             this.Config = config;
         }
 
@@ -224,6 +226,7 @@ namespace StarTrek_KG.Output
             ACTIVITY_PANEL.Add("tor = Photon Torpedo Control");
             ACTIVITY_PANEL.Add("she = Shield Control");
             ACTIVITY_PANEL.Add("com = Access Computer");
+            ACTIVITY_PANEL.Add("dmg = Damage Control");
 
             if(Constants.DEBUG_MODE)
             {
@@ -275,6 +278,10 @@ namespace StarTrek_KG.Output
                     this.ComputerMenu(playerShip);
                     break;
 
+                case "dmg":
+                    this.DamageControlMenu(playerShip);
+                    break;
+
                 case "dbg":
                     this.DebugMenu(playerShip);
                     break;
@@ -322,6 +329,17 @@ namespace StarTrek_KG.Output
             var computerCommand = Console.ReadLine().Trim().ToLower();
 
             Computer.For(playerShip).Controls(computerCommand);
+        }
+
+        private void DamageControlMenu(Ship playerShip)
+        {
+            this.Strings(DamageControl.CONTROL_PANEL);
+            this.WithNoEndCR("Enter Damage Control Command: ");
+
+            //todo: readline needs to be done using an event
+            var damageControlCommand = Console.ReadLine().Trim().ToLower();
+
+            DamageControl.For(playerShip).Controls(damageControlCommand);
         }
 
         private void ShieldMenu(IShip playerShip)
