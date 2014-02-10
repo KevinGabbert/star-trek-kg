@@ -2,7 +2,6 @@
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
-using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Actors
 {

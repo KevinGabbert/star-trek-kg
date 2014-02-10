@@ -27,14 +27,16 @@ namespace StarTrek_KG.Subsystem
         {
             this.Game.Write.Line(this.Type + " Damaged.");
         }
+
         public virtual void OutputRepairedMessage()
         {
             this.Game.Write.Line(this.Type + " Repaired.");
         }
-        public virtual void OutputMalfunctioningMessage()
-        {
-            this.Game.Write.Line(this.Type + " Malfunctioning.");
-        }
+
+        //public virtual void OutputMalfunctioningMessage()
+        //{
+        //    this.Game.Write.Line(this.Type + " Malfunctioning.");
+        //}
 
         protected void Initialize()
         {   

@@ -135,8 +135,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             //This action will hit every single hostile in the quadrant
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership); //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
 
-            //Verifies energy subtracted from firing ship.
-            Assert.AreEqual(startingEnergy - testBoltEnergy, _setup.TestMap.Playership.Energy);
+            //Verifies energy subtracted from firing ship.  (greater, because of auto-salvage operation)
+            Assert.GreaterOrEqual(startingEnergy - testBoltEnergy, _setup.TestMap.Playership.Energy);
 
             //in space. no one can hear you scream.
             Assert.AreEqual(0, activeQuadrant.GetHostiles().Count);

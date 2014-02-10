@@ -286,6 +286,9 @@ namespace StarTrek_KG.Playfield
 
             Phasers.For(this.Playership).Damage = 0;
             Phasers.For(this.Playership).ShipConnectedTo = this.Playership;
+
+            DamageControl.For(this.Playership).Damage = 0;
+            DamageControl.For(this.Playership).ShipConnectedTo = this.Playership;
         }
 
         public void GetSubsystemSetupFromConfig()

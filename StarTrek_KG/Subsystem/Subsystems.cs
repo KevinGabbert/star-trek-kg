@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.TypeSafeEnums;
@@ -27,7 +26,8 @@ namespace StarTrek_KG.Subsystem
                                      new ShortRangeScan(shipConnectedTo, game),
                                      new LongRangeScan(shipConnectedTo, game),
                                      new Torpedoes(shipConnectedTo, game),
-                                     new Phasers(shipConnectedTo, game) //TODO: get game ref from shipCOnnectedTo
+                                     new Phasers(shipConnectedTo, game),
+                                     new DamageControl(shipConnectedTo, game)//TODO: get game ref from shipCOnnectedTo
                                   });
         }
 

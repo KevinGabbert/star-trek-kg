@@ -6,6 +6,7 @@ namespace StarTrek_KG.Interfaces
 {
     public interface IOutputWrite
     {
+        List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }
