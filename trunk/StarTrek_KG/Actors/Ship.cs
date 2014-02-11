@@ -151,20 +151,27 @@ namespace StarTrek_KG.Actors
             //seem like a lot? well.. you are taking on the ENTIRE FEDERATION!  You will need it!
 
             var scavengedText = "";
+            var foundPhotons = (photonsScavenged > 0);
 
-            if (photonsScavenged > 0)
+            if (foundPhotons)
             {
                 Torpedoes.For(this).Count += photonsScavenged;
-                scavengedText = photonsScavenged + " Photon Torpedoes found ";
+                scavengedText = photonsScavenged + " Torpedoes found";
             }
 
             if (energyScavenged > 0)
             {
                 this.Energy += energyScavenged;
-                scavengedText = energyScavenged + " Energy found ";
+
+                if (foundPhotons)
+                {
+                    scavengedText += ", & "; 
+                }
+
+                scavengedText += energyScavenged + " Energy found";
             }
 
-            this.Map.Write.Line(scavengedText + "from destroyed " + scavengedFrom + " debris field. ");
+            this.Map.Write.Line(scavengedText + " from destroyed " + scavengedFrom + " debris field. ");
         }
           
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D

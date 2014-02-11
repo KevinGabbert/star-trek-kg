@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -37,16 +36,27 @@ namespace StarTrek_KG.Output
             int totalHostiles = map.Quadrants.GetHostileCount();
             bool docked = Navigation.For(map.Playership).Docked;
 
-            CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
+            bool shieldsAutoRaised = false;
+            if (quadrant.GetHostiles().Count > 0)
+            {
+                shieldsAutoRaised = Game.Auto_Raise_Shields(map, quadrant);
+            }
+
+            this.CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
             this.OutputSRSWarnings(quadrant, map, docked);
+
+            if (shieldsAutoRaised)
+            {
+                map.Write.Line("Shields automatically raised to " + Shields.For(map.Playership).Energy);
+            }
         }
 
-        private void CreateViewScreen(Quadrant quadrant,
-                                             IMap map,
-                                             int totalHostiles,
-                                             string condition,
-                                             Location location,
-                                             bool docked)
+        private void CreateViewScreen(IQuadrant quadrant,
+                                      IMap map,
+                                      int totalHostiles,
+                                      string condition,
+                                      Location location,
+                                      bool docked)
         {
             var sb = new StringBuilder();
             this.Condition = condition;
@@ -64,7 +74,7 @@ namespace StarTrek_KG.Output
 
             this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrantName);
 
-            for (int i = 0; i < 8; i++ )
+            for (int i = 0; i < 8; i++ ) //todo: resource out
             {
                 this.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles, isNebula);
             }
@@ -196,7 +206,7 @@ namespace StarTrek_KG.Output
         private void OutputSRSWarnings(Quadrant quadrant, IMap map, bool docked)
         {
             if (quadrant.GetHostiles().Count > 0)
-            {
+            {                
                 this.SRSScanHostile(quadrant);
             }
             else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
@@ -235,7 +245,7 @@ namespace StarTrek_KG.Output
 
                 if (hostile.Faction == Faction.Federation)
                 {
-                    hostileName = Game.GetFederationShipName(hostile) + " " + Game.GetFederationShipRegistration(hostile);
+                    hostileName = hostile.Name + " " + Game.GetFederationShipRegistration(hostile);
                 }
 
                 this.Write.Console.WriteLine(this.Config.GetText("IDHostile"), hostileName);

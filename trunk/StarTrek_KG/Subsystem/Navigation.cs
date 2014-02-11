@@ -97,10 +97,11 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        //todo: move to Game() object
         private void SuccessfulDockWithStarbase()
         {
             this.Game.Write.ResourceLine("DockingMessageLowerShields");
+            Shields.For(this.ShipConnectedTo).Energy = 0;
+
             Shields.For(this.ShipConnectedTo).Damage = 0;
 
             this.ShipConnectedTo.RepairEverything();

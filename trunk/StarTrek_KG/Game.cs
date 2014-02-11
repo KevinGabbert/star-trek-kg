@@ -23,8 +23,8 @@ namespace StarTrek_KG
             public IStarTrekKGSettings Config { get; set; }
             public IOutputWrite Write { get; set; }
 
-            public Output.Write Output { get; set; }
-            public Output.PrintSector PrintSector { get; set; }
+            public Write Output { get; set; }
+            public PrintSector PrintSector { get; set; }
             public IMap Map { get; set; }
 
             public bool StarbasesAreHostile { get; set; } //todo: temporary until Starbase object is created
@@ -59,7 +59,7 @@ namespace StarTrek_KG
                 this.GetConstants();
 
                 this.PrintSector =
-                    (new Output.PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config));
+                    (new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config));
 
                 var startConfig = (new SetupOptions
                                        {
@@ -80,7 +80,7 @@ namespace StarTrek_KG
                 this.Write.HighlightTextBW(false);
 
                 //todo: why are we creating this PrintSector() class a second time??
-                this.Output = new Output.Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
+                this.Output = new Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
                 this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config);
             }
         }
@@ -517,7 +517,7 @@ namespace StarTrek_KG
             {
                 if (shieldsValueAfterHit == 0)
                 {
-                    this.Write.SingleLine("Shields are Down.");
+                    this.Write.SingleLine("** Shields are Down **");
                 }
                 else
                 {
@@ -549,6 +549,12 @@ namespace StarTrek_KG
             }
         }
 
+        /// <summary>
+        /// this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now
+        /// </summary>
+        /// <param name="ship"></param>
+        /// <param name="currentThreat"></param>
+        /// <returns></returns>
         private string SingleEnemyTaunt(IShip ship, string currentThreat)
         {
             var currentFaction = ship.Faction;
@@ -567,24 +573,23 @@ namespace StarTrek_KG
                 //"NCC-500 U.S.S. Saladin  Saladin-class"
                 //"NCC-500 U.S.S. FirstName SecondName  Saladin-class"
 
-                currentShipName = GetFederationShipName(ship);
+                currentShipName = ship.Name;
             }
             else if (currentFaction == Faction.Klingon)
             {
-                this.Write.Line(string.Format("Klingon ship at {0} sends the following message: ",
+                this.Write.WithNoEndCR(String.Format("Klingon ship at {0} sends the following message: ",
                     "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
             }
             else
             {
-                this.Write.Line(string.Format("Hostile at {0} sends the following message: ",
+                this.Write.WithNoEndCR(String.Format("Hostile at {0} sends the following message: ",
                     "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
                 currentShipName = ship.Name;
             }
 
             FactionThreat randomThreat = this.Config.GetThreats(currentFaction).Shuffle().First();
 
-            //this is just a bit inefficient, but the way to fix it is to have a refactor.  It works for now
-            currentThreat += string.Format(randomThreat.Threat, currentShipName);
+            currentThreat += String.Format(randomThreat.Threat, currentShipName);
 
             this.LatestTaunts.Add(randomThreat);
 
@@ -592,57 +597,57 @@ namespace StarTrek_KG
             return currentThreat;
         }
 
-        public static string GetFederationShipName(IShip ship)
-        {
-            string currentShipName = ship.Name;
+        //public static string GetFederationShipName(IShip ship)
+        //{
+        //    string currentShipName = ship.Name;
 
-            if (currentShipName == "Starbase")
-            {
-                return currentShipName;
-            }
+        //    if (currentShipName == "Starbase")
+        //    {
+        //        return currentShipName;
+        //    }
 
-            if (currentShipName == "Enterprise")
-            {
-                return "Starbase";
-            }
+        //    if (currentShipName == "Enterprise")
+        //    {
+        //        return "Starbase";
+        //    }
 
-            try
-            {
-                int USS = ship.Name.IndexOf("U.S.S.");
-                int spaceAfterGivenName = 0;
+        //    try
+        //    {
+        //        int USS = ship.Name.IndexOf("U.S.S. ");
+        //        int spaceAfterGivenName = 0;
 
-                var nameLength = ship.Name.Length;
+        //        var nameLength = ship.Name.Length;
 
-                for (int i = nameLength; i > 0; i--)
-                {
-                    var currentChar = ship.Name.Substring(i - 1, 1);
-                    if (currentChar == " ")
-                    {
-                        spaceAfterGivenName = i;
-                        break;
-                    }
-                }
+        //        for (int i = nameLength; i > 0; i--)
+        //        {
+        //            var currentChar = ship.Name.Substring(i - 1, 1);
+        //            if (currentChar == " ")
+        //            {
+        //                spaceAfterGivenName = i;
+        //                break;
+        //            }
+        //        }
 
-                currentShipName = ship.Name.Substring(USS, spaceAfterGivenName - USS).Trim();
-                return currentShipName;
-            }
-            catch (Exception)
-            {
-                //HACK: At present, starbase name won't parse because I have it so that you are shooting yourself.  :D
-                //todo: make starbase its own object
-                //if (currentShipName == this.Map.Playership.Name)
-                //{
-                    ship.Name = "Unknown";
-                //}
-                //else
-                //{
-                //    //yeah, something else broke.  tell the world.
-                //    throw;
-                //}
-            }
+        //        currentShipName = ship.Name.Substring(USS, spaceAfterGivenName - USS).Trim();
+        //        return currentShipName;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        //HACK: At present, starbase name won't parse because I have it so that you are shooting yourself.  :D
+        //        //todo: make starbase its own object
+        //        //if (currentShipName == this.Map.Playership.Name)
+        //        //{
+        //            ship.Name = "Unknown";
+        //        //}
+        //        //else
+        //        //{
+        //        //    //yeah, something else broke.  tell the world.
+        //        //    throw;
+        //        //}
+        //    }
 
-            return currentShipName;
-        }
+        //    return currentShipName;
+        //}
 
         public static string GetFederationShipRegistration(IShip ship)
         {
@@ -650,6 +655,39 @@ namespace StarTrek_KG
 
             string currentShipName = ship.Name.Substring(0, USS).Trim();
             return currentShipName;
+        }
+
+        public static bool Auto_Raise_Shields(IMap map, IQuadrant quadrant)
+        {
+            bool shieldsRaised = false;
+
+            if (quadrant.Type != QuadrantType.Nebulae)
+            {
+                var thisShip = map.Playership;
+                var thisShipEnergy = thisShip.Energy;
+                var thisShipShields = Shields.For(thisShip);
+
+                if (thisShipShields.Energy == 0) //todo: resource this out
+                {
+                    if (thisShipEnergy > 500) //todo: resource this out
+                    {
+                        thisShipShields.Energy = 500; //todo: resource this out
+                        thisShip.Energy -= 500;
+
+                        shieldsRaised = true;
+                    }
+                    else if (thisShipEnergy > 1)
+                    {
+                        var energyLeft = thisShipEnergy/2; //todo: resource this out
+
+                        thisShipShields.Energy = Convert.ToInt32(energyLeft);
+                        thisShip.Energy = energyLeft;
+                        shieldsRaised = true;
+                    }
+                }
+            }
+
+            return shieldsRaised;
         }
     }
 }

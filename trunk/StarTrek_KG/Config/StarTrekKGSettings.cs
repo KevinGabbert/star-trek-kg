@@ -97,7 +97,7 @@ namespace StarTrek_KG.Config
             this.Reset();
 
             FactionShips factionShips = this.Get.Factions[faction.ToString()].FactionShips;
-            var shipNames = (from RegistryNameTypeClassElement shipElement in factionShips select shipElement.name).ToList();
+            var shipNames = (from RegistryNameTypeClassElement shipElement in factionShips select shipElement.name.Trim()).ToList();
             return shipNames;
         }
 
