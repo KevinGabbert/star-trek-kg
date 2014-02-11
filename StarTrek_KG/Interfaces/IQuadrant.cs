@@ -9,6 +9,7 @@ namespace StarTrek_KG.Interfaces
 {
     public interface IQuadrant
     {
+        QuadrantType Type { get; set; }
         string Name { get; set; }
         IMap Map { get; set; }
         Sectors Sectors { get; set; }

@@ -138,10 +138,21 @@ namespace StarTrek_KG.Subsystem
 
         private static bool IsInQuadrant(VectorCoordinate torpedoLocation)
         {
-            return (torpedoLocation.X >= Constants.SECTOR_MIN ||
-                   torpedoLocation.Y >= Constants.SECTOR_MIN) &&
-                   Math.Round(torpedoLocation.X) < Constants.SECTOR_MAX &&
-                   Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX;
+            var torpedoXIsNotMin = torpedoLocation.X >= Constants.SECTOR_MIN;
+            var torpedoYIsNotMIN = torpedoLocation.Y >= Constants.SECTOR_MIN;
+
+            var torpedoXisNotMax = Math.Round(torpedoLocation.X) < Constants.SECTOR_MAX;
+            var torpedoYisNotMax = Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX;
+
+            //todo: look into issue:
+            var xIsNotNegative = torpedoLocation.X > -1; //adjusting for an issue around sector 0,0
+            var yIsNotNegative = torpedoLocation.Y > -1; //adjusting for an issue around sector 0,0
+
+            var condition = (torpedoXIsNotMin || torpedoYIsNotMIN) &&
+                            (torpedoXisNotMax && torpedoYisNotMax) &&
+                            (xIsNotNegative && yIsNotNegative);
+
+            return (condition);
         }
 
         private bool HitSomething(Location location)
@@ -328,8 +339,10 @@ namespace StarTrek_KG.Subsystem
             //todo: once starbases are an object, then they are merely another hostile.  Delete this IF and the rest of the code should work fine.
             if (thisQuadrant.GetStarbaseCount() > 0)
             {
-                //todo: this will go away when starbases are made into an object
-                this.Game.Write.Line("Hostile Starbases cannot be targeted.. yet.");
+                if (Game.StarbasesAreHostile)
+                {
+                    this.Game.Map.StarbaseCalculator(this.ShipConnectedTo);
+                }
             }
 
             if (thisQuadrantHostiles.Count == 0)

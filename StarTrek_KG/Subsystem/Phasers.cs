@@ -94,7 +94,7 @@ namespace StarTrek_KG.Subsystem
                 this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
 
-            if (this.Game.StarbasesAreHostile)
+            if (this.ShipConnectedTo.GetQuadrant().GetStarbaseCount() > 0 && this.Game.StarbasesAreHostile)
             {
                 //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
                 //for what its worth, Starbases will have a lot more power!
@@ -146,7 +146,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        private void DamageBadGuy(IShip badGuyShip, Shields badGuyShields)
+        private void DamageBadGuy(IShip badGuyShip, Actors.System badGuyShields)
         {
             string badGuyShipName = badGuyShip.Name;
             string badguyShieldEnergy = badGuyShields.Energy.ToString();
@@ -161,7 +161,7 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.Write.Line(
                 string.Format(
-                    "Hit " + badGuyShipName + " at sector [{0},{1}]. " + badGuyShipName + " shield strength now at {2}.",
+                    "Hit " + badGuyShipName + " at sector [{0},{1}], shield strength now at {2}.",
                     badGuy.X, badGuy.Y, badguyShieldEnergy));
         }
 
