@@ -301,6 +301,8 @@ namespace StarTrek_KG.Subsystem
 
         private void DestroyStarbase(IMap map, int newY, int newX, ISector qLocation)
         {
+            Navigation.For(map.Playership).Docked = false;  //in case you shot it point-blank range..
+
             map.starbases--;
 
             qLocation.Object = null;
