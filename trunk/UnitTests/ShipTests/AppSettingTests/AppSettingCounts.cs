@@ -11,7 +11,7 @@ namespace UnitTests.ShipTests.AppSettingTests
     [TestFixture]
     public class AppSettingCounts
     {
-        private StarTrekKGSettings config = new StarTrekKGSettings();
+        private readonly StarTrekKGSettings config = new StarTrekKGSettings();
 
         [SetUp]
         public void Setup()

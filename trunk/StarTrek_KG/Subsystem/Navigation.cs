@@ -114,14 +114,18 @@ namespace StarTrek_KG.Subsystem
         {
             var thisShip = this.ShipConnectedTo.GetLocation();
 
-            var hostiles = Quadrants.Get(map, thisShip.Quadrant).GetHostiles();
+            var currentQuadrant = Quadrants.Get(map, thisShip.Quadrant);
+
+            var hostiles = currentQuadrant.GetHostiles();
             var baddiesHangingAround = hostiles.Count > 0;
 
             var hostileFedsInQuadrant = hostiles.Any(h => h.Faction == Faction.Federation); //todo: Cheap.  Use a property for this.
 
             var stillInSameQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
 
-            if ((baddiesHangingAround && stillInSameQuadrant) || hostileFedsInQuadrant || this.Game.StarbasesAreHostile)
+            if ((baddiesHangingAround && stillInSameQuadrant) || 
+                hostileFedsInQuadrant || 
+                (this.Game.StarbasesAreHostile && currentQuadrant.GetStarbaseCount() > 0))
             {
                 this.Game.ALLHostilesAttack(this.Game.Map);
             }

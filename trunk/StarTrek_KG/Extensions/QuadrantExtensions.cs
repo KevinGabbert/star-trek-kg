@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using StarTrek_KG.Enums;
+﻿using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Extensions
@@ -17,8 +13,6 @@ namespace StarTrek_KG.Extensions
         public static void TransformIntoNebulae(this Quadrant quadrant)
         {
             //todo: later, find a way to name all contigious nebula sectors
-            //(probably make a Nebulae Object that consists of an IEnumerable<Nebula> and give it a name prop
-            //Utility.Utility.ResetGreekLetterStack();
 
             foreach (Sector sector in quadrant.Sectors)
             {

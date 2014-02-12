@@ -428,6 +428,12 @@ namespace StarTrek_KG.Output
                 attackerName = attacker.Name;
             }
 
+            //HACK: until starbases become real objects.. getting tired of this.
+            if (attackerName == "Enterprise")
+            {
+                attackerName = "Hostile Starbase";
+            }
+
             return String.Format("Your Ship has been hit by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }
     }

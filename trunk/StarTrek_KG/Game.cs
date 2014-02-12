@@ -449,18 +449,25 @@ namespace StarTrek_KG
         {
             if (this.StarbasesAreHostile)
             {
-                var starbasesAttacking = activeQuadrant.GetStarbaseCount();
-
-                for (int i = 0; i < starbasesAttacking; i++)
+                if (activeQuadrant.Type != QuadrantType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
                 {
-                    //todo: modify starbase to be its own ship object on the map
-                    //HACK: this is a little bit of a cheat, saying that the playership is attacking itself, but until the starbase is its own object, this should be fine
-                    this.HostileAttacks(map, map.Playership);
+                    var starbasesAttacking = activeQuadrant.GetStarbaseCount();
 
-                    //cause starbases are bastards like that.  hey.. You started it!
-                    this.HostileAttacks(map, map.Playership);
+                    for (int i = 0; i < starbasesAttacking; i++)
+                    {
+                        //todo: modify starbase to be its own ship object on the map
+                        //HACK: this is a little bit of a cheat, saying that the playership is attacking itself, but until the starbase is its own object, this should be fine
+                        this.HostileAttacks(map, map.Playership);
 
-                    //todo: when starbases are their own object, they will fire once.. it will just hurt more.
+                        //cause starbases are bastards like that.  hey.. You started it!
+                        this.HostileAttacks(map, map.Playership);
+
+                        //todo: when starbases are their own object, they will fire once.. it will just hurt more.
+                    }
+                }
+                else
+                {
+                    this.Write.Line("Hostile Starbase fires blindly, unable to get a lock on your position in Nebula.");
                 }
             }
         }

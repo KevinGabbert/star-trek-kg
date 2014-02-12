@@ -57,17 +57,17 @@ namespace StarTrek_KG.Interfaces
         void RemoveTargetFromSector(IMap map, IShip ship);
         void StarbaseCalculator(Ship shipConnectedTo);
 
-        /// <summary>
-        /// Removes all friendlies fromevery sector in the entire map.
-        /// </summary>
-        /// <param name="map"></param>
-        void RemoveAllFriendlies(IMap map);
+        ///// <summary>
+        ///// Removes all friendlies fromevery sector in the entire map.
+        ///// </summary>
+        ///// <param name="map"></param>
+        //void RemoveAllFriendlies(IMap map);
 
         /// <summary>
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        void SetFriendly(IMap map);
+        void SetActiveAsFriendly(IMap map);
 
         string ToString();
 

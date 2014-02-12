@@ -15,6 +15,13 @@ namespace UnitTests.ShipTests.AppSettingTests
             (new StarTrekKGSettings()).Get = (new StarTrekKGSettings()).GetConfig();
         }
 
+        //[Test]
+        //public void repairEnergy()
+        //{
+        //    Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("repairEnergy"));
+        //}
+
+
         [Test]
         public void repairEnergy()
         {

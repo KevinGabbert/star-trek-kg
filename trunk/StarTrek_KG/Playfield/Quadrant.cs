@@ -31,23 +31,7 @@ namespace StarTrek_KG.Playfield
             public bool Scanned { get; set; }
             public bool Empty { get; set; }
 
-            private bool _active;
-            public bool Active
-            {
-                get
-                {
-                    return _active;
-                }
-                set
-                {
-                    if (value)
-                    {
-                        this.Map.Quadrants.ClearActive();
-                    }
-
-                    _active = value;
-                }
-            }
+        public bool Active { get; set; }
 
         #endregion
 
@@ -82,6 +66,13 @@ namespace StarTrek_KG.Playfield
             this.Empty = true;
 
             this.Create(map, quadrantNames, baddieNames, stockBaddieFaction, out nameIndex, addStars, makeNebulae);
+        }
+
+        public void SetActive()
+        {
+            this.Map.Quadrants.ClearActive();
+
+            this.Active = true;
         }
 
         public void Create(Stack<string> baddieNames, Faction stockBaddieFaction, bool addStars = true, bool makeNebulae = false)
