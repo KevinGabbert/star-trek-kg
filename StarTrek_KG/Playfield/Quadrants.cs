@@ -56,6 +56,26 @@ namespace StarTrek_KG.Playfield
             return retVal;
         }
 
+        public static Quadrant GetByName(IEnumerable<Quadrant> quadrants, string quadrantName)
+        {
+            Quadrant retVal = null;
+
+            try
+            {
+                //todo: change this back to retval
+                retVal = quadrants.Single(q => q.Name == quadrantName);
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.Message == "Sequence contains more than one element.  The fix for this is to remove dupes from app.config")
+                {
+                    //todo: why do we have more than 1 element?
+                }
+            }
+
+            return retVal;
+        }
+
         public Quadrant GetActive()
         {
             var activeQuadrants = this.Map.Quadrants.Where(q => q.Active).ToList();

@@ -140,7 +140,8 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                this.Quadrants[0].Active = true;
+                //this.Quadrants[0].Active = true;
+                this.Quadrants[0].SetActive();
             }
         }
 
@@ -322,7 +323,9 @@ namespace StarTrek_KG.Playfield
 
             var m = this.Quadrants.Single(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y);
             this.Playership.Coordinate = new Coordinate(m.X, m.Y);
-            this.Playership.GetQuadrant().Active = true;
+
+            //this.Playership.GetQuadrant().Active = true;
+            this.Playership.GetQuadrant().SetActive();
         }
 
         public void SetupPlayershipTorpedoes()
@@ -475,25 +478,34 @@ namespace StarTrek_KG.Playfield
             }
         }
 
+        ///// <summary>
+        ///// Removes all friendlies fromevery sector in the entire map.
+        ///// </summary>
+        ///// <param name="map"></param>
+        //public void RemoveAllFriendlies(IMap map)
+        //{
+        //    var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
+
+        //    foreach (Sector sector in sectorsWithFriendlies)
+        //    {
+        //        sector.Item = SectorItem.Empty;
+        //    }
+        //}
+
         /// <summary>
         /// Removes all friendlies fromevery sector in the entire map.
         /// </summary>
         /// <param name="map"></param>
-        public void RemoveAllFriendlies(IMap map)
+        public void RemovePlayership(IMap map)
         {
-            var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
-
-            foreach (Sector sector in sectorsWithFriendlies)
-            {
-                sector.Item = SectorItem.Empty;
-            }
+            map.Playership.Sector.Item = SectorItem.Empty;
         }
 
         /// <summary>
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        public void SetFriendly(IMap map)
+        public void SetActiveAsFriendly(IMap map)
         {
             //zip through all sectors in all quadrants.  remove any friendlies
 
@@ -501,7 +513,7 @@ namespace StarTrek_KG.Playfield
             //to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
             //to have multiple friendlies, as is the eventual plan.
 
-            this.RemoveAllFriendlies(map);
+            this.RemovePlayership(map);
 
             var activeQuadrant = map.Quadrants.GetActive();
 

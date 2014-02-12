@@ -15,9 +15,11 @@ namespace StarTrek_KG.Interfaces
         Sectors Sectors { get; set; }
         bool Scanned { get; set; }
         bool Empty { get; set; }
-        bool Active { get; set; }
+        bool Active { get; set; } 
+
         int X { get; set; }
         int Y { get; set; }
+
         void Create(Stack<string> baddieNames, Faction stockBaddieFaction, bool addStars = true, bool makeNebulae = false);
         void Create(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, Faction stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false);
         void Create(Stack<string> quadrantNames, Stack<String> baddieNames, Faction stockBaddieFaction, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false);

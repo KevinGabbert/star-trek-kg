@@ -74,6 +74,23 @@ namespace StarTrek_KG.Actors
             this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
         }
 
+        public void Execute(string destinationQuadrantName, out int lastQuadX, out int lastQuadY)
+        {
+            Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
+
+            lastQuadY = playershipQuadrant.Y;
+            lastQuadX = playershipQuadrant.X;
+
+            Quadrant destinationQuadrant = Quadrants.GetByName(this.Game.Map.Quadrants, destinationQuadrantName);
+
+            //destinationQuadrant.Active = true;
+            destinationQuadrant.SetActive();
+
+            this.Game.Map.SetActiveAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
+
+            this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), destinationQuadrant);
+        }
+
 
         /// <summary>
         /// todo: do we need to modify this algorithm?
@@ -238,9 +255,10 @@ namespace StarTrek_KG.Actors
                 throw new GameException("No quadrant to make active");
             }
 
-            newActiveQuadrant.Active = true;
+            //newActiveQuadrant.Active = true;
+            newActiveQuadrant.SetActive();
 
-            this.Game.Map.SetFriendly(this.Game.Map); //sets friendly in Active Quadrant  
+            this.Game.Map.SetActiveAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
 
             return newActiveQuadrant; //contains the newly set sector in it
         }
