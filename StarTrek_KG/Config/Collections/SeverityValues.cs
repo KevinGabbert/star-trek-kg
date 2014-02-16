@@ -5,11 +5,11 @@ namespace StarTrek_KG.Config.Collections
 {
     public class SeverityValues : ConfigurationElementCollection
     {
-        public E.SeverityValueTranslationElement this[int index]
+        public E.SeverityValueTranslation this[int index]
         {
             get
             {
-                return base.BaseGet(index) as E.SeverityValueTranslationElement;
+                return base.BaseGet(index) as E.SeverityValueTranslation;
             }
             set
             {
@@ -22,11 +22,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new E.SeverityValueTranslationElement this[string responseString]
+        public new E.SeverityValueTranslation this[string responseString]
         {
             get
             {
-                return (E.SeverityValueTranslationElement)BaseGet(responseString);
+                return (E.SeverityValueTranslation)BaseGet(responseString);
             }
             set
             {
@@ -41,12 +41,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new E.SeverityValueTranslationElement();
+            return new E.SeverityValueTranslation();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((E.SeverityValueTranslationElement)element).value;
+            return ((E.SeverityValueTranslation)element).value;
         }
     }
 }

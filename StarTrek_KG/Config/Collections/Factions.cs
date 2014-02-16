@@ -3,13 +3,13 @@ using StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config.Collections
 {
-    public class Factions : NameAllegiances
+    public class Factions : NameAllegianceDesignators
     {
-        public FactionElement this[int index]
+        public Faction this[int index]
         {
             get
             {
-                return base.BaseGet(index) as FactionElement;
+                return base.BaseGet(index) as Faction;
             }
             set
             {
@@ -21,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new FactionElement this[string responseString]
+        public new Faction this[string responseString]
         {
             get
             {
-                return (FactionElement)BaseGet(responseString);
+                return (Faction)BaseGet(responseString);
             }
             set
             {
@@ -40,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new FactionElement();
+            return new Faction();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((FactionElement)element).name;
+            return ((Faction)element).name;
         }
 
         //public override ConfigurationElementCollectionType CollectionType

@@ -24,8 +24,8 @@ namespace StarTrek_KG.Interfaces
         void Initialize(SetupOptions setupOptions);
         void Initialize(SectorDefs sectorDefs, bool generateWithNebulae);
         void SetupFriendlies(SectorDefs sectorDefs);
-        void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, Faction stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae);
-        void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, Faction stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebulae);
+        void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae);
+        void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebulae);
         IEnumerable<Sector> AddStarbases();
         IEnumerable<IShip> GetAllFederationShips();
 

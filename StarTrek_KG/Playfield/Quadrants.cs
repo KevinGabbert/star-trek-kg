@@ -205,7 +205,7 @@ namespace StarTrek_KG.Playfield
 
             string shipToRemoveName = shipToRemove.Name;
 
-            if (shipToRemove.Faction == Faction.Federation)
+            if (shipToRemove.Faction == FactionName.Federation)
             {
                 shipToRemoveName = shipToRemove.Name;
                 this.Map.AddACoupleHostileFederationShipsToExistingMap();

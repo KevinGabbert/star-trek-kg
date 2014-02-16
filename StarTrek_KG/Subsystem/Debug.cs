@@ -89,7 +89,7 @@ namespace StarTrek_KG.Subsystem
 
                     //todo: newly appeared ship needs to NOT fire inbetween turns!
 
-                    var testShipNames = this.Game.Config.GetShips(Faction.TestFaction).ToList().Shuffle();
+                    var testShipNames = this.Game.Config.FactionShips(FactionName.TestFaction).ToList().Shuffle();
 
                     var quadX = Coordinate.GetRandom();
                     var quadY = Coordinate.GetRandom();
@@ -98,7 +98,7 @@ namespace StarTrek_KG.Subsystem
 
                     this.Game.Map.Config = this.Game.Config;
 
-                    var hostileShip = new Ship(Faction.Klingon, testShipNames[0], randomSector, this.Game.Map);
+                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.Game.Map);
                     Shields.For(hostileShip).Energy = Utility.Utility.Random.Next(100, 200); //todo: resource those numbers out
 
                     this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);

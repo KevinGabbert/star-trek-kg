@@ -22,7 +22,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfSettings()
         {
-            Assert.AreEqual(65, config.Get.GameSettings.Count);
+            Assert.AreEqual(63, config.Get.GameSettings.Count);
         }
 
         [Test]
@@ -42,13 +42,13 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfFactionShips()
         {
-            Assert.AreEqual(980, config.Get.Factions[Faction.Federation.ToString()].FactionShips.Count);
+            Assert.AreEqual(980, config.Get.Factions[FactionName.Federation.ToString()].FactionShips.Count);
         }
 
         [Test]
         public void CountOfFactionThreats()
         {
-            Assert.AreEqual(7, config.Get.Factions[Faction.Federation.ToString()].FactionThreats.Count);
+            Assert.AreEqual(7, config.Get.Factions[FactionName.Federation.ToString()].FactionThreats.Count);
         }
 
 

@@ -5,11 +5,11 @@ namespace StarTrek_KG.Config.Collections
 {
     public class FactionShips : RegistryNameTypeClasses
     {
-        public RegistryNameTypeClassElement this[int index]
+        public RegistryNameTypeClass this[int index]
         {
             get
             {
-                return base.BaseGet(index) as RegistryNameTypeClassElement;
+                return base.BaseGet(index) as RegistryNameTypeClass;
             }
             set
             {
@@ -21,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new RegistryNameTypeClassElement this[string responseString]
+        public new RegistryNameTypeClass this[string responseString]
         {
             get
             {
-                return (RegistryNameTypeClassElement)BaseGet(responseString);
+                return (RegistryNameTypeClass)BaseGet(responseString);
             }
             set
             {
@@ -40,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new RegistryNameTypeClassElement();
+            return new RegistryNameTypeClass();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((RegistryNameTypeClassElement)element).name;
+            return ((RegistryNameTypeClass)element).name;
         }
     }
 }

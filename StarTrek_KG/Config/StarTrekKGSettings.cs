@@ -92,16 +92,27 @@ namespace StarTrek_KG.Config
 
         #region Helper Methods
 
-        public List<string> GetShips(Faction faction)
+        public List<string> FactionShips(FactionName faction) //todo: this is called multiple times, do we need to reload file?
         {
             this.Reset();
 
-            FactionShips factionShips = this.Get.Factions[faction.ToString()].FactionShips;
-            var shipNames = (from RegistryNameTypeClassElement shipElement in factionShips select shipElement.name.Trim()).ToList();
+            var factionElement = this.Get.Factions[faction.ToString()];
+
+            FactionShips factionShips = factionElement.FactionShips;
+            var shipNames = (from RegistryNameTypeClass shipElement in factionShips select shipElement.name.Trim()).ToList();
             return shipNames;
         }
 
-        public List<FactionThreat> GetThreats(Faction faction)
+        public Faction FactionDetails(FactionName faction)
+        {
+            this.Reset();
+
+            var factionElement = this.Get.Factions[faction.ToString()];
+
+            return factionElement;
+        }
+
+        public List<FactionThreat> GetThreats(FactionName faction)
         {
             if (faction == null)
             {
@@ -112,7 +123,7 @@ namespace StarTrek_KG.Config
 
             FactionThreats factionThreatCollection = this.Get.Factions[faction.ToString()].FactionThreats;
 
-            IEnumerable<SeverityValueTranslationElement> threatElements = (from SeverityValueTranslationElement threatElement in factionThreatCollection select threatElement).ToList();
+            IEnumerable<SeverityValueTranslation> threatElements = (from SeverityValueTranslation threatElement in factionThreatCollection select threatElement).ToList();
 
             var threats = threatElements.Select(factionThreat => new FactionThreat(factionThreat.value, factionThreat.translation)) .ToList();
 
@@ -124,7 +135,7 @@ namespace StarTrek_KG.Config
             this.Reset();
 
             var systems = this.Get.StarSystems;
-            var systemNames = (from NameElement starSystem in systems select starSystem.name).ToList();
+            var systemNames = (from Name starSystem in systems select starSystem.name).ToList();
             return systemNames;
         }
 
@@ -138,7 +149,7 @@ namespace StarTrek_KG.Config
         {
             this.Reset();
 
-            NameValueElement element = this.Get.ConsoleText[name];
+            NameValue element = this.Get.ConsoleText[name];
 
             var setting = this.CheckAndCastValue<string>(name, element, true);
 
@@ -149,7 +160,7 @@ namespace StarTrek_KG.Config
         {
             this.Reset();
 
-            NameValueElement element = this.Get.GameSettings[name];
+            NameValue element = this.Get.GameSettings[name];
 
             var setting = this.CheckAndCastValue<T>(name, element, true);
 
@@ -158,7 +169,7 @@ namespace StarTrek_KG.Config
 
         #endregion
 
-        public T CheckAndCastValue<T>(string name, NameValueElement element, bool whiteSpaceIsOk = false)
+        public T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false)
         {
             T setting;
             if (element != null)

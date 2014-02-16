@@ -67,7 +67,7 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        public Faction Faction { get; set; }
+        public FactionName Faction { get; set; }
 
 
         public Subsystem.Subsystems Subsystems

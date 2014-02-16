@@ -575,14 +575,14 @@ namespace StarTrek_KG
 
             this.Write.Line("");
 
-            if (currentFaction == Faction.Federation)
+            if (currentFaction == FactionName.Federation)
             {
                 //"NCC-500 U.S.S. Saladin  Saladin-class"
                 //"NCC-500 U.S.S. FirstName SecondName  Saladin-class"
 
                 currentShipName = ship.Name;
             }
-            else if (currentFaction == Faction.Klingon)
+            else if (currentFaction == FactionName.Klingon)
             {
                 this.Write.WithNoEndCR(String.Format("Klingon ship at {0} sends the following message: ",
                     "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
