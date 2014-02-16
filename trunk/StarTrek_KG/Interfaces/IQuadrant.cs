@@ -20,14 +20,14 @@ namespace StarTrek_KG.Interfaces
         int X { get; set; }
         int Y { get; set; }
 
-        void Create(Stack<string> baddieNames, Faction stockBaddieFaction, bool addStars = true, bool makeNebulae = false);
-        void Create(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, Faction stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false);
-        void Create(Stack<string> quadrantNames, Stack<String> baddieNames, Faction stockBaddieFaction, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false);
+        void Create(Stack<string> baddieNames, FactionName stockBaddieFaction, bool addStars = true, bool makeNebulae = false);
+        void Create(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, FactionName stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false);
+        void Create(Stack<string> quadrantNames, Stack<String> baddieNames, FactionName stockBaddieFaction, Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false);
 
         void InitializeSectors(Quadrant quadrant,
             List<Sector> itemsToPopulate,
             Stack<string> baddieNames,
-            Faction stockBaddieFaction,
+            FactionName stockBaddieFaction,
             bool addStars,
             bool makeNebulae = false);
 
@@ -36,12 +36,12 @@ namespace StarTrek_KG.Interfaces
         string CreateStars(Quadrant quadrant, int totalStarsInQuadrant, SectorType starSectorType = SectorType.StarSystem);
 
         void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
-            Stack<string> baddieNames, Faction stockBaddieFaction);
+            Stack<string> baddieNames, FactionName stockBaddieFaction);
 
-        void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, Faction stockBaddieFaction);
+        void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, FactionName stockBaddieFaction);
         void AddShip(IShip ship, ISector toSector);
         void RemoveShip(IShip ship);
-        Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, Faction stockBaddieFaction);
+        Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, FactionName stockBaddieFaction);
         void AddEmptySector(Quadrant quadrant, int x, int y);
         bool NoHostiles(List<Ship> hostiles);
 

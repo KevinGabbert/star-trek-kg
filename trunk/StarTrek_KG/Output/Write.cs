@@ -423,7 +423,7 @@ namespace StarTrek_KG.Output
 
             string attackerName = attackerQuadrant.Type == QuadrantType.Nebulae ? "Unknown Ship" : attacker.Name;
 
-            if (attacker.Faction == Faction.Federation)
+            if (attacker.Faction == FactionName.Federation)
             {
                 attackerName = attacker.Name;
             }

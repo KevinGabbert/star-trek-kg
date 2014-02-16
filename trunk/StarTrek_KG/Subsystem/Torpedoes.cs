@@ -185,13 +185,13 @@ namespace StarTrek_KG.Subsystem
             {
                 this.Game.Map.RemoveTargetFromSector(this.Game.Map, hostileInSector);
 
-                if (hostileInSector.Faction == Faction.Federation)
+                if (hostileInSector.Faction == FactionName.Federation)
                 {
                     this.Game.Map.AddACoupleHostileFederationShipsToExistingMap();
                     this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
                 }
 
-                if (hostileInSector.Faction == Faction.Klingon)
+                if (hostileInSector.Faction == FactionName.Klingon)
                 {
                     this.ShipConnectedTo.Scavenge(ScavengeType.OtherShip);
                 }

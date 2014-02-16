@@ -5,11 +5,11 @@ namespace StarTrek_KG.Config.Collections
 {
     public class NameValues : ConfigurationElementCollection
     {
-        public E.NameValueElement this[int index]
+        public E.NameValue this[int index]
         {
             get
             {
-                return base.BaseGet(index) as E.NameValueElement;
+                return base.BaseGet(index) as E.NameValue;
             }
             set
             {
@@ -21,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new E.NameValueElement this[string responseString]
+        public new E.NameValue this[string responseString]
         {
             get
             {
-                return (E.NameValueElement)BaseGet(responseString);
+                return (E.NameValue)BaseGet(responseString);
             }
             set
             {
@@ -40,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new E.NameValueElement();
+            return new E.NameValue();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((E.NameValueElement)element).name;
+            return ((E.NameValue)element).name;
         }
     }
 }

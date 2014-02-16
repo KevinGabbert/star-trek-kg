@@ -121,7 +121,7 @@ namespace StarTrek_KG.Output
         {
             for (var column = 0; column < Constants.SECTOR_MAX; column++)
             {
-                var sector = Sector.Get(sectors, row, column);
+                Sector sector = Sector.Get(sectors, row, column);
 
                 switch (sector.Item)
                 {
@@ -136,29 +136,7 @@ namespace StarTrek_KG.Output
 
                     case SectorItem.Hostile:
 
-                        //bug can be viewed (and even tested here)
-                        //if last hostile was destroyed, it wont be removed from array.
-
-                        //noticed in playthrough that last hostile couldn't be seen.  is it properly labeled?
-
-                        //todo: resolve if issue
-                        //if (this.game.Map.Hostiles.Count < 1)
-                        //{
-                        //    Console.WriteLine("bug. hostile not removed from display.");
-                        //}
-
-                        if (totalHostiles < 1)
-                        {
-                            this.Write.Console.WriteLine("bug. hostile not removed from display.");
-                        }
-
-                        //todo: hostile feds look like: ++-
-                        //if (sector.Object.Faction == Faction.Federation)
-                        //{
-                        //    sb.Append(Constants.FEDERATION);
-                        //}
-
-                        sb.Append(Constants.HOSTILE);
+                        this.AppendFactionDesignator(sb, totalHostiles, sector);
                         break;
 
                     case SectorItem.Star:
@@ -166,6 +144,9 @@ namespace StarTrek_KG.Output
                         break;
 
                     case SectorItem.Starbase:
+                        //todo:  this.AppendFactionDesignator(sb, totalHostiles, sector);
+                        //this code will be used when starbase is an object
+
                         sb.Append(Constants.STARBASE);
                         break;
 
@@ -185,6 +166,44 @@ namespace StarTrek_KG.Output
 
             this.Write.Console.WriteLine(sb.ToString());
             sb.Length = 0;
+        }
+
+        private void AppendFactionDesignator(StringBuilder sb, int totalHostiles, Sector sector)
+        {
+            var ship = (IShip) sector.Object;
+
+            //todo: get designator for faction
+
+            string factionDesignator = this.Config.Get.FactionDetails(ship.Faction).designator;
+
+            if (factionDesignator == "")
+            {
+                factionDesignator = "+?+";
+            }
+
+            //bug can be viewed (and even tested here)
+            //if last hostile was destroyed, it wont be removed from array.
+
+            //noticed in playthrough that last hostile couldn't be seen.  is it properly labeled?
+
+            //todo: resolve if issue
+            //if (this.game.Map.Hostiles.Count < 1)
+            //{
+            //    Console.WriteLine("bug. hostile not removed from display.");
+            //}
+
+            if (totalHostiles < 1)
+            {
+                this.Write.Console.WriteLine("bug. hostile not removed from display.");
+            }
+
+            //todo: hostile feds look like: ++-
+            //if (sector.Object.Faction == Faction.Federation)
+            //{
+            //    sb.Append(Constants.FEDERATION);
+            //}
+
+            sb.Append(factionDesignator);
         }
 
         private string GetCurrentCondition(IQuadrant quadrant, IMap map)
@@ -243,7 +262,7 @@ namespace StarTrek_KG.Output
                     hostileName = "Unknown";
                 }
 
-                if (hostile.Faction == Faction.Federation)
+                if (hostile.Faction == FactionName.Federation)
                 {
                     hostileName = hostile.Name + " " + Game.GetFederationShipRegistration(hostile);
                 }

@@ -55,8 +55,8 @@ namespace UnitTests.ShipTests
             this.SetupMapWith1Friendly();
 
             //add a ship
-            var hostileShip = new Ship(Faction.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
-            var hostileShip2 = new Ship(Faction.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
+            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
 
             var activeQuad = this.TestMap.Quadrants.GetActive();
             activeQuad.AddShip(hostileShip, hostileShip.Sector);
@@ -120,7 +120,7 @@ namespace UnitTests.ShipTests
                                                     new LocationDef(new Coordinate(0, 0),
                                                                     new Coordinate(0, 1)), SectorItem.Hostile),
                                             }
-            }, this.Game.Write, this.Game.Config, Faction.Federation);
+            }, this.Game.Write, this.Game.Config, FactionName.Federation);
             this.VerifyMap();
         }
 

@@ -105,7 +105,7 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var destroyedShip in destroyedShips)
             {
-                if(destroyedShip.Faction == Faction.Federation)
+                if(destroyedShip.Faction == FactionName.Federation)
                 {
                     this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
                 }

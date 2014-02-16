@@ -51,7 +51,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void NewWithMap()
         {
-            var baddieNames = new Stack<string>((new StarTrekKGSettings()).GetShips(Faction.Klingon));
+            var baddieNames = new Stack<string>((new StarTrekKGSettings()).FactionShips(FactionName.Klingon));
             var quadrantNames = new Stack<string>((new StarTrekKGSettings()).GetStarSystems());
 
             _setup.SetupMapWith1Friendly();

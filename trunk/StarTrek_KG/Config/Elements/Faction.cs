@@ -3,7 +3,7 @@ using StarTrek_KG.Config.Collections;
 
 namespace StarTrek_KG.Config.Elements
 {
-    public class FactionElement : NameAllegianceElement
+    public class Faction : NameAllegianceDesignator
     {
         [ConfigurationProperty("FactionThreats", IsDefaultCollection = true)]
         [ConfigurationCollection(typeof(FactionThreats), AddItemName = "FactionThreat")]

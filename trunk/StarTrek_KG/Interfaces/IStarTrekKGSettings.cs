@@ -29,13 +29,13 @@ namespace StarTrek_KG.Interfaces
         NameValues GameSettings { get; }
 
         new StarTrekKGSettings GetConfig();
-        List<string> GetShips(Faction faction);
-        List<FactionThreat> GetThreats(Faction faction);
+        List<string> FactionShips(FactionName faction);
+        List<FactionThreat> GetThreats(FactionName faction);
         List<string> GetStarSystems();
         string GetText(string textToGet, string textToGet2);
         string GetText(string name);
         T GetSetting<T>(string name);
-        T CheckAndCastValue<T>(string name, NameValueElement element, bool whiteSpaceIsOk = false);
+        T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false);
         void Reset();
     }
 }

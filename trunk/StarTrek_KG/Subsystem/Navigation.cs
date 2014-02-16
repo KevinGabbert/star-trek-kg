@@ -119,7 +119,7 @@ namespace StarTrek_KG.Subsystem
             var hostiles = currentQuadrant.GetHostiles();
             var baddiesHangingAround = hostiles.Count > 0;
 
-            var hostileFedsInQuadrant = hostiles.Any(h => h.Faction == Faction.Federation); //todo: Cheap.  Use a property for this.
+            var hostileFedsInQuadrant = hostiles.Any(h => h.Faction == FactionName.Federation); //todo: Cheap.  Use a property for this.
 
             var stillInSameQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
 

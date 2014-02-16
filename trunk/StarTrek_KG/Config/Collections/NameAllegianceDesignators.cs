@@ -3,13 +3,13 @@ using StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config.Collections
 {
-    public class NameAllegiances: ConfigurationElementCollection
+    public class NameAllegianceDesignators: ConfigurationElementCollection
     {
-        public NameAllegianceElement this[int index]
+        public NameAllegianceDesignator this[int index]
         {
             get
             {
-                return base.BaseGet(index) as NameAllegianceElement;
+                return base.BaseGet(index) as NameAllegianceDesignator;
             }
             set
             {
@@ -21,11 +21,11 @@ namespace StarTrek_KG.Config.Collections
             }
         }
 
-        public new NameAllegianceElement this[string responseString]
+        public new NameAllegianceDesignator this[string responseString]
         {
             get
             {
-                return (NameAllegianceElement)BaseGet(responseString);
+                return (NameAllegianceDesignator)BaseGet(responseString);
             }
             set
             {
@@ -40,12 +40,12 @@ namespace StarTrek_KG.Config.Collections
 
         protected override ConfigurationElement CreateNewElement()
         {
-            return new NameAllegianceElement();
+            return new NameAllegianceDesignator();
         }
 
         protected override object GetElementKey(ConfigurationElement element)
         {
-            return ((NameAllegianceElement)element).name;
+            return ((NameAllegianceDesignator)element).name;
         }
     }
 }
