@@ -255,7 +255,7 @@ namespace StarTrek_KG.Subsystem
                         this.Game.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
                         this.Game.Write.Line("Federation Ships and starbases will now shoot you on sight!");
 
-                        this.Game.StarbasesAreHostile = true;
+                        this.Game.PlayerNowEnemyToFederation = true;
 
                         //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
                         map.AddHostileFederationShipsToExistingMap();
@@ -264,7 +264,7 @@ namespace StarTrek_KG.Subsystem
                     {
                         this.Game.Write.Line("Starbase was destroyed before getting out a distress call.");
 
-                        if (!this.Game.StarbasesAreHostile)
+                        if (!this.Game.PlayerNowEnemyToFederation)
                         {
                             this.Game.Write.Line("For now, no one will know of this..");
                         }
@@ -341,7 +341,7 @@ namespace StarTrek_KG.Subsystem
             //todo: once starbases are an object, then they are merely another hostile.  Delete this IF and the rest of the code should work fine.
             if (thisQuadrant.GetStarbaseCount() > 0)
             {
-                if (Game.StarbasesAreHostile)
+                if (Game.PlayerNowEnemyToFederation)
                 {
                     this.Game.Map.StarbaseCalculator(this.ShipConnectedTo);
                 }

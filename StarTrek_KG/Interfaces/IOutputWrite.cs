@@ -13,11 +13,11 @@ namespace StarTrek_KG.Interfaces
         int Starbases { get; set; }
         int Stardate { get; set; }
         Console Console { get; set; }
-        void PrintCommandResult(Ship ship);
+        void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
         void PrintMission();
         void Strings(IEnumerable<string> strings);
         void HighlightTextBW(bool on);
-
+        
         void Line(string stringToOutput);
 
         void DebugLine(string stringToOutput);

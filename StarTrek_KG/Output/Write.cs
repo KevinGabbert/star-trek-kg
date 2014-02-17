@@ -58,7 +58,7 @@ namespace StarTrek_KG.Output
         }
 
         //missionResult needs to be an enum
-        public void PrintCommandResult(Ship ship)
+        public void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
         {
             var missionEndResult = String.Empty;
 
@@ -69,6 +69,10 @@ namespace StarTrek_KG.Output
             else if (ship.Energy == 0)
             {
                 missionEndResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF ENERGY.";
+            }
+            else if (starbasesAreHostile && starbasesLeft == 0)
+            {
+                missionEndResult = "ALL FEDERATION STARBASES DESTROYED. YOU HAVE DEALT A SEVERE BLOW TO THE FEDERATION!";
             }
             else if (this.TotalHostiles == 0)
             {

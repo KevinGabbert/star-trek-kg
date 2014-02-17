@@ -36,7 +36,7 @@ namespace StarTrek_KG.Interfaces
         string CreateStars(Quadrant quadrant, int totalStarsInQuadrant, SectorType starSectorType = SectorType.StarSystem);
 
         void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
-            Stack<string> baddieNames, FactionName stockBaddieFaction);
+            Stack<string> baddieNames, FactionName stockBaddieFaction, bool makeNebulae);
 
         void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, FactionName stockBaddieFaction);
         void AddShip(IShip ship, ISector toSector);

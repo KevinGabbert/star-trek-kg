@@ -131,7 +131,7 @@ namespace StarTrek_KG.Playfield
             {
                 for (var y = 0; y < Constants.SECTOR_MAX; y++)
                 {
-                    this.PopulateMatchingItem(quadrant, itemsToPopulate, x, y, baddieNames, stockBaddieFaction);
+                    this.PopulateMatchingItem(quadrant, itemsToPopulate, x, y, baddieNames, stockBaddieFaction, makeNebulae);
                 }
             }
 
@@ -249,7 +249,7 @@ namespace StarTrek_KG.Playfield
         }
 
         public void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
-            Stack<string> baddieNames, FactionName stockBaddieFaction)
+            Stack<string> baddieNames, FactionName stockBaddieFaction, bool isNebula)
         {
             var sectorItemToPopulate = SectorItem.Empty;
 
@@ -269,9 +269,11 @@ namespace StarTrek_KG.Playfield
                                 sectorItemToPopulate = SectorItem.Empty;
                             }
                             else
-
                             {
-                                sectorItemToPopulate = sectorToPopulate.Item;
+                                if (!(isNebula && (sectorToPopulate.Item == SectorItem.Starbase)))
+                                {
+                                    sectorItemToPopulate = sectorToPopulate.Item;
+                                }
                             }
                         }
                         else

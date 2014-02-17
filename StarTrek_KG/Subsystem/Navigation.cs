@@ -82,7 +82,7 @@ namespace StarTrek_KG.Subsystem
 
             Location thisShip = this.ShipConnectedTo.GetLocation();
 
-            if (!this.Game.StarbasesAreHostile) //No Docking allowed if they hate you.
+            if (!this.Game.PlayerNowEnemyToFederation) //No Docking allowed if they hate you.
             {
                 this.Docked = this.Game.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Game.Map.Quadrants.GetActive().Sectors);
             }
@@ -125,7 +125,7 @@ namespace StarTrek_KG.Subsystem
 
             if ((baddiesHangingAround && stillInSameQuadrant) || 
                 hostileFedsInQuadrant || 
-                (this.Game.StarbasesAreHostile && currentQuadrant.GetStarbaseCount() > 0))
+                (this.Game.PlayerNowEnemyToFederation && currentQuadrant.GetStarbaseCount() > 0))
             {
                 this.Game.ALLHostilesAttack(this.Game.Map);
             }

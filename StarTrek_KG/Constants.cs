@@ -5,10 +5,9 @@ namespace StarTrek_KG
 {
     public static class Constants
     {
-        public const string NEBULA = "--+";
         public const string EMPTY = "   ";
         public const string PLAYERSHIP = "<*>";
-        public const string STARBASE = ">!<"; //todo: when this becomes a ship type, then add a ship TypeDesignator (vs using the faction designator) for starbases
+        public const string STARBASE = ">!<"; 
         public const string STAR = " * ";
         public const string DEBUG_MARKER = " X ";
 
