@@ -284,5 +284,11 @@ namespace StarTrek_KG.Playfield
         //{
         //    return quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly || sector.Item == SectorItem.Hostile);
         //}
+
+        public int GetStarbaseCount()
+        {
+            int allStarbases = this.Sum(q => q.GetStarbaseCount());
+            return allStarbases;
+        }
     }
 }

@@ -127,6 +127,7 @@ namespace StarTrek_KG.Output
                 {
                     case SectorItem.Empty:
 
+                        //todo: might be good to put some false positives here  (jsut throw in some random faction letters)
                         sb.Append(isNebula ? Utility.Utility.NebulaUnit() : Constants.EMPTY);
                         break;
 
@@ -136,11 +137,38 @@ namespace StarTrek_KG.Output
 
                     case SectorItem.Hostile:
 
-                        this.AppendFactionDesignator(sb, totalHostiles, sector);
+                        //todo: later it might be nice to have something act on this.. say.. more power to the sensors can change this value
+                        bool canActuallySeeEnemy = isNebula && (Utility.Utility.Random.Next(10) == 5); //todo: resource this out
+
+                        if (!isNebula || canActuallySeeEnemy)
+                        {
+                            this.AppendShipDesignator(sb, totalHostiles, sector);
+                        }
+                        else
+                        {
+                            if (isNebula)
+                            {
+                                sb.Append("-++");
+                            }
+                        }
+
                         break;
 
                     case SectorItem.Star:
-                        sb.Append(Constants.STAR);
+
+                        bool canActuallySeeStar = (!isNebula) || (isNebula && (Utility.Utility.Random.Next(10) == 6)); //todo: resource this out
+                        if (canActuallySeeStar)
+                        {
+                            sb.Append(Constants.STAR);
+                        }
+                        else
+                        {
+                            if (isNebula)
+                            {
+                                sb.Append("-+-");
+                            }
+                        }
+
                         break;
 
                     case SectorItem.Starbase:
@@ -168,7 +196,7 @@ namespace StarTrek_KG.Output
             sb.Length = 0;
         }
 
-        private void AppendFactionDesignator(StringBuilder sb, int totalHostiles, Sector sector)
+        private void AppendShipDesignator(StringBuilder sb, int totalHostiles, Sector sector)
         {
             var ship = (IShip) sector.Object;
 

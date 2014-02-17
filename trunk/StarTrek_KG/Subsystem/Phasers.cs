@@ -94,7 +94,7 @@ namespace StarTrek_KG.Subsystem
                 this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
             }
 
-            if (this.ShipConnectedTo.GetQuadrant().GetStarbaseCount() > 0 && this.Game.StarbasesAreHostile)
+            if (this.ShipConnectedTo.GetQuadrant().GetStarbaseCount() > 0 && this.Game.PlayerNowEnemyToFederation)
             {
                 //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
                 //for what its worth, Starbases will have a lot more power!

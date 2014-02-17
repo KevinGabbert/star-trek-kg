@@ -27,7 +27,7 @@ namespace StarTrek_KG
             public PrintSector PrintSector { get; set; }
             public IMap Map { get; set; }
 
-            public bool StarbasesAreHostile { get; set; } //todo: temporary until Starbase object is created
+            public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
             public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
             public bool gameOver;
 
@@ -39,7 +39,7 @@ namespace StarTrek_KG
         /// </summary>
         public Game(IStarTrekKGSettings config, bool startup = true)
         {
-            this.StarbasesAreHostile = false;  //todo: resource this out.
+            this.PlayerNowEnemyToFederation = false;  //todo: resource this out.
             this.Config = config;
             if(this.Write == null)
             {
@@ -342,7 +342,7 @@ namespace StarTrek_KG
         /// </summary>
         private void PlayOnce()
         {
-            if(gameOver)
+            if(this.gameOver)
             {
                 this.Write.DebugLine("Game Over.");
                 return;
@@ -352,7 +352,7 @@ namespace StarTrek_KG
 
             while (!gameOver)
             {
-                gameOver = this.NewTurn(); //Shows Command Prompt
+                this.gameOver = this.NewTurn(); //Shows Command Prompt
 
                 if (gameOver)
                 {
@@ -375,15 +375,26 @@ namespace StarTrek_KG
         {
             this.Write.Prompt(this.Map.Playership, this.Map.Text, this);
 
-                //move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
-                ////Map.GetAllHostiles(this.Map).Count
+            //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
 
-            gameOver = !(this.Map.Playership.Energy > 0 &&
-                         !this.Map.Playership.Destroyed &&
-                          (this.Map.Quadrants.GetHostileCount() > 0) &&                              
-                         this.Map.timeRemaining > 0);
+            var starbasesLeft = this.Map.Quadrants.GetStarbaseCount();
 
-            Output.PrintCommandResult(this.Map.Playership);
+            if (this.PlayerNowEnemyToFederation)
+            {
+                this.gameOver = (this.Map.timeRemaining < 1 ||
+                                 starbasesLeft < 1 ||
+                                 this.Map.Playership.Destroyed ||
+                                 this.Map.Playership.Energy < 1);
+            }
+            else
+            {
+                this.gameOver = !(this.Map.Playership.Energy > 0 &&
+                                !this.Map.Playership.Destroyed &&
+                                (this.Map.Quadrants.GetHostileCount() > 0) &&                              
+                                this.Map.timeRemaining > 0);
+            }
+
+            Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
             return gameOver;
         }
 
@@ -447,7 +458,7 @@ namespace StarTrek_KG
 
         private void HostileStarbasesAttack(IMap map, IQuadrant activeQuadrant)
         {
-            if (this.StarbasesAreHostile)
+            if (this.PlayerNowEnemyToFederation)
             {
                 if (activeQuadrant.Type != QuadrantType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
                 {
@@ -474,7 +485,7 @@ namespace StarTrek_KG
 
         private void HostileAttacks(IMap map, IShip badGuy)
         {
-            if (Navigation.For(map.Playership).Docked && !this.StarbasesAreHostile)
+            if (Navigation.For(map.Playership).Docked && !this.PlayerNowEnemyToFederation)
             {
                 this.AttackDockedPlayership(badGuy);
             }
