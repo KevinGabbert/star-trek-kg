@@ -7,7 +7,7 @@ namespace StarTrek_KG
     {
         public const string EMPTY = "   ";
         public const string PLAYERSHIP = "<*>";
-        public const string STARBASE = ">!<"; 
+        public const string STARBASE = ">!<"; //∞
         public const string STAR = " * ";
         public const string DEBUG_MARKER = " X ";
 
