@@ -185,6 +185,28 @@ namespace StarTrek_KG.Output
             }
         }
 
+        public string RenderQuadrantCounts(int starbaseCount, int starCount, int hostileCount)
+        {
+            string counts = "";
+
+            //todo: Can we get unicode reversed text?
+            //if (renderingMyLocation)
+            //{
+            //    this.HighlightTextBW(true);
+            //}
+
+            counts += hostileCount.FormatForLRS();
+            counts += starbaseCount.FormatForLRS();
+            counts += starCount.FormatForLRS();
+
+            //if (renderingMyLocation)
+            //{
+            //    this.HighlightTextBW(false);
+            //}
+
+            return counts;
+        }
+
         public void RenderUnscannedQuadrant(bool renderingMyLocation)
         {
             if (renderingMyLocation)
@@ -226,6 +248,7 @@ namespace StarTrek_KG.Output
             ACTIVITY_PANEL.Add("nav = Navigation");
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
+            ACTIVITY_PANEL.Add("crs = Combined Range Scan");
             ACTIVITY_PANEL.Add("pha = Phaser Control");
             ACTIVITY_PANEL.Add("tor = Photon Torpedo Control");
             ACTIVITY_PANEL.Add("she = Shield Control");
@@ -263,6 +286,10 @@ namespace StarTrek_KG.Output
 
                 case "lrs":
                     LongRangeScan.For(playerShip).Controls();
+                    break;
+
+                case "crs":
+                    CombinedRangeScan.For(playerShip).Controls();
                     break;
 
                 case "pha": Phasers.For(playerShip).Controls(playerShip);

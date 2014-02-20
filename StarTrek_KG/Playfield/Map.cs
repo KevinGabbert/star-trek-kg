@@ -272,24 +272,33 @@ namespace StarTrek_KG.Playfield
 
             //todo:  do we pull strings from config and then put a switch statement below to set up individual systems??
 
+            foreach (ISubsystem subSystem in this.Playership.Subsystems)
+            {
+                subSystem.Damage = 0;
+                subSystem.ShipConnectedTo = this.Playership;
+            }
+
             this.SetupPlayershipNav();
             this.SetupPlayershipShields();
             this.SetupPlayershipTorpedoes();
 
-            ShortRangeScan.For(this.Playership).Damage = 0;
-            ShortRangeScan.For(this.Playership).ShipConnectedTo = this.Playership;
+            //ShortRangeScan.For(this.Playership).Damage = 0;
+            //ShortRangeScan.For(this.Playership).ShipConnectedTo = this.Playership;
 
-            LongRangeScan.For(this.Playership).Damage = 0;
-            LongRangeScan.For(this.Playership).ShipConnectedTo = this.Playership;
+            //LongRangeScan.For(this.Playership).Damage = 0;
+            //LongRangeScan.For(this.Playership).ShipConnectedTo = this.Playership;
 
-            Computer.For(this.Playership).Damage = 0;
-            Computer.For(this.Playership).ShipConnectedTo = this.Playership;
+            //CombinedRangeScan.For(this.Playership).Damage = 0;
+            //CombinedRangeScan.For(this.Playership).ShipConnectedTo = this.Playership;
 
-            Phasers.For(this.Playership).Damage = 0;
-            Phasers.For(this.Playership).ShipConnectedTo = this.Playership;
+            //Computer.For(this.Playership).Damage = 0;
+            //Computer.For(this.Playership).ShipConnectedTo = this.Playership;
 
-            DamageControl.For(this.Playership).Damage = 0;
-            DamageControl.For(this.Playership).ShipConnectedTo = this.Playership;
+            //Phasers.For(this.Playership).Damage = 0;
+            //Phasers.For(this.Playership).ShipConnectedTo = this.Playership;
+
+            //DamageControl.For(this.Playership).Damage = 0;
+            //DamageControl.For(this.Playership).ShipConnectedTo = this.Playership;
         }
 
         public void GetSubsystemSetupFromConfig()
@@ -334,25 +343,25 @@ namespace StarTrek_KG.Playfield
 
             torpedoes.ShipConnectedTo = this.Playership;
             torpedoes.Count = this.Config.GetSetting<int>("photonTorpedoes");
-            torpedoes.Damage = 0;
+            //torpedoes.Damage = 0;
         }
 
         public void SetupPlayershipShields()
         {
             var starshipShields = Shields.For(this.Playership);
 
-            starshipShields.ShipConnectedTo = this.Playership;
+            //starshipShields.ShipConnectedTo = this.Playership;
             starshipShields.Energy = 0;
-            starshipShields.Damage = 0;
+            //starshipShields.Damage = 0;
         }
 
         public void SetupPlayershipNav()
         {
             var starshipNAV = Navigation.For(this.Playership);
 
-            starshipNAV.ShipConnectedTo = this.Playership;
+            //starshipNAV.ShipConnectedTo = this.Playership;
             starshipNAV.Movement.ShipConnectedTo = this.Playership;
-            starshipNAV.Damage = 0;
+            //starshipNAV.Damage = 0;
             starshipNAV.MaxWarpFactor = this.Config.GetSetting<int>("MaxWarpFactor");
             starshipNAV.Docked = false;
         }

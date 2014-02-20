@@ -12,7 +12,8 @@ namespace StarTrek_KG.Interfaces
         double MaxTransfer { get; set; }
         int Energy { get; set; }
         Game Game { get; set; }
-        SubsystemType Type { get; set; }    
+        SubsystemType Type { get; set; }
+        Ship ShipConnectedTo { get; set; }
 
         ISubsystem For(Ship ship, Game game);
 
