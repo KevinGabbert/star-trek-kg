@@ -18,6 +18,7 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly SubsystemType Torpedoes = new SubsystemType(7, "Photon Torpedoes");
         public static readonly SubsystemType Phasers = new SubsystemType(8, "Phasers");
         public static readonly SubsystemType DamageControl = new SubsystemType(9, "Damage Control");
+        public static readonly SubsystemType CombinedRangeScan = new SubsystemType(5, "Combined Range Scan");
 
         private static Dictionary<string, SubsystemType> instance = new Dictionary<string, SubsystemType>();
 
@@ -65,6 +66,10 @@ namespace StarTrek_KG.TypeSafeEnums
 
                 case "lrs":
                     returnVal = SubsystemType.LongRangeScan;
+                    break;
+
+                case "crs":
+                    returnVal = SubsystemType.CombinedRangeScan;
                     break;
 
                 case "pha":

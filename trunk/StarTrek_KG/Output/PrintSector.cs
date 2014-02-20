@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -42,7 +43,7 @@ namespace StarTrek_KG.Output
                 shieldsAutoRaised = Game.Auto_Raise_Shields(map, quadrant);
             }
 
-            this.CreateViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
+            this.CreateSRSViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
             this.OutputSRSWarnings(quadrant, map, docked);
 
             if (shieldsAutoRaised)
@@ -51,12 +52,12 @@ namespace StarTrek_KG.Output
             }
         }
 
-        private void CreateViewScreen(IQuadrant quadrant,
-                                      IMap map,
-                                      int totalHostiles,
-                                      string condition,
-                                      Location location,
-                                      bool docked)
+        private void CreateSRSViewScreen(IQuadrant quadrant,
+                              IMap map,
+                              int totalHostiles,
+                              string condition,
+                              Location location,
+                              bool docked)
         {
             var sb = new StringBuilder();
             this.Condition = condition;
@@ -74,15 +75,15 @@ namespace StarTrek_KG.Output
 
             this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrantName);
 
-            for (int i = 0; i < 8; i++ ) //todo: resource out
+            for (int i = 0; i < 8; i++) //todo: resource out
             {
-                this.ShowSectorRow(sb, i, this.GetRowIndicator(i, map), quadrant.Sectors, totalHostiles, isNebula);
+                this.ShowSectorRow(sb, i, this.GetSRSRowIndicator(i, map), quadrant.Sectors, totalHostiles, isNebula);
             }
 
             this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
         }
 
-        private string GetRowIndicator(int row, IMap map)
+        private string GetSRSRowIndicator(int row, IMap map)
         {
             string retVal = " ";
 
@@ -116,6 +117,102 @@ namespace StarTrek_KG.Output
 
             return retVal;
         }
+
+        public void CRSPrintSector(Quadrant quadrant, IMap map)
+        {
+            //--refactor
+            var condition = this.GetCurrentCondition(quadrant, map);
+            var myShip = map.Playership;
+
+            Location myLocation = myShip.GetLocation();
+            int totalHostiles = map.Quadrants.GetHostileCount();
+            bool docked = Navigation.For(myShip).Docked;
+            List<string> lrsResults = LongRangeScan.For(myShip).RunLRSScan_Refactored(myLocation);
+
+            bool shieldsAutoRaised = false;
+            if (quadrant.GetHostiles().Count > 0)
+            {
+                shieldsAutoRaised = Game.Auto_Raise_Shields(map, quadrant);
+            }
+
+            //--refactor ^
+
+
+            this.CreateCRSViewScreen(quadrant, map, totalHostiles, condition, myLocation, lrsResults);
+            this.OutputSRSWarnings(quadrant, map, docked);
+
+
+            //--refactor
+            if (shieldsAutoRaised)
+            {
+                map.Write.Line("Shields automatically raised to " + Shields.For(map.Playership).Energy);
+            }
+            //--refactor ^
+        }
+
+        private void CreateCRSViewScreen(IQuadrant quadrant,
+                              IMap map,
+                              int totalHostiles,
+                              string condition,
+                              Location location,
+                              List<string> lrsResults)
+        {
+            var sb = new StringBuilder();
+            this.Condition = condition;
+            this.Location = location;
+
+            this.Write.Console.WriteLine("");
+
+            var quadrantName = quadrant.Name;
+            var isNebula = (quadrant.Type == QuadrantType.Nebulae);
+
+            if (isNebula)
+            {
+                quadrantName += " Nebula"; //todo: resource out.
+            }
+
+            this.Write.Console.WriteLine(lrsResults[0]);
+            this.Write.Console.WriteLine(String.Format("Region: {0}", quadrantName));
+            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder"), String.Format("Quad: [{0},{1}]  Sec: [{2},{3}]", Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y), Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y)));
+
+            for (int i = 0; i < 8; i++) //todo: resource out
+            {
+                this.ShowSectorRow(sb, i, this.GetCRSRowIndicator(i, map, lrsResults), quadrant.Sectors, totalHostiles, isNebula);
+            }
+
+            //todo: LRS bottom line
+            this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder"), lrsResults[6]);
+        }
+
+        private string GetCRSRowIndicator(int row, IMap map, IList<string> lrsResults)
+        {
+            string retVal = " ";
+
+            switch (row)
+            {
+                case 0:
+                    retVal += String.Format("Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy);
+                    break;
+                case 1:
+                    retVal += String.Format("Photon Torpedoes: {0}", Torpedoes.For(map.Playership).Count);
+                    break;
+                case 2:
+                    retVal += String.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
+                    break;
+
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                    retVal += lrsResults[row - 2]; 
+                    break;
+            }
+
+            return retVal;
+        }
+
+
 
         private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles, bool isNebula)
         {
@@ -196,7 +293,7 @@ namespace StarTrek_KG.Output
             sb.Length = 0;
         }
 
-        private void AppendShipDesignator(StringBuilder sb, int totalHostiles, Sector sector)
+        private void AppendShipDesignator(StringBuilder sb, int totalHostiles, ISector sector)
         {
             var ship = (IShip) sector.Object;
 
