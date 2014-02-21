@@ -29,17 +29,17 @@ namespace StarTrek_KG.Subsystem
 
         public void Controls()
         {
-            //if (Damaged()) return;
+            if (Damaged()) return;
 
-            //var location = this.ShipConnectedTo.GetLocation();
-            //Quadrant quadrant = Quadrants.Get(this.Game.Map, location.Quadrant);
+            var location = this.ShipConnectedTo.GetLocation();
+            Quadrant quadrant = Quadrants.Get(this.Game.Map, location.Quadrant);
 
-            //var printSector = (new PrintSector(this.Game.Config.GetSetting<int>("ShieldsDownLevel"), (this.Game.Config.GetSetting<int>("LowEnergyLevel")),this.Game.Write, this.Game.Config));
-            //printSector.SRSPrintSector(quadrant, this.Game.Map); 
+            var printSector = (new PrintSector(this.Game.Config.GetSetting<int>("ShieldsDownLevel"), (this.Game.Config.GetSetting<int>("LowEnergyLevel")),this.Game.Write, this.Game.Config));
+            printSector.CRSPrintSector(quadrant, this.Game.Map); 
 
-            //quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
+            quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
 
-            //quadrant.Scanned = true;
+            quadrant.Scanned = true;
         }
 
         public static CombinedRangeScan For(Ship ship)
@@ -49,7 +49,7 @@ namespace StarTrek_KG.Subsystem
                 throw new GameConfigException("Ship not set up (CombinedRangeScan)."); //todo: reflect the name and refactor this to ISubsystem
             }
 
-            return (CombinedRangeScan) ship.Subsystems.Single(s => s.Type == SubsystemType.ShortRangeScan);
+            return (CombinedRangeScan) ship.Subsystems.Single(s => s.Type == SubsystemType.CombinedRangeScan);
         }
     }
 }
