@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -137,7 +138,6 @@ namespace StarTrek_KG.Output
 
             //--refactor ^
 
-
             this.CreateCRSViewScreen(quadrant, map, totalHostiles, condition, myLocation, lrsResults);
             this.OutputSRSWarnings(quadrant, map, docked);
 
@@ -155,7 +155,7 @@ namespace StarTrek_KG.Output
                               int totalHostiles,
                               string condition,
                               Location location,
-                              List<string> lrsResults)
+                              IList<string> lrsResults)
         {
             var sb = new StringBuilder();
             this.Condition = condition;
@@ -171,17 +171,57 @@ namespace StarTrek_KG.Output
                 quadrantName += " Nebula"; //todo: resource out.
             }
 
-            this.Write.Console.WriteLine(lrsResults[0]);
-            this.Write.Console.WriteLine(String.Format("Region: {0}", quadrantName));
-            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder"), String.Format("Quad: [{0},{1}]  Sec: [{2},{3}]", Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y), Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y)));
-
-            for (int i = 0; i < 8; i++) //todo: resource out
+            if (lrsResults.Any())
             {
-                this.ShowSectorRow(sb, i, this.GetCRSRowIndicator(i, map, lrsResults), quadrant.Sectors, totalHostiles, isNebula);
+                this.Write.Console.WriteLine(lrsResults[0]);
             }
 
-            //todo: LRS bottom line
-            this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder"), lrsResults[6]);
+            var topBorder = this.Config.GetText("CRSTopBorder");
+
+            this.CRS_Region_ScanLine(quadrantName, topBorder);
+            this.ScanLine(topBorder, String.Format(" Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy));
+
+            int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
+            for (int i = 0; i < crsRows; i++) //todo: resource out
+            {
+                var rowIndicator = this.GetCRSRowIndicator(i, map, lrsResults);
+                this.ShowSectorRow(sb, i, rowIndicator, quadrant.Sectors, totalHostiles, isNebula);
+            }
+
+            string lrsBottom = null;
+            if (lrsResults.Count() == 7)
+            {
+                lrsBottom = lrsResults[6];
+            }
+
+            this.ScanLine(this.Config.GetText("CRSBottomBorder"), lrsBottom);
+        }
+
+        private void ScanLine(string srsText, string rightSideText = "")
+        {
+            int textMeasurement = srsText.Length;
+
+            var srsLine = new StringBuilder(srsText);
+
+            srsLine.Remove(textMeasurement, srsLine.ToString().Length - (textMeasurement));
+            srsLine.Insert(textMeasurement, rightSideText);
+
+            this.Write.SingleLine(srsLine.ToString());
+        }
+
+        private void CRS_Region_ScanLine(string quadrantName, string topBorder)
+        {
+            int topBorderAreaMeasurement = topBorder.Length + 1;
+            var regionLine = new StringBuilder(String.Format("Region: {0}", quadrantName).PadRight(topBorderAreaMeasurement));
+
+            regionLine.Remove(topBorderAreaMeasurement, regionLine.ToString().Length - (topBorderAreaMeasurement));
+
+            var quadIndicator = String.Format("Quad: [{0},{1}]  Sec: [{2},{3}]",
+                                Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y),
+                                Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y));
+
+            regionLine.Insert(topBorderAreaMeasurement, quadIndicator);
+            this.Write.SingleLine(regionLine.ToString());
         }
 
         private string GetCRSRowIndicator(int row, IMap map, IList<string> lrsResults)
@@ -191,13 +231,14 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    retVal += String.Format("Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy);
-                    break;
-                case 1:
                     retVal += String.Format("Photon Torpedoes: {0}", Torpedoes.For(map.Playership).Count);
                     break;
+
+                case 1:
+                    retVal += String.Format("Time remaining: {0}", map.timeRemaining);
+                    break;
+
                 case 2:
-                    retVal += String.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
                     break;
 
                 case 3:
@@ -205,13 +246,17 @@ namespace StarTrek_KG.Output
                 case 5:
                 case 6:
                 case 7:
-                    retVal += lrsResults[row - 2]; 
+                    
+                    if (lrsResults.Count() == row - 2)
+                    {
+                        retVal += lrsResults[row - 2];
+                    }
+
                     break;
             }
 
             return retVal;
         }
-
 
 
         private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles, bool isNebula)
@@ -289,7 +334,8 @@ namespace StarTrek_KG.Output
                 sb.Append(suffix);
             }
 
-            this.Write.Console.WriteLine(sb.ToString());
+            this.ScanLine(sb.ToString());
+            //this.Write.Console.WriteLine(sb.ToString()); 
             sb.Length = 0;
         }
 
@@ -371,7 +417,7 @@ namespace StarTrek_KG.Output
         }
 
         //todo: this function needs to be part of SRS
-        private void SRSScanHostile(Quadrant quadrant)
+        private void SRSScanHostile(IQuadrant quadrant)
         {
             this.Write.Console.WriteLine(this.Config.GetText("HostileDetected"),
                               (quadrant.GetHostiles().Count == 1 ? "" : "s"));
