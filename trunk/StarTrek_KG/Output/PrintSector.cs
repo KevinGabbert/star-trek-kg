@@ -128,7 +128,7 @@ namespace StarTrek_KG.Output
             Location myLocation = myShip.GetLocation();
             int totalHostiles = map.Quadrants.GetHostileCount();
             bool docked = Navigation.For(myShip).Docked;
-            List<string> lrsResults = LongRangeScan.For(myShip).RunLRSScan_Refactored(myLocation);
+            List<string> lrsResults = LongRangeScan.For(myShip).RunLRSScan(myLocation);
 
             bool shieldsAutoRaised = false;
             if (quadrant.GetHostiles().Count > 0)
