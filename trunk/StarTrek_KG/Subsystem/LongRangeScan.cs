@@ -100,7 +100,6 @@ namespace StarTrek_KG.Subsystem
             {
                 lrsScanLines.Add("└─────┴─────┴─────┘");
             }
-
         }
 
         private string GetQuadrantInfo(int quadrantY, bool outOfBounds, string currentLRSScanLine, int quadrantX)
@@ -151,7 +150,7 @@ namespace StarTrek_KG.Subsystem
                 //    currentLRSScanLine += "<HighlightStart />";
                 //}
 
-                currentLRSScanLine += "NNN";
+                currentLRSScanLine += Utility.Utility.NebulaUnit();
 
                 //if (renderingMyLocation)
                 //{
