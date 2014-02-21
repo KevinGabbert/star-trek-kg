@@ -54,81 +54,85 @@ namespace StarTrek_KG.Subsystem
 
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
             {
-                for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
-                {
-                    string currentLRSScanLine = "";
-
-                    currentLRSScanLine += Constants.SCAN_SECTOR_DIVIDER + " ";
-
-                    var renderingMyLocation = myLocation.Quadrant.X == quadrantX &&
-                                              myLocation.Quadrant.Y == quadrantY;
-
-                    //todo: turn these into props.
-
-                    var outOfBounds = this.OutOfBounds(quadrantY, quadrantX);
-
-                    if (!outOfBounds)
-                    {
-                        Quadrant quadrantToScan = Quadrants.Get(this.Game.Map,
-                            this.CoordinateToScan(quadrantY, quadrantX));
-
-                        if (quadrantToScan.Type != QuadrantType.Nebulae)
-                        {
-                            int starbaseCount = -1;
-                            int starCount = -1;
-                            int hostileCount = -1;
-
-                            this.Execute(quadrantToScan, out hostileCount, out starbaseCount, out starCount);
-
-                            //todo: if renderingMyLocation, then highlight text
-                            //todo: We might have to drop down a marker in currentLRSScanLine right here, and pull it out while rendering so that we
-                            //can change the backcolor
-
-                            if (renderingMyLocation)
-                            {
-                                currentLRSScanLine += "<HighlightStart />";
-                            }
-
-                            currentLRSScanLine += this.Game.Write.RenderQuadrantCounts(starbaseCount, starCount, hostileCount);
-                            
-                            if (renderingMyLocation)
-                            {
-                                currentLRSScanLine += "<HighlightEnd />";
-                            }
-                        }
-                        else
-                        {
-                            //todo: if renderingMyLocation, then highlight text
-                            //todo: pull out markup while rendering 
-                            //can change the backcolor
-
-                            if (renderingMyLocation)
-                            {
-                                currentLRSScanLine += "<HighlightStart />";
-                            }
-
-                            currentLRSScanLine += "NNN";
-
-                            if (renderingMyLocation)
-                            {
-                                currentLRSScanLine += "<HighlightEnd />";
-                            }
-                        }
-                    }
-                    else
-                    {
-                        currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBorder");
-                    }
-
-                    currentLRSScanLine += " ";
-                    lrsScanLines.Add(currentLRSScanLine);
-                }
-
-                lrsScanLines.Add(Constants.SCAN_SECTOR_DIVIDER);
-                lrsScanLines.Add("-------------------");
+                ScanRow(myLocation, quadrantY, lrsScanLines);
             }
 
-            return new List<string>();
+            return lrsScanLines;
+        }
+
+        private void ScanRow(Location myLocation, int quadrantY, List<string> lrsScanLines)
+        {
+            string currentLRSScanLine = "";
+            for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
+            {
+                currentLRSScanLine += Constants.SCAN_SECTOR_DIVIDER + " ";
+
+                //var renderingMyLocation = myLocation.Quadrant.X == quadrantX &&
+                //                          myLocation.Quadrant.Y == quadrantY;
+
+                //todo: turn these into props.
+                var outOfBounds = this.OutOfBounds(quadrantY, quadrantX);
+
+                if (!outOfBounds)
+                {
+                    currentLRSScanLine = GetQuadrantData(quadrantY, quadrantX, currentLRSScanLine);
+                }
+                else
+                {
+                    currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBorder");
+                }
+
+                currentLRSScanLine += " ";
+            }
+
+            //lrsScanLines.Add(Constants.SCAN_SECTOR_DIVIDER);
+            lrsScanLines.Add(currentLRSScanLine + Constants.SCAN_SECTOR_DIVIDER);
+            lrsScanLines.Add("-------------------");
+        }
+
+        private string GetQuadrantData(int quadrantY, int quadrantX, string currentLRSScanLine)
+        {
+            Quadrant quadrantToScan = Quadrants.Get(this.Game.Map, this.CoordinateToScan(quadrantY, quadrantX));
+
+            if (quadrantToScan.Type != QuadrantType.Nebulae)
+            {
+                int starbaseCount;
+                int starCount;
+                int hostileCount;
+
+                this.Execute(quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+
+                //if (renderingMyLocation)
+                //{
+                //    currentLRSScanLine += "<HighlightStart />";
+                //}
+
+                currentLRSScanLine += this.Game.Write.RenderQuadrantCounts(starbaseCount, starCount, hostileCount);
+
+                //if (renderingMyLocation)
+                //{
+                //    currentLRSScanLine += "<HighlightEnd />";
+                //}
+            }
+            else
+            {
+                //todo: if renderingMyLocation, then highlight text
+                //todo: pull out markup while rendering 
+                //can change the backcolor
+
+                //if (renderingMyLocation)
+                //{
+                //    currentLRSScanLine += "<HighlightStart />";
+                //}
+
+                currentLRSScanLine += "NNN";
+
+                //if (renderingMyLocation)
+                //{
+                //    currentLRSScanLine += "<HighlightEnd />";
+                //}
+            }
+            return currentLRSScanLine;
         }
 
         //todo: this will be replaced

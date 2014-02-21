@@ -113,6 +113,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
             this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
             this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
+            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSCRSDamage"), CombinedRangeScan.For(ship).Damage);
             this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
             this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSComputerDamage"), computerDamage);
             this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);

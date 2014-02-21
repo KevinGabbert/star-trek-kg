@@ -171,11 +171,6 @@ namespace StarTrek_KG.Output
                 quadrantName += " Nebula"; //todo: resource out.
             }
 
-            if (lrsResults.Any())
-            {
-                this.Write.Console.WriteLine(lrsResults[0]);
-            }
-
             var topBorder = this.Config.GetText("CRSTopBorder");
 
             this.CRS_Region_ScanLine(quadrantName, topBorder);
@@ -184,14 +179,14 @@ namespace StarTrek_KG.Output
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
             for (int i = 0; i < crsRows; i++) //todo: resource out
             {
-                var rowIndicator = this.GetCRSRowIndicator(i, map, lrsResults);
+                var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults);
                 this.ShowSectorRow(sb, i, rowIndicator, quadrant.Sectors, totalHostiles, isNebula);
             }
 
             string lrsBottom = null;
             if (lrsResults.Count() == 7)
             {
-                lrsBottom = lrsResults[6];
+                lrsBottom = " " + lrsResults[6];
             }
 
             this.ScanLine(this.Config.GetText("CRSBottomBorder"), lrsBottom);
@@ -224,7 +219,7 @@ namespace StarTrek_KG.Output
             this.Write.SingleLine(regionLine.ToString());
         }
 
-        private string GetCRSRowIndicator(int row, IMap map, IList<string> lrsResults)
+        private string GetCRSRightTextLine(int row, IMap map, IList<string> lrsResults)
         {
             string retVal = " ";
 
@@ -239,15 +234,13 @@ namespace StarTrek_KG.Output
                     break;
 
                 case 2:
-                    break;
-
                 case 3:
                 case 4:
                 case 5:
                 case 6:
                 case 7:
                     
-                    if (lrsResults.Count() == row - 2)
+                    if (lrsResults.Count() > (row - 1))
                     {
                         retVal += lrsResults[row - 2];
                     }
