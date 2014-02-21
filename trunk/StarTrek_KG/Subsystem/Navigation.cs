@@ -71,7 +71,15 @@ namespace StarTrek_KG.Subsystem
 
             this.RepairOrTakeDamage(lastQuadX, lastQuadY);
 
-            ShortRangeScan.For(this.ShipConnectedTo).Controls();
+            var crs = CombinedRangeScan.For(this.ShipConnectedTo);
+            if (crs.Damaged())
+            {
+                ShortRangeScan.For(this.ShipConnectedTo).Controls();
+            }
+            else
+            {
+                crs.Controls();
+            }
 
             //todo: upon arriving in quadrant, all damaged controls need to be enumerated
         }
