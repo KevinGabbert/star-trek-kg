@@ -33,20 +33,12 @@ namespace StarTrek_KG.Subsystem
             if (Damaged()) return;
 
             Location myLocation = this.ShipConnectedTo.GetLocation();
-            bool currentlyInNebula = myLocation.Quadrant.Type == QuadrantType.Nebulae;
 
-            if (!currentlyInNebula)
-            {
-                var lrsResults = this.RunLRSScan(myLocation);
+            var lrsResults = this.RunLRSScan(myLocation);
 
-                foreach (var line in lrsResults)
-                {
-                    this.Game.Write.SingleLine(line);
-                }
-            }
-            else
+            foreach (var line in lrsResults)
             {
-                this.Game.Write.SingleLine("Long Range Scan inoperative while in Nebula.");
+                this.Game.Write.SingleLine(line);
             }
         }
 
@@ -54,20 +46,26 @@ namespace StarTrek_KG.Subsystem
         public List<string> RunLRSScan(Location myLocation)
         {
             var lrsScanLines = new List<string>();
+            bool currentlyInNebula = myLocation.Quadrant.Type == QuadrantType.Nebulae;
 
             lrsScanLines.Add("┌─────┬─────┬─────┐");
 
             var scanRow = 0;
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
             {
-                this.ScanRow(myLocation, quadrantY, lrsScanLines, scanRow);
+                this.ScanRow(myLocation, quadrantY, lrsScanLines, scanRow, currentlyInNebula);
                 scanRow++;
+            }
+
+            if (currentlyInNebula)
+            {
+                this.Game.Write.SingleLine("Long Range Scan inoperative while in Nebula.");
             }
 
             return lrsScanLines;
         }
 
-        private void ScanRow(Location myLocation, int quadrantY, ICollection<string> lrsScanLines, int scanRow)
+        private void ScanRow(Location myLocation, int quadrantY, ICollection<string> lrsScanLines, int scanRow, bool currentlyInNebula)
         {
             string currentLRSScanLine = "";
             for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
@@ -80,19 +78,18 @@ namespace StarTrek_KG.Subsystem
                 //todo: turn these into props.
                 var outOfBounds = this.OutOfBounds(quadrantY, quadrantX);
 
-                if (!outOfBounds)
+                if (!currentlyInNebula)
                 {
-                    currentLRSScanLine = GetQuadrantData(quadrantY, quadrantX, currentLRSScanLine);
+                    currentLRSScanLine = this.GetQuadrantInfo(quadrantY, outOfBounds, currentLRSScanLine, quadrantX);
                 }
                 else
                 {
-                    currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBorder");
+                    currentLRSScanLine += Utility.Utility.NebulaUnit();
                 }
 
                 currentLRSScanLine += " ";
             }
 
-            //lrsScanLines.Add(Constants.SCAN_SECTOR_DIVIDER);
             lrsScanLines.Add(currentLRSScanLine + Constants.SCAN_SECTOR_DIVIDER);
 
             if (scanRow == 0 || scanRow == 1)
@@ -104,6 +101,19 @@ namespace StarTrek_KG.Subsystem
                 lrsScanLines.Add("└─────┴─────┴─────┘");
             }
 
+        }
+
+        private string GetQuadrantInfo(int quadrantY, bool outOfBounds, string currentLRSScanLine, int quadrantX)
+        {
+            if (!outOfBounds)
+            {
+                currentLRSScanLine = GetQuadrantData(quadrantY, quadrantX, currentLRSScanLine);
+            }
+            else
+            {
+                currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBorder");
+            }
+            return currentLRSScanLine;
         }
 
         private string GetQuadrantData(int quadrantY, int quadrantX, string currentLRSScanLine)
