@@ -55,17 +55,19 @@ namespace StarTrek_KG.Subsystem
         {
             var lrsScanLines = new List<string>();
 
-            lrsScanLines.Add("───────────────────");
+            lrsScanLines.Add("┌─────┬─────┬─────┐");
 
+            var scanRow = 0;
             for (var quadrantY = myLocation.Quadrant.Y - 1; quadrantY <= myLocation.Quadrant.Y + 1; quadrantY++)
             {
-                ScanRow(myLocation, quadrantY, lrsScanLines);
+                this.ScanRow(myLocation, quadrantY, lrsScanLines, scanRow);
+                scanRow++;
             }
 
             return lrsScanLines;
         }
 
-        private void ScanRow(Location myLocation, int quadrantY, ICollection<string> lrsScanLines)
+        private void ScanRow(Location myLocation, int quadrantY, ICollection<string> lrsScanLines, int scanRow)
         {
             string currentLRSScanLine = "";
             for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
@@ -92,7 +94,16 @@ namespace StarTrek_KG.Subsystem
 
             //lrsScanLines.Add(Constants.SCAN_SECTOR_DIVIDER);
             lrsScanLines.Add(currentLRSScanLine + Constants.SCAN_SECTOR_DIVIDER);
-            lrsScanLines.Add("───────────────────");
+
+            if (scanRow == 0 || scanRow == 1)
+            {
+                lrsScanLines.Add("├─────┼─────┼─────┤");
+            }
+            else
+            {
+                lrsScanLines.Add("└─────┴─────┴─────┘");
+            }
+
         }
 
         private string GetQuadrantData(int quadrantY, int quadrantX, string currentLRSScanLine)

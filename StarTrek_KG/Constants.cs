@@ -16,7 +16,7 @@ namespace StarTrek_KG
         //--------------------------------------
         public const string ALLY = "<++>"; //todo: future feature
 
-        public const string SCAN_SECTOR_DIVIDER = "|";
+        public const string SCAN_SECTOR_DIVIDER = "│";
 
         //Make these part of the Map Object.  There should be only 1 map instance.. right?
         public static int SECTOR_MIN; 
