@@ -24,12 +24,10 @@
  * 
  */
 
-using System;
 using System.Drawing;
 using StarTrek_KG;
 using StarTrek_KG.Config;
-using StarTrek_KG.Experimental;
-using StarTrek_KG.Experimental.ColorConsole;
+using StarTrek_KG.Utility;
 
 namespace StarTrek_Console {
 
@@ -37,10 +35,13 @@ namespace StarTrek_Console {
 
     public static void Main(string[] args)
     {
+        //System.Console.WriteLine("\u00B2"); 
         //SetScreenColorsApp.SetScreenColors(Color.Black, Color.Orange);
         //SetScreenColorsApp.SetScreenColors(Color.Blue, Color.Black);
 
         //Console.ForegroundColor = ConsoleColor.Black;
+
+        ConsoleHelper.SetConsoleIcon(SystemIcons.Shield);
 
         var settingsForWholeGame = (new StarTrekKGSettings());
 

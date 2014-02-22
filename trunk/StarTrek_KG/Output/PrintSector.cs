@@ -7,6 +7,7 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Output
 {
@@ -189,7 +190,7 @@ namespace StarTrek_KG.Output
                 lrsBottom = " " + lrsResults[6];
             }
 
-            this.ScanLine(this.Config.GetText("CRSBottomBorder"), lrsBottom);
+            this.ScanLine(this.Config.GetText("CRSBottomBorder"), lrsBottom + this.Config.GetText("AppVersion"));
         }
 
         private void ScanLine(string srsText, string rightSideText = "")
@@ -238,16 +239,20 @@ namespace StarTrek_KG.Output
                 case 4:
                 case 5:
                 case 6:
-                case 7:
-                    
-                    if (lrsResults.Count() > (row - 1))
-                    {
-                        retVal += lrsResults[row - 2];
-                    }
-
+                case 7:                 
+                    retVal = addLine(row, lrsResults, retVal);
                     break;
             }
 
+            return retVal;
+        }
+
+        private static string addLine(int row, IList<string> lrsResults, string retVal)
+        {
+            if (lrsResults.Count() > (row - 1))
+            {
+                retVal += lrsResults[row - 2];
+            }
             return retVal;
         }
 
