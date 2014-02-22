@@ -6,6 +6,7 @@ using StarTrek_KG.Exceptions;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Subsystem
 {

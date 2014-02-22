@@ -142,12 +142,15 @@
     <Compile Include="Subsystem\SubSystem_Base.cs" />
     <Compile Include="Subsystem\Torpedoes.cs" />
     <Compile Include="Actors\System.cs" />
+    <Compile Include="Utility\ConsoleHelper.cs" />
     <Compile Include="Utility\MelodyPlayer.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Actors\Warp.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Types\" />
