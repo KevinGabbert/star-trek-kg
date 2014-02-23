@@ -112,6 +112,7 @@ namespace StarTrek_KG.Subsystem
             {
                 currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBorder");
             }
+
             return currentLRSScanLine;
         }
 

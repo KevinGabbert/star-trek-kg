@@ -467,6 +467,27 @@ namespace StarTrek_KG.Output
 
             return String.Format("Your Ship has been hit by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }
+
+        public void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel)
+        {
+            var condition = ship.GetConditionAndSetIcon();
+
+            if (ship.AtLowEnergyLevel())
+            {
+                this.ResourceLine("LowEnergyLevel");
+            }
+
+            if (ship.GetQuadrant().Type == QuadrantType.Nebulae)
+            {
+                this.SingleLine("");
+                this.ResourceLine("NebulaWarning");
+            }
+
+            if (Shields.For(ship).Energy == shieldsDownLevel && !Navigation.For(ship).Docked)
+            {
+                this.ResourceLine("ShieldsDown");
+            }
+        }
     }
 }
 

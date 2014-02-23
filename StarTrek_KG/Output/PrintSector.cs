@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -13,58 +15,34 @@ namespace StarTrek_KG.Output
 {
     public class PrintSector: IWrite, IConfig
     {
-        private Location Location { get; set; }
-        public string Condition { get; set; }
-        private int ShieldsDownLevel { get; set; }
-        private int LowEnergyLevel { get; set; }
+        #region Properties
+
+        //private Location Location { get; set; }
 
         public IOutputWrite Write { get; set; }
         public IStarTrekKGSettings Config { get; set; }
 
-        public PrintSector(int shieldsDownLevel, int lowEnergyLevel, IOutputWrite write, IStarTrekKGSettings config)
+        #endregion
+
+        public PrintSector(IOutputWrite write, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Write = write;
             this.Write.Config = config;
-
-            this.ShieldsDownLevel = shieldsDownLevel;
-            this.LowEnergyLevel = lowEnergyLevel;
         }
 
-        public void SRSPrintSector(Quadrant quadrant, IMap map)
+        public void SRSPrintSector(Quadrant quadrant, IMap map, bool shieldsAutoRaised)
         {
-            var condition = this.GetCurrentCondition(quadrant, map);
-
-            Location myLocation = map.Playership.GetLocation();
             int totalHostiles = map.Quadrants.GetHostileCount();
-            bool docked = Navigation.For(map.Playership).Docked;
 
-            bool shieldsAutoRaised = false;
-            if (quadrant.GetHostiles().Count > 0)
-            {
-                shieldsAutoRaised = Game.Auto_Raise_Shields(map, quadrant);
-            }
-
-            this.CreateSRSViewScreen(quadrant, map, totalHostiles, condition, myLocation, docked);
-            this.OutputSRSWarnings(quadrant, map, docked);
-
-            if (shieldsAutoRaised)
-            {
-                map.Write.Line("Shields automatically raised to " + Shields.For(map.Playership).Energy);
-            }
+            this.CreateSRSViewScreen(quadrant, map, totalHostiles);
+            this.OutputSRSWarnings(quadrant, map, shieldsAutoRaised);
         }
 
         private void CreateSRSViewScreen(IQuadrant quadrant,
                               IMap map,
-                              int totalHostiles,
-                              string condition,
-                              Location location,
-                              bool docked)
+                              int totalHostiles)
         {
-            var sb = new StringBuilder();
-            this.Condition = condition;
-            this.Location = location;
-
             this.Write.Console.WriteLine("");
 
             var quadrantName = quadrant.Name;
@@ -77,25 +55,27 @@ namespace StarTrek_KG.Output
 
             this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrantName);
 
+            var sb = new StringBuilder();
+            Location location = map.Playership.GetLocation();
             for (int i = 0; i < 8; i++) //todo: resource out
             {
-                this.ShowSectorRow(sb, i, this.GetSRSRowIndicator(i, map), quadrant.Sectors, totalHostiles, isNebula);
+                this.ShowSectorRow(sb, i, this.GetSRSRowIndicator(i, map, location), quadrant.Sectors, totalHostiles, isNebula);
             }
 
-            this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), docked);
+            this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
-        private string GetSRSRowIndicator(int row, IMap map)
+        private string GetSRSRowIndicator(int row, IMap map, Location location)
         {
             string retVal = " ";
 
             switch (row)
             {
                 case 0:
-                    retVal += String.Format(this.Config.GetText("SRSQuadrantIndicator"), Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y));
+                    retVal += String.Format(this.Config.GetText("SRSQuadrantIndicator"), Convert.ToString(location.Quadrant.X), Convert.ToString(location.Quadrant.Y));
                     break;
                 case 1:
-                    retVal += String.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y));
+                    retVal += String.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
                     break;
                 case 2:
                     retVal += String.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
@@ -104,7 +84,7 @@ namespace StarTrek_KG.Output
                     retVal += String.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
                     break;
                 case 4:
-                    retVal += String.Format(this.Config.GetText("SRSConditionIndicator"), this.Condition);
+                    retVal += String.Format(this.Config.GetText("SRSConditionIndicator"), map.Playership.GetConditionAndSetIcon());
                     break;
                 case 5:
                     retVal += String.Format(this.Config.GetText("SRSEnergyIndicator"), map.Playership.Energy);
@@ -120,47 +100,17 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        public void CRSPrintSector(Quadrant quadrant, IMap map)
+        public void CRSPrintSector(Quadrant quadrant, IMap map, bool shieldsAutoRaised)
         {
-            //--refactor
-            var condition = this.GetCurrentCondition(quadrant, map);
-            var myShip = map.Playership;
-
-            Location myLocation = myShip.GetLocation();
-            int totalHostiles = map.Quadrants.GetHostileCount();
-            bool docked = Navigation.For(myShip).Docked;
-            List<string> lrsResults = LongRangeScan.For(myShip).RunLRSScan(myLocation);
-
-            bool shieldsAutoRaised = false;
-            if (quadrant.GetHostiles().Count > 0)
-            {
-                shieldsAutoRaised = Game.Auto_Raise_Shields(map, quadrant);
-            }
-
-            //--refactor ^
-
-            this.CreateCRSViewScreen(quadrant, map, totalHostiles, condition, myLocation, lrsResults);
-            this.OutputSRSWarnings(quadrant, map, docked);
-
-
-            //--refactor
-            if (shieldsAutoRaised)
-            {
-                map.Write.Line("Shields automatically raised to " + Shields.For(map.Playership).Energy);
-            }
-            //--refactor ^
+            this.CreateCRSViewScreen(quadrant, map);
+            this.OutputSRSWarnings(quadrant, map, shieldsAutoRaised);
         }
 
-        private void CreateCRSViewScreen(IQuadrant quadrant,
-                              IMap map,
-                              int totalHostiles,
-                              string condition,
-                              Location location,
-                              IList<string> lrsResults)
+        private void CreateCRSViewScreen(IQuadrant quadrant, IMap map)
         {
-            var sb = new StringBuilder();
-            this.Condition = condition;
-            this.Location = location;
+            var myShip = map.Playership;
+            var location = myShip.GetLocation();
+            List<string> lrsResults = LongRangeScan.For(myShip).RunLRSScan(location);
 
             this.Write.Console.WriteLine("");
 
@@ -174,10 +124,12 @@ namespace StarTrek_KG.Output
 
             var topBorder = this.Config.GetText("CRSTopBorder");
 
-            this.CRS_Region_ScanLine(quadrantName, topBorder);
+            this.CRS_Region_ScanLine(quadrantName, topBorder, location);
             this.ScanLine(topBorder, String.Format(" Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy));
 
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
+            int totalHostiles = map.Quadrants.GetHostileCount();
+            var sb = new StringBuilder();
             for (int i = 0; i < crsRows; i++) //todo: resource out
             {
                 var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults);
@@ -205,7 +157,7 @@ namespace StarTrek_KG.Output
             this.Write.SingleLine(srsLine.ToString());
         }
 
-        private void CRS_Region_ScanLine(string quadrantName, string topBorder)
+        private void CRS_Region_ScanLine(string quadrantName, string topBorder, Location location)
         {
             int topBorderAreaMeasurement = topBorder.Length + 1;
             var regionLine = new StringBuilder(String.Format("Region: {0}", quadrantName).PadRight(topBorderAreaMeasurement));
@@ -213,8 +165,8 @@ namespace StarTrek_KG.Output
             regionLine.Remove(topBorderAreaMeasurement, regionLine.ToString().Length - (topBorderAreaMeasurement));
 
             var quadIndicator = String.Format("Quad: [{0},{1}]  Sec: [{2},{3}]",
-                                Convert.ToString(this.Location.Quadrant.X), Convert.ToString(this.Location.Quadrant.Y),
-                                Convert.ToString(this.Location.Sector.X), Convert.ToString(this.Location.Sector.Y));
+                                Convert.ToString(location.Quadrant.X), Convert.ToString(location.Quadrant.Y),
+                                Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
 
             regionLine.Insert(topBorderAreaMeasurement, quadIndicator);
             this.Write.SingleLine(regionLine.ToString());
@@ -255,7 +207,6 @@ namespace StarTrek_KG.Output
             }
             return retVal;
         }
-
 
         private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles, bool isNebula)
         {
@@ -375,42 +326,18 @@ namespace StarTrek_KG.Output
             sb.Append(factionDesignator);
         }
 
-        private string GetCurrentCondition(IQuadrant quadrant, IMap map)
-        {
-            var condition = "GREEN";
-
-            if (quadrant.GetHostiles().Count > 0)
-            {
-                condition = "RED";
-            }
-            else if (map.Playership.Energy < this.LowEnergyLevel)
-            {
-                condition = "YELLOW";
-            }
-
-            return condition;
-        }
-
-        private void OutputSRSWarnings(Quadrant quadrant, IMap map, bool docked)
+        private void OutputSRSWarnings(IQuadrant quadrant, IMap map, bool shieldsAutoRaised)
         {
             if (quadrant.GetHostiles().Count > 0)
             {                
                 this.SRSScanHostile(quadrant);
             }
-            else if (map.Playership.Energy < this.LowEnergyLevel) //todo: setting comes from app.config
-            {
-                this.Write.ResourceLine("LowEnergyLevel");
-            }
 
-            if (quadrant.Type == QuadrantType.Nebulae)
-            {
-                this.Write.SingleLine("");
-                this.Write.ResourceLine("NebulaWarning");
-            }
+            this.Write.OutputConditionAndWarnings(map.Playership, this.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            if (Shields.For(map.Playership).Energy == this.ShieldsDownLevel && !docked)
+            if (shieldsAutoRaised)
             {
-                this.Write.ResourceLine("ShieldsDown");
+                map.Write.Line("Shields automatically raised to " + Shields.For(map.Playership).Energy);
             }
         }
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
+using System.Threading;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -7,9 +9,11 @@ using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Actors
 {
+
     //TODO: ship.Energy not decrementing after being hit
     public class Ship : ISystem, IShip
     {
@@ -268,6 +272,35 @@ namespace StarTrek_KG.Actors
             shipLocation.Quadrant = this.GetQuadrant();
 
             return shipLocation;
+        }
+
+        public bool AtLowEnergyLevel()
+        {
+            return (this.Energy < this.Config.GetSetting<int>("LowEnergyLevel"));
+        }
+
+        public string GetConditionAndSetIcon()
+        {
+            var currentQuadrant = this.GetQuadrant();
+            var condition = "GREEN";
+
+            if (currentQuadrant.GetHostiles().Count > 0)
+            {
+                condition = "RED";
+
+                ConsoleHelper.SetConsoleIcon(SystemIcons.Error);
+            }
+            else if (this.AtLowEnergyLevel() || currentQuadrant.IsNebulae())
+            {
+                condition = "YELLOW";
+                ConsoleHelper.SetConsoleIcon(SystemIcons.Exclamation);
+            }
+            else
+            {
+                ConsoleHelper.SetConsoleIcon(SystemIcons.Shield);
+            }
+
+            return condition;
         }
     }
 }

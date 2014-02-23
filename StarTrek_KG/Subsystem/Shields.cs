@@ -5,6 +5,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
@@ -103,6 +104,8 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
                     this.Energy,
                     this.ShipConnectedTo.Energy));
+
+                this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
             }
         }
 
@@ -150,6 +153,17 @@ namespace StarTrek_KG.Subsystem
             }
 
             return (Shields) ship.Subsystems.Single(s => s.Type == SubsystemType.Shields);
+        }
+
+        public bool AutoRaiseShieldsIfNeeded(IQuadrant quadrant)
+        {
+            bool shieldsAutoRaised = false;
+            if (quadrant.GetHostiles().Count > 0)
+            {
+                shieldsAutoRaised = Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, quadrant);
+            }
+
+            return shieldsAutoRaised;
         }
     }
 }

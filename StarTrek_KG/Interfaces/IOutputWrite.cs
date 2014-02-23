@@ -40,5 +40,7 @@ namespace StarTrek_KG.Interfaces
         string GetPanelHead(string shipName);
         bool PromptUser(string promptMessage, out double value);
         bool PromptUser(string promptMessage, out string value);
+
+        void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
     }
 }

@@ -30,11 +30,13 @@ namespace StarTrek_KG.Subsystem
         {
             if (Damaged()) return;
 
+            //todo: below is almost identical to CRS.  Refactor.
             var location = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Game.Map, location.Quadrant);
+            var shieldsAutoRaised = Shields.For(this.ShipConnectedTo).AutoRaiseShieldsIfNeeded(quadrant);
+            var printSector = (new PrintSector(this.Game.Write, this.Game.Config));
 
-            var printSector = (new PrintSector(this.Game.Config.GetSetting<int>("ShieldsDownLevel"), (this.Game.Config.GetSetting<int>("LowEnergyLevel")),this.Game.Write, this.Game.Config));
-            printSector.SRSPrintSector(quadrant, this.Game.Map); 
+            printSector.SRSPrintSector(quadrant, this.Game.Map, shieldsAutoRaised); 
 
             quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
 

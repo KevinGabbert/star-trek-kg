@@ -82,6 +82,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             //todo: upon arriving in quadrant, all damaged controls need to be enumerated
+            //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
         }
 
         private void RepairOrTakeDamage(int lastQuadX, int lastQuadY)
