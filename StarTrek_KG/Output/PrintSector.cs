@@ -17,8 +17,6 @@ namespace StarTrek_KG.Output
     {
         #region Properties
 
-        //private Location Location { get; set; }
-
         public IOutputWrite Write { get; set; }
         public IStarTrekKGSettings Config { get; set; }
 
@@ -31,38 +29,42 @@ namespace StarTrek_KG.Output
             this.Write.Config = config;
         }
 
-        public void SRSPrintSector(Quadrant quadrant, IMap map, bool shieldsAutoRaised)
+        public void CreateSRSViewScreen(IQuadrant quadrant, IMap map, Location shipLocation, int totalHostiles, string quadrantDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            int totalHostiles = map.Quadrants.GetHostileCount();
+            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrantDisplayName);
 
-            this.CreateSRSViewScreen(quadrant, map, totalHostiles);
-            this.OutputSRSWarnings(quadrant, map, shieldsAutoRaised);
-        }
-
-        private void CreateSRSViewScreen(IQuadrant quadrant,
-                              IMap map,
-                              int totalHostiles)
-        {
-            this.Write.Console.WriteLine("");
-
-            var quadrantName = quadrant.Name;
-            var isNebula = (quadrant.Type == QuadrantType.Nebulae);
-
-            if (isNebula)
+            int srsRows = Convert.ToInt32(this.Config.GetText("SRSRows"));
+            for (int i = 0; i < srsRows; i++) //todo: resource out
             {
-                quadrantName += " Nebula"; //todo: resource out.
-            }
-
-            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrantName);
-
-            var sb = new StringBuilder();
-            Location location = map.Playership.GetLocation();
-            for (int i = 0; i < 8; i++) //todo: resource out
-            {
-                this.ShowSectorRow(sb, i, this.GetSRSRowIndicator(i, map, location), quadrant.Sectors, totalHostiles, isNebula);
+                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), quadrant.Sectors, totalHostiles, isNebula);
             }
 
             this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
+        }
+
+        public void CreateCRSViewScreen(IQuadrant quadrant, IMap map, Location shipLocation, int totalHostiles, string quadrantDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
+        {
+            List<string> lrsResults = LongRangeScan.For(map.Playership).RunLRSScan(shipLocation);
+
+            var topBorder = this.Config.GetText("CRSTopBorder");
+
+            this.CRS_Region_ScanLine(quadrantDisplayName, topBorder, shipLocation);
+            this.ScanLine(topBorder, String.Format(" Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy));
+
+            int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
+            for (int i = 0; i < crsRows; i++) 
+            {
+                var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults);
+                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, quadrant.Sectors, totalHostiles, isNebula);
+            }
+
+            string lrsBottom = null;
+            if (lrsResults.Count() == 7)
+            {
+                lrsBottom = " " + lrsResults[6];
+            }
+
+            this.ScanLine(this.Config.GetText("CRSBottomBorder"), lrsBottom + this.Config.GetText("AppVersion"));
         }
 
         private string GetSRSRowIndicator(int row, IMap map, Location location)
@@ -100,51 +102,6 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        public void CRSPrintSector(Quadrant quadrant, IMap map, bool shieldsAutoRaised)
-        {
-            this.CreateCRSViewScreen(quadrant, map);
-            this.OutputSRSWarnings(quadrant, map, shieldsAutoRaised);
-        }
-
-        private void CreateCRSViewScreen(IQuadrant quadrant, IMap map)
-        {
-            var myShip = map.Playership;
-            var location = myShip.GetLocation();
-            List<string> lrsResults = LongRangeScan.For(myShip).RunLRSScan(location);
-
-            this.Write.Console.WriteLine("");
-
-            var quadrantName = quadrant.Name;
-            var isNebula = (quadrant.Type == QuadrantType.Nebulae);
-
-            if (isNebula)
-            {
-                quadrantName += " Nebula"; //todo: resource out.
-            }
-
-            var topBorder = this.Config.GetText("CRSTopBorder");
-
-            this.CRS_Region_ScanLine(quadrantName, topBorder, location);
-            this.ScanLine(topBorder, String.Format(" Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy));
-
-            int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
-            int totalHostiles = map.Quadrants.GetHostileCount();
-            var sb = new StringBuilder();
-            for (int i = 0; i < crsRows; i++) //todo: resource out
-            {
-                var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults);
-                this.ShowSectorRow(sb, i, rowIndicator, quadrant.Sectors, totalHostiles, isNebula);
-            }
-
-            string lrsBottom = null;
-            if (lrsResults.Count() == 7)
-            {
-                lrsBottom = " " + lrsResults[6];
-            }
-
-            this.ScanLine(this.Config.GetText("CRSBottomBorder"), lrsBottom + this.Config.GetText("AppVersion"));
-        }
-
         private void ScanLine(string srsText, string rightSideText = "")
         {
             int textMeasurement = srsText.Length;
@@ -160,16 +117,17 @@ namespace StarTrek_KG.Output
         private void CRS_Region_ScanLine(string quadrantName, string topBorder, Location location)
         {
             int topBorderAreaMeasurement = topBorder.Length + 1;
-            var regionLine = new StringBuilder(String.Format("Region: {0}", quadrantName).PadRight(topBorderAreaMeasurement));
+            var regionLineBuilder = new StringBuilder(String.Format("Region: {0}", quadrantName).PadRight(topBorderAreaMeasurement));
 
-            regionLine.Remove(topBorderAreaMeasurement, regionLine.ToString().Length - (topBorderAreaMeasurement));
+            regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - (topBorderAreaMeasurement));
 
             var quadIndicator = String.Format("Quad: [{0},{1}]  Sec: [{2},{3}]",
                                 Convert.ToString(location.Quadrant.X), Convert.ToString(location.Quadrant.Y),
                                 Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
 
-            regionLine.Insert(topBorderAreaMeasurement, quadIndicator);
-            this.Write.SingleLine(regionLine.ToString());
+            regionLineBuilder.Insert(topBorderAreaMeasurement, quadIndicator);
+
+            this.Write.SingleLine(regionLineBuilder.ToString());
         }
 
         private string GetCRSRightTextLine(int row, IMap map, IList<string> lrsResults)
@@ -179,7 +137,7 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    retVal += String.Format("Photon Torpedoes: {0}", Torpedoes.For(map.Playership).Count);
+                    retVal += String.Format("Torpedoes: {0}", Torpedoes.For(map.Playership).Count);
                     break;
 
                 case 1:
@@ -239,7 +197,7 @@ namespace StarTrek_KG.Output
                         {
                             if (isNebula)
                             {
-                                sb.Append("-++");
+                                sb.Append(Utility.Utility.NebulaUnit());
                             }
                         }
 
@@ -256,7 +214,7 @@ namespace StarTrek_KG.Output
                         {
                             if (isNebula)
                             {
-                                sb.Append("-+-");
+                                sb.Append(Utility.Utility.NebulaUnit());
                             }
                         }
 
@@ -284,7 +242,6 @@ namespace StarTrek_KG.Output
             }
 
             this.ScanLine(sb.ToString());
-            //this.Write.Console.WriteLine(sb.ToString()); 
             sb.Length = 0;
         }
 
@@ -326,7 +283,7 @@ namespace StarTrek_KG.Output
             sb.Append(factionDesignator);
         }
 
-        private void OutputSRSWarnings(IQuadrant quadrant, IMap map, bool shieldsAutoRaised)
+        public void OutputScanWarnings(IQuadrant quadrant, IMap map, bool shieldsAutoRaised)
         {
             if (quadrant.GetHostiles().Count > 0)
             {                
