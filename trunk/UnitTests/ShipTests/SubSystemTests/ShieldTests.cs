@@ -33,8 +33,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void ControlsADD()
         {
-            _setup.TestShields.Controls("add");
-            
+            _setup.TestShields.Controls("add"); 
         }
 
         [Ignore]

@@ -59,7 +59,7 @@ namespace StarTrek_KG
                 this.GetConstants();
 
                 this.PrintSector =
-                    (new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config));
+                    (new PrintSector(this.Write, this.Config));
 
                 var startConfig = (new SetupOptions
                                        {
@@ -81,7 +81,7 @@ namespace StarTrek_KG
 
                 //todo: why are we creating this PrintSector() class a second time??
                 this.Output = new Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
-                this.PrintSector = new PrintSector(Constants.SHIELDS_DOWN_LEVEL, Constants.LOW_ENERGY_LEVEL, this.Write, this.Config);
+                this.PrintSector = new PrintSector(this.Write, this.Config);
             }
         }
 

@@ -594,5 +594,10 @@ namespace StarTrek_KG.Playfield
         {
             return this.Sectors.FirstOrDefault(sector => sector.X == coordinate.X && sector.Y == coordinate.Y);
         }
+
+        public bool IsNebulae()
+        {
+            return (this.Type == QuadrantType.Nebulae);
+        }
     }
 }

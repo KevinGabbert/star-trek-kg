@@ -35,6 +35,8 @@ namespace StarTrek_Console {
 
     public static void Main(string[] args)
     {
+        System.Console.Title = "Star Trek KG";
+
         //System.Console.WriteLine("\u00B2"); 
         //SetScreenColorsApp.SetScreenColors(Color.Black, Color.Orange);
         //SetScreenColorsApp.SetScreenColors(Color.Blue, Color.Black);
@@ -46,6 +48,6 @@ namespace StarTrek_Console {
         var settingsForWholeGame = (new StarTrekKGSettings());
 
         (new Game(settingsForWholeGame)).Run();
-    } 
+    }
   }
 }

@@ -68,6 +68,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line("");
 
             this.Fire(phaserEnergy, shipFiringPhasers);
+            this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
         }
 
         private void Execute(double phaserEnergy)

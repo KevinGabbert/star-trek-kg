@@ -98,6 +98,7 @@ namespace StarTrek_KG.Subsystem
                 //Increment to next Sector
                 if (this.HitSomething(currentLocation, lastPosition, newLocation))
                 {
+                    this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
                     return;
                 }
 
