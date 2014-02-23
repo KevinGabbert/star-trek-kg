@@ -3,10 +3,7 @@ using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Output;
-using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
-using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Subsystem
 {
@@ -30,17 +27,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (Damaged()) return;
 
-            //todo: below is almost identical to CRS.  Refactor.
-            var location = this.ShipConnectedTo.GetLocation();
-            Quadrant quadrant = Quadrants.Get(this.Game.Map, location.Quadrant);
-            var shieldsAutoRaised = Shields.For(this.ShipConnectedTo).AutoRaiseShieldsIfNeeded(quadrant);
-            var printSector = (new PrintSector(this.Game.Write, this.Game.Config));
-
-            printSector.SRSPrintSector(quadrant, this.Game.Map, shieldsAutoRaised); 
-
-            quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
-
-            quadrant.Scanned = true;
+            this.Game.Write.RenderSector(SectorScanType.ShortRange, this);
         }
 
         public static ShortRangeScan For(Ship ship)

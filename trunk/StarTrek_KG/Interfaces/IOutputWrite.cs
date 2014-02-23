@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Enums;
 using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Interfaces
@@ -42,5 +43,6 @@ namespace StarTrek_KG.Interfaces
         bool PromptUser(string promptMessage, out string value);
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
+        void RenderSector(SectorScanType scanType, ISubsystem subsystem);
     }
 }

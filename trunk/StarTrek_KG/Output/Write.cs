@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
 using Console = StarTrek_KG.Utility.Console;
@@ -487,6 +489,42 @@ namespace StarTrek_KG.Output
             {
                 this.ResourceLine("ShieldsDown");
             }
+        }
+
+        public void RenderSector(SectorScanType scanType, ISubsystem subsystem)
+        {
+            var location = subsystem.ShipConnectedTo.GetLocation();
+            Quadrant quadrant = Quadrants.Get(subsystem.Game.Map, location.Quadrant);
+            var shieldsAutoRaised = Shields.For(subsystem.ShipConnectedTo).AutoRaiseShieldsIfNeeded(quadrant);
+            var printSector = (new PrintSector(this, subsystem.Game.Config));
+
+            int totalHostiles = subsystem.Game.Map.Quadrants.GetHostileCount();
+            var isNebula = (quadrant.Type == QuadrantType.Nebulae);
+            string quadrantDisplayName = quadrant.Name;
+            var sectorScanStringBuilder = new StringBuilder();
+
+            if (isNebula)
+            {
+                quadrantDisplayName += " Nebula"; //todo: resource out.
+            }
+
+            this.Line("");
+
+            switch (scanType)
+            {
+                case SectorScanType.CombinedRange:
+                    printSector.CreateCRSViewScreen(quadrant, subsystem.Game.Map, location, totalHostiles, quadrantDisplayName, isNebula, sectorScanStringBuilder);
+                    break;
+
+                case SectorScanType.ShortRange:
+                    printSector.CreateSRSViewScreen(quadrant, subsystem.Game.Map, location, totalHostiles, quadrantDisplayName, isNebula, sectorScanStringBuilder);         
+                    break;
+            }
+
+            printSector.OutputScanWarnings(quadrant, subsystem.Game.Map, shieldsAutoRaised);
+
+            quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
+            quadrant.Scanned = true;
         }
     }
 }

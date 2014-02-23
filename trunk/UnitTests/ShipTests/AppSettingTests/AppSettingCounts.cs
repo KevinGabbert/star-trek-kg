@@ -42,7 +42,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfFactionShips()
         {
-            Assert.AreEqual(980, config.Get.Factions[FactionName.Federation.ToString()].FactionShips.Count);
+            Assert.AreEqual(976, config.Get.Factions[FactionName.Federation.ToString()].FactionShips.Count);
         }
 
         [Test]
@@ -51,11 +51,10 @@ namespace UnitTests.ShipTests.AppSettingTests
             Assert.AreEqual(7, config.Get.Factions[FactionName.Federation.ToString()].FactionThreats.Count);
         }
 
-
         [Test]
         public void CountOfConsoleText()
         {
-            Assert.AreEqual(179, config.Get.ConsoleText.Count);
+            Assert.AreEqual(183, config.Get.ConsoleText.Count);
         }
     }
 }
