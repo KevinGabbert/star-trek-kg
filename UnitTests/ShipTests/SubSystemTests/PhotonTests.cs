@@ -17,6 +17,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [SetUp]
         public void Setup()
         {
+            Constants.DEBUG_MODE = false;
             _photonsToTest = new Torpedoes(_setup.TestMap.Playership, this.Game);
         }
 
@@ -35,7 +36,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(9, _photonsToTest.Count);
         }
 
-        [Ignore("slow running.. Don't know why.")]
+        //[Ignore("slow running.. Don't know why.")]
         [Test]
         public void ShootHostileMultiple()
         {
@@ -49,6 +50,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void VerifyRunsOutOfTorpedoes()
         {
+            Constants.DEBUG_MODE = false;
             _setup.SetupMapWith1Friendly();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
@@ -62,7 +64,6 @@ namespace UnitTests.ShipTests.SubSystemTests
             }
 
             Assert.AreEqual(0, _photonsToTest.Count);
-
 
             for (int i = 0; i < 10; i++)
             {
@@ -136,7 +137,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void ShootHostile()
         {
-            ShootHostileTest(true);
+            ShootHostileTest(false);
         }
 
         private void ShootHostileTest(bool debugMode)
