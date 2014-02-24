@@ -514,7 +514,7 @@ namespace StarTrek_KG.Playfield
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        public void SetActiveAsFriendly(IMap map)
+        public void SetActiveSectorAsFriendly(IMap map)
         {
             //zip through all sectors in all quadrants.  remove any friendlies
 
