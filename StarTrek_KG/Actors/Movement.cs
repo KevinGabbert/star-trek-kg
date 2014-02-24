@@ -43,19 +43,31 @@ namespace StarTrek_KG.Actors
             //Clear Old Sector
             Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;
 
-            Quadrant newLocation = null;
+            Quadrant newLocation;
 
-            //todo: why the refs? why not copy the variables?
-            if (this.TravelThroughSectors(distanceEntered, 
-                                          distance, 
-                                          numericDirection, 
-                                          ref vectorLocationX, 
-                                          ref vectorLocationY, 
-                                          playershipQuadrant, 
-                                          lastSector))
+            if (distanceEntered >= 1)
             {
-                newLocation = playershipQuadrant; //We are staying in the same quadrant
+                newLocation = this.TravelThroughQuadrants(Convert.ToInt32(distanceEntered), Convert.ToInt32(numericDirection), this.ShipConnectedTo);
+                newLocation.SetActive();
+                this.ShipConnectedTo.Coordinate = newLocation;
+
+                this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
                 goto EndNavigation;
+            }
+            else if (distanceEntered < 1)
+            {
+                //todo: why the refs? why not copy the variables?
+                if (this.TravelThroughSectors(distanceEntered,
+                    distance,
+                    numericDirection,
+                    ref vectorLocationX,
+                    ref vectorLocationY,
+                    playershipQuadrant,
+                    lastSector))
+                {
+                    newLocation = playershipQuadrant; //We are staying in the same quadrant
+                    goto EndNavigation;
+                }
             }
 
             //ref'd because it corrects bad values
@@ -74,6 +86,80 @@ namespace StarTrek_KG.Actors
             this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
         }
 
+        private Quadrant TravelThroughQuadrants(int distance, int numericDirection, IShip playership)
+        {
+            //remember:  Quadrants are currently shifted from sector directions by 2 positions.
+
+            //what user enters
+            // 4   5   6
+            //   \ ↑ /
+            //3 ← <*> → 7
+            //   / ↓ \
+            // 2   1   8
+
+            //How quadrants are coded
+            // 6   7   8
+            //   \ ↑ /  
+            //5 ← <*> → 1
+            //   / ↓ \  
+            // 4   3   2
+
+            var currentQX = playership.GetQuadrant().X;
+            var currentQY = playership.GetQuadrant().Y;
+
+            for (int i = 0; i < distance; i++)
+            {
+                switch (numericDirection)
+                {
+                    case 3:
+                        currentQY++;
+                        break;
+                    case 4:
+                        currentQX++;
+                        currentQY--;
+                        break;
+                    case 5:
+                        currentQX--;
+                        break;
+                    case 6:
+                        currentQX--;
+                        currentQY--;
+                        break;
+                    case 7:
+                        currentQX--;
+                        break;
+                    case 8:
+                        currentQX--;
+                        currentQY++;
+                        break;
+                    case 1:
+                        currentQX++;
+                        break;
+                    case 2:
+                        currentQX++;
+                        currentQY++;
+                        break;
+                }
+
+                //todo: check if Quadrant is nebula or out of bounds
+            }
+
+            return Quadrants.Get(ShipConnectedTo.Map, new Coordinate(currentQX, currentQY));
+
+            //todo: once we have found quadrant..
+            //is target location blocked?
+            //if true, then output that expected location was blocked, and ship's computers have picked a new spot
+            
+            //while loop
+            //   pick a random sector
+            //   check it for obstacle
+            //if good then jump out of loop
+
+            throw new NotImplementedException();
+        }
+
+
+        //todo: for warp-to-quadrant
         public void Execute(string destinationQuadrantName, out int lastQuadX, out int lastQuadY)
         {
             Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
@@ -86,7 +172,7 @@ namespace StarTrek_KG.Actors
             //destinationQuadrant.Active = true;
             destinationQuadrant.SetActive();
 
-            this.Game.Map.SetActiveAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
+            this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
 
             this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), destinationQuadrant);
         }
@@ -103,9 +189,13 @@ namespace StarTrek_KG.Actors
         /// <param name="playershipQuadrant"></param>
         /// <param name="lastSector"></param>
         /// <returns></returns>
-        private bool TravelThroughSectors(double distanceEntered, double distance, double numericDirection, 
-                                          ref double vectorLocationX, ref double vectorLocationY, 
-                                          Quadrant playershipQuadrant, Coordinate lastSector)
+        private bool TravelThroughSectors(double distanceEntered, 
+                                          double distance, 
+                                          double numericDirection, 
+                                          ref double vectorLocationX, 
+                                          ref double vectorLocationY, 
+                                          Quadrant playershipQuadrant, 
+                                          Coordinate lastSector)
         {
             //todo: can this be refactored with Utility.ComputeAngle()?
             double angle = -(Math.PI * (numericDirection - 1.0) / 4.0);
@@ -191,7 +281,7 @@ namespace StarTrek_KG.Actors
             return false;
         }
 
-        private void IdentifyObstacle(Coordinate sector, ISectorObject currentObject, SectorItem currentItem)
+        private void IdentifyObstacle(ICoordinate sector, ISectorObject currentObject, SectorItem currentItem)
         {
             switch (currentItem)
             {
@@ -258,7 +348,7 @@ namespace StarTrek_KG.Actors
             //newActiveQuadrant.Active = true;
             newActiveQuadrant.SetActive();
 
-            this.Game.Map.SetActiveAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
+            this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
 
             return newActiveQuadrant; //contains the newly set sector in it
         }

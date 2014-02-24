@@ -67,7 +67,7 @@ namespace StarTrek_KG.Interfaces
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        void SetActiveAsFriendly(IMap map);
+        void SetActiveSectorAsFriendly(IMap map);
 
         string ToString();
 
