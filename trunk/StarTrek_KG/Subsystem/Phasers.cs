@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
@@ -16,16 +14,9 @@ namespace StarTrek_KG.Subsystem
         //Quadrants
         //Utility
 
-        public Phasers(Ship shipConnectedTo, Game game)
+        public Phasers(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
-            base.Game = game;
-
-            //For subsystem_Base, temporarily
             this.Game.Write = this.Game.Write; //todo: remove this when all subsystems are converted
-
-            this.Initialize();
-
-            this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Phasers;
         }
 
@@ -174,14 +165,9 @@ namespace StarTrek_KG.Subsystem
             destroyedShips.Add(badGuyShip);
         }
 
-        public static Phasers For(Ship ship)
+        public static Phasers For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Ship not set up (Phasers). Add a Friendly to your GameConfig"); 
-            }
-
-            return (Phasers)ship.Subsystems.Single(s => s.Type == SubsystemType.Phasers);
+            return (Phasers)SubSystem_Base.For(ship, SubsystemType.Phasers);
         }
     }
 }

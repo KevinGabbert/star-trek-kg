@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -14,11 +13,9 @@ namespace StarTrek_KG.Subsystem
                                                     "fix = Emergency Fix subsystem"
                                                 };
 
-        public DamageControl(Ship shipConnectedTo, Game game)
+        public DamageControl(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.DamageControl; //needed for lookup
-            this.ShipConnectedTo = shipConnectedTo;
-            this.Game = game;
         }
 
         public override void Controls(string command)
@@ -66,14 +63,9 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public static DamageControl For(Ship ship)
+        public static DamageControl For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Ship not set up (Damage Control).");
-            }
-
-            return (DamageControl)ship.Subsystems.Single(s => s.Type == SubsystemType.DamageControl); //todo: reflect the name and refactor this to ISubsystem
+            return (DamageControl)SubSystem_Base.For(ship, SubsystemType.DamageControl);
         }
     }
 }

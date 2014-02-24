@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -13,13 +12,8 @@ namespace StarTrek_KG.Subsystem
     //todo: fix hostiles and starbases and stars to test fully
     public class LongRangeScan : SubSystem_Base
     {
-        public LongRangeScan(Ship shipConnectedTo, Game game)
+        public LongRangeScan(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
         {
-            this.Game = game;
-
-            this.Initialize();
-
-            this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.LongRangeScan;
         }
 
@@ -238,14 +232,9 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public static LongRangeScan For(Ship ship)
+        public static LongRangeScan For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Ship not set up (LongRangeScan)."); //todo: reflect the name and refactor this to ISubsystem
-            }
-
-            return (LongRangeScan) ship.Subsystems.Single(s => s.Type == SubsystemType.LongRangeScan);
+            return (LongRangeScan)SubSystem_Base.For(ship, SubsystemType.LongRangeScan);
         }
     }
 }

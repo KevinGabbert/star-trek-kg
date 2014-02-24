@@ -1,15 +1,14 @@
-﻿using System;
+﻿//using System;
+
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
-using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Output
 {
@@ -54,7 +53,7 @@ namespace StarTrek_KG.Output
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
             for (int i = 0; i < crsRows; i++) 
             {
-                var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults);
+                var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults, totalHostiles);
                 this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, quadrant.Sectors, totalHostiles, isNebula);
             }
 
@@ -130,14 +129,14 @@ namespace StarTrek_KG.Output
             this.Write.SingleLine(regionLineBuilder.ToString());
         }
 
-        private string GetCRSRightTextLine(int row, IMap map, IList<string> lrsResults)
+        private string GetCRSRightTextLine(int row, IMap map, IList<string> lrsResults, int totalHostiles)
         {
             string retVal = " ";
 
             switch (row)
             {
                 case 0:
-                    retVal += String.Format("Torpedoes: {0}", Torpedoes.For(map.Playership).Count);
+                    retVal += String.Format("Torpedoes: {0}  Hostiles Left: {1}", Torpedoes.For(map.Playership).Count, totalHostiles);
                     break;
 
                 case 1:

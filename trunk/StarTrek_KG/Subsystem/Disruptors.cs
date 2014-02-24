@@ -1,16 +1,16 @@
-﻿using System;
-using StarTrek_KG.Actors;
+﻿using StarTrek_KG.Actors;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
     public class Disruptors : SubSystem_Base
     {
         //this.Initialize();
-        public Disruptors(Ship shipConnectedTo)
+        public Disruptors(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
-            this.ShipConnectedTo = shipConnectedTo;
+            this.Type = SubsystemType.Disruptors;
         }
 
         //todo: Under Construction

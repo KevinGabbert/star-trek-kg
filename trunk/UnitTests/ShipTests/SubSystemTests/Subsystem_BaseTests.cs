@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using StarTrek_KG;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
@@ -11,7 +12,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void Setup()
         {
 
-
+            Constants.DEBUG_MODE = false;
             
         }
     }

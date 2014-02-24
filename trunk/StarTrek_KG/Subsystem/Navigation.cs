@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
@@ -11,21 +10,16 @@ namespace StarTrek_KG.Subsystem
     {
         #region Properties
 
-            public bool Docked { get; set; } //todo: move this to ship
-            public int MaxWarpFactor { get; set; }
+        public bool Docked { get; set; } //todo: move this to ship
+        public int MaxWarpFactor { get; set; }
 
-            public Warp Warp { get; set; }
-            public Movement Movement { get; set; }
+        public Warp Warp { get; set; }
+        public Movement Movement { get; set; }
 
         #endregion
 
-        public Navigation(Ship shipConnectedTo, Game game)
+        public Navigation(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
         {
-            this.Game = game;
-
-            this.Initialize();
-
-            this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Navigation;
 
             this.Warp = new Warp(this.Game.Write);
@@ -34,8 +28,10 @@ namespace StarTrek_KG.Subsystem
 
         private void SetMaxWarpFactor()
         {
-            this.MaxWarpFactor = (int)(0.2 + (Utility.Utility.Random).Next(9)); //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
-            this.Game.Write.Line(string.Format(this.Game.Config.GetSetting<string>("MaxWarpFactorMessage"), this.MaxWarpFactor));
+            this.MaxWarpFactor = (int) (0.2 + (Utility.Utility.Random).Next(9));
+                //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
+            this.Game.Write.Line(string.Format(this.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
+                this.MaxWarpFactor));
         }
 
         public override void Controls(string command)
@@ -45,7 +41,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Controls()
         {
-            if(this.Damaged())
+            if (this.Damaged())
             {
                 this.SetMaxWarpFactor();
             }
@@ -93,7 +89,8 @@ namespace StarTrek_KG.Subsystem
 
             if (!this.Game.PlayerNowEnemyToFederation) //No Docking allowed if they hate you.
             {
-                this.Docked = this.Game.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X, this.Game.Map.Quadrants.GetActive().Sectors);
+                this.Docked = this.Game.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X,
+                    this.Game.Map.Quadrants.GetActive().Sectors);
             }
 
             if (Docked)
@@ -128,12 +125,13 @@ namespace StarTrek_KG.Subsystem
             var hostiles = currentQuadrant.GetHostiles();
             var baddiesHangingAround = hostiles.Count > 0;
 
-            var hostileFedsInQuadrant = hostiles.Any(h => h.Faction == FactionName.Federation); //todo: Cheap.  Use a property for this.
+            var hostileFedsInQuadrant = hostiles.Any(h => h.Faction == FactionName.Federation);
+                //todo: Cheap.  Use a property for this.
 
             var stillInSameQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
 
-            if ((baddiesHangingAround && stillInSameQuadrant) || 
-                hostileFedsInQuadrant || 
+            if ((baddiesHangingAround && stillInSameQuadrant) ||
+                hostileFedsInQuadrant ||
                 (this.Game.PlayerNowEnemyToFederation && currentQuadrant.GetStarbaseCount() > 0))
             {
                 this.Game.ALLHostilesAttack(this.Game.Map);
@@ -151,45 +149,43 @@ namespace StarTrek_KG.Subsystem
             double quadX;
             double quadY;
 
-            this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInQuadrant"), (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
+            this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInQuadrant"),
+                (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
 
             if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationQuadrantX"), out quadX)
-                || quadX < (Constants.QUADRANT_MIN + 1) 
+                || quadX < (Constants.QUADRANT_MIN + 1)
                 || quadX > Constants.QUADRANT_MAX)
-                {
-                    this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidXCoordinate"));
-                    return;
-                }
+            {
+                this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidXCoordinate"));
+                return;
+            }
 
             if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationQuadrantY"), out quadY)
-                || quadY < (Constants.QUADRANT_MIN + 1) 
+                || quadY < (Constants.QUADRANT_MIN + 1)
                 || quadY > Constants.QUADRANT_MAX)
-                {
-                    this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidYCoordinate"));
-                    return;
-                }
+            {
+                this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidYCoordinate"));
+                return;
+            }
 
             this.Game.Write.Line("");
-            var qx = ((int)(quadX)) - 1;
-            var qy = ((int)(quadY)) - 1;
+            var qx = ((int) (quadX)) - 1;
+            var qy = ((int) (quadY)) - 1;
             if (qx == thisShip.Quadrant.X && qy == thisShip.Quadrant.Y)
             {
                 this.Game.Write.Line(this.Game.Config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 
-            this.Game.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
-            this.Game.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+            this.Game.Write.Line(string.Format("Direction: {0:#.##}",
+                Utility.Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+            this.Game.Write.Line(string.Format("Distance:  {0:##.##}",
+                Utility.Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
         }
 
-        public static Navigation For(Ship ship)
+        public static Navigation For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Navigation Not Set Up"); //todo: reflect the name and refactor this to ISubsystem
-            }
-
-            return (Navigation)ship.Subsystems.Single(s => s.Type == SubsystemType.Navigation);
+            return (Navigation) SubSystem_Base.For(ship, SubsystemType.Navigation);
         }
     }
 }

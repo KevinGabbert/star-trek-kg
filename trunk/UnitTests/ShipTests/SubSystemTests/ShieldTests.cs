@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
+using StarTrek_KG;
 using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests.SubSystemTests
@@ -11,6 +12,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void Setup()
         {
             TestRunner.GetTestConstants();
+            Constants.DEBUG_MODE = false;
            _setup.SetupMapWith1Hostile();
 
            _setup.TestShields = new Shields(_setup.TestMap.Playership, _setup.Game);  

@@ -23,6 +23,14 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
+        protected SubSystem_Base(Ship shipConnectedTo, Game game)
+        {
+            this.Game = game;
+            this.Initialize();
+
+            this.ShipConnectedTo = shipConnectedTo;
+        }
+
         public virtual void OutputDamagedMessage()
         {
             this.Game.Write.Line(this.Type + " Damaged.");
@@ -154,6 +162,18 @@ namespace StarTrek_KG.Subsystem
             subSystem.Game = game;
 
             return subSystem;
+        }
+
+        protected static ISubsystem For(IShip ship, SubsystemType subsystemType)
+        {
+            if (ship == null)
+            {
+                throw new GameConfigException("Ship not set up with Subsystem: " + subsystemType);
+            }
+
+            var subSystemToReturn = ship.Subsystems.Single(s => s.Type == subsystemType);
+
+            return subSystemToReturn;
         }
     }
 }

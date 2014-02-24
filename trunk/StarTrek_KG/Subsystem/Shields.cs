@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
@@ -14,13 +11,8 @@ namespace StarTrek_KG.Subsystem
     {
         public static List<string> SHIELD_PANEL = new List<string>();
 
-        public Shields(Ship shipConnectedTo, Game game)
+        public Shields(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
-            this.Game = game;
-
-            this.Initialize();
-
-            this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Shields;
             this.Damage = 0;
             this.Energy = 0;
@@ -147,12 +139,7 @@ namespace StarTrek_KG.Subsystem
 
         public static Shields For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Ship not set up (shields). Add a Friendly to your GameConfig");
-            }
-
-            return (Shields) ship.Subsystems.Single(s => s.Type == SubsystemType.Shields);
+            return (Shields)SubSystem_Base.For(ship, SubsystemType.Shields);
         }
 
         public bool AutoRaiseShieldsIfNeeded(IQuadrant quadrant)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
@@ -18,13 +17,9 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Ship shipConnectedTo, Game game)
+        public Torpedoes(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
-            this.Game = game;
-            this.Initialize();
-
-            this.ShipConnectedTo = shipConnectedTo;
-            this.Type = SubsystemType.Torpedoes;
+            this.Type = SubsystemType.Torpedoes; //for lookup
         }
 
         public override void Controls(string command)
@@ -369,16 +364,9 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public static Torpedoes For(Ship ship)
+        public static Torpedoes For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Ship not set up (Torpedoes).");   //todo: reflect the name and refactor this to ISubsystem
-            }
-
-            ISubsystem subSystem = ship.Subsystems.Single(s => s.Type == SubsystemType.Torpedoes);
-
-            return (Torpedoes)subSystem;
+            return (Torpedoes)SubSystem_Base.For(ship, SubsystemType.Torpedoes);
         }
     }
 }
