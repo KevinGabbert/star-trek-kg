@@ -29,7 +29,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         public void CountOfSettingstarSystems()
         {
 
-            Assert.AreEqual(79, config.Get.StarSystems.Count);
+            Assert.AreEqual(78, config.Get.StarSystems.Count);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfConsoleText()
         {
-            Assert.AreEqual(183, config.Get.ConsoleText.Count);
+            Assert.AreEqual(185, config.Get.ConsoleText.Count);
         }
     }
 }

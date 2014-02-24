@@ -2,7 +2,6 @@
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
@@ -22,20 +21,15 @@ namespace StarTrek_KG.Subsystem
                                                     "tlm = Translate Last Message"
                                                 };
 
-        public Computer(Ship shipConnectedTo, Game game)
+        public Computer(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
-            this.Game = game;
-
-            this.Initialize();
-
-            this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Computer;
             this.Damage = 0;
         }
 
         public override void Controls(string command)
         {
-            if (Damaged()) return;
+            if (this.Damaged()) return;
 
             var starship = this.ShipConnectedTo;
 
@@ -197,14 +191,9 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public static Computer For(Ship ship)
+        public static Computer For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Ship not set up (Computer).");
-            }
-
-            return (Computer)ship.Subsystems.Single(s => s.Type == SubsystemType.Computer); //todo: reflect the name and refactor this to ISubsystem
+            return (Computer)SubSystem_Base.For(ship, SubsystemType.Computer);
         }
     }
 }

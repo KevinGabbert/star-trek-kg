@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config.Collections;
-using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
@@ -43,13 +40,8 @@ namespace StarTrek_KG.Subsystem
                                                     "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
-        public Debug(Ship shipConnectedTo, Game game)
+        public Debug(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
-            this.Game = game;
-
-            this.Initialize();
-
-            this.ShipConnectedTo = shipConnectedTo;
             this.Type = SubsystemType.Debug; //this is required if you want this system to be able to be looked up
             this.Damage = 0;
         }
@@ -153,14 +145,9 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public static Debug For(Ship ship)
+        public static Debug For(IShip ship)
         {
-            if (ship == null)
-            {
-                throw new GameConfigException("Ship not set up (Debug). Check config file "); 
-            }
-
-            return (Debug)ship.Subsystems.Single(s => s.Type == SubsystemType.Debug);
+            return (Debug)SubSystem_Base.For(ship, SubsystemType.Debug);
         }
     }
 }
