@@ -340,7 +340,7 @@ namespace StarTrek_KG.Output
             this.Console.WriteLine();
         }
 
-        private void DebugMenu(Ship playerShip)
+        private void DebugMenu(IShip playerShip)
         {
             this.Strings(Debug.CONTROL_PANEL);
             this.WithNoEndCR("Enter Debug command: ");
@@ -351,7 +351,7 @@ namespace StarTrek_KG.Output
             Debug.For(playerShip).Controls(debugCommand);
         }
 
-        private void ComputerMenu(Ship playerShip)
+        private void ComputerMenu(IShip playerShip)
         {
             if (Computer.For(playerShip).Damaged()) return;
 
@@ -364,7 +364,7 @@ namespace StarTrek_KG.Output
             Computer.For(playerShip).Controls(computerCommand);
         }
 
-        private void DamageControlMenu(Ship playerShip)
+        private void DamageControlMenu(IShip playerShip)
         {
             this.Strings(DamageControl.CONTROL_PANEL);
             this.WithNoEndCR("Enter Damage Control Command: ");
@@ -525,6 +525,17 @@ namespace StarTrek_KG.Output
 
             quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
             quadrant.Scanned = true;
+        }
+
+        public string Course()
+        {
+            return Environment.NewLine +
+                   " 4   5   6 " + Environment.NewLine +
+                   @"   \ ↑ /  " + Environment.NewLine +
+                   "3 ← <*> → 7" + Environment.NewLine +
+                   @"   / ↓ \  " + Environment.NewLine +
+                   " 2   1   8" + Environment.NewLine +
+                   Environment.NewLine;
         }
     }
 }
