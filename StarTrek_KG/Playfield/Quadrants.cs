@@ -290,5 +290,18 @@ namespace StarTrek_KG.Playfield
             int allStarbases = this.Sum(q => q.GetStarbaseCount());
             return allStarbases;
         }
+
+        /// <summary>
+        /// yes. it really sux that you can't warp through a nebula.  We don't know whats in there.  LRS fails.. We won't know how to keep things on course.
+        /// but.. its only a temporary problem.  You can warp *out* of a nebula, so its really meant to be an annoying obstacle which 
+        /// could actually affect some situations (time, for example)</summary>
+        /// <param name="map"></param>
+        /// <param name="coordinate"></param>
+        /// <returns></returns>
+        internal static bool IsNebula(IMap map, Coordinate coordinate)
+        {
+            //todo: make an app.config setting to turn this feature off if people whine.
+            return (Quadrants.Get(map, coordinate).Type == QuadrantType.Nebulae);
+        }
     }
 }

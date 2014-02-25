@@ -33,7 +33,7 @@ namespace StarTrek_KG.Actors
             //todo: Fix the mathematical need for a different numerical direction for sectors and quadrants.
             //todo: GetSectorDirection() and GetQuadrantDirection() need to return the same numbers
 
-            double numericDirection = distanceEntered < 1 ? direction : Movement.GetQuadrantDirection(direction);
+            //double numericDirection = distanceEntered < 1 ? direction : Movement.GetQuadrantDirection(direction);
 
             double vectorLocationX = playershipQuadrant.X * 8 + playerShipSector.X;
             double vectorLocationY = playershipQuadrant.Y * 8 + playerShipSector.Y;
@@ -47,7 +47,7 @@ namespace StarTrek_KG.Actors
 
             if (distanceEntered >= 1)
             {
-                newLocation = this.TravelThroughQuadrants(Convert.ToInt32(distanceEntered), Convert.ToInt32(numericDirection), this.ShipConnectedTo);
+                newLocation = this.TravelThroughQuadrants(Convert.ToInt32(distanceEntered), Convert.ToInt32(direction), this.ShipConnectedTo);
                 newLocation.SetActive();
                 this.ShipConnectedTo.Coordinate = newLocation;
 
@@ -59,7 +59,7 @@ namespace StarTrek_KG.Actors
                 //todo: why the refs? why not copy the variables?
                 if (this.TravelThroughSectors(distanceEntered,
                     distance,
-                    numericDirection,
+                    direction,
                     ref vectorLocationX,
                     ref vectorLocationY,
                     playershipQuadrant,
@@ -74,7 +74,14 @@ namespace StarTrek_KG.Actors
             //todo: why can't this be another variable?
             //todo: why can't this be computed before TravelThroughSectors? (because apparently we want the ship to stop at it)
             //todo: *should* we compute beforehand?
-            this.CheckForGalacticBarrier(ref vectorLocationX, ref vectorLocationY);
+
+
+
+
+
+            //TODO: this function won't work when hitting galactic barrier at sublight speeds.  Fix.
+
+            this.IsGalacticBarrier(ref vectorLocationX, ref vectorLocationY);
 
             //todo: if quadrant hasnt changed because ship cant move off map, then output a message that the galactic barrier has been hit
 
@@ -86,65 +93,71 @@ namespace StarTrek_KG.Actors
             this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
         }
 
-        private Quadrant TravelThroughQuadrants(int distance, int numericDirection, IShip playership)
+        private Quadrant TravelThroughQuadrants(int distance, int direction, IShip playership)
         {
-            //remember:  Quadrants are currently shifted from sector directions by 2 positions.
-
-            //what user enters
             // 4   5   6
             //   \ ↑ /
             //3 ← <*> → 7
             //   / ↓ \
             // 2   1   8
 
-            //How quadrants are coded
-            // 6   7   8
-            //   \ ↑ /  
-            //5 ← <*> → 1
-            //   / ↓ \  
-            // 4   3   2
-
-            var currentQX = playership.GetQuadrant().X;
-            var currentQY = playership.GetQuadrant().Y;
+            //todo: get rid of this double-stuff. I'm only doing this so that IsGalacticBarrier can be used by both quadrant and Sector Navigation.
+            double currentQX = playership.GetQuadrant().X;
+            double currentQY = playership.GetQuadrant().Y;
 
             for (int i = 0; i < distance; i++)
             {
-                switch (numericDirection)
+                switch (direction)
                 {
-                    case 3:
-                        currentQY++;
+                    case 3: 
+                        currentQX--; //left
                         break;
                     case 4:
-                        currentQX++;
-                        currentQY--;
+                        currentQX--; //left
+                        currentQY--; //up
                         break;
                     case 5:
-                        currentQX--;
+                        currentQY--; //up
                         break;
                     case 6:
-                        currentQX--;
-                        currentQY--;
+                        currentQX++; //right
+                        currentQY--; //up
                         break;
                     case 7:
-                        currentQX--;
+                        currentQX++; //right
                         break;
                     case 8:
-                        currentQX--;
-                        currentQY++;
+                        currentQX++; //right
+                        currentQY++; //down
                         break;
                     case 1:
-                        currentQX++;
+                        currentQY++; //down
                         break;
                     case 2:
-                        currentQX++;
-                        currentQY++;
+                        currentQX--; //left
+                        currentQY++; //down
                         break;
                 }
 
                 //todo: check if Quadrant is nebula or out of bounds
+
+                var barrierHit = this.IsGalacticBarrier(ref currentQX, ref currentQY);  //XY will be set to safe value in here
+                if (barrierHit)
+                {
+                    break;
+                }
+                else
+                {
+                    bool nebulaEncountered = Quadrants.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentQX), Convert.ToInt32(currentQY)));
+                    if (nebulaEncountered)
+                    {
+                        this.Game.Write.Line("Nebula Encountered. Navigation stopped to manually recalibrate warp coil");
+                        break;
+                    }
+                }
             }
 
-            return Quadrants.Get(ShipConnectedTo.Map, new Coordinate(currentQX, currentQY));
+            return Quadrants.Get(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentQX), Convert.ToInt32(currentQY)));
 
             //todo: once we have found quadrant..
             //is target location blocked?
@@ -154,8 +167,6 @@ namespace StarTrek_KG.Actors
             //   pick a random sector
             //   check it for obstacle
             //if good then jump out of loop
-
-            throw new NotImplementedException();
         }
 
 
@@ -308,22 +319,6 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        private static double GetQuadrantDirection(double direction)
-        {
-            //Quadrants are currently shifted from sector directions by 2 positions.
-            //this function exists to correct a directional disparity
-            //todo: correct this numerical disparity..
-
-            //How quadrants are coded
-            // 6   7   8
-            //   \ ↑ /  
-            //5 ← <*> → 1
-            //   / ↓ \  
-            // 4   3   2
-
-            return -direction + 8;
-        }
-
         private Quadrant SetShipLocation(double x, double y)
         {
             var shipSector = this.ShipConnectedTo.Sector;
@@ -353,8 +348,7 @@ namespace StarTrek_KG.Actors
             return newActiveQuadrant; //contains the newly set sector in it
         }
 
-        //todo: put these values in app.config
-        private void CheckForGalacticBarrier(ref double x, ref double y)
+        public bool IsGalacticBarrier(ref double x, ref double y)
         {
             //todo: this barrier needs to be a computed size based upon app.config xy settings of how big the galaxy is.
             //Star Trek lore gives us a good excuse to limit playfield size.
@@ -366,9 +360,9 @@ namespace StarTrek_KG.Actors
                 x = 0; //todo: gridXLowerBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
-            else if (x > 63)
+            else if (x > 7)
             {
-                x = 63; //todo: gridXUpperBound in app.config or calculated
+                x = 7; //todo: gridXUpperBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
 
@@ -377,34 +371,25 @@ namespace StarTrek_KG.Actors
                 y = 0; //todo: gridYLowerBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
-            else if (y > 63)
+            else if (y > 7)
             {
-                y = 63; //todo: gridYUpperBound in app.config or calculated
+                y = 7; //todo: gridYUpperBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
 
             if (this.BlockedByGalacticBarrier)
             {
                 //todo: which one?  name it.
-                this.Game.Write.Line("Galactic Barrier hit. Navigation stopped.");
+                this.Game.Write.Line("Galactic Barrier hit. Navigation stopped..");
             }
-        }
 
-        public string Course()
-        {
-            return Environment.NewLine +
-                   " 4   5   6 " + Environment.NewLine +
-                   @"   \ ↑ /  " + Environment.NewLine +
-                   "3 ← <*> → 7" + Environment.NewLine +
-                   @"   / ↓ \  " + Environment.NewLine +
-                   " 2   1   8" + Environment.NewLine +
-                   Environment.NewLine;
+            return this.BlockedByGalacticBarrier;
         }
 
         //This prompt needs to be exposed to the user as an event
         public bool InvalidCourseCheck(out double direction)
         {
-            var course = this.Course() + "Enter Course: ";
+            var course = this.Game.Write.Course() + "Enter Course: ";
             string userDirection;
 
             if (this.Game.Write.PromptUser(course, out userDirection))

@@ -9,11 +9,11 @@ namespace StarTrek_KG.Interfaces
     {
         List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }
+        Console Console { get; set; }
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }
         int Starbases { get; set; }
         int Stardate { get; set; }
-        Console Console { get; set; }
         void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
         void PrintMission();
         void Strings(IEnumerable<string> strings);
@@ -44,5 +44,6 @@ namespace StarTrek_KG.Interfaces
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
         void RenderSector(SectorScanType scanType, ISubsystem subsystem);
+        string Course();
     }
 }
