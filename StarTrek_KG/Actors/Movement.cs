@@ -21,7 +21,7 @@ namespace StarTrek_KG.Actors
 
         public void Execute(double direction, double distance, double distanceEntered, out int lastQuadX, out int lastQuadY)
         {
-            ISector playerShipSector = this.ShipConnectedTo.Sector;
+            //ISector playerShipSector = this.ShipConnectedTo.Sector;
             Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
 
             lastQuadY = playershipQuadrant.Y;
@@ -35,62 +35,165 @@ namespace StarTrek_KG.Actors
 
             //double numericDirection = distanceEntered < 1 ? direction : Movement.GetQuadrantDirection(direction);
 
-            double vectorLocationX = playershipQuadrant.X * 8 + playerShipSector.X;
-            double vectorLocationY = playershipQuadrant.Y * 8 + playerShipSector.Y;
+            //double vectorLocationX = playershipQuadrant.X * 8 + playerShipSector.X;
+            //double vectorLocationY = playershipQuadrant.Y * 8 + playerShipSector.Y;
 
-            var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
+            //var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
 
-            //Clear Old Sector
-            Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;
-
+            Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;//Clear Old Sector
             Quadrant newLocation;
 
             if (distanceEntered >= 1)
             {
-                newLocation = this.TravelThroughQuadrants(Convert.ToInt32(distanceEntered), Convert.ToInt32(direction), this.ShipConnectedTo);
+                newLocation = this.TravelThroughQuadrants(Convert.ToInt32(distance), Convert.ToInt32(direction), this.ShipConnectedTo);
+                
                 newLocation.SetActive();
                 this.ShipConnectedTo.Coordinate = newLocation;
-
                 this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
-                goto EndNavigation;
             }
-            else if (distanceEntered < 1)
+            else
             {
-                //todo: why the refs? why not copy the variables?
-                if (this.TravelThroughSectors(distanceEntered,
-                    distance,
-                    direction,
-                    ref vectorLocationX,
-                    ref vectorLocationY,
-                    playershipQuadrant,
-                    lastSector))
+                var newSector = this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
+
+                Quadrant newActiveQuadrant = this.ShipConnectedTo.GetQuadrant();
+                
+                this.ShipConnectedTo.Sector = newSector;
+                newActiveQuadrant.SetActive();
+                this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
+            }
+
+            //this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
+        }
+
+        private bool TravelThroughSectorsOld(double distance,
+            double numericDirection,
+            ref double vectorLocationX,
+            ref double vectorLocationY,
+            Quadrant playershipQuadrant,
+            Coordinate lastSector)
+        {
+            //todo: can this be refactored with Utility.ComputeAngle()?
+            double angle = -(Math.PI * (numericDirection - 1.0) / 4.0);
+            var distanceVector = new VectorCoordinate(distance * Math.Cos(angle), distance * Math.Sin(angle));
+            var vector = new Vector(distanceVector.X / Constants.MOVEMENT_PRECISION,
+                distanceVector.Y / Constants.MOVEMENT_PRECISION);
+            var activeSectors = playershipQuadrant.Sectors;
+            for (var unit = 0; unit < Constants.MOVEMENT_PRECISION; unit++)
+            {
+                vectorLocationX += vector.X;
+                vectorLocationY += vector.Y;
+                int quadX = ((int)Math.Round(vectorLocationX)) / 8;
+                int quadY = ((int)Math.Round(vectorLocationY)) / 8;
+                //todo: this line causes galactic barrier out of bounds error? (becuase tries to assign 8 to X)
+                if (quadX == playershipQuadrant.X && quadY == playershipQuadrant.Y)
                 {
-                    newLocation = playershipQuadrant; //We are staying in the same quadrant
-                    goto EndNavigation;
+                    var closestSector = new Coordinate((int)Math.Round(vectorLocationX) % 8,
+                                                        (int)Math.Round(vectorLocationY) % 8);
+                    if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
+                    {
+                        //vector_div is so you can get right up to an obstacle before hitting it.
+                        this.Game.Write.Line("All Stop.");
+                        return true;
+                    }
+                    //todo: verify playershipXY is right next to obstacle to if obstacle hit
+                    lastSector = closestSector;
                 }
             }
+            return false;
+        }
 
-            //ref'd because it corrects bad values
-            //todo: why can't this be another variable?
-            //todo: why can't this be computed before TravelThroughSectors? (because apparently we want the ship to stop at it)
-            //todo: *should* we compute beforehand?
+        private ISector TravelThroughSectors(double distance, double direction, IShip playership)
+        {
+            // 4   5   6
+            //   \ ↑ /
+            //3 ← <*> → 7
+            //   / ↓ \
+            // 2   1   8
 
+            direction = -direction + 8;
 
+            ISector returnVal = playership.Sector;
+            var currentQuadrant = playership.GetQuadrant();
 
+            double currentSX = playership.Sector.X;
+            double currentSY = playership.Sector.Y;
 
+            for (int i = 0; i < distance; i++)
+            {
+                switch (Convert.ToInt32(direction))
+                {
+                    case 3:
+                        currentSX--; //left
+                        break;
+                    case 4:
+                        currentSX--; //left
+                        currentSY--; //up
+                        break;
+                    case 5:
+                        currentSY--; //up
+                        break;
+                    case 6:
+                        currentSX++; //right
+                        currentSY--; //up
+                        break;
+                    case 7:
+                        currentSX++; //right
+                        break;
+                    case 8:
+                        currentSX++; //right
+                        currentSY++; //down
+                        break;
+                    case 1:
+                        currentSY++; //down
+                        break;
+                    case 2:
+                        currentSX--; //left
+                        currentSY++; //down
+                        break;
+                }
 
-            //TODO: this function won't work when hitting galactic barrier at sublight speeds.  Fix.
+                //TODO: check to see if we have left quadrant - //DO BOUNDS CHECKING
+                //  put currentSX & currentSY together and see if they blow the upper or lower BOUNDS of the sector edges
+                //      // Is X < 0 or > 8
+                        // is Y < 0 or > 8
+                //  if they do, then we need to figure out what quadrant is past those limits and get it
+                //  if there is *no* quadrant past those limits, then we need to say that we hit the galactic barrier.
 
-            this.IsGalacticBarrier(ref vectorLocationX, ref vectorLocationY);
+                //We will have to check for the galactic barrier immediately before pulling a new quadrant..
+                //var newQuadrant = new Quadrant(currentQuadrant);
 
-            //todo: if quadrant hasnt changed because ship cant move off map, then output a message that the galactic barrier has been hit
+                //If we get into a new quadrant, then we need to figure out where we are. (all obstacle checking still applies of course)
+                //   1. Reset the variable or variables that blew its bounds  -- either to 0 or 7
+                //   2. Both newQuadrant and newSector will be set here.
+                // Q. what if there is a star in the other sector? A. then we will stop. as below.  newSector will not be assigned.
 
-            //todo: Map Friendly was set in obstacle check (move that here)
-            //todo: use Location object
-            newLocation = this.SetShipLocation(vectorLocationX, vectorLocationY);//Set new Sector
+                var newSector = new Sector(new LocationDef(currentQuadrant.X, currentQuadrant.Y, Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
 
-        EndNavigation:
-            this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
+                var barrierHit = this.IsGalacticBarrier(ref currentSX, ref currentSY);  //XY will be set to safe value in here
+                if (barrierHit)
+                {
+                    break;
+                }
+                else
+                {
+                    bool obstacleEncountered = this.SublightObstacleCheck((Coordinate)playership.Sector, newSector, currentQuadrant.Sectors);
+                    if (obstacleEncountered)
+                    {
+                        this.Game.Write.Line("All Stop.");
+                        break;
+                    }
+
+                    //bool nebulaEncountered = Sectors.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
+                    //if (nebulaEncountered)
+                    //{
+                    //    this.Game.Write.Line("Nebula Encountered. Navigation stopped to manually recalibrate warp coil");
+                    //    break;
+                    //}
+                }
+                returnVal = newSector;
+            }
+
+            return returnVal;
         }
 
         private Quadrant TravelThroughQuadrants(int distance, int direction, IShip playership)
@@ -169,7 +272,6 @@ namespace StarTrek_KG.Actors
             //if good then jump out of loop
         }
 
-
         //todo: for warp-to-quadrant
         public void Execute(string destinationQuadrantName, out int lastQuadX, out int lastQuadY)
         {
@@ -186,68 +288,6 @@ namespace StarTrek_KG.Actors
             this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
 
             this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), destinationQuadrant);
-        }
-
-
-        /// <summary>
-        /// todo: do we need to modify this algorithm?
-        /// </summary>
-        /// <param name="distanceEntered"></param>
-        /// <param name="distance"></param>
-        /// <param name="numericDirection"></param>
-        /// <param name="vectorLocationX"></param>
-        /// <param name="vectorLocationY"></param>
-        /// <param name="playershipQuadrant"></param>
-        /// <param name="lastSector"></param>
-        /// <returns></returns>
-        private bool TravelThroughSectors(double distanceEntered, 
-                                          double distance, 
-                                          double numericDirection, 
-                                          ref double vectorLocationX, 
-                                          ref double vectorLocationY, 
-                                          Quadrant playershipQuadrant, 
-                                          Coordinate lastSector)
-        {
-            //todo: can this be refactored with Utility.ComputeAngle()?
-            double angle = -(Math.PI * (numericDirection - 1.0) / 4.0);
-
-            var distanceVector = new VectorCoordinate(distance * Math.Cos(angle), distance * Math.Sin(angle));
-
-            var vector = new Vector(distanceVector.X / Constants.MOVEMENT_PRECISION,
-                                    distanceVector.Y / Constants.MOVEMENT_PRECISION);
-
-            var activeSectors = playershipQuadrant.Sectors;
-
-            for (var unit = 0; unit < Constants.MOVEMENT_PRECISION; unit++)
-            {
-                vectorLocationX += vector.X;
-                vectorLocationY += vector.Y;
-
-                int quadX = ((int) Math.Round(vectorLocationX)) / 8;
-                int quadY = ((int) Math.Round(vectorLocationY)) / 8;
-
-                //todo: this line causes galactic barrier out of bounds error? (becuase tries to assign 8 to X)
-
-                if (quadX == playershipQuadrant.X && quadY == playershipQuadrant.Y)
-                {
-                    var closestSector = new Coordinate((int) Math.Round(vectorLocationX) % 8, 
-                                                       (int) Math.Round(vectorLocationY) % 8);
-
-                    if (distanceEntered < 1) //Check for obstacles only when navigating at sublight speeds.  i.e. Warp .1, etc
-                    {
-                        if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
-                        {
-                            //vector_div is so you can get right up to an obstacle before hitting it.
-                            this.Game.Write.Line("All Stop.");
-                            return true;
-                        }
-                    }
-
-                    //todo: verify playershipXY is right next to obstacle to if obstacle hit         
-                    lastSector = closestSector;
-                }
-            }
-            return false;
         }
 
         /// <summary>
@@ -319,16 +359,16 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        private Quadrant SetShipLocation(double x, double y)
+        private Quadrant SetShipLocation(double vectorX, double vectorY)
         {
             var shipSector = this.ShipConnectedTo.Sector;
             var shipQuadrant = this.ShipConnectedTo.Coordinate;
 
-            shipSector.X = ((int)Math.Round(x)) % 8;
-            shipSector.Y = ((int)Math.Round(y)) % 8;
+            shipSector.X = ((int)Math.Round(vectorX)) % 8; //sector info is in the vector
+            shipSector.Y = ((int)Math.Round(vectorY)) % 8;
 
-            var quadX = ((int)Math.Round(x)) / 8;
-            var quadY = ((int)Math.Round(y)) / 8;
+            var quadX = ((int)Math.Round(vectorX)) / 8; //quadrant info is in the vector
+            var quadY = ((int)Math.Round(vectorY)) / 8;
 
             shipQuadrant.X = quadX;
             shipQuadrant.Y = quadY;
@@ -340,7 +380,6 @@ namespace StarTrek_KG.Actors
                 throw new GameException("No quadrant to make active");
             }
 
-            //newActiveQuadrant.Active = true;
             newActiveQuadrant.SetActive();
 
             this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
@@ -353,6 +392,8 @@ namespace StarTrek_KG.Actors
             //todo: this barrier needs to be a computed size based upon app.config xy settings of how big the galaxy is.
             //Star Trek lore gives us a good excuse to limit playfield size.
 
+            var upperBound = 7;
+
             this.BlockedByGalacticBarrier = false;
 
             if (x < 0)
@@ -360,9 +401,9 @@ namespace StarTrek_KG.Actors
                 x = 0; //todo: gridXLowerBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
-            else if (x > 7)
+            else if (x > upperBound)
             {
-                x = 7; //todo: gridXUpperBound in app.config or calculated
+                x = upperBound; //todo: gridXUpperBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
 
@@ -371,9 +412,9 @@ namespace StarTrek_KG.Actors
                 y = 0; //todo: gridYLowerBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
-            else if (y > 7)
+            else if (y > upperBound)
             {
-                y = 7; //todo: gridYUpperBound in app.config or calculated
+                y = upperBound; //todo: gridYUpperBound in app.config or calculated
                 this.BlockedByGalacticBarrier = true;
             }
 

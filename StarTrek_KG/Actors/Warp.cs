@@ -30,7 +30,10 @@ namespace StarTrek_KG.Actors
             bool returnVal;
 
             //app.config (max warp setting - set in initialize ship)
-            distance *= Constants.SECTOR_MAX; // this computation ensures that any movement inside of a single sector is *free*, meaning no energy consumed
+            if (distance < 1)
+            {
+                distance *= 10; //Constants.SECTOR_MAX; // this computation ensures that any movement inside of a single sector is *free*, meaning no energy consumed
+            }
 
             var energyRequired = (int)distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
