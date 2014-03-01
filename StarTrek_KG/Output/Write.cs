@@ -249,6 +249,7 @@ namespace StarTrek_KG.Output
 
             ACTIVITY_PANEL.Add("imp = Impulse Navigation");
             ACTIVITY_PANEL.Add("wrp = Warp Navigation");
+            ACTIVITY_PANEL.Add("nto = Navigate To Object");
 
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
@@ -284,6 +285,7 @@ namespace StarTrek_KG.Output
             {
                 case "wrp":
                 case "imp":
+                case "nto":
                     Navigation.For(playerShip).Controls(command);
                     break;
 

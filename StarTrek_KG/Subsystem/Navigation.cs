@@ -40,14 +40,47 @@ namespace StarTrek_KG.Subsystem
 
         public override void Controls(string command)
         {
-            if (command == "wrp")
+
+            switch (command)
             {
-                this.WarpControls();
+                case "wrp":
+                    this.WarpControls();
+                    break;
+
+                case "imp":
+                    this.SublightControls();
+                    break;
+
+                case "nto":
+                    this.NavigateToObject();
+                    break;
+            }
+        }
+
+        private void NavigateToObject()
+        {
+            if (this.Damaged()) //todo: change this to Impulse.For(  when navigation object is removed
+            {
+                return;
             }
 
-            if (command == "imp")
+            if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
-                this.SublightControls();
+                this.Game.Write.Line("Unable to scan sector to navigate.");
+                return;
+            }
+            else
+            {
+                this.Game.Write.Line("Objects in sector:");
+
+                //todo: write a list of all Objects in sector
+
+                this.Game.Write.Line("Navigate to Object is not yet supported.");
+
+                //this.Game.Write.WithNoEndCR("Enter number of Object to travel to: ");
+
+                ////todo: readline needs to be done using an event
+                //var navCommand = Console.ReadLine().Trim().ToLower();
             }
         }
 
