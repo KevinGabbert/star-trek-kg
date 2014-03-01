@@ -459,34 +459,6 @@ namespace StarTrek_KG.Playfield
 
         //}
 
-        //todo: this should be part of the computer object
-        public void StarbaseCalculator(Ship shipConnectedTo)
-        {
-            //var navigation = Navigation.For(shipConnectedTo);
-
-            var mySector = shipConnectedTo.Sector;
-
-            var thisQuadrant = shipConnectedTo.GetQuadrant();
-
-            var starbasesInSector = thisQuadrant.Sectors.Where(s => s.Item == SectorItem.Starbase).ToList();
-
-            if (starbasesInSector.Any())
-            {
-                foreach (var starbase in starbasesInSector)
-                {
-                    this.Write.Line("-----------------");
-                    this.Write.Line(string.Format("Starbase in sector [{0},{1}].", (starbase.X + 1), (starbase.Y + 1)));
-
-                    this.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y)));
-                    this.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y) / Constants.SECTOR_MAX));
-                }
-            }
-            else
-            {
-                this.Write.Line("There are no starbases in this quadrant.");
-            }
-        }
-
         ///// <summary>
         ///// Removes all friendlies fromevery sector in the entire map.
         ///// </summary>

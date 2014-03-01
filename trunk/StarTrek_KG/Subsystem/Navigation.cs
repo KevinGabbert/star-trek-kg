@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
@@ -64,24 +67,37 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
+            this.Game.Write.Line("");
+            this.Game.Write.Line("Objects in sector:");
+
+            //todo: write a list of all Objects in sector
+            //todo: how does computer do this
+
+            var sectorsWithObjects = this.ObjectFinder().ToList();
+
+            if (sectorsWithObjects.Any())
             {
-                this.Game.Write.Line("Unable to scan sector to navigate.");
-                return;
+                foreach (var sector in sectorsWithObjects)
+                {
+                    string objectName = sector.Object != null ? sector.Object.Name : "Unknown";
+
+                    this.Game.Write.SingleLine(string.Format("Object: {0}  [{1},{2}].", objectName, (sector.X + 1), (sector.Y + 1)));
+                }
             }
             else
             {
-                this.Game.Write.Line("Objects in sector:");
-
-                //todo: write a list of all Objects in sector
-
-                this.Game.Write.Line("Navigate to Object is not yet supported.");
-
-                //this.Game.Write.WithNoEndCR("Enter number of Object to travel to: ");
-
-                ////todo: readline needs to be done using an event
-                //var navCommand = Console.ReadLine().Trim().ToLower();
+                this.Game.Write.Line("No Sectors with Objects found (this is an error)");
             }
+
+            this.Game.Write.Line("");
+            this.Game.Write.Line("Navigate to Object is not yet supported.");
+
+            //this.Game.Write.WithNoEndCR("Enter number of Object to travel to: ");
+
+            ////todo: readline needs to be done using an event
+            var navCommand = Console.ReadLine().Trim().ToLower();
+
+            //this.NavigateToObject();
         }
 
         public void SublightControls()
@@ -225,7 +241,6 @@ namespace StarTrek_KG.Subsystem
 
         public void Calculator()
         {
-
             //todo: ask additional question.  sublight or warp
 
             var thisShip = this.ShipConnectedTo.GetLocation();
@@ -265,6 +280,59 @@ namespace StarTrek_KG.Subsystem
                 Utility.Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
             this.Game.Write.Line(string.Format("Distance:  {0:##.##}",
                 Utility.Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+        }
+
+        public void StarbaseCalculator(Ship shipConnectedTo)
+        {
+            if (this.Damaged())
+            {
+                return;
+            }
+
+            var mySector = shipConnectedTo.Sector;
+
+            var thisQuadrant = shipConnectedTo.GetQuadrant();
+
+            var starbasesInSector = thisQuadrant.Sectors.Where(s => s.Item == SectorItem.Starbase).ToList();
+
+            if (starbasesInSector.Any())
+            {
+                foreach (var starbase in starbasesInSector)
+                {
+                    this.Game.Write.Line("-----------------");
+                    this.Game.Write.Line(string.Format("Starbase in sector [{0},{1}].", (starbase.X + 1), (starbase.Y + 1)));
+
+                    this.Game.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y)));
+                    this.Game.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y) / Constants.SECTOR_MAX));
+                }
+            }
+            else
+            {
+                this.Game.Write.Line("There are no starbases in this quadrant.");
+            }
+        }
+
+        public IEnumerable<Sector> ObjectFinder()
+        {
+            var objects = new List<Sector>();
+
+            if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
+            {
+                this.Game.Write.Line("Cannot locate Objects for calculations");
+                return objects;
+            }
+
+            if (Computer.For(this.ShipConnectedTo).Damaged())
+            {
+                this.Game.Write.Line("Cannot calculate Object positions");
+                return objects;
+            }
+
+            var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
+
+            IEnumerable<Sector> sectorsWithObjects = thisQuadrant.Sectors.Where(s => s.Item != SectorItem.Empty);
+
+            return sectorsWithObjects;
         }
 
         public static Navigation For(IShip ship)
