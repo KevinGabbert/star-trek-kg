@@ -20,7 +20,7 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.Phasers;
         }
 
-        public void Fire(double energyToFire, IShip shipFiringPhasers)
+        public void Fire(int energyToFire, IShip shipFiringPhasers)
         {
             if (!this.EnergyCheckFail(energyToFire, shipFiringPhasers))
             {
@@ -47,7 +47,7 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            double phaserEnergy;
+            int phaserEnergy;
 
             this.Game.Write.Line("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
 
@@ -110,7 +110,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        private bool PromptUserForPhaserEnergy(out double phaserEnergy)
+        private bool PromptUserForPhaserEnergy(out int phaserEnergy)
         {
             return this.Game.Write.PromptUser(String.Format("Enter phaser energy (1--{0}): ", this.ShipConnectedTo.Energy), out phaserEnergy);
         }

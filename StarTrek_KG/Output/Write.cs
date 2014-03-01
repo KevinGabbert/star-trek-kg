@@ -247,7 +247,8 @@ namespace StarTrek_KG.Output
         {
             ACTIVITY_PANEL = new List<string>();
 
-            ACTIVITY_PANEL.Add("nav = Navigation");
+            ACTIVITY_PANEL.Add("navs = Sublight Navigation");
+            ACTIVITY_PANEL.Add("navw = Warp Navigation");
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
             ACTIVITY_PANEL.Add("crs = Combined Range Scan");
@@ -278,8 +279,12 @@ namespace StarTrek_KG.Output
             var command = readLine.Trim().ToLower();
             switch (command)
             {
-                case "nav":
-                    Navigation.For(playerShip).Controls("nav");
+                case "navs":
+                    Navigation.For(playerShip).Controls("navs");
+                    break;
+
+                case "navw":
+                    Navigation.For(playerShip).Controls("navw");
                     break;
 
                 case "srs":
@@ -410,13 +415,13 @@ namespace StarTrek_KG.Output
             return "--- > " +  shipName + " < ---";
         }
 
-        public bool PromptUser(string promptMessage, out double value)
+        public bool PromptUser(string promptMessage, out int value)
         {
             try
             {
                 this.WithNoEndCR(promptMessage);
 
-                value = Double.Parse(this.Console.ReadLine());
+                value = int.Parse(this.Console.ReadLine());
 
                 return true;
             }

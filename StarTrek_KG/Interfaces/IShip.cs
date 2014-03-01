@@ -9,7 +9,7 @@ namespace StarTrek_KG.Interfaces
     {
         string Name { get; set; }
         FactionName Faction { get; set; }
-        double Energy { get; set; }
+        int Energy { get; set; }
 
         Allegiance Allegiance { get; set; }
         bool Destroyed { get; set; }

@@ -103,7 +103,7 @@ namespace StarTrek_KG.Subsystem
 
         public new int TransferredFromUser()
         {
-            double transfer;
+            int transfer;
             bool readSuccess = this.Game.Write.PromptUser(String.Format("Enter amount of energy (1--{0}): ", this.MaxTransfer),
                                                  out transfer);
 

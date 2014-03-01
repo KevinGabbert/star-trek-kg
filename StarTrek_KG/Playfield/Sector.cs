@@ -96,19 +96,19 @@ namespace StarTrek_KG.Playfield
             return "Sector: " + this.X + ", " + this.Y;
         }
 
-        public void IncrementBy(VectorCoordinate coordinate)
-        {
-            this._enforceBoundsChecking = false;
+        //public void IncrementBy(VectorCoordinate coordinate)
+        //{
+        //    this._enforceBoundsChecking = false;
 
-            var x = (int)Math.Round(coordinate.X, MidpointRounding.AwayFromZero);
-            var y = (int)Math.Round(coordinate.Y, MidpointRounding.AwayFromZero);
+        //    var x = (int)Math.Round(coordinate.X, MidpointRounding.AwayFromZero);
+        //    var y = (int)Math.Round(coordinate.Y, MidpointRounding.AwayFromZero);
 
-            if (x > Constants.SECTOR_MIN || y > Constants.SECTOR_MIN || x < Constants.SECTOR_MAX || y < Constants.SECTOR_MAX)
-            {
-                this.X = x;
-                this.Y = y;
-            }
-        }
+        //    if (x > Constants.SECTOR_MIN || y > Constants.SECTOR_MIN || x < Constants.SECTOR_MAX || y < Constants.SECTOR_MAX)
+        //    {
+        //        this.X = x;
+        //        this.Y = y;
+        //    }
+        //}
 
         public static Sector FromCoordinate(Coordinate coordinateToConvert)
         {

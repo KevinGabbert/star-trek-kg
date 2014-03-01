@@ -36,25 +36,38 @@ namespace StarTrek_KG.Subsystem
 
         public override void Controls(string command)
         {
-            this.Controls();
+            if (command == "navw")
+            {
+                this.WarpControls();
+            }
+
+            if (command == "navs")
+            {
+                this.SublightControls();
+            }
         }
 
-        public void Controls()
+        private void SublightControls()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void WarpControls()
         {
             if (this.Damaged())
             {
                 this.SetMaxWarpFactor();
             }
 
-            double distance;
-            double direction;
+            int distance;
+            int direction;
 
             if (this.Movement.InvalidCourseCheck(out direction))
             {
                 return;
             }
 
-            //todo: I'd like to check this sooner than *after* we start moving.  I have always disliked this behavior in the game
+
             if (this.Warp.InvalidWarpFactorCheck(this.MaxWarpFactor, out distance)) return;
 
             int lastQuadY;
@@ -144,10 +157,13 @@ namespace StarTrek_KG.Subsystem
 
         public void Calculator()
         {
+
+            //todo: ask additional question.  sublight or warp
+
             var thisShip = this.ShipConnectedTo.GetLocation();
 
-            double quadX;
-            double quadY;
+            int quadX;
+            int quadY;
 
             this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInQuadrant"),
                 (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
