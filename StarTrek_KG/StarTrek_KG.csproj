@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actors\Impulse.cs" />
     <Compile Include="Config\Collections\ResgistryNameTypeClasses.cs" />
     <Compile Include="Config\Collections\SeverityValues.cs" />
     <Compile Include="Config\Collections\FactionThreats.cs" />
