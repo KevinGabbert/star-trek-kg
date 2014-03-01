@@ -73,7 +73,7 @@ namespace StarTrek_KG.Subsystem
             //todo: write a list of all Objects in sector
             //todo: how does computer do this
 
-            var sectorsWithObjects = this.ObjectFinder().ToList();
+            var sectorsWithObjects = ShortRangeScan.For(this.ShipConnectedTo).ObjectFinder().ToList();
 
             if (sectorsWithObjects.Any())
             {
@@ -310,29 +310,6 @@ namespace StarTrek_KG.Subsystem
             {
                 this.Game.Write.Line("There are no starbases in this quadrant.");
             }
-        }
-
-        public IEnumerable<Sector> ObjectFinder()
-        {
-            var objects = new List<Sector>();
-
-            if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
-            {
-                this.Game.Write.Line("Cannot locate Objects for calculations");
-                return objects;
-            }
-
-            if (Computer.For(this.ShipConnectedTo).Damaged())
-            {
-                this.Game.Write.Line("Cannot calculate Object positions");
-                return objects;
-            }
-
-            var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
-
-            IEnumerable<Sector> sectorsWithObjects = thisQuadrant.Sectors.Where(s => s.Item != SectorItem.Empty);
-
-            return sectorsWithObjects;
         }
 
         public static Navigation For(IShip ship)
