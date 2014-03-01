@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
@@ -415,7 +416,7 @@ namespace StarTrek_KG.Actors
 
                 //todo: check to see if number is higher than 8
 
-                if (!userDirection.IsNumeric())
+                if (!userDirection.IsNumeric() || userDirection.Contains("."))
                 {
                     this.Game.Write.Line("Invalid course.");
                     direction = 0;
@@ -423,18 +424,17 @@ namespace StarTrek_KG.Actors
                     return true;
                 }
 
-                //var directionToCheck = Convert.ToDouble(userDirection);
+                var directionToCheck = Convert.ToInt32(userDirection);
 
-                //if (directionToCheck > 8.9 || directionToCheck < 0)
-                //{
-                //    this.Game.Write.Line("Invalid course...");
-                //    direction = 0;
+                if (directionToCheck > 8 || directionToCheck < 0)
+                {
+                    this.Game.Write.Line("Invalid course..");
+                    direction = 0;
 
-                //    return true;
-                //}
+                    return true;
+                }
             }
 
-            //direction = Convert.ToDouble(userDirection);
             direction = Convert.ToInt32(userDirection);
 
             return false;
