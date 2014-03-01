@@ -279,6 +279,10 @@ namespace StarTrek_KG.Output
             var command = readLine.Trim().ToLower();
             switch (command)
             {
+                case "nav":
+                    Navigation.For(playerShip).Controls("navs");
+                    break;
+
                 case "navs":
                     Navigation.For(playerShip).Controls("navs");
                     break;

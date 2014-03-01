@@ -5,17 +5,17 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Actors
 {
-    public class Warp: IWrite
+    public class Impulse : IWrite
     {
         public IOutputWrite Write { get; set; }
 
-        public Warp(IOutputWrite output)
+        public Impulse(IOutputWrite output)
         {
             this.Write = output;
 
             if (this.Write == null)
             {
-                throw new GameException("Property Write is not set for Warp. ");
+                throw new GameException("Property Write is not set for Impulse. ");
             }
         }
 
@@ -29,13 +29,7 @@ namespace StarTrek_KG.Actors
         {
             bool returnVal;
 
-            //app.config (max warp setting - set in initialize ship)
-            if (distance < 1)
-            {
-                distance *= 10; //Constants.SECTOR_MAX; // this computation ensures that any movement inside of a single sector is *free*, meaning no energy consumed
-            }
-
-            var energyRequired = (int)distance; //rounds down for values < 1, meaning a distance of .1 is free
+            var energyRequired = distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
                 this.Write.Line("Insufficient energy to travel that speed.");
@@ -51,13 +45,13 @@ namespace StarTrek_KG.Actors
 
             return returnVal;
         }
-        public bool InvalidWarpFactorCheck(int maxWarpFactor, out int distance)
+        public bool InvalidSublightFactorCheck(int maxSublightDistance, out int distance)
         {
-            if (!this.Write.PromptUser(String.Format("Enter warp factor (1-{0}): ", maxWarpFactor), out distance)
-                || distance < 0 
-                || distance > maxWarpFactor)
+            if (!this.Write.PromptUser(String.Format("Enter Sublight distance (1-{0}): ", maxSublightDistance), out distance)
+                || distance < 0
+                || distance > maxSublightDistance)
             {
-                this.Write.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
+                this.Write.Line("Invalid sublight distance. Maximum distance is " + maxSublightDistance + " at this time.");
                 return true;
             }
             return false;

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -14,6 +15,7 @@ namespace StarTrek_KG.Subsystem
         public int MaxWarpFactor { get; set; }
 
         public Warp Warp { get; set; }
+        public Impulse Impulse { get; set; }
         public Movement Movement { get; set; }
 
         #endregion
@@ -23,6 +25,8 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.Navigation;
 
             this.Warp = new Warp(this.Game.Write);
+            this.Impulse = new Impulse(this.Game.Write);
+
             this.Movement = new Movement(shipConnectedTo, game);
         }
 
@@ -45,11 +49,48 @@ namespace StarTrek_KG.Subsystem
             {
                 this.SublightControls();
             }
+
+            if (command == "nav")
+            {
+                //todo: ask user if they want warp or sublight
+                throw new NotImplementedException();
+            }
         }
 
-        private void SublightControls()
+        public void SublightControls()
         {
-            throw new System.NotImplementedException();
+            int distance;
+            int direction;
+
+            if (this.Movement.InvalidCourseCheck(out direction))
+            {
+                return;
+            }
+
+            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return;
+
+            int lastQuadY;
+            int lastQuadX;
+
+            if (!Impulse.Engage(direction, distance, out lastQuadY, out lastQuadX, this.Game.Map))
+            {
+                return;
+            }
+
+            this.RepairOrTakeDamage(lastQuadX, lastQuadY);
+
+            var crs = CombinedRangeScan.For(this.ShipConnectedTo);
+            if (crs.Damaged())
+            {
+                ShortRangeScan.For(this.ShipConnectedTo).Controls();
+            }
+            else
+            {
+                crs.Controls();
+            }
+
+            //todo: upon arriving in quadrant, all damaged controls need to be enumerated
+            //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
         }
 
         public void WarpControls()
@@ -73,7 +114,7 @@ namespace StarTrek_KG.Subsystem
             int lastQuadY;
             int lastQuadX;
 
-            if (!Warp.EngageWarp(direction, distance, out lastQuadY, out lastQuadX, this.Game.Map))
+            if (!Warp.Engage(direction, distance, out lastQuadY, out lastQuadX, this.Game.Map))
             {
                 return;
             }
