@@ -503,8 +503,8 @@ namespace StarTrek_KG
                                                     badGuy.Sector.X,
                                                     badGuy.Sector.Y);
 
-            var seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed")*
-                                          (Utility.Utility.Random).NextDouble();
+            int seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed")*
+                                          (Utility.Utility.Random).Next();
 
             var inNebula = badGuy.GetQuadrant().Type == QuadrantType.Nebulae;
 

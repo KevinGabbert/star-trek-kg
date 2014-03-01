@@ -19,7 +19,7 @@ namespace StarTrek_KG.Actors
             set { throw new NotImplementedException(); }
         }
 
-        public double Energy
+        public int Energy
         {
             get
             {

@@ -25,7 +25,7 @@ namespace StarTrek_KG.Actors
         /// <param name="ship"> </param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public bool EnergySubtracted(Ship ship, ref double distance)
+        public bool EnergySubtracted(Ship ship, ref int distance)
         {
             bool returnVal;
 
@@ -51,10 +51,10 @@ namespace StarTrek_KG.Actors
 
             return returnVal;
         }
-        public bool InvalidWarpFactorCheck(double maxWarpFactor, out double distance)
+        public bool InvalidWarpFactorCheck(int maxWarpFactor, out int distance)
         {
-            if (!this.Write.PromptUser(String.Format("Enter warp factor (0.1--{0}): ", maxWarpFactor), out distance)
-                || distance < 0.1 
+            if (!this.Write.PromptUser(String.Format("Enter warp factor (1-{0}): ", maxWarpFactor), out distance)
+                || distance < 0 
                 || distance > maxWarpFactor)
             {
                 this.Write.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
@@ -62,7 +62,7 @@ namespace StarTrek_KG.Actors
             }
             return false;
         }
-        public bool EngageWarp(double direction, double distance, out int lastQuadY, out int lastQuadX, IMap map)
+        public bool EngageWarp(int direction, int distance, out int lastQuadY, out int lastQuadX, IMap map)
         {
             var distanceEntered = distance;
             var success = this.EnergySubtracted(map.Playership, ref distance);

@@ -42,7 +42,7 @@ namespace StarTrek_KG.Subsystem
                                   Environment.NewLine +
                                   "Enter firing direction (1.0--9.0) ";
 
-            double direction;
+            int direction;
             if (!this.Game.Write.PromptUser(firingDirection, out direction)
                 || direction < 1.0 
                 || direction > 9.0)
@@ -69,8 +69,8 @@ namespace StarTrek_KG.Subsystem
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(this.Game.Map, torpedoStartingLocation.Quadrant);
 
-            var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
-            var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
+            //var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
+            //var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
 
             this.Game.Write.Line("Photon torpedo fired...");
             this.Count--;
@@ -85,71 +85,71 @@ namespace StarTrek_KG.Subsystem
             newLocation.Quadrant = quadrant;
             newLocation.Sector = new Sector();
 
-            //todo: condense WHILE to be a function of Coordinate
-            //todo: eliminate the twice rounding of torpedo location, as the same value is evaluated twice
-            //todo: the rounding can happen once in a variable, and then referred to twice (see note below)
-            while (Torpedoes.IsInQuadrant(currentLocation))
-            {
-                //Increment to next Sector
-                if (this.HitSomething(currentLocation, lastPosition, newLocation))
-                {
-                    this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
-                    return;
-                }
+            ////todo: condense WHILE to be a function of Coordinate
+            ////todo: eliminate the twice rounding of torpedo location, as the same value is evaluated twice
+            ////todo: the rounding can happen once in a variable, and then referred to twice (see note below)
+            //while (Torpedoes.IsInQuadrant(currentLocation))
+            //{
+            //    //Increment to next Sector
+            //    if (this.HitSomething(currentLocation, lastPosition, newLocation))
+            //    {
+            //        this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+            //        return;
+            //    }
 
-                //Keep going.. because we haven't hit anything yet
+            //    //Keep going.. because we haven't hit anything yet
 
-                //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
-                currentLocation.IncrementBy(torpedoVector);
-            }
+            //    //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
+            //    currentLocation.IncrementBy(torpedoVector);
+            //}
 
             this.Game.Write.Line("Photon torpedo failed to hit anything.");
         }
 
-        private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation)
-        {
-            newLocation.Sector.IncrementBy(currentLocation);
+        //private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation)
+        //{
+        //    newLocation.Sector.IncrementBy(currentLocation);
 
-            //todo: Condense into function of Coordinate
-            if (Torpedoes.LastPositionAintNewPosition(newLocation, lastPosition))
-            {
-                this.Game.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
+        //    //todo: Condense into function of Coordinate
+        //    if (Torpedoes.LastPositionAintNewPosition(newLocation, lastPosition))
+        //    {
+        //        this.Game.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
 
-                var outputCoordinate = Utility.Utility.HideXorYIfNebula(this.ShipConnectedTo.GetQuadrant(), newLocation.Sector.X.ToString(), newLocation.Sector.Y.ToString());
+        //        var outputCoordinate = Utility.Utility.HideXorYIfNebula(this.ShipConnectedTo.GetQuadrant(), newLocation.Sector.X.ToString(), newLocation.Sector.Y.ToString());
 
-                this.Game.Write.Line(string.Format("  [{0},{1}]", outputCoordinate.X, outputCoordinate.Y));
+        //        this.Game.Write.Line(string.Format("  [{0},{1}]", outputCoordinate.X, outputCoordinate.Y));
 
-                lastPosition.Update(newLocation);
-            }
+        //        lastPosition.Update(newLocation);
+        //    }
 
-            Torpedoes.DebugTrack(newLocation);
+        //    Torpedoes.DebugTrack(newLocation);
 
-            return this.HitSomething(newLocation);
-        }
+        //    return this.HitSomething(newLocation);
+        //}
 
         private static bool LastPositionAintNewPosition(Location newTorpedoLocation, Coordinate torpedoLastPosition)
         {
             return torpedoLastPosition.X != newTorpedoLocation.Sector.X || torpedoLastPosition.Y != newTorpedoLocation.Sector.Y;
         }
 
-        private static bool IsInQuadrant(VectorCoordinate torpedoLocation)
-        {
-            var torpedoXIsNotMin = torpedoLocation.X >= Constants.SECTOR_MIN;
-            var torpedoYIsNotMIN = torpedoLocation.Y >= Constants.SECTOR_MIN;
+        //private static bool IsInQuadrant(VectorCoordinate torpedoLocation)
+        //{
+        //    var torpedoXIsNotMin = torpedoLocation.X >= Constants.SECTOR_MIN;
+        //    var torpedoYIsNotMIN = torpedoLocation.Y >= Constants.SECTOR_MIN;
 
-            var torpedoXisNotMax = Math.Round(torpedoLocation.X) < Constants.SECTOR_MAX;
-            var torpedoYisNotMax = Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX;
+        //    var torpedoXisNotMax = Math.Round(torpedoLocation.X) < Constants.SECTOR_MAX;
+        //    var torpedoYisNotMax = Math.Round(torpedoLocation.Y) < Constants.SECTOR_MAX;
 
-            //todo: look into issue:
-            var xIsNotNegative = torpedoLocation.X > -1; //adjusting for an issue around sector 0,0
-            var yIsNotNegative = torpedoLocation.Y > -1; //adjusting for an issue around sector 0,0
+        //    //todo: look into issue:
+        //    var xIsNotNegative = torpedoLocation.X > -1; //adjusting for an issue around sector 0,0
+        //    var yIsNotNegative = torpedoLocation.Y > -1; //adjusting for an issue around sector 0,0
 
-            var condition = (torpedoXIsNotMin || torpedoYIsNotMIN) &&
-                            (torpedoXisNotMax && torpedoYisNotMax) &&
-                            (xIsNotNegative && yIsNotNegative);
+        //    var condition = (torpedoXIsNotMin || torpedoYIsNotMIN) &&
+        //                    (torpedoXisNotMax && torpedoYisNotMax) &&
+        //                    (xIsNotNegative && yIsNotNegative);
 
-            return (condition);
-        }
+        //    return (condition);
+        //}
 
         private bool HitSomething(Location location)
         {

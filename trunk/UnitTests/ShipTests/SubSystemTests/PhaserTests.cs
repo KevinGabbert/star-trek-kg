@@ -37,7 +37,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy"); ;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
-            const double testBoltEnergy = 89.6829;
+            const int testBoltEnergy = 89;
 
             var phasers = new Phasers(_setup.TestMap.Playership, this.Game);
 
@@ -56,7 +56,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy");;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
-            const double testBoltEnergy = 89.6829;
+            const int testBoltEnergy = 89;
 
             //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership); 
@@ -73,7 +73,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy"); 
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
-            const double testBoltEnergy = 4000;
+            const int testBoltEnergy = 4000;
 
             //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership);
@@ -92,7 +92,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy"); ;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
-            const double testBoltEnergy = -1;
+            const int testBoltEnergy = -1;
 
             //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership);
@@ -130,7 +130,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
-            const double testBoltEnergy = 89.6829;
+            const int testBoltEnergy = 89;
 
             //This action will hit every single hostile in the quadrant
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership); //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.

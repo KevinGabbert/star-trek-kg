@@ -10,6 +10,6 @@ namespace StarTrek_KG.Interfaces
         Coordinate QuadrantDef { get; set; }
         SectorType Type { get; set; }
 
-        void IncrementBy(VectorCoordinate coordinate);
+        //void IncrementBy(VectorCoordinate coordinate);
     }
 }

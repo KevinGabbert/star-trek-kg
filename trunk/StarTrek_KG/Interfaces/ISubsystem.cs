@@ -9,7 +9,7 @@ namespace StarTrek_KG.Interfaces
     public interface ISubsystem
     {
         int Damage { get; set; }
-        double MaxTransfer { get; set; }
+        int MaxTransfer { get; set; }
         int Energy { get; set; }
         Game Game { get; set; }
         SubsystemType Type { get; set; }

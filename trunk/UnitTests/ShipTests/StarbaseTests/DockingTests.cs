@@ -76,32 +76,32 @@ namespace UnitTests.ShipTests.StarbaseTests
             //this.Move_Sector(((int)NavDirection.East).ToString(), .2 * 8);
         }
 
-        private void Move_Sector(string direction, double distance)
-        {
-            var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+        //private void Move_Sector(string direction, int distance)
+        //{
+        //    var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
 
-            _startingQuadrant = new Coordinate(playershipQuad.X, playershipQuad.Y);
+        //    _startingQuadrant = new Coordinate(playershipQuad.X, playershipQuad.Y);
 
-            _startingSectorX = _testMapNoObjects.Playership.Sector.X;
-            _startingSectorY = _testMapNoObjects.Playership.Sector.Y;
+        //    _startingSectorX = _testMapNoObjects.Playership.Sector.X;
+        //    _startingSectorY = _testMapNoObjects.Playership.Sector.Y;
 
-            //verify that the ship is where we think it is before we start
-            Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors,
-                                                           _testMapNoObjects.Playership.Sector.X,
-                                                           _testMapNoObjects.Playership.Sector.Y).Item);
+        //    //verify that the ship is where we think it is before we start
+        //    Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors,
+        //                                                   _testMapNoObjects.Playership.Sector.X,
+        //                                                   _testMapNoObjects.Playership.Sector.Y).Item);
 
-            _testMovement = new Movement(_testMapNoObjects.Playership, this.Game);
-            _testMovement.BlockedByObstacle = false;
+        //    _testMovement = new Movement(_testMapNoObjects.Playership, this.Game);
+        //    _testMovement.BlockedByObstacle = false;
 
-            var sectorItem =
-                Sector.Get(_testMovement.Game.Map.Quadrants.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
-                                                                       _testMovement.Game.Map.Playership.Sector.Y).Item;
-            Assert.AreEqual(SectorItem.Friendly, sectorItem);
+        //    var sectorItem =
+        //        Sector.Get(_testMovement.Game.Map.Quadrants.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
+        //                                                               _testMovement.Game.Map.Playership.Sector.Y).Item;
+        //    Assert.AreEqual(SectorItem.Friendly, sectorItem);
 
-            _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
+        //    _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
 
-            //EnergySubtracted changes an entered value of .1 to .8
-            //todo: measure time passed
-        }
+        //    //EnergySubtracted changes an entered value of .1 to .8
+        //    //todo: measure time passed
+        //}
     }
 }
