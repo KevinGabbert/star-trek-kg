@@ -326,9 +326,14 @@ namespace StarTrek_KG.Subsystem
             return false;
         }
 
-        //todo: move to Utility() object
         public void Calculator()
         {
+            if (this.Damaged())
+            {
+                this.Game.Write.Line("Cannot calculate while Torpedo subsystem is damaged.");
+                return;
+            }
+
             this.Game.Write.Line("");
 
             var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
@@ -339,7 +344,7 @@ namespace StarTrek_KG.Subsystem
             {
                 if (Game.PlayerNowEnemyToFederation)
                 {
-                    this.Game.Map.StarbaseCalculator(this.ShipConnectedTo);
+                    Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo);
                 }
             }
 

@@ -55,7 +55,6 @@ namespace StarTrek_KG.Interfaces
         Sector Get(int quadrantX, int quadrantY, int sectorX, int sectorY);
         void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips);
         void RemoveTargetFromSector(IMap map, IShip ship);
-        void StarbaseCalculator(Ship shipConnectedTo);
 
         ///// <summary>
         ///// Removes all friendlies fromevery sector in the entire map.

@@ -54,7 +54,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "bas":
-                    this.Game.Map.StarbaseCalculator(this.ShipConnectedTo); 
+                    Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo); 
                     break;
 
                 case "nav":

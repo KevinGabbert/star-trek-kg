@@ -39,5 +39,7 @@ namespace StarTrek_KG.Actors
                 throw new global::System.NotImplementedException();
             }
         }
+
+        string ISectorObject.Name { get; set; }
     }
 }

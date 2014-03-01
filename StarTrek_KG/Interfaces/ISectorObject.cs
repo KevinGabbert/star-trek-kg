@@ -10,5 +10,6 @@ namespace StarTrek_KG.Interfaces
 
         Type Type { get; set; }
 
+        string Name { get; set; }
     }
 }
