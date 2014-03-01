@@ -32,16 +32,26 @@ namespace StarTrek_KG.Utility
             return list;
         }
 
-        //calculates distance traveled mostly to be able to have a value for diagonal distance, as straight line calculation doesnt need all this effort.
-        //todo: modify this to take location
-        public static double Distance(double startX, double startY, double destinationX, double destinationY)
+        ////calculates distance traveled mostly to be able to have a value for diagonal distance, as straight line calculation doesnt need all this effort.
+        ////todo: modify this to take location
+        //public static double Distance(double startX, double startY, double destinationX, double destinationY)
+        //{
+        //    var distanceTraveledX = destinationX - startX;
+        //    var distanceTraveledY = destinationY - startY;
+
+        //    //X squared + Y Squared = Z squared. (Pythagorean Theorem), then Square Root to solve: 
+        //    return Math.Sqrt(distanceTraveledX * distanceTraveledX +
+        //                     distanceTraveledY * distanceTraveledY);
+        //}
+
+        public static int Distance(int startX, int startY, int destinationX, int destinationY)
         {
             var distanceTraveledX = destinationX - startX;
             var distanceTraveledY = destinationY - startY;
 
             //X squared + Y Squared = Z squared. (Pythagorean Theorem), then Square Root to solve: 
-            return Math.Sqrt(distanceTraveledX * distanceTraveledX +
-                             distanceTraveledY * distanceTraveledY);
+            return Convert.ToInt32(Math.Sqrt(distanceTraveledX * distanceTraveledX +
+                             distanceTraveledY * distanceTraveledY));
         }
          
         public static double ComputeDirection(int x1, int y1, int x2, int y2)
@@ -214,133 +224,4 @@ namespace StarTrek_KG.Utility
             return new OutputCoordinate(x, y);
         }
     }
-
-
-    //Todo: when this works, move this to its own file.
-    public class ObjectWalkerEntity
-    {
-        public object Value { get; set; }
-        public PropertyInfo PropertyInfo { get; set; }
-    }
-
-    public static class ObjectWalker
-    {
-        public static List<ObjectWalkerEntity> Walk(object o)
-        {
-            return ProcessObject(o).ToList();
-        }
-
-        private static IEnumerable<ObjectWalkerEntity> ProcessObject(object o)
-        {
-            if (o == null)
-            {
-                // nothing here, just return an empty enumerable object
-                return new ObjectWalkerEntity[0];
-            }
-
-            // create the list to hold values found in this object
-            var objectList = new List<ObjectWalkerEntity>();
-
-            Type t = o.GetType();
-            foreach (PropertyInfo pi in t.GetProperties())
-            {
-                if (IsGeneric(pi.PropertyType))
-                {
-                    // Add generic object
-                    var obj = new ObjectWalkerEntity();
-                    obj.PropertyInfo = pi;
-                    object value;
-                    try
-                    {
-                        value = pi.GetValue(o, null);
-
-                        objectList.Add(obj);
-                    }
-                    catch (Exception ex)
-                    {
-
-                        //throw;
-                    }
-
-                }
-                else
-                {
-                    // not generic, get the property value and make the recursive call
-                    try
-                    {
-                        object value = pi.GetValue(o, null);
-
-                        // all values returned from the recursive call get 
-                        // rolled up into the list created in this call.
-                        objectList.AddRange(ProcessObject(value));
-                    }
-                    catch (Exception ex)
-                    {
-
-                        //throw;
-                    }
-
-
-                }
-            }
-
-            return objectList.AsReadOnly();
-        }
-
-        private static bool IsGeneric(Type type)
-        {
-            return
-                IsSubclassOfRawGeneric(type, typeof(bool)) ||
-                IsSubclassOfRawGeneric(type, typeof(string)) ||
-                IsSubclassOfRawGeneric(type, typeof(int)) ||
-                IsSubclassOfRawGeneric(type, typeof(UInt16)) ||
-                IsSubclassOfRawGeneric(type, typeof(UInt32)) ||
-                IsSubclassOfRawGeneric(type, typeof(UInt64)) ||
-                IsSubclassOfRawGeneric(type, typeof(DateTime));
-        }
-
-        private static bool IsSubclassOfRawGeneric(Type generic, Type toCheck)
-        {
-            while (toCheck != typeof(object))
-            {
-                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
-                {
-                    return true;
-                }
-                toCheck = toCheck.BaseType;
-            }
-            return false;
-        }
-    }
 }
-
-
-
-//ALPHA	        α	&#945;	&#x03B1	&alpha;
-//BETA	        β	&#946;	&#x03B2	&beta;
-//GAMMA	        γ	&#947;	&#x03B3	&gamma;
-//DELTA	        δ	&#948;	&#x03B4	&delta;
-//EPSILON	    ε	&#949;	&#x03B5	&epsilon;
-//ZETA	        ζ	&#950;	&#x03B6	&zeta;
-//ETA	        η	&#951;	&#x03B7	&eta;
-//THETA	        θ	&#952;	&#x03B8	&theta;
-//IOTA	        ι	&#953;	&#x03B9	&iota;
-//KAPPA	        κ	&#954;	&#x03BA	&kappa;
-//LAMBDA	    λ	&#955;	&#x03BB	&lambda;
-//MU	        μ	&#956;	&#x03BC	&mu;
-//NU	        ν	&#957;	&#x03BD	&nu;
-//XI	        ξ	&#958;	&#x03BE	&xi;
-//OMICRON	    ο	&#959;	&#x03BF	&omicron;
-//PI	        π	&#960;	&#x03C0	&pi;
-//RHO	        ρ	&#961;	&#x03C1	&rho;
-//FINAL SIGMA	ς	&#962;	&#x03C2	 
-//SIGMA	        σ	&#963;	&#x03C3	&sigma;
-//TAU	        τ	&#964;	&#x03C4	&tau;
-//UPSILON	    υ	&#965;	&#x03C5	&upsilon;
-//PHI	        φ	&#966;	&#x03C6	&phi;
-//CHI	        χ	&#967;	&#x03C7	&chi;
-//PSI	        ψ	&#968;	&#x03C8	&psi;
-//OMEGA	        ω	&#969;	&#x03C9	&omega;
-
-//αβγδεζηθικλμνξοπρςστυφχψω

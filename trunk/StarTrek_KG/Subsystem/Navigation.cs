@@ -40,20 +40,14 @@ namespace StarTrek_KG.Subsystem
 
         public override void Controls(string command)
         {
-            if (command == "navw")
+            if (command == "wrp")
             {
                 this.WarpControls();
             }
 
-            if (command == "navs")
+            if (command == "imp")
             {
                 this.SublightControls();
-            }
-
-            if (command == "nav")
-            {
-                //todo: ask user if they want warp or sublight
-                throw new NotImplementedException();
             }
         }
 

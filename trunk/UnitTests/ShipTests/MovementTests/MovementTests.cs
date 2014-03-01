@@ -315,7 +315,7 @@ namespace UnitTests.ShipTests.MovementTests
             _startingSectorY = this.Game.Map.Playership.Sector.Y;
 
             //verify that the ship is where we think it is before we start
-            Assert.AreEqual(SectorItem.Friendly, Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors, 
+            Assert.AreEqual(SectorItem.Friendly, Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors,
                                                            this.Game.Map.Playership.Sector.X,
                                                            this.Game.Map.Playership.Sector.Y).Item);
             var sectorItem =
@@ -323,7 +323,7 @@ namespace UnitTests.ShipTests.MovementTests
                                                                        _testMovement.Game.Map.Playership.Sector.Y).Item;
             Assert.AreEqual(SectorItem.Friendly, sectorItem);
 
-            _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
+            _testMovement.Execute(MovementType.Impulse, Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
 
             //EnergySubtracted changes an entered value of .1 to .8
             //todo: measure time passed
@@ -671,7 +671,7 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void Move_Quadrant(string direction, int distance)
         {
-            _testMovement.Execute(Convert.ToInt32(direction), distance, distance, out _lastQuadX, out _lastQuadY);
+            _testMovement.Execute(MovementType.Warp, Convert.ToInt32(direction), distance, distance, out _lastQuadX, out _lastQuadY);
         }
 
         //todo: this needs to be refactored into a ship setup testfixture or something.

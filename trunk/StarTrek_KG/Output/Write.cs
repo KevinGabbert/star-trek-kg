@@ -247,13 +247,16 @@ namespace StarTrek_KG.Output
         {
             ACTIVITY_PANEL = new List<string>();
 
-            ACTIVITY_PANEL.Add("navs = Sublight Navigation");
-            ACTIVITY_PANEL.Add("navw = Warp Navigation");
+            ACTIVITY_PANEL.Add("imp = Impulse Navigation");
+            ACTIVITY_PANEL.Add("wrp = Warp Navigation");
+
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
             ACTIVITY_PANEL.Add("crs = Combined Range Scan");
+
             ACTIVITY_PANEL.Add("pha = Phaser Control");
             ACTIVITY_PANEL.Add("tor = Photon Torpedo Control");
+
             ACTIVITY_PANEL.Add("she = Shield Control");
             ACTIVITY_PANEL.Add("com = Access Computer");
             ACTIVITY_PANEL.Add("dmg = Damage Control");
@@ -279,16 +282,9 @@ namespace StarTrek_KG.Output
             var command = readLine.Trim().ToLower();
             switch (command)
             {
-                case "nav":
-                    Navigation.For(playerShip).Controls("navs");
-                    break;
-
-                case "navs":
-                    Navigation.For(playerShip).Controls("navs");
-                    break;
-
-                case "navw":
-                    Navigation.For(playerShip).Controls("navw");
+                case "wrp":
+                case "imp":
+                    Navigation.For(playerShip).Controls(command);
                     break;
 
                 case "srs":
