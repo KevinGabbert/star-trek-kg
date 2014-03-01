@@ -1,4 +1,5 @@
 ﻿using System;
+using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
@@ -63,7 +64,7 @@ namespace StarTrek_KG.Actors
 
             if (success)
             {
-                Navigation.For(map.Playership).Movement.Execute(direction, distance, distanceEntered, out lastQuadX, out lastQuadY);
+                Navigation.For(map.Playership).Movement.Execute(MovementType.Impulse, direction, distance, distanceEntered, out lastQuadX, out lastQuadY);
             }
             else
             {

@@ -19,7 +19,7 @@ namespace StarTrek_KG.Actors
             this.ShipConnectedTo = shipConnectedTo;
         }
 
-        public void Execute(int direction, int distance, int distanceEntered, out int lastQuadX, out int lastQuadY)
+        public void Execute(MovementType movementType, int direction, int distance, int distanceEntered, out int lastQuadX, out int lastQuadY)
         {
             //ISector playerShipSector = this.ShipConnectedTo.Sector;
             Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
@@ -41,66 +41,34 @@ namespace StarTrek_KG.Actors
             //var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
 
             Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;//Clear Old Sector
-            Quadrant newLocation;
+            Quadrant newLocation = null;
 
-            if (distanceEntered >= 1)
+            switch (movementType)
             {
-                newLocation = this.TravelThroughQuadrants(Convert.ToInt32(distance), Convert.ToInt32(direction), this.ShipConnectedTo);
-                
+                case MovementType.Impulse:
+                    var newSector = this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
+                    newLocation = this.ShipConnectedTo.GetQuadrant();
+                    this.ShipConnectedTo.Sector = newSector;
+                    break;
+
+                case MovementType.Warp:
+                    newLocation = this.TravelThroughQuadrants(Convert.ToInt32(distance), Convert.ToInt32(direction),
+                        this.ShipConnectedTo);
+                    this.ShipConnectedTo.Coordinate = newLocation;   
+                    break;
+                default:
+                    this.Game.Write.Line("Unsupported Movement Type");
+                    break;
+            }
+
+            if (newLocation != null)
+            {
                 newLocation.SetActive();
-                this.ShipConnectedTo.Coordinate = newLocation;
-                this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
-            }
-            else
-            {
-                var newSector = this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
+                this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant 
 
-                Quadrant newActiveQuadrant = this.ShipConnectedTo.GetQuadrant();
-                
-                this.ShipConnectedTo.Sector = newSector;
-                newActiveQuadrant.SetActive();
-                this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
+                this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);
             }
-
-            //this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);  
         }
-
-        //private bool TravelThroughSectorsOld(double distance,
-        //    double numericDirection,
-        //    ref double vectorLocationX,
-        //    ref double vectorLocationY,
-        //    Quadrant playershipQuadrant,
-        //    Coordinate lastSector)
-        //{
-        //    //todo: can this be refactored with Utility.ComputeAngle()?
-        //    double angle = -(Math.PI * (numericDirection - 1.0) / 4.0);
-        //    var distanceVector = new VectorCoordinate(distance * Math.Cos(angle), distance * Math.Sin(angle));
-        //    var vector = new Vector(distanceVector.X / Constants.MOVEMENT_PRECISION,
-        //        distanceVector.Y / Constants.MOVEMENT_PRECISION);
-        //    var activeSectors = playershipQuadrant.Sectors;
-        //    for (var unit = 0; unit < Constants.MOVEMENT_PRECISION; unit++)
-        //    {
-        //        vectorLocationX += vector.X;
-        //        vectorLocationY += vector.Y;
-        //        int quadX = ((int)Math.Round(vectorLocationX)) / 8;
-        //        int quadY = ((int)Math.Round(vectorLocationY)) / 8;
-        //        //todo: this line causes galactic barrier out of bounds error? (becuase tries to assign 8 to X)
-        //        if (quadX == playershipQuadrant.X && quadY == playershipQuadrant.Y)
-        //        {
-        //            var closestSector = new Coordinate((int)Math.Round(vectorLocationX) % 8,
-        //                                                (int)Math.Round(vectorLocationY) % 8);
-        //            if (this.SublightObstacleCheck(lastSector, closestSector, activeSectors))
-        //            {
-        //                //vector_div is so you can get right up to an obstacle before hitting it.
-        //                this.Game.Write.Line("All Stop.");
-        //                return true;
-        //            }
-        //            //todo: verify playershipXY is right next to obstacle to if obstacle hit
-        //            lastSector = closestSector;
-        //        }
-        //    }
-        //    return false;
-        //}
 
         private ISector TravelThroughSectors(int distance, int direction, IShip playership)
         {
