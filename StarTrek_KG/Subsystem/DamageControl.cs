@@ -32,7 +32,7 @@ namespace StarTrek_KG.Subsystem
         public string ShowSubsystemsToFix()
         {
             this.Game.Write.CreateCommandPanel();
-            this.Game.Write.Panel("--- > Subsystem to Fix", this.Game.Write.ACTIVITY_PANEL);
+            this.Game.Write.Panel("─── Subsystem to Fix", this.Game.Write.ACTIVITY_PANEL);
             this.Game.Write.WithNoEndCR("Enter subsystem: ");
             return "";
         }

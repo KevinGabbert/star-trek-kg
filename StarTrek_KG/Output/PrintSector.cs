@@ -179,11 +179,11 @@ namespace StarTrek_KG.Output
                         sb.Append(isNebula ? Utility.Utility.NebulaUnit() : Constants.EMPTY);
                         break;
 
-                    case SectorItem.Friendly:
+                    case SectorItem.FriendlyShip:
                         sb.Append(Constants.PLAYERSHIP);
                         break;
 
-                    case SectorItem.Hostile:
+                    case SectorItem.HostileShip:
 
                         //todo: later it might be nice to have something act on this.. say.. more power to the sensors can change this value
                         bool canActuallySeeEnemy = isNebula && (Utility.Utility.Random.Next(10) == 5); //todo: resource this out

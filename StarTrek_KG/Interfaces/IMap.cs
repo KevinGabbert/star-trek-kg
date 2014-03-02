@@ -54,6 +54,7 @@ namespace StarTrek_KG.Interfaces
         SectorItem GetItem(int quadrantX, int quadrantY, int sectorX, int sectorY);
         Sector Get(int quadrantX, int quadrantY, int sectorX, int sectorY);
         void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips);
+        void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips);
         void RemoveTargetFromSector(IMap map, IShip ship);
 
         ///// <summary>

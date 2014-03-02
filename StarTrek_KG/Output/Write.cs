@@ -396,13 +396,13 @@ namespace StarTrek_KG.Output
 
             if (currentShieldEnergy > 0)
             {
-                Shields.SHIELD_PANEL.Add("--- > Shield Control: -- <CURRENTLY AT: " + currentShieldEnergy + "> --");
+                Shields.SHIELD_PANEL.Add("─── Shield Control: ── <CURRENTLY AT: " + currentShieldEnergy + "> ──");
                 Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
                 Shields.SHIELD_PANEL.Add("sub = Subtract energy from shields.");
             }
             else
             {
-                Shields.SHIELD_PANEL.Add("--- > Shield Control: -- <DOWN> --");
+                Shields.SHIELD_PANEL.Add("─── Shield Control: ── <DOWN> ──");
                 Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
             }
 
@@ -417,7 +417,7 @@ namespace StarTrek_KG.Output
 
         public string GetPanelHead(string shipName)
         {
-            return "--- > " +  shipName + " < ---";
+            return "─── " + shipName + " ───";
         }
 
         public bool PromptUser(string promptMessage, out int value)

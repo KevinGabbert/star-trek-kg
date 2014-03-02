@@ -53,21 +53,60 @@ namespace StarTrek_KG.Subsystem
 
         public void TargetObject()
         {
-            if (this.Damaged())
-            {
-                return;
-            }
+        //    if (this.Damaged())
+        //    {
+        //        return;
+        //    }
 
+        //    this.Game.Write.Line("");
+        //    this.Game.Write.Line("Objects to Target:");
+
+        //    List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+
+        //    string userReply;
+        //    this.Game.Write.Line("");
+        //    this.Game.Write.PromptUser("Enter number to lock Phasers: ", out userReply);
+
+        //    int number = Convert.ToInt32(userReply);
+        //    var objectToFireOn = sectorsWithObjects.Single(i => i.Key == number).Value;
+
+        //    int phaserEnergy;
+        //    if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
+        //    {
+        //        this.Game.Write.Line("Invalid phaser energy level.");
+        //        return;
+        //    }
+
+        //    if (!this.EnergyCheckFail(phaserEnergy, this.ShipConnectedTo))
+        //    {
+        //        this.ShipConnectedTo.Energy -= phaserEnergy;
+
+        //        var destroyedShips = new List<IShip>();
+        //        switch (objectToFireOn.Item)
+        //        {
+        //            case SectorItem.HostileShip:
+        //            case SectorItem.FriendlyShip:
+        //                this.FireOnShip(0, (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
+        //                break;
+
+        //            case SectorItem.Starbase:
+        //                //this.FireOnStarbase(0, (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
+        //                this.Game.Write.Line("Firing on Starbases unsupported with phasers (for now).");
+        //                break;
+
+        //            case SectorItem.Star:
+        //                this.FireOnStar((IStar)objectToFireOn.Object);
+        //                break;
+        //        }
+
+        //        this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
+        //    }
+        }
+
+        private void FireOnStar(IStar iStar)
+        {
             this.Game.Write.Line("");
-            this.Game.Write.Line("Objects to Target:");
-
-            Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
-
-            string userReply = null;
-            this.Game.Write.PromptUser("Enter number of Object to target: ", out userReply);
-
-            this.Game.Write.Line("");
-            this.Game.Write.Line("Target Object is not yet supported.");
+            this.Game.Write.Line("Direct hit on " + iStar.Name + ". No apparent damage to Stellar Body.");
         }
     }
 }

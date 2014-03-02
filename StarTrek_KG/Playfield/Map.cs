@@ -127,7 +127,7 @@ namespace StarTrek_KG.Playfield
                     var sectorToPlaceShip = Sector.Get(this.Quadrants.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
 
                     //This places our newly created ship into our newly created List of Quadrants.
-                    sectorToPlaceShip.Item = SectorItem.Friendly;
+                    sectorToPlaceShip.Item = SectorItem.FriendlyShip;
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -151,7 +151,7 @@ namespace StarTrek_KG.Playfield
             this.Quadrants = new Quadrants(this, this.Write);
 
             //Friendlies are added separately
-            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.Friendly).ToList();
+            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.FriendlyShip).ToList();
 
             this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Quadrants: " + this.Quadrants.Count);
             
@@ -443,6 +443,24 @@ namespace StarTrek_KG.Playfield
             map.Quadrants.Remove(destroyedShips);
             map.Quadrants.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
         }
+        public void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips)
+        {
+            this.RemoveAllDestroyedShips(this, destroyedShips); //remove from Hostiles collection
+
+            foreach (var destroyedShip in destroyedShips)
+            {
+                if (destroyedShip.Faction == FactionName.Federation)
+                {
+                    this.Playership.Scavenge(ScavengeType.FederationShip);
+                }
+                else
+                {
+                    this.Playership.Scavenge(ScavengeType.OtherShip);
+                }
+
+                //todo: add else if for starbase when the time comes
+            }
+        }
 
         public void RemoveTargetFromSector(IMap map, IShip ship)
         {
@@ -499,7 +517,7 @@ namespace StarTrek_KG.Playfield
             var activeQuadrant = map.Quadrants.GetActive();
 
             var newActiveSector = Sector.Get(activeQuadrant.Sectors, map.Playership.Sector.X, map.Playership.Sector.Y);
-            newActiveSector.Item = SectorItem.Friendly;
+            newActiveSector.Item = SectorItem.FriendlyShip;
         }
 
         public override string ToString()

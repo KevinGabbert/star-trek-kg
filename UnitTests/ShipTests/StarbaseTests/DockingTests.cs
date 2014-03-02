@@ -45,7 +45,7 @@ namespace UnitTests.ShipTests.StarbaseTests
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 2)), SectorItem.Starbase)
                                     }
             }, this.Game.Write, this.Game.Config));

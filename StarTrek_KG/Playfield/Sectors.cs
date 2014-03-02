@@ -51,7 +51,7 @@ namespace StarTrek_KG.Playfield
 
         public void ClearAllFriendlies()
         {
-            var friendlySectors = this.Where(s => s.Item == SectorItem.Friendly);
+            var friendlySectors = this.Where(s => s.Item == SectorItem.FriendlyShip);
 
             foreach (var sector in friendlySectors)
             {

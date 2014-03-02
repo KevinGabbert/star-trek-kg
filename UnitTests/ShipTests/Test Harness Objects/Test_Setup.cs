@@ -76,7 +76,7 @@ namespace UnitTests.ShipTests
                                                              {
                                                                  new SectorDef(
                                                                      new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)),
-                                                                     SectorItem.Friendly),
+                                                                     SectorItem.FriendlyShip),
                                                                  //todo: this needs to be in a random spo
                                                              }
                                         }, this.Game.Write, this.Game.Config));
@@ -95,10 +95,10 @@ namespace UnitTests.ShipTests
                                                            new SectorDef(
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                new Coordinate(0, 0)),
-                                                               SectorItem.Friendly),
+                                                               SectorItem.FriendlyShip),
                                                            new SectorDef(
                                                                new LocationDef(new Coordinate(0, 0),
-                                                                               new Coordinate(0, 1)), SectorItem.Hostile),
+                                                                               new Coordinate(0, 1)), SectorItem.HostileShip),
                                                        }
                                   }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
@@ -115,10 +115,10 @@ namespace UnitTests.ShipTests
                                                 new SectorDef(
                                                     new LocationDef(new Coordinate(0, 0),
                                                                     new Coordinate(0, 0)),
-                                                    SectorItem.Friendly),
+                                                    SectorItem.FriendlyShip),
                                                 new SectorDef(
                                                     new LocationDef(new Coordinate(0, 0),
-                                                                    new Coordinate(0, 1)), SectorItem.Hostile),
+                                                                    new Coordinate(0, 1)), SectorItem.HostileShip),
                                             }
             }, this.Game.Write, this.Game.Config, FactionName.Federation);
             this.VerifyMap();
@@ -155,10 +155,10 @@ namespace UnitTests.ShipTests
                                             new SectorDef(
                                                 new LocationDef(new Coordinate(0, 0),
                                                                 friendlySector),
-                                                SectorItem.Friendly),
+                                                SectorItem.FriendlyShip),
                                             new SectorDef(
                                                 new LocationDef(new Coordinate(0, 0),
-                                                                hostileSector), SectorItem.Hostile),
+                                                                hostileSector), SectorItem.HostileShip),
                                         }
             }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
@@ -171,7 +171,7 @@ namespace UnitTests.ShipTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                 {
-                   new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.Friendly)},
+                   new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.FriendlyShip)},
               AddStars = false
             }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
@@ -186,7 +186,7 @@ namespace UnitTests.ShipTests
 
                 SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
                                     }
             }, this.Game.Write, this.Game.Config));

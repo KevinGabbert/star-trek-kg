@@ -238,33 +238,7 @@ namespace StarTrek_KG.Subsystem
             {
                 case SectorItem.Starbase:
 
-                    //todo: technically, the script below should leave the Torpedoes class and move to a script class..
-                    //todo: raise an event that a script can use.
-
-                    //At present, a starbase can be destroyed by a single hit
-                    bool emergencyMessageSuccess = this.StarbaseEmergencyMessageAttempt();
-
-                    this.DestroyStarbase(map, newY, newX, qLocation);
-
-                    if (emergencyMessageSuccess)
-                    {
-                        this.Game.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
-                        this.Game.Write.Line("Federation Ships and starbases will now shoot you on sight!");
-
-                        this.Game.PlayerNowEnemyToFederation = true;
-
-                        //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
-                        map.AddHostileFederationShipsToExistingMap();
-                    }
-                    else
-                    {
-                        this.Game.Write.Line("Starbase was destroyed before getting out a distress call.");
-
-                        if (!this.Game.PlayerNowEnemyToFederation)
-                        {
-                            this.Game.Write.Line("For now, no one will know of this..");
-                        }
-                    }
+                    this.Game.DestroyStarbase(map, newY, newX, qLocation);
 
                     return true;
 
@@ -288,32 +262,6 @@ namespace StarTrek_KG.Subsystem
             }
 
             return false;
-        }
-
-        private bool StarbaseEmergencyMessageAttempt()
-        {
-            return (Utility.Utility.Random.Next(2) == 1);
-        }
-
-        private void DestroyStarbase(IMap map, int newY, int newX, ISector qLocation)
-        {
-            Navigation.For(map.Playership).Docked = false;  //in case you shot it point-blank range..
-
-            map.starbases--;
-
-            qLocation.Object = null;
-            qLocation.Item = SectorItem.Empty;
-
-            //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
-            this.Game.Write.Line(string.Format("You have destroyed A Federation starbase! (at sector [{0},{1}])",
-                newX, newY));
-
-            this.ShipConnectedTo.Scavenge(ScavengeType.Starbase);
-
-            //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
-            //todo: a concerted effort of 4? torpedoes will destroy an unshielded starbase.
-            //todo: however, you'd better hit the comms subsystem to prevent an emergency message, then shoot the log bouy
-            //todo: it sends out or other starbases will know of your crime.
         }
 
         private bool Exhausted()
