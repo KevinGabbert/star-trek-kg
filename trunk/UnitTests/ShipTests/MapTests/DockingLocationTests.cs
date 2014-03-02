@@ -24,7 +24,7 @@ namespace UnitTests.ShipTests.MapTests
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.Friendly)
+                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.FriendlyShip)
                             }
             }, this.Game.Write, this.Game.Config));
 
@@ -85,7 +85,7 @@ namespace UnitTests.ShipTests.MapTests
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.Friendly)
+                                new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.FriendlyShip)
                             }
             }, this.Game.Write, this.Game.Config));
 

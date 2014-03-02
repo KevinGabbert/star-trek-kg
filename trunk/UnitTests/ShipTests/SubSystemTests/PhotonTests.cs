@@ -159,7 +159,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(0, hostile.Sector.X, "Hostile.X not at 0");
             Assert.AreEqual(1, hostile.Sector.Y, "Hostile.Y not at 1");
 
-            Assert.AreEqual(SectorItem.Hostile, hostile.Sector.Item);
+            Assert.AreEqual(SectorItem.HostileShip, hostile.Sector.Item);
             Assert.IsNotNull(hostile.Sector.Object);
 
             Constants.DEBUG_MODE = debugMode;
@@ -250,7 +250,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(hostileSector.X, hostile.Sector.X, "Hostile.X not at 0");
             Assert.AreEqual(hostileSector.Y, hostile.Sector.Y, "Hostile.Y not at 1");
 
-            Assert.AreEqual(SectorItem.Hostile, hostile.Sector.Item);
+            Assert.AreEqual(SectorItem.HostileShip, hostile.Sector.Item);
             Assert.IsNotNull(hostile.Sector.Object);
 
             Constants.DEBUG_MODE = debugMode;

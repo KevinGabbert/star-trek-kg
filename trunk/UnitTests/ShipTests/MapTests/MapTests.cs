@@ -179,7 +179,7 @@ namespace UnitTests.ShipTests.MapTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
                             }
             }, this.Game.Write, this.Game.Config)); 
 
@@ -202,7 +202,7 @@ namespace UnitTests.ShipTests.MapTests
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
                                     }
             }, this.Game.Write, this.Game.Config));
             //_setup.TestMap.Quadrants.PopulateSectors(null, _setup.TestMap);
@@ -308,7 +308,7 @@ namespace UnitTests.ShipTests.MapTests
                 
                 SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
                                     }
             }, this.Game.Write, this.Game.Config));
 
@@ -330,7 +330,7 @@ namespace UnitTests.ShipTests.MapTests
 
             _setup.TestMap.Quadrants.Single(q => q.X == testQuadX &&
                                            q.Y == testQuadY).Sectors.Single(s => s.X == testSectX &&
-                                                                                 s.Y == testSectY).Item = SectorItem.Hostile;
+                                                                                 s.Y == testSectY).Item = SectorItem.HostileShip;
             //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
 
             var hostiles1 = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.Coordinate.X &&
@@ -340,7 +340,7 @@ namespace UnitTests.ShipTests.MapTests
             Assert.IsNotNull(verifiedShip);
 
             var sectorItemBefore = _setup.TestMap.GetItem(testQuadX, testQuadY, testSectX, testSectY);
-            Assert.AreEqual(SectorItem.Hostile, sectorItemBefore); //verify our newly added ship is on the map
+            Assert.AreEqual(SectorItem.HostileShip, sectorItemBefore); //verify our newly added ship is on the map
 
             //verify our newly added ship is in the Hostiles list
             var shipToRemove = _setup.TestMap.Quadrants.Single(q => q.X == hostileShip.Coordinate.X &&
@@ -409,7 +409,7 @@ namespace UnitTests.ShipTests.MapTests
                 
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Friendly), //todo: this needs to be in a random spo
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
                 }
             }, this.Game.Write, this.Game.Config));
 

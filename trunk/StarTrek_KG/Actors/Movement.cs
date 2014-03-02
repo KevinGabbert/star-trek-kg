@@ -293,7 +293,7 @@ namespace StarTrek_KG.Actors
                     mySector.Y = lastSector.Y;
 
                     //todo: move this to XXX label.  run tests.  should work.
-                    Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.Friendly;
+                    Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.FriendlyShip;
 
                     this.IdentifyObstacle(sector, currentObject, currentItem);
 
@@ -320,7 +320,7 @@ namespace StarTrek_KG.Actors
                                       sector.Y + "]");
                     break;
 
-                case SectorItem.Hostile:
+                case SectorItem.HostileShip:
                     var hostile = currentObject;
                     this.Game.Write.Line("Ship " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
                                       sector.Y + "]");

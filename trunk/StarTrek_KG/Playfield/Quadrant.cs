@@ -303,7 +303,7 @@ namespace StarTrek_KG.Playfield
             var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
             this.Map.Write.DebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " + newlyCreatedSector);
 
-            if(itemToPopulate == SectorItem.Hostile)
+            if(itemToPopulate == SectorItem.HostileShip)
             {
                 //if a baddie name is passed, then use it.  otherwise
                 var newShip = this.CreateHostileShip(newlyCreatedSector, stockBaddieNames, stockBaddieFaction);
@@ -342,11 +342,11 @@ namespace StarTrek_KG.Playfield
                 switch(ship.Allegiance)
                 {
                     case Allegiance.GoodGuy:
-                        addToSector.Item = SectorItem.Friendly;
+                        addToSector.Item = SectorItem.FriendlyShip;
                         break;
 
                     case Allegiance.BadGuy:
-                        addToSector.Item = SectorItem.Hostile;
+                        addToSector.Item = SectorItem.HostileShip;
                         break;
                 }        
             }

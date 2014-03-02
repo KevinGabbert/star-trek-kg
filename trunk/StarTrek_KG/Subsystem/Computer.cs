@@ -12,7 +12,8 @@ namespace StarTrek_KG.Subsystem
     public class Computer : SubSystem_Base
     {
         public static readonly string[] CONTROL_PANEL = {
-                                                    "--- > Main Computer --------------",
+                                                    "",
+                                                    "─── Main Computer ──────────────",
                                                     "rec = Cumulative Galactic Record",
                                                     "sta = Status Report",
                                                     "tor = Photon Torpedo Calculator",
@@ -106,12 +107,14 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public void ListObjectsInQuadrant()
+        public List<KeyValuePair<int, Sector>> ListObjectsInQuadrant()
         {
+            var list = new List<KeyValuePair<int, Sector>>();
+
             if (this.Damaged())
             {
                 Game.Write.Line("Unable to List Objects in Quadrant");
-                return;
+                return list;
             }
 
             var sectorsWithObjects = ShortRangeScan.For(this.ShipConnectedTo).ObjectFinder().ToList();
@@ -126,6 +129,8 @@ namespace StarTrek_KG.Subsystem
                     this.Game.Write.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, (sector.X + 1),
                         (sector.Y + 1)));
 
+                    list.Add(new KeyValuePair<int, Sector>(objectNumber, sector));
+
                     objectNumber++;
                 }
             }
@@ -133,6 +138,8 @@ namespace StarTrek_KG.Subsystem
             {
                 this.Game.Write.Line("No Sectors with Objects found (this is an error)");
             }
+
+            return list;
         }
 
         private void TranslateLatestTaunt()

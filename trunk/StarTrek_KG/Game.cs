@@ -129,25 +129,25 @@ namespace StarTrek_KG
                            //indicator that an individual object needs to be placed, istead of generated objects from config file.
 
                            //todo: get rid of that second, stupid parameter.
-                           new SectorDef(SectorItem.Friendly),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
-                           new SectorDef(SectorItem.Hostile),
+                           new SectorDef(SectorItem.FriendlyShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
+                           new SectorDef(SectorItem.HostileShip),
                            new SectorDef(SectorItem.Starbase),
                            new SectorDef(SectorItem.Starbase),
                            new SectorDef(SectorItem.Starbase),
@@ -432,7 +432,7 @@ namespace StarTrek_KG
 
             this.HostileStarbasesAttack(map, activeQuadrant);
 
-            returnValue = HostileShipsAttack(map, hostilesAttacking, returnValue);
+            returnValue = this.HostileShipsAttack(map, hostilesAttacking, returnValue);
 
             return returnValue;
         }
@@ -706,6 +706,63 @@ namespace StarTrek_KG
             }
 
             return shieldsRaised;
+        }
+
+        public void DestroyStarbase(IMap map, int newY, int newX, Sector qLocation)
+        {
+            //todo: technically, the script below should leave the Torpedoes class and move to a script class..
+            //todo: raise an event that a script can use.
+
+            //At present, a starbase can be destroyed by a single hit
+            bool emergencyMessageSuccess = this.StarbaseEmergencyMessageAttempt();
+
+            this.DestroyStarbase(map, newY, newX, (ISector)qLocation);
+
+            if (emergencyMessageSuccess)
+            {
+                this.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
+                this.Write.Line("Federation Ships and starbases will now shoot you on sight!");
+
+                this.PlayerNowEnemyToFederation = true;
+
+                //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
+                map.AddHostileFederationShipsToExistingMap();
+            }
+            else
+            {
+                this.Write.Line("Starbase was destroyed before getting out a distress call.");
+
+                if (!this.PlayerNowEnemyToFederation)
+                {
+                    this.Write.Line("For now, no one will know of this..");
+                }
+            }
+        }
+
+        private void DestroyStarbase(IMap map, int newY, int newX, ISector qLocation)
+        {
+            Navigation.For(map.Playership).Docked = false;  //in case you shot it point-blank range..
+
+            map.starbases--;
+
+            qLocation.Object = null;
+            qLocation.Item = SectorItem.Empty;
+
+            //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
+            this.Write.Line(string.Format("You have destroyed A Federation starbase! (at sector [{0},{1}])",
+                newX, newY));
+
+            this.Map.Playership.Scavenge(ScavengeType.Starbase);
+
+            //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
+            //todo: a concerted effort of 4? torpedoes will destroy an unshielded starbase.
+            //todo: however, you'd better hit the comms subsystem to prevent an emergency message, then shoot the log bouy
+            //todo: it sends out or other starbases will know of your crime.
+        }
+
+        private bool StarbaseEmergencyMessageAttempt()
+        {
+            return (Utility.Utility.Random.Next(2) == 1);
         }
     }
 }

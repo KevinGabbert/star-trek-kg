@@ -119,7 +119,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(6, activeQuadrant.GetHostiles()[0].Sector.Y);
 
             //verify position on map.
-            Assert.AreEqual(SectorItem.Hostile, activeQuadrant.Sectors[22].Item);
+            Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[22].Item);
 
             //set its energy
             Shields.For(activeQuadrant.GetHostiles()[0]).Energy = 50;

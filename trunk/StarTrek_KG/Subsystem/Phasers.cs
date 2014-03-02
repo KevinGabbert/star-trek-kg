@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -49,13 +50,12 @@ namespace StarTrek_KG.Subsystem
 
             int phaserEnergy;
 
-            this.Game.Write.Line("Phasers locked on target."); //todo: there should be an element of variation on this if computer is damaged.
-
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
                 this.Game.Write.Line("Invalid energy level.");
                 return;
             }
+
             this.Game.Write.Line("");
 
             this.Fire(phaserEnergy, shipFiringPhasers);
@@ -64,6 +64,29 @@ namespace StarTrek_KG.Subsystem
 
         private void Execute(double phaserEnergy)
         {
+            var inNebula = this.InNebula();
+
+            //TODO: BUG: fired phaser energy won't subtract from ship's energy
+
+            var destroyedShips = new List<IShip>();
+            foreach (var badGuyShip in this.Game.Map.Quadrants.GetActive().GetHostiles())
+            {
+                this.FireOnShip(phaserEnergy, badGuyShip, inNebula, destroyedShips);
+            }
+
+            if (this.ShipConnectedTo.GetQuadrant().GetStarbaseCount() > 0 && this.Game.PlayerNowEnemyToFederation)
+            {
+                //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
+                
+                //for what its worth, Starbases will have a lot more power!
+                this.Game.Write.Line("Starbases cannot be hit with phasers.. Yet..");
+            }
+
+            this.Game.Map.RemoveDestroyedShipsAndScavenge(destroyedShips);
+        }
+
+        private bool InNebula()
+        {
             var inNebula = this.ShipConnectedTo.GetQuadrant().Type == QuadrantType.Nebulae;
 
             if (inNebula)
@@ -71,43 +94,21 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.Line("Due to the Nebula, phaser effectiveness will be reduced.");
             }
 
-            this.Game.Write.Line("Firing phasers..."); //todo: pull from config
+            return inNebula;
+        }
 
-            //TODO: BUG: fired phaser energy won't subtract from ship's energy
+        private void FireOnShip(double phaserEnergy, IShip badGuyShip, bool inNebula, ICollection<IShip> destroyedShips)
+        {
+            Location location = this.ShipConnectedTo.GetLocation();
 
-            var destroyedShips = new List<IShip>();
-            foreach (var badGuyShip in this.Game.Map.Quadrants.GetActive().GetHostiles())
-            {
-                Location location = this.ShipConnectedTo.GetLocation();
+            this.Game.Write.Line("Phasers locked on: " + badGuyShip.Name);
 
-                double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X, badGuyShip.Sector.Y);
-                double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate", "PhaserEnergyAdjustment", inNebula);
+            double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X,
+                badGuyShip.Sector.Y);
+            double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate",
+                "PhaserEnergyAdjustment", inNebula);
 
-                this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
-            }
-
-            if (this.ShipConnectedTo.GetQuadrant().GetStarbaseCount() > 0 && this.Game.PlayerNowEnemyToFederation)
-            {
-                //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
-                //for what its worth, Starbases will have a lot more power!
-                this.Game.Write.Line("Starbases cannot be hit with phasers.. Yet..");
-            }
-
-            this.Game.Map.RemoveAllDestroyedShips(this.Game.Map, destroyedShips);//remove from Hostiles collection
-
-            foreach (var destroyedShip in destroyedShips)
-            {
-                if(destroyedShip.Faction == FactionName.Federation)
-                {
-                    this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
-                }
-                else
-                {
-                    this.ShipConnectedTo.Scavenge(ScavengeType.OtherShip);
-                }
-
-                //todo: add else if for starbase when the time comes
-            }
+            this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
         }
 
         private bool PromptUserForPhaserEnergy(out int phaserEnergy)
@@ -180,16 +181,64 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line("");
             this.Game.Write.Line("Objects to Target:");
 
-            Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+            List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
 
-            string userReply = null;
+            string userReply;
             this.Game.Write.Line("");
             this.Game.Write.PromptUser("Enter number to lock Phasers: ", out userReply);
 
+            int number = Convert.ToInt32(userReply);
+            var objectToFireOn = sectorsWithObjects.Single(i => i.Key == number).Value;
+
+            int phaserEnergy;
+            if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
+            {
+                this.Game.Write.Line("Invalid phaser energy level.");
+                return;
+            }
+
+            var hostilesHaveAttacked = false;
+            if (!this.EnergyCheckFail(phaserEnergy, this.ShipConnectedTo))
+            {
+                if (Utility.Utility.Random.Next(2) == 1)
+                {
+                    this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.  
+                    hostilesHaveAttacked = true;
+                }
+
+                this.ShipConnectedTo.Energy -= phaserEnergy;
+
+                var destroyedShips = new List<IShip>();
+                switch (objectToFireOn.Item)
+                {
+                     case SectorItem.HostileShip:
+                     case SectorItem.FriendlyShip:
+                         this.FireOnShip(phaserEnergy, (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
+                        break;
+
+                     case SectorItem.Starbase:
+                        //todo: support Starbase Hit points
+                        this.Game.DestroyStarbase(this.Game.Map, objectToFireOn.Y, objectToFireOn.X, objectToFireOn);
+                        break;
+
+                     case SectorItem.Star:
+                        this.FireOnStar((IStar)objectToFireOn.Object);
+                        break;
+                }
+
+                this.Game.Map.RemoveDestroyedShipsAndScavenge(destroyedShips);
+
+                if (!hostilesHaveAttacked)
+                {
+                    this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.  
+                }
+            }
+        }
+
+        private void FireOnStar(IStar iStar)
+        {
             this.Game.Write.Line("");
-            this.Game.Write.Line("Target Object is not yet supported for Phasers.");
-
-
+            this.Game.Write.Line("Direct hit on " + iStar.Name + ". No apparent damage to Stellar Body.");
         }
     }
 }
