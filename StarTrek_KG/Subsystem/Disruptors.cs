@@ -5,7 +5,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Disruptors : SubSystem_Base
+    public class Disruptors : SubSystem_Base, IWeapon
     {
         //this.Initialize();
         public Disruptors(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
@@ -49,6 +49,25 @@ namespace StarTrek_KG.Subsystem
             //Game.ReportShieldsStatus(map, shieldsValueBeforeHit);
 
             return 0;
+        }
+
+        public void TargetObject()
+        {
+            if (this.Damaged())
+            {
+                return;
+            }
+
+            this.Game.Write.Line("");
+            this.Game.Write.Line("Objects to Target:");
+
+            Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+
+            string userReply = null;
+            this.Game.Write.PromptUser("Enter number of Object to target: ", out userReply);
+
+            this.Game.Write.Line("");
+            this.Game.Write.Line("Target Object is not yet supported.");
         }
     }
 }

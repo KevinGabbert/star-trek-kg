@@ -8,7 +8,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Phasers : SubSystem_Base
+    public class Phasers : SubSystem_Base, IWeapon
     {
         //dependencies to inject
         //Quadrants
@@ -168,6 +168,28 @@ namespace StarTrek_KG.Subsystem
         public static Phasers For(IShip ship)
         {
             return (Phasers)SubSystem_Base.For(ship, SubsystemType.Phasers);
+        }
+
+        public void TargetObject()
+        {
+            if (this.Damaged())
+            {
+                return;
+            }
+
+            this.Game.Write.Line("");
+            this.Game.Write.Line("Objects to Target:");
+
+            Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+
+            string userReply = null;
+            this.Game.Write.Line("");
+            this.Game.Write.PromptUser("Enter number to lock Phasers: ", out userReply);
+
+            this.Game.Write.Line("");
+            this.Game.Write.Line("Target Object is not yet supported for Phasers.");
+
+
         }
     }
 }
