@@ -24,7 +24,7 @@ namespace StarTrek_KG
             public IOutputWrite Write { get; set; }
 
             public Write Output { get; set; }
-            public PrintSector PrintSector { get; set; }
+            public Render PrintSector { get; set; }
             public IMap Map { get; set; }
 
             public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
@@ -59,7 +59,7 @@ namespace StarTrek_KG
                 this.GetConstants();
 
                 this.PrintSector =
-                    (new PrintSector(this.Write, this.Config));
+                    (new Render(this.Write, this.Config));
 
                 var startConfig = (new SetupOptions
                                        {
@@ -81,7 +81,7 @@ namespace StarTrek_KG
 
                 //todo: why are we creating this PrintSector() class a second time??
                 this.Output = new Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
-                this.PrintSector = new PrintSector(this.Write, this.Config);
+                this.PrintSector = new Render(this.Write, this.Config);
             }
         }
 

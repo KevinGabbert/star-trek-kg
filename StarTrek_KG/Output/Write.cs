@@ -506,7 +506,7 @@ namespace StarTrek_KG.Output
             var location = subsystem.ShipConnectedTo.GetLocation();
             Quadrant quadrant = Quadrants.Get(subsystem.Game.Map, location.Quadrant);
             var shieldsAutoRaised = Shields.For(subsystem.ShipConnectedTo).AutoRaiseShieldsIfNeeded(quadrant);
-            var printSector = (new PrintSector(this, subsystem.Game.Config));
+            var printSector = (new Render(this, subsystem.Game.Config));
 
             int totalHostiles = subsystem.Game.Map.Quadrants.GetHostileCount();
             var isNebula = (quadrant.Type == QuadrantType.Nebulae);

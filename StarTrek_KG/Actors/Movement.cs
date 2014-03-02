@@ -28,17 +28,6 @@ namespace StarTrek_KG.Actors
             lastQuadY = playershipQuadrant.Y;
             lastQuadX = playershipQuadrant.X;
 
-            //todo: fix direction with sector to match quadrant direction
-
-            //hack: bandaid fix. inelegant code
-            //todo: Fix the mathematical need for a different numerical direction for sectors and quadrants.
-            //todo: GetSectorDirection() and GetQuadrantDirection() need to return the same numbers
-
-            //double numericDirection = distanceEntered < 1 ? direction : Movement.GetQuadrantDirection(direction);
-
-            //double vectorLocationX = playershipQuadrant.X * 8 + playerShipSector.X;
-            //double vectorLocationY = playershipQuadrant.Y * 8 + playerShipSector.Y;
-
             //var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
 
             Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;//Clear Old Sector
