@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -598,6 +599,85 @@ namespace StarTrek_KG.Playfield
         public bool IsNebulae()
         {
             return (this.Type == QuadrantType.Nebulae);
+        }
+
+
+        //todo: refactor these functions with LRS
+        //todo: hand LRS a List<LRSResult>(); and then it can build its little grid.
+        //or rather.. LongRangeScan subsystem comes up with the numbers, then hands it to the Print
+
+
+
+        public void GetNeighbors()
+        {
+            //var x = new List<LRSResult>();
+            //todo: an LRSResult is an object with Hostiles, Starbases, and Stars in it
+
+            //string currentLRSScanLine = "";
+            //for (var quadrantX = myLocation.Quadrant.X - 1; quadrantX <= myLocation.Quadrant.X + 1; quadrantX++)
+            //{
+            //    currentLRSScanLine += Constants.SCAN_SECTOR_DIVIDER + " ";
+
+            //    //var renderingMyLocation = myLocation.Quadrant.X == quadrantX &&
+            //    //                          myLocation.Quadrant.Y == quadrantY;
+
+            //    //todo: turn these into props.
+            //    var outOfBounds = this.OutOfBounds(quadrantY, quadrantX);
+
+            //    if (!currentlyInNebula)
+            //    {
+            //        currentLRSScanLine = this.GetQuadrantInfo(quadrantY, outOfBounds, currentLRSScanLine, quadrantX);
+            //    }
+            //    else
+            //    {
+            //        currentLRSScanLine += Utility.Utility.NebulaUnit();
+            //    }
+
+            //    currentLRSScanLine += " ";
+            //}
+        }
+
+        private string GetQuadrantInfo(int quadrantY, bool outOfBounds, string currentLRSScanLine, int quadrantX)
+        {
+            //if (!outOfBounds)
+            //{
+            //    currentLRSScanLine = GetQuadrantData(quadrantY, quadrantX, currentLRSScanLine);
+            //}
+            //else
+            //{
+            //    currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBorder");
+            //}
+
+            return currentLRSScanLine;
+        }
+
+        private string GetQuadrantData(int quadrantY, int quadrantX, string currentLRSScanLine)
+        {
+            ////Quadrant quadrantToScan = Quadrants.Get(this.Game.Map, this.CoordinateToScan(quadrantY, quadrantX));
+
+            //if (quadrantToScan.Type != QuadrantType.Nebulae)
+            //{
+            //    int starbaseCount;
+            //    int starCount;
+            //    int hostileCount;
+
+            //    //this.Execute(quadrantToScan, out hostileCount, out starbaseCount, out starCount);
+
+            //    //currentLRSScanLine += this.Game.Write.RenderQuadrantCounts(starbaseCount, starCount, hostileCount);
+
+            //}
+            //else
+            //{
+            //    //todo: if renderingMyLocation, then highlight text
+            //    //todo: pull out markup while rendering 
+            //    //can change the backcolor
+
+            //    currentLRSScanLine += Utility.Utility.NebulaUnit();
+
+            //}
+
+            //return currentLRSScanLine;
+            return "";
         }
     }
 }

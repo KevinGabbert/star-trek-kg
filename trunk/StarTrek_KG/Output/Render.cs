@@ -1,6 +1,4 @@
-﻿//using System;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +10,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
-    public class PrintSector: IWrite, IConfig
+    public class Render: IWrite, IConfig
     {
         #region Properties
 
@@ -21,7 +19,7 @@ namespace StarTrek_KG.Output
 
         #endregion
 
-        public PrintSector(IOutputWrite write, IStarTrekKGSettings config)
+        public Render(IOutputWrite write, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Write = write;
