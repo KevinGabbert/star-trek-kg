@@ -250,14 +250,15 @@ namespace StarTrek_KG.Output
             ACTIVITY_PANEL.Add("imp = Impulse Navigation");
             ACTIVITY_PANEL.Add("wrp = Warp Navigation");
             ACTIVITY_PANEL.Add("nto = Navigate To Object");
-
+            ACTIVITY_PANEL.Add("─────────────────────────────");
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
             ACTIVITY_PANEL.Add("crs = Combined Range Scan");
-
+            ACTIVITY_PANEL.Add("─────────────────────────────");
             ACTIVITY_PANEL.Add("pha = Phaser Control");
             ACTIVITY_PANEL.Add("tor = Photon Torpedo Control");
-
+            ACTIVITY_PANEL.Add("toq = Target Object in this Quadrant");
+            ACTIVITY_PANEL.Add("─────────────────────────────");
             ACTIVITY_PANEL.Add("she = Shield Control");
             ACTIVITY_PANEL.Add("com = Access Computer");
             ACTIVITY_PANEL.Add("dmg = Damage Control");
@@ -265,7 +266,7 @@ namespace StarTrek_KG.Output
             if(Constants.DEBUG_MODE)
             {
                 ACTIVITY_PANEL.Add("");
-                ACTIVITY_PANEL.Add("----------------------");
+                ACTIVITY_PANEL.Add("─────────────────────────────");
                 ACTIVITY_PANEL.Add("dbg = Debug Test Mode");
             }
         }
@@ -309,13 +310,15 @@ namespace StarTrek_KG.Output
                     break;
 
                 case "she":
-
                     this.ShieldMenu(playerShip);
                     break;
 
                 case "com":
-
                     this.ComputerMenu(playerShip);
+                    break;
+
+                case "toq":
+                    Computer.For(playerShip).Controls(command);
                     break;
 
                 case "dmg":

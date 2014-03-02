@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
+﻿using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -68,34 +65,15 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.Game.Write.Line("");
-            this.Game.Write.Line("Objects in sector:");
+            this.Game.Write.Line("Objects in Quadrant:");
 
-            //todo: write a list of all Objects in sector
-            //todo: how does computer do this
+            Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
 
-            var sectorsWithObjects = ShortRangeScan.For(this.ShipConnectedTo).ObjectFinder().ToList();
-
-            if (sectorsWithObjects.Any())
-            {
-                foreach (var sector in sectorsWithObjects)
-                {
-                    string objectName = sector.Object != null ? sector.Object.Name : "Unknown";
-
-                    this.Game.Write.SingleLine(string.Format("Object: {0}  [{1},{2}].", objectName, (sector.X + 1), (sector.Y + 1)));
-                }
-            }
-            else
-            {
-                this.Game.Write.Line("No Sectors with Objects found (this is an error)");
-            }
+            string userReply = null;
+            this.Game.Write.PromptUser("Enter number of Object to travel to: ", out userReply);
 
             this.Game.Write.Line("");
             this.Game.Write.Line("Navigate to Object is not yet supported.");
-
-            //this.Game.Write.WithNoEndCR("Enter number of Object to travel to: ");
-
-            ////todo: readline needs to be done using an event
-            var navCommand = Console.ReadLine().Trim().ToLower();
 
             //this.NavigateToObject();
         }
@@ -241,6 +219,8 @@ namespace StarTrek_KG.Subsystem
 
         public void Calculator()
         {
+            if (this.Damaged()) return;
+
             //todo: ask additional question.  sublight or warp
 
             var thisShip = this.ShipConnectedTo.GetLocation();

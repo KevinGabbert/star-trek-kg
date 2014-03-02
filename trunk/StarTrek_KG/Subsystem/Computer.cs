@@ -29,8 +29,6 @@ namespace StarTrek_KG.Subsystem
 
         public override void Controls(string command)
         {
-            if (this.Damaged()) return;
-
             var starship = this.ShipConnectedTo;
 
             switch (command.ToLower())
@@ -43,21 +41,31 @@ namespace StarTrek_KG.Subsystem
 
                     //todo: get a list of all baddie names in quadrant
 
-                    Computer.For(this.ShipConnectedTo).PrintCurrentStatus(this.Game.Map, 
+                    this.PrintCurrentStatus(this.Game.Map, 
                                               this.Damage, 
                                               starship,
                                               this.ShipConnectedTo.GetQuadrant());
                     break;
 
                 case "tor":
+                    //todo: calculator code will be refactored to this object
+                    if (this.Damaged()) return;
                     Torpedoes.For(this.ShipConnectedTo).Calculator();
                     break;
 
+                case "toq":
+                    this.TargetObjectInQuadrant();
+                    break;
+
                 case "bas":
+                    //todo: calculator code will be refactored to this object
+                    if (this.Damaged()) return;
                     Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo); 
                     break;
 
                 case "nav":
+                    //todo: calculator code will be refactored to this object
+                    if (this.Damaged()) return;
                     Navigation.For(this.ShipConnectedTo).Calculator();
                     break;
 
@@ -80,6 +88,53 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
+        private void TargetObjectInQuadrant()
+        {
+            string replyFromUser;
+
+            this.Game.Write.PromptUser("Target with (T)orpedoes or (P)hasers? ", out replyFromUser);
+
+            switch (replyFromUser.ToUpper())
+            {
+                case "T":
+                    Torpedoes.For(this.ShipConnectedTo).TargetObject();
+                    break;
+
+                case "P":
+                    Phasers.For(this.ShipConnectedTo).TargetObject();
+                    break;
+            }
+        }
+
+        public void ListObjectsInQuadrant()
+        {
+            if (this.Damaged())
+            {
+                Game.Write.Line("Unable to List Objects in Quadrant");
+                return;
+            }
+
+            var sectorsWithObjects = ShortRangeScan.For(this.ShipConnectedTo).ObjectFinder().ToList();
+
+            if (sectorsWithObjects.Any())
+            {
+                int objectNumber = 1;
+                foreach (var sector in sectorsWithObjects)
+                {
+                    string objectName = sector.Object != null ? sector.Object.Name : "Unknown";
+
+                    this.Game.Write.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, (sector.X + 1),
+                        (sector.Y + 1)));
+
+                    objectNumber++;
+                }
+            }
+            else
+            {
+                this.Game.Write.Line("No Sectors with Objects found (this is an error)");
+            }
+        }
+
         private void TranslateLatestTaunt()
         {
             this.Game.Write.Line("Comms was able to translate the latest transmissions: ");
@@ -92,11 +147,12 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-
         //output this as KeyValueCollection that the UI can display as it likes.
 
         public void PrintCurrentStatus(IMap map, int computerDamage, Ship ship, Quadrant currentQuadrant)
         {
+            if (this.Damaged()) return;
+
             //todo: completely redo this
 
             this.Game.Write.Console.WriteLine("");
@@ -128,6 +184,8 @@ namespace StarTrek_KG.Subsystem
 
         public void PrintGalacticRecord(List<Quadrant> quadrants)
         {
+            if (this.Damaged()) return;
+
             this.Game.Write.Console.WriteLine();
             this.Game.Write.ResourceSingleLine("GalacticRecordLine");
 

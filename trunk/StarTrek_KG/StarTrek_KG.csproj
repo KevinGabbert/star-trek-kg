@@ -67,6 +67,7 @@
     <Compile Include="FactionThreat.cs" />
     <Compile Include="Subsystem\CombinedRangeScan.cs" />
     <Compile Include="Subsystem\DamageControl.cs" />
+    <Compile Include="Interfaces\IWeapon.cs" />
     <Compile Include="TypeSafeEnums\Faction.cs" />
     <Compile Include="Enums\ScavengeType.cs" />
     <Compile Include="Enums\QuadrantType.cs" />
