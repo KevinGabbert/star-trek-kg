@@ -6,6 +6,7 @@ using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Config

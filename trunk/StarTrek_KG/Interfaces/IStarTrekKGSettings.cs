@@ -4,6 +4,7 @@ using System.Configuration;
 using StarTrek_KG.Config;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
+using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Interfaces

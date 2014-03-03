@@ -7,6 +7,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
+using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
 using W = StarTrek_KG.Output.Write;

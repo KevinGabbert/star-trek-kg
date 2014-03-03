@@ -4,6 +4,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
@@ -29,6 +30,8 @@ namespace StarTrek_KG.Subsystem
             Location myLocation = this.ShipConnectedTo.GetLocation();
 
             var lrsResults = this.RunLRSScan(myLocation);
+
+            var testLRSResults = myLocation.Quadrant.GetLRSData(myLocation, this.Game);
 
             foreach (var line in lrsResults)
             {
@@ -70,7 +73,7 @@ namespace StarTrek_KG.Subsystem
                 //                          myLocation.Quadrant.Y == quadrantY;
 
                 //todo: turn these into props.
-                var outOfBounds = this.OutOfBounds(quadrantY, quadrantX);
+                var outOfBounds = this.Game.Map.OutOfBounds(quadrantY, quadrantX);
 
                 if (!currentlyInNebula)
                 {
@@ -104,7 +107,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBorder");
+                currentLRSScanLine += this.Game.Config.GetSetting<string>("GalacticBarrier");
             }
 
             return currentLRSScanLine;
@@ -153,17 +156,6 @@ namespace StarTrek_KG.Subsystem
                 //}
             }
             return currentLRSScanLine;
-        }
-
-        private bool OutOfBounds(int quadrantY, int quadrantX)
-        {
-            var inTheNegative = quadrantX < 0 || quadrantY < 0;
-            var maxxed = quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX;
-
-            var yOnMap = quadrantY >= 0 && quadrantY < Constants.QUADRANT_MAX;
-            var xOnMap = quadrantX >= 0 && quadrantX < Constants.QUADRANT_MAX;
-
-            return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }
 
         //todo: fix this
@@ -222,6 +214,22 @@ namespace StarTrek_KG.Subsystem
             }
 
             quadrantToScan.Scanned = true;  
+        }
+
+        public LRSResult Execute(Quadrant quadrantToScan)
+        {
+            var quadrantResult = new LRSResult();
+
+            if (quadrantToScan.Type != QuadrantType.Nebulae)
+            {
+                quadrantResult.Hostiles = quadrantToScan.GetHostiles().Count;
+                quadrantResult.Starbases = quadrantToScan.GetStarbaseCount();
+                quadrantResult.Stars = quadrantToScan.GetStarCount();
+            }
+
+            quadrantToScan.Scanned = true;
+
+            return quadrantResult;
         }
 
         public void Debug_Scan_All_Quadrants(bool setScanned)
