@@ -538,7 +538,7 @@ namespace StarTrek_KG.Output
             quadrant.Scanned = true;
         }
 
-        public void RenderLRSData(LRSData lrsData, Game game)
+        public List<string> RenderLRSData(LRSData lrsData, Game game)
         {
             var renderedResults = new List<string>();
             int scanColumn = 0;
@@ -583,10 +583,7 @@ namespace StarTrek_KG.Output
 
             renderedResults.Add("└─────┴─────┴─────┘");
 
-            foreach (var line in renderedResults)
-            {
-                this.SingleLine(line);
-            }
+            return renderedResults;
         }
 
         public string Course()
