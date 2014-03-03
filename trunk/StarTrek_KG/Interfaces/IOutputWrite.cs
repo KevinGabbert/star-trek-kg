@@ -36,7 +36,7 @@ namespace StarTrek_KG.Interfaces
 
         void RenderNebula(bool renderingMyLocation);
         void RenderUnscannedQuadrant(bool renderingMyLocation);
-        void RenderLRSData(LRSData lrsData, Game game);
+        List<string> RenderLRSData(LRSData lrsData, Game game);
 
         void CreateCommandPanel();
         void Prompt(Ship playerShip, string mapText, Game game);

@@ -147,14 +147,10 @@ namespace UnitTests.ShipTests.QuadrantTests
 
             _setup.TestLongRangeScan = new LongRangeScan(_setup.TestMap.Playership, _setup.Game);
 
-            var starbaseCount = 0;
-            var starCount = 0;
-            var hostileCount = 0;
-
-            _setup.TestLongRangeScan.Execute(_testQuadrant, out hostileCount, out starbaseCount, out starCount);
+            var x = _setup.TestLongRangeScan.Execute(_testQuadrant);
                 //pulls count from Quadrant object
 
-            Assert.AreEqual(expectedBaddies, hostileCount);
+            Assert.AreEqual(expectedBaddies, x.Hostiles);
         }
 
         private void SetupQuadrant(bool withNebula)
