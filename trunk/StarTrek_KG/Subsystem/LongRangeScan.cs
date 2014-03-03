@@ -29,14 +29,10 @@ namespace StarTrek_KG.Subsystem
 
             Location myLocation = this.ShipConnectedTo.GetLocation();
 
-            var lrsResults = this.RunLRSScan(myLocation);
+            //var lrsResults = this.RunLRSScan(myLocation);
 
             var testLRSResults = myLocation.Quadrant.GetLRSData(myLocation, this.Game);
-
-            foreach (var line in lrsResults)
-            {
-                this.Game.Write.SingleLine(line);
-            }
+            this.Game.Write.RenderLRSData(testLRSResults, this.Game);
         }
 
         //TODO: When done, this will replace existing LRS Scan

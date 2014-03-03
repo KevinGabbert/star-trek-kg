@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Types;
 using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Interfaces
@@ -35,6 +36,8 @@ namespace StarTrek_KG.Interfaces
 
         void RenderNebula(bool renderingMyLocation);
         void RenderUnscannedQuadrant(bool renderingMyLocation);
+        void RenderLRSData(LRSData lrsData, Game game);
+
         void CreateCommandPanel();
         void Prompt(Ship playerShip, string mapText, Game game);
         void Panel(string panelHead, IEnumerable<string> strings);
