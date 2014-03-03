@@ -635,6 +635,17 @@ namespace StarTrek_KG.Playfield
         {
             //todo: finish this.
             return new List<Ship>();
-        } 
+        }
+
+        public bool OutOfBounds(int quadrantY, int quadrantX)
+        {
+            var inTheNegative = quadrantX < 0 || quadrantY < 0;
+            var maxxed = quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX;
+
+            var yOnMap = quadrantY >= 0 && quadrantY < Constants.QUADRANT_MAX;
+            var xOnMap = quadrantX >= 0 && quadrantX < Constants.QUADRANT_MAX;
+
+            return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
+        }
     }
 }

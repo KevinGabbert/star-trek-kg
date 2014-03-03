@@ -73,5 +73,7 @@ namespace StarTrek_KG.Interfaces
 
         void AddHostileFederationShipsToExistingMap();
         void AddACoupleHostileFederationShipsToExistingMap();
+
+        bool OutOfBounds(int quadrantY, int quadrantX);
     }
 }

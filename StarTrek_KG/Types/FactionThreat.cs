@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG
+﻿namespace StarTrek_KG.Types
 {
     public class FactionThreat
     {
