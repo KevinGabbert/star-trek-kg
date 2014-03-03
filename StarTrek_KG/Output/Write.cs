@@ -8,6 +8,7 @@ using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 using Console = StarTrek_KG.Utility.Console;
 
@@ -535,6 +536,57 @@ namespace StarTrek_KG.Output
 
             quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
             quadrant.Scanned = true;
+        }
+
+        public void RenderLRSData(LRSData lrsData, Game game)
+        {
+            var renderedResults = new List<string>();
+            int scanColumn = 0;
+
+            renderedResults.Add("┌─────┬─────┬─────┐");
+
+            string currentLRSScanLine = "│";
+
+            foreach (LRSResult dataPoint in lrsData)
+            {
+                string currentQuadrantResult = null;
+
+                if (dataPoint.Unknown)
+                {
+                    currentQuadrantResult = Utility.Utility.NebulaUnit();
+                }
+                else if(dataPoint.GalacticBarrier)
+                {
+                    currentQuadrantResult = game.Config.GetSetting<string>("GalacticBarrier");
+                }
+                else
+                {
+                    currentQuadrantResult += dataPoint;
+                }
+
+                currentLRSScanLine += " " +  currentQuadrantResult + " " + "│";
+
+                if (scanColumn == 2 || scanColumn == 5)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                    renderedResults.Add("├─────┼─────┼─────┤");
+                    currentLRSScanLine = "│";
+                }
+
+                if (scanColumn == 8)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                }
+
+                scanColumn++;
+            }
+
+            renderedResults.Add("└─────┴─────┴─────┘");
+
+            foreach (var line in renderedResults)
+            {
+                this.SingleLine(line);
+            }
         }
 
         public string Course()

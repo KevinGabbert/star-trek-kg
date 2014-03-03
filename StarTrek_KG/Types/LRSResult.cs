@@ -27,5 +27,14 @@
             get { return _stars; }
             set { _stars = value; }
         }
+
+        public override string ToString()
+        {
+            string returnVal = null;
+
+            returnVal = this.Hostiles.ToString() + this.Starbases.ToString() + this.Stars.ToString();
+
+            return returnVal;
+        }
     }
 }
