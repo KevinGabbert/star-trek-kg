@@ -23,7 +23,7 @@ namespace StarTrek_KG.Interfaces
 
         void Initialize(SetupOptions setupOptions);
         void Initialize(SectorDefs sectorDefs, bool generateWithNebulae);
-        void SetupFriendlies(SectorDefs sectorDefs);
+        void SetupPlayerShipInSectors(SectorDefs sectorDefs);
         void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae);
         void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebulae);
         IEnumerable<Sector> AddStarbases();
@@ -67,7 +67,7 @@ namespace StarTrek_KG.Interfaces
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        void SetActiveSectorAsFriendly(IMap map);
+        void SetPlayershipInActiveSector(IMap map);
 
         string ToString();
 

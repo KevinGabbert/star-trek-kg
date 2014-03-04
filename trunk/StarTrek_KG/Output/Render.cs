@@ -177,7 +177,7 @@ namespace StarTrek_KG.Output
                         sb.Append(isNebula ? Utility.Utility.NebulaUnit() : Constants.EMPTY);
                         break;
 
-                    case SectorItem.FriendlyShip:
+                    case SectorItem.PlayerShip:
                         sb.Append(Constants.PLAYERSHIP);
                         break;
 

@@ -7,18 +7,6 @@ namespace StarTrek_KG.Playfield
 {
     public class Sectors: List<Sector>
     {
-        public static Sector Get(int x, int y, List<Sector> sectors)
-        {
-            var sectorFound = sectors.Where(si => si.X == x && si.Y == y).ToList();
-            
-            if (!sectorFound.Any())
-            {
-                throw new GameException("Sector not found: X: " + x + " Y: " + y + " SectorCount: " + sectors.Count);
-            }
-
-            return sectorFound.Single();
-        }
-
         public Sector Get(Coordinate coordinate)
         {
             var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
@@ -37,30 +25,22 @@ namespace StarTrek_KG.Playfield
             return gotSectors.Single();
         }
 
-        public static Sector GetNoError(int x, int y, List<Sector> sectors)
+        public Sector GetNoError(Coordinate coordinate)
+        {
+            var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
+
+            //There can only be one active sector
+            return gotSectors.SingleOrDefault();
+        }
+
+        public static Sector GetNoError(int x, int y, IEnumerable<Sector> sectors)
         {
             var sectorFound = sectors.Where(si => si.X == x && si.Y == y).ToList();
 
             return sectorFound.Count() == 1 ? sectorFound.Single() : null;
         }
 
-        public void Assign(int x, int y, SectorItem itemToAssign)
-        {
-            Sectors.Get(x, y, this).Item = itemToAssign;
-        }
-
-        public void ClearAllFriendlies()
-        {
-            var friendlySectors = this.Where(s => s.Item == SectorItem.FriendlyShip);
-
-            foreach (var sector in friendlySectors)
-            {
-                sector.Item = SectorItem.Empty;
-            }
-        }
-
         //todo: refactor this against Quadrant.NotFound()
-
         public bool NotFound(Coordinate coordinate)
         {
             var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
@@ -111,3 +91,30 @@ namespace StarTrek_KG.Playfield
         }
     }
 }
+
+    //public void Assign(int x, int y, SectorItem itemToAssign)
+    //{
+    //    Sectors.Get(x, y, this).Item = itemToAssign;
+    //}
+
+    //public void ClearAllFriendlies()
+    //{
+    //    var friendlySectors = this.Where(s => s.Item == SectorItem.PlayerShip);
+
+    //    foreach (var sector in friendlySectors)
+    //    {
+    //        sector.Item = SectorItem.Empty;
+    //    }
+    //}
+
+    //public static Sector Get(int x, int y, List<Sector> sectors)
+    //{
+    //    var sectorFound = sectors.Where(si => si.X == x && si.Y == y).ToList();
+            
+    //    if (!sectorFound.Any())
+    //    {
+    //        throw new GameException("Sector not found: X: " + x + " Y: " + y + " SectorCount: " + sectors.Count);
+    //    }
+
+    //    return sectorFound.Single();
+    //}

@@ -72,7 +72,7 @@ namespace UnitTests.ShipTests.MovementTests
                                                                   new SectorDef(
                                                                       new LocationDef(new Coordinate(4, 4),
                                                                                       new Coordinate(4, 4)),
-                                                                      SectorItem.FriendlyShip),
+                                                                      SectorItem.PlayerShip),
                                                                   //todo: this needs to be in a random spot
                                                               },
                                              AddStars = false
@@ -315,15 +315,15 @@ namespace UnitTests.ShipTests.MovementTests
             _startingSectorY = this.Game.Map.Playership.Sector.Y;
 
             //verify that the ship is where we think it is before we start
-            Assert.AreEqual(SectorItem.FriendlyShip, Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors,
+            Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(this.Game.Map.Quadrants.GetActive().Sectors,
                                                            this.Game.Map.Playership.Sector.X,
                                                            this.Game.Map.Playership.Sector.Y).Item);
             var sectorItem =
                 Sector.Get(_testMovement.Game.Map.Quadrants.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
                                                                        _testMovement.Game.Map.Playership.Sector.Y).Item;
-            Assert.AreEqual(SectorItem.FriendlyShip, sectorItem);
+            Assert.AreEqual(SectorItem.PlayerShip, sectorItem);
 
-            _testMovement.Execute(MovementType.Impulse, Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
+            _testMovement.Execute(MovementType.Impulse, Convert.ToInt32(direction), distance, out _lastQuadX, out _lastQuadY);
 
             //EnergySubtracted changes an entered value of .1 to .8
             //todo: measure time passed
@@ -671,7 +671,7 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void Move_Quadrant(string direction, int distance)
         {
-            _testMovement.Execute(MovementType.Warp, Convert.ToInt32(direction), distance, distance, out _lastQuadX, out _lastQuadY);
+            _testMovement.Execute(MovementType.Warp, Convert.ToInt32(direction), distance, out _lastQuadX, out _lastQuadY);
         }
 
         //todo: this needs to be refactored into a ship setup testfixture or something.
@@ -689,13 +689,13 @@ namespace UnitTests.ShipTests.MovementTests
             //Check to see if Playership has been assigned to a sector in the active quadrant.
 
             //indirectly..
-            Assert.AreEqual(1, activeQuad.Sectors.Count(s => s.Item == SectorItem.FriendlyShip));
+            Assert.AreEqual(1, activeQuad.Sectors.Count(s => s.Item == SectorItem.PlayerShip));
 
             //directly.
-            Assert.AreEqual(SectorItem.FriendlyShip, activeQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X && s.Y == this.Game.Map.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.PlayerShip, activeQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X && s.Y == this.Game.Map.Playership.Sector.Y).Item);
 
             var x = (from Sector s in activeQuad.Sectors
-                     where s.Item == SectorItem.FriendlyShip
+                     where s.Item == SectorItem.PlayerShip
                      select s).Count();
 
             Assert.AreEqual(1, x);
@@ -740,17 +740,17 @@ namespace UnitTests.ShipTests.MovementTests
 
             //Friendly was set in new location
             //Playership current sector has the ship set in it 
-            Assert.AreEqual(SectorItem.FriendlyShip, Sector.Get(playershipQuad.Sectors, 
+            Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(playershipQuad.Sectors, 
                                                             this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y).Item);
 
             //is ship in expected location in new quadrant?
             ////indirectly..
-            var found2 = (playershipQuad.Sectors.Where(s => s.Item == SectorItem.FriendlyShip)).Count();
+            var found2 = (playershipQuad.Sectors.Where(s => s.Item == SectorItem.PlayerShip)).Count();
             Assert.AreEqual(1, found2, "expected to find 1 friendly, not " + found2 + ".   ");
 
             //directly
             //Verifying Sector. Look up sector by playership's coordinates. see if a friendly is there.
-            Assert.AreEqual(SectorItem.FriendlyShip, playershipQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X &&
+            Assert.AreEqual(SectorItem.PlayerShip, playershipQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X &&
                                                                                                                 s.Y == this.Game.Map.Playership.Sector.Y).Item);
 
             //Check Ship Quadrant against active. (this really just tests the GetActive() function - this should be a separate test as well)
@@ -779,14 +779,14 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(SectorItem.Empty, Sector.Get(activeQuad.Sectors, _startingSectorX, _startingSectorY).Item);
 
             //indirectly..
-            var found = (this.Game.Map.Quadrants.GetActive().Sectors.Where(s => s.Item == SectorItem.FriendlyShip)).Count();
+            var found = (this.Game.Map.Quadrants.GetActive().Sectors.Where(s => s.Item == SectorItem.PlayerShip)).Count();
             Assert.AreEqual(1, found, "expected to find 1 friendly, not " + found + ".   ");
 
             //Look up sector by playership's coordinates. see if a friendly is there.
-            Assert.AreEqual(SectorItem.FriendlyShip, activeQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X &&
+            Assert.AreEqual(SectorItem.PlayerShip, activeQuad.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X &&
                                                                                 s.Y == this.Game.Map.Playership.Sector.Y).Item);
             //same thing.  uses sector.Get functionality to check.
-            Assert.AreEqual(SectorItem.FriendlyShip, Sector.Get(activeQuad.Sectors, this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(activeQuad.Sectors, this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y).Item);
 
             Assert.AreEqual(_startingQuadrant.X, _lastQuadX, "(c)startingQuadrantX");
             Assert.AreEqual(_startingQuadrant.Y, _lastQuadY, "(c)startingQuadrantY");

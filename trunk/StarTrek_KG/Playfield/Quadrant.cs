@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -359,7 +358,7 @@ namespace StarTrek_KG.Playfield
                 switch (ship.Allegiance)
                 {
                     case Allegiance.GoodGuy:
-                        addToSector.Item = SectorItem.FriendlyShip;
+                        addToSector.Item = SectorItem.PlayerShip;
                         break;
 
                     case Allegiance.BadGuy:
@@ -412,61 +411,6 @@ namespace StarTrek_KG.Playfield
             quadrant.Sectors.Add(sector);
         }
 
-        //Loop for each Hostile and starbase.  Each go around pops a hostile
-        //(up to 3) into a random sector.  Same thing with Starbase, but the limit
-        //of starbases is 1.
-        //public static void Populate(Map map)
-        //{
-        //    var starbases = map.starbases;  //todo: once starbases are a list, then  
-        //    var hostiles = map.HostilesToSetUp;
-
-        //    while (hostiles > 0 || starbases > 0)
-        //    {
-        //        var x = (Utility.Random).Next(Constants.SECTOR_MAX);
-        //        var y = (Utility.Random).Next(Constants.SECTOR_MAX);
-
-        //        var quadrant = Quadrants.Get(map, x, y);
-
-        //        if (!quadrant.Starbase)
-        //        {
-        //            quadrant.Starbase = true;
-        //            starbases--;
-        //        }
-
-        //        if (quadrant.Hostiles.Count < 3) //todo: put 3 in app.config
-        //        {
-        //            Quadrant.CreateHostile(quadrant, x, y, Map.baddieNames);
-        //            hostiles--;
-        //        }
-        //    }
-        //}
-
-        //////todo: use 1 set of hostiles.  Create in sectors, count up for quadrants
-        //private static void AddHostile(Quadrant quadrant, int x, int y)
-        //{
-        //    //Quadrant.CreateHostile(quadrant, x, y, Map.baddieNames);
-
-        //    ////todo: a hostile was made, but he is not in any QUADRANT yet..
-
-        //    //List<Ship> allbadGuysInQuadrant = quadrant.Hostiles.Where(s => s.Allegiance == Allegiance.BadGuy).ToList();
-
-        //    //var k = allbadGuysInQuadrant[0];
-
-        //    ////fixme
-
-        //    ////all hostiles have the same XY.  this is rightfully failing
-
-        //    //var badGuy = allbadGuysInQuadrant.Where(s =>  
-        //    //                            s.Sector.X == x && 
-        //    //                            s.Sector.Y == y).Single();
-
-        //    ////this needs to be linked
-        //    ////add again?
-        //    //quadrant.Hostiles.Add(badGuy);
-        //}
-
-        //Output as enum??
-
         public bool NoHostiles(List<Ship> hostiles)
         {
             if (hostiles.Count == 0)
@@ -476,32 +420,6 @@ namespace StarTrek_KG.Playfield
             }
             return false;
         }
-
-        ////todo: use 1 set of hostiles.  Create in sectors, count up for quadrants
-        // public static void CreateHostileX(Quadrant quadrant, int x, int y, IList<string> listOfBaddies)
-        //{
-        //    //todo: this should be a random baddie, from the list of baddies in app.config
-        //    //todo: note, in leter versions, baddies and allies can fight each other automatically (when they move to within range of each other.  status of the battles can be kept in the ships log (if observed by a friendly)
-//
-        //          var index = (Utility.Random).Next(listOfBaddies.Count);
-        //        var hostileShip = new Ship(listOfBaddies[index], quadrant.Map, x, y);
-        //      hostileShip.Sector = new Sector(x, y);
-
-        //    Shields.For(hostileShip).Energy = 300 + (Utility.Random).Next(200);
-
-        //  quadrant.Hostiles.Add(hostileShip);
-
-        //listOfBaddies.RemoveAt(index); //remove name from our big list of names so we dont select it again
-        //}
-
-        //public Sector GetItem(int qX, int qY)
-        //{
-        //    return this.Sectors.Where(s => s.X == qX && s.Y == qY).Single();
-        //}
-        //public static bool OutOfBounds(int x, int y)
-        //{
-        //    return x < 0 || y < 0 || x > 7 || y > 7; //todo: this should be deduced from an app.config value
-        // }
 
         /// <summary>
         /// goes through each sector in this quadrant and counts hostiles
@@ -621,7 +539,6 @@ namespace StarTrek_KG.Playfield
             return (this.Type == QuadrantType.Nebulae);
         }
 
-
         //todo: refactor these functions with LRS
         //todo: hand LRS a List<LRSResult>(); and then it can build its little grid.
         //or rather.. LongRangeScan subsystem comes up with the numbers, then hands it to the Print
@@ -732,3 +649,85 @@ namespace StarTrek_KG.Playfield
         }
     }
 }
+
+
+////todo: use 1 set of hostiles.  Create in sectors, count up for quadrants
+// public static void CreateHostileX(Quadrant quadrant, int x, int y, IList<string> listOfBaddies)
+//{
+//    //todo: this should be a random baddie, from the list of baddies in app.config
+//    //todo: note, in leter versions, baddies and allies can fight each other automatically (when they move to within range of each other.  status of the battles can be kept in the ships log (if observed by a friendly)
+//
+//          var index = (Utility.Random).Next(listOfBaddies.Count);
+//        var hostileShip = new Ship(listOfBaddies[index], quadrant.Map, x, y);
+//      hostileShip.Sector = new Sector(x, y);
+
+//    Shields.For(hostileShip).Energy = 300 + (Utility.Random).Next(200);
+
+//  quadrant.Hostiles.Add(hostileShip);
+
+//listOfBaddies.RemoveAt(index); //remove name from our big list of names so we dont select it again
+//}
+
+//public Sector GetItem(int qX, int qY)
+//{
+//    return this.Sectors.Where(s => s.X == qX && s.Y == qY).Single();
+//}
+//public static bool OutOfBounds(int x, int y)
+//{
+//    return x < 0 || y < 0 || x > 7 || y > 7; //todo: this should be deduced from an app.config value
+// }
+
+//Loop for each Hostile and starbase.  Each go around pops a hostile
+//(up to 3) into a random sector.  Same thing with Starbase, but the limit
+//of starbases is 1.
+//public static void Populate(Map map)
+//{
+//    var starbases = map.starbases;  //todo: once starbases are a list, then  
+//    var hostiles = map.HostilesToSetUp;
+
+//    while (hostiles > 0 || starbases > 0)
+//    {
+//        var x = (Utility.Random).Next(Constants.SECTOR_MAX);
+//        var y = (Utility.Random).Next(Constants.SECTOR_MAX);
+
+//        var quadrant = Quadrants.Get(map, x, y);
+
+//        if (!quadrant.Starbase)
+//        {
+//            quadrant.Starbase = true;
+//            starbases--;
+//        }
+
+//        if (quadrant.Hostiles.Count < 3) //todo: put 3 in app.config
+//        {
+//            Quadrant.CreateHostile(quadrant, x, y, Map.baddieNames);
+//            hostiles--;
+//        }
+//    }
+//}
+
+//////todo: use 1 set of hostiles.  Create in sectors, count up for quadrants
+//private static void AddHostile(Quadrant quadrant, int x, int y)
+//{
+//    //Quadrant.CreateHostile(quadrant, x, y, Map.baddieNames);
+
+//    ////todo: a hostile was made, but he is not in any QUADRANT yet..
+
+//    //List<Ship> allbadGuysInQuadrant = quadrant.Hostiles.Where(s => s.Allegiance == Allegiance.BadGuy).ToList();
+
+//    //var k = allbadGuysInQuadrant[0];
+
+//    ////fixme
+
+//    ////all hostiles have the same XY.  this is rightfully failing
+
+//    //var badGuy = allbadGuysInQuadrant.Where(s =>  
+//    //                            s.Sector.X == x && 
+//    //                            s.Sector.Y == y).Single();
+
+//    ////this needs to be linked
+//    ////add again?
+//    //quadrant.Hostiles.Add(badGuy);
+//}
+
+//Output as enum??

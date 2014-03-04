@@ -32,14 +32,14 @@ namespace StarTrek_KG.Playfield
         //    return defs; 
         //}
 
-        public IEnumerable<SectorDef> Friendlies()
+        public IEnumerable<SectorDef> PlayerShips()
         {
-            return this.Where(s => s.Item == SectorItem.FriendlyShip); //TODO: this needs to be changed to a count of ships in a sector that have friendly intent, rather than this "placemarker" construct
+            return this.Where(s => s.Item == SectorItem.PlayerShip); //TODO: this needs to be changed to a count of ships in a sector that have friendly intent, rather than this "placemarker" construct
         }
 
-        public IEnumerable<SectorDef> ConfigFriendlies()
-        {
-            return this.Where(s => s.Item == SectorItem.FriendlyShip); //todo: what is this for?
-        }
+        //public IEnumerable<SectorDef> ConfigFriendlies()
+        //{
+        //    return this.Where(s => s.Item == SectorItem.PlayerShip); //todo: what is this for?
+        //}
     }
 }

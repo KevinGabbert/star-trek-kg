@@ -28,8 +28,6 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
         }
 
-        //todo: query quadrants for number of hostiles (change quadrants to a collection!) and get rid of "totalHostiles variable)
-
         public static Quadrant Get(IMap map, Coordinate quadrant)
         {
             var i = map.Quadrants.Where(q => q.X == quadrant.X && q.Y == quadrant.Y);
@@ -88,6 +86,7 @@ namespace StarTrek_KG.Playfield
             //There can only be one active sector
             return activeQuadrants.Single();
         }
+
 
         public bool NoHostiles(List<IShip> hostiles)
         {
@@ -214,30 +213,6 @@ namespace StarTrek_KG.Playfield
             this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemoveName, this.Map.Config.GetText("shipDestroyed")));
         }
 
-        /// <summary>
-        /// This is actually placeholder code, as hopefully, one day, there will be a lot of playerships running around, needing removal,
-        /// but thats not needed at the moment, so if the playership is ever directly removed, then get out and end game.
-        /// </summary>
-        /// <param name="map"></param>
-        /// <param name="shipToRemoveQuadrant"></param>
-        private static void CheckForPlayershipRemoval(Map map, Coordinate shipToRemoveQuadrant)
-        {
-            var playerShipQuadrant = map.Playership.Coordinate;
-
-            if (playerShipQuadrant.X == shipToRemoveQuadrant.X &&
-                playerShipQuadrant.Y == shipToRemoveQuadrant.Y)
-            {
-                //Game Over.  Todo: finish this.
-                throw new GameException("Game Over. Playership dead. Catch this, output to console, and start over.");
-            }
-        }
-
-        //public bool NotFound(int x, int y)
-        //{
-        //    var notFound = this.Count(s => s.X == x && s.Y == y) == 0;
-        //    return notFound;
-        //}
-
         public bool NotFound(Coordinate coordinate)
         {
             var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
@@ -259,32 +234,6 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public void RemoveFromAnywhere()
-        {
-            //foreach (Quadrant quadrant in map.Quadrants.Where(q => q.X == shipToRemove.QuadrantDef.X && q.Y == shipToRemove.QuadrantDef.Y))
-            //{
-            //    Quadrant quadrant1 = quadrant;
-            //    foreach (Sector sector in SectorsWithShips(quadrant).Where(sector => quadrant1.X == shipToRemoveQuadrant.X &&
-            //                                                                         quadrant1.Y == shipToRemoveQuadrant.Y &&
-            //                                                                         sector.X == shipToRemove.Sector.X &&
-            //                                                                         sector.Y == shipToRemove.Sector.Y))
-            //    {
-            //        sector.Item = SectorItem.Empty; //remove its placemarker from the map
-
-            //        quadrant.Hostiles.Remove(shipToRemove);//Remove from Quadrant.Hostiles.  //remove 1 hostile from this quadrant count
-            //        map.Quadrants.Hostiles.Remove(shipToRemove); //remove from our big list of baddies //Remove from Quadrants.Hostiles. //todo: is this needed?
-
-            //        //Remove from this.Map.Playership
-            //        Quadrants.CheckForPlayershipRemoval(map, shipToRemoveQuadrant);
-            //    }
-            //}
-        }
-
-        //private static IEnumerable<Sector> SectorsWithShips(Quadrant quadrant)
-        //{
-        //    return quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly || sector.Item == SectorItem.Hostile);
-        //}
-
         public int GetStarbaseCount()
         {
             int allStarbases = this.Sum(q => q.GetStarbaseCount());
@@ -305,3 +254,54 @@ namespace StarTrek_KG.Playfield
         }
     }
 }
+
+    ///// <summary>
+    ///// This is actually placeholder code, as hopefully, one day, there will be a lot of playerships running around, needing removal,
+    ///// but thats not needed at the moment, so if the playership is ever directly removed, then get out and end game.
+    ///// </summary>
+    ///// <param name="map"></param>
+    ///// <param name="shipToRemoveQuadrant"></param>
+    //private static void CheckForPlayershipRemoval(IMap map, Coordinate shipToRemoveQuadrant)
+    //{
+    //    var playerShipQuadrant = map.Playership.Coordinate;
+
+    //    if (playerShipQuadrant.X == shipToRemoveQuadrant.X &&
+    //        playerShipQuadrant.Y == shipToRemoveQuadrant.Y)
+    //    {
+    //        //Game Over.  Todo: finish this.
+    //        throw new GameException("Game Over. Playership dead. Catch this, output to console, and start over.");
+    //    }
+    //}
+
+
+    //public bool NotFound(int x, int y)
+    //{
+    //    var notFound = this.Count(s => s.X == x && s.Y == y) == 0;
+    //    return notFound;
+    //}
+
+    //private static IEnumerable<Sector> SectorsWithShips(Quadrant quadrant)
+    //{
+    //    return quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly || sector.Item == SectorItem.Hostile);
+    //}
+
+//public void RemoveFromAnywhere()
+//{
+//    //foreach (Quadrant quadrant in map.Quadrants.Where(q => q.X == shipToRemove.QuadrantDef.X && q.Y == shipToRemove.QuadrantDef.Y))
+//    //{
+//    //    Quadrant quadrant1 = quadrant;
+//    //    foreach (Sector sector in SectorsWithShips(quadrant).Where(sector => quadrant1.X == shipToRemoveQuadrant.X &&
+//    //                                                                         quadrant1.Y == shipToRemoveQuadrant.Y &&
+//    //                                                                         sector.X == shipToRemove.Sector.X &&
+//    //                                                                         sector.Y == shipToRemove.Sector.Y))
+//    //    {
+//    //        sector.Item = SectorItem.Empty; //remove its placemarker from the map
+
+//    //        quadrant.Hostiles.Remove(shipToRemove);//Remove from Quadrant.Hostiles.  //remove 1 hostile from this quadrant count
+//    //        map.Quadrants.Hostiles.Remove(shipToRemove); //remove from our big list of baddies //Remove from Quadrants.Hostiles. //todo: is this needed?
+
+//    //        //Remove from this.Map.Playership
+//    //        Quadrants.CheckForPlayershipRemoval(map, shipToRemoveQuadrant);
+//    //    }
+//    //}
+//}

@@ -179,7 +179,7 @@ namespace UnitTests.ShipTests.MapTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
+                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
                             }
             }, this.Game.Write, this.Game.Config)); 
 
@@ -202,7 +202,7 @@ namespace UnitTests.ShipTests.MapTests
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
                                     }
             }, this.Game.Write, this.Game.Config));
             //_setup.TestMap.Quadrants.PopulateSectors(null, _setup.TestMap);
@@ -308,7 +308,7 @@ namespace UnitTests.ShipTests.MapTests
                 
                 SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
                                     }
             }, this.Game.Write, this.Game.Config));
 
@@ -409,7 +409,7 @@ namespace UnitTests.ShipTests.MapTests
                 
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
                 }
             }, this.Game.Write, this.Game.Config));
 

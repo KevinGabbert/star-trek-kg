@@ -23,7 +23,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                                           Initialize = true,
                                           SectorDefs = new SectorDefs
                                                            {
-                                                               new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.FriendlyShip),
+                                                               new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
                                                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
                                                            },
                                           AddStars = false
@@ -126,7 +126,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.FriendlyShip)
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
@@ -145,7 +145,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.FriendlyShip)
+                        new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
@@ -164,7 +164,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1), new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1)), SectorItem.FriendlyShip)
+                        new SectorDef(new LocationDef(new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1), new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1)), SectorItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
@@ -184,7 +184,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.FriendlyShip),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
 
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.HostileShip)
@@ -209,7 +209,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.FriendlyShip),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Starbase),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 3)), SectorItem.Starbase),
@@ -240,7 +240,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.FriendlyShip),
+                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
 
                         new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Starbase),

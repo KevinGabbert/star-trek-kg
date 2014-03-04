@@ -20,9 +20,8 @@ namespace StarTrek_KG.Actors
             this.ShipConnectedTo = shipConnectedTo;
         }
 
-        public void Execute(MovementType movementType, int direction, int distance, int distanceEntered, out int lastQuadX, out int lastQuadY)
+        public void Execute(MovementType movementType, int direction, int distance, out int lastQuadX, out int lastQuadY)
         {
-            //ISector playerShipSector = this.ShipConnectedTo.Sector;
             Quadrant playershipQuadrant = this.ShipConnectedTo.GetQuadrant();
 
             lastQuadY = playershipQuadrant.Y;
@@ -46,6 +45,7 @@ namespace StarTrek_KG.Actors
                         this.ShipConnectedTo);
                     this.ShipConnectedTo.Coordinate = newLocation;   
                     break;
+
                 default:
                     this.Game.Write.Line("Unsupported Movement Type");
                     break;
@@ -54,7 +54,7 @@ namespace StarTrek_KG.Actors
             if (newLocation != null)
             {
                 newLocation.SetActive();
-                this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant 
+                this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Quadrant 
 
                 this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), newLocation);
             }
@@ -252,7 +252,7 @@ namespace StarTrek_KG.Actors
             //destinationQuadrant.Active = true;
             destinationQuadrant.SetActive();
 
-            this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Quadrant  
+            this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Quadrant  
 
             this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastQuadX, lastQuadY), destinationQuadrant);
         }
@@ -282,7 +282,7 @@ namespace StarTrek_KG.Actors
                     mySector.Y = lastSector.Y;
 
                     //todo: move this to XXX label.  run tests.  should work.
-                    Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.FriendlyShip;
+                    Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.PlayerShip;
 
                     this.IdentifyObstacle(sector, currentObject, currentItem);
 

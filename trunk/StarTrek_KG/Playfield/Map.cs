@@ -99,7 +99,7 @@ namespace StarTrek_KG.Playfield
 
             if (sectorDefs != null)
             {
-                this.SetupFriendlies(sectorDefs);
+                this.SetupPlayerShipInSectors(sectorDefs);
             }
 
             //Modify this to output everything
@@ -111,23 +111,25 @@ namespace StarTrek_KG.Playfield
                 this.Write.Line(this.Config.GetSetting<string>("DebugModeEnd"));
                 this.Write.Line("");
             }
+
+            this.Playership.UpdateSectorNeighbors();
         }
 
-        public void SetupFriendlies(SectorDefs sectorDefs)
+        public void SetupPlayerShipInSectors(SectorDefs sectorDefs)
         {
             //if we have > 0 friendlies with XYs, then we will place them.
             //if we have at least 1 friendly with no XY, then config will be used to generate that type of ship.
 
-            if (sectorDefs.Friendlies().Any())
+            if (sectorDefs.PlayerShips().Any())
             {
                 try
                 {
-                    this.SetUpPlayerShip(sectorDefs.Friendlies().Single());
+                    this.SetUpPlayerShip(sectorDefs.PlayerShips().Single());
 
                     var sectorToPlaceShip = Sector.Get(this.Quadrants.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
 
                     //This places our newly created ship into our newly created List of Quadrants.
-                    sectorToPlaceShip.Item = SectorItem.FriendlyShip;
+                    sectorToPlaceShip.Item = SectorItem.PlayerShip;
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -151,7 +153,7 @@ namespace StarTrek_KG.Playfield
             this.Quadrants = new Quadrants(this, this.Write);
 
             //Friendlies are added separately
-            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.FriendlyShip).ToList();
+            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.PlayerShip).ToList();
 
             this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Quadrants: " + this.Quadrants.Count);
             
@@ -204,17 +206,6 @@ namespace StarTrek_KG.Playfield
             throw new NotImplementedException();
         }
 
-        //private static List<Sector> GetQuadrantObjects(int starbases, int HostilesToSetUp)
-        //{
-        //    var quadrantObjects = new List<Sector>();
-
-        //    //get stars for quadrant and subtract from parameter (will be subtracted when this is hit next?)
-        //    //newQuadrant.Stars = 1 + (Utility.Random).Next(Constants.SECTOR_MAX);
-        //    //get hostiles for quadrant and subtract from big list
-        //    //get starbase T/F and subtract from big list
-        //    return quadrantObjects;
-        //}
-
         /// <summary>
         /// This will eventually be moved into each individual object
         /// </summary>
@@ -235,7 +226,7 @@ namespace StarTrek_KG.Playfield
             this.Write.DebugLine("starbases: " + this.HostilesToSetUp);
         }
 
-        //refactor these to a setup object
+        //todo: refactor these to a setup object
         public void SetUpPlayerShip(SectorDef playerShipDef)
         {
             this.Write.DebugLine(this.Config.GetSetting<string>("DebugSettingUpPlayership"));
@@ -460,6 +451,8 @@ namespace StarTrek_KG.Playfield
 
                 //todo: add else if for starbase when the time comes
             }
+
+            this.Playership.UpdateSectorNeighbors();
         }
 
         public void RemoveTargetFromSector(IMap map, IShip ship)
@@ -467,32 +460,12 @@ namespace StarTrek_KG.Playfield
             map.Quadrants.Remove(ship);
         }
 
-        //todo: finish this
-        //public SectorItem GetShip(int quadrantX, int quadrantY, int sectorX, int sectorY)
-        //{
-        //    var t = this.Quadrants.Where(q => q.X == quadrantX &&
-        //                                      q.Y == quadrantY).Single().Sectors.Where(s => s.X == sectorX &&
-        //                                                                                    s.Y == sectorY).Single().Item;
-
-
-        //}
-
-        ///// <summary>
-        ///// Removes all friendlies fromevery sector in the entire map.
-        ///// </summary>
-        ///// <param name="map"></param>
-        //public void RemoveAllFriendlies(IMap map)
-        //{
-        //    var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
-
-        //    foreach (Sector sector in sectorsWithFriendlies)
-        //    {
-        //        sector.Item = SectorItem.Empty;
-        //    }
-        //}
-
         /// <summary>
-        /// Removes all friendlies fromevery sector in the entire map.
+        ///  Removes all friendlies fromevery sector in the entire map.
+        ///  zips through all sectors in all quadrants.  remove any friendlies
+        ///  This is a bit of a brute force approach, and not preferred, as it disguises any bugs that might have to do with forgetting
+        ///  to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
+        ///  to have multiple friendlies, as is the eventual plan.
         /// </summary>
         /// <param name="map"></param>
         public void RemovePlayership(IMap map)
@@ -504,35 +477,14 @@ namespace StarTrek_KG.Playfield
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        public void SetActiveSectorAsFriendly(IMap map)
+        public void SetPlayershipInActiveSector(IMap map)
         {
-            //zip through all sectors in all quadrants.  remove any friendlies
-
-            //This is a bit of a brute force approach, and not preferred, as it disguises any bugs that might have to do with forgetting
-            //to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
-            //to have multiple friendlies, as is the eventual plan.
-
             this.RemovePlayership(map);
 
             var activeQuadrant = map.Quadrants.GetActive();
 
             var newActiveSector = Sector.Get(activeQuadrant.Sectors, map.Playership.Sector.X, map.Playership.Sector.Y);
-            newActiveSector.Item = SectorItem.FriendlyShip;
-        }
-
-        public override string ToString()
-        {
-            string returnVal = null;
-
-            //if debugMode
-            //returns the location of every single object in the map
-
-            //roll out every object in:
-            //this.Quadrants;
-            //this.GameConfig;
-            
-
-            return returnVal;
+            newActiveSector.Item = SectorItem.PlayerShip;
         }
 
         public void AddACoupleHostileFederationShipsToExistingMap()
@@ -649,3 +601,55 @@ namespace StarTrek_KG.Playfield
         }
     }
 }
+
+
+//private static List<Sector> GetQuadrantObjects(int starbases, int HostilesToSetUp)
+//{
+//    var quadrantObjects = new List<Sector>();
+
+//    //get stars for quadrant and subtract from parameter (will be subtracted when this is hit next?)
+//    //newQuadrant.Stars = 1 + (Utility.Random).Next(Constants.SECTOR_MAX);
+//    //get hostiles for quadrant and subtract from big list
+//    //get starbase T/F and subtract from big list
+//    return quadrantObjects;
+//}
+
+
+//public override string ToString()
+//{
+//    string returnVal = null;
+
+//    //if debugMode
+//    //returns the location of every single object in the map
+
+//    //roll out every object in:
+//    //this.Quadrants;
+//    //this.GameConfig;
+            
+
+//    return returnVal;
+//}
+
+//todo: finish this
+//public SectorItem GetShip(int quadrantX, int quadrantY, int sectorX, int sectorY)
+//{
+//    var t = this.Quadrants.Where(q => q.X == quadrantX &&
+//                                      q.Y == quadrantY).Single().Sectors.Where(s => s.X == sectorX &&
+//                                                                                    s.Y == sectorY).Single().Item;
+
+
+//}
+
+///// <summary>
+///// Removes all friendlies fromevery sector in the entire map.
+///// </summary>
+///// <param name="map"></param>
+//public void RemoveAllFriendlies(IMap map)
+//{
+//    var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
+
+//    foreach (Sector sector in sectorsWithFriendlies)
+//    {
+//        sector.Item = SectorItem.Empty;
+//    }
+//}

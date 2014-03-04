@@ -130,7 +130,7 @@ namespace StarTrek_KG
                            //indicator that an individual object needs to be placed, istead of generated objects from config file.
 
                            //todo: get rid of that second, stupid parameter.
-                           new SectorDef(SectorItem.FriendlyShip),
+                           new SectorDef(SectorItem.PlayerShip),
                            new SectorDef(SectorItem.HostileShip),
                            new SectorDef(SectorItem.HostileShip),
                            new SectorDef(SectorItem.HostileShip),

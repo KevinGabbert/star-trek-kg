@@ -6,7 +6,8 @@ namespace StarTrek_KG.Enums
         Empty,
         Star,
         HostileShip, //make this go away
-        FriendlyShip, //playership
+        FriendlyShip,
+        PlayerShip, 
         Starbase,
         Debug
     };
