@@ -347,9 +347,31 @@ namespace StarTrek_KG.Actors
                             var sectorsToQuery = myLocation.Quadrant.Sectors;
 
                             currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX, sectorY, false));
+                            
                             string stringToWrite = "";
+                            string sector;
+                            bool nullSector = currentResult.Location.Sector == null;
 
-                            string sector = currentResult.Location.Sector == null ? "ANOTHER QUADRANT" : currentResult.Location.Sector.Item.ToString();
+                            if (nullSector)
+                            {
+                                //This means we need to find what quad this sector is in.
+                                //TODO: look up or divine quadrant here, then set
+
+                                //Quadrant lookedUpQuadrant = null;
+
+                                //currentResult.Location.Quadrant = lookedUpQuadrant;
+
+                                //sectorsToQuery = lookedUpQuadrant.Sectors;
+
+                                ////Do we really need this second assignment?
+                                //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX, sectorY, false));
+
+                                sector = "ANOTHER QUADRANT"; 
+                            }
+                            else
+                            {
+                                sector = currentResult.Location.Sector.Item.ToString();
+                            }
 
                             stringToWrite += row + ": [" + sectorX + "," + sectorY + "] " + sector;
 
@@ -357,7 +379,7 @@ namespace StarTrek_KG.Actors
 
                         }
 
-                        //currentResult.Location.Quadrant = 
+                        
                         row++;
                     }
                 }
