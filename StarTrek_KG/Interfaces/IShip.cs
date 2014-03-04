@@ -7,7 +7,6 @@ namespace StarTrek_KG.Interfaces
 {
     public interface IShip: ISectorObject
     {
-        string Name { get; set; }
         FactionName Faction { get; set; }
         int Energy { get; set; }
 

@@ -224,7 +224,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                                             {
-                                                new SectorDef(SectorItem.FriendlyShip)
+                                                new SectorDef(SectorItem.PlayerShip)
                                             }
             }, this.Game.Write, this.Game.Config));
 
@@ -239,10 +239,10 @@ namespace UnitTests.ShipTests.HostileTests
             //Check to see if Playership has been assigned to a sector in the active quadrant.
 
             //indirectly..
-            Assert.AreEqual(1, activeQuad.Sectors.Count(s => s.Item == SectorItem.FriendlyShip));
+            Assert.AreEqual(1, activeQuad.Sectors.Count(s => s.Item == SectorItem.PlayerShip));
 
             //directly.
-            Assert.AreEqual(SectorItem.FriendlyShip, activeQuad.Sectors.Single(s => s.X == _setup.TestMap.Playership.Sector.X && s.Y == _setup.TestMap.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.PlayerShip, activeQuad.Sectors.Single(s => s.X == _setup.TestMap.Playership.Sector.X && s.Y == _setup.TestMap.Playership.Sector.Y).Item);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -352,7 +352,7 @@ namespace UnitTests.ShipTests.HostileTests
                                         {
                                             new SectorDef(
                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
-                                                SectorItem.FriendlyShip),
+                                                SectorItem.PlayerShip),
                                             new SectorDef(
                                                 new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)),
                                                 SectorItem.HostileShip),
@@ -373,7 +373,7 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = _setup.TestMap.Quadrants.GetActive();
 
-            Assert.AreEqual(SectorItem.FriendlyShip, activeQuadrant.Sectors[17].Item);
+            Assert.AreEqual(SectorItem.PlayerShip, activeQuadrant.Sectors[17].Item);
             Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[22].Item);
             Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[23].Item);
 
@@ -409,7 +409,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 5)), SectorItem.FriendlyShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 5)), SectorItem.PlayerShip),
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip),
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.HostileShip),
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
@@ -424,7 +424,7 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = activeQuad;
 
-            Assert.AreEqual(SectorItem.FriendlyShip, activeQuadrant.Sectors[37].Item);
+            Assert.AreEqual(SectorItem.PlayerShip, activeQuadrant.Sectors[37].Item);
             Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[38].Item);
             Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[23].Item);
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[24].Item);
@@ -468,7 +468,7 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: why active? are hostiles in the same sector?
             var activeQuadrant = activeQuad;
 
-            Assert.AreEqual(SectorItem.FriendlyShip, activeQuadrant.Sectors[1].Item);
+            Assert.AreEqual(SectorItem.PlayerShip, activeQuadrant.Sectors[1].Item);
             Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[38].Item, "Expected Hostile at activeQuadrant.Sectors[38]");
             Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[23].Item, "Expected Hostile at activeQuadrant.Sectors[23]");
             Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[24].Item);
@@ -496,7 +496,7 @@ namespace UnitTests.ShipTests.HostileTests
                                     
                                     SectorDefs = new SectorDefs
                                                      {
-                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.FriendlyShip),
+                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.PlayerShip),
                                                          new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip),
                                                          new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.HostileShip),
                                                          new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
@@ -558,7 +558,7 @@ namespace UnitTests.ShipTests.HostileTests
                                        
                                        SectorDefs = new SectorDefs
                                             {
-                                                new SectorDef(SectorItem.FriendlyShip)
+                                                new SectorDef(SectorItem.PlayerShip)
                                             }
                                    }, this.Game.Write, this.Game.Config));
 
@@ -597,7 +597,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.FriendlyShip),
+                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Write, this.Game.Config));
@@ -614,7 +614,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                                         {
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.FriendlyShip),
+                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 7)), SectorItem.HostileShip)
                                         }
             }, this.Game.Write, this.Game.Config));
@@ -631,7 +631,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                                         {
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.FriendlyShip),
+                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.PlayerShip),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 7)), SectorItem.HostileShip)
                                         }
             }, this.Game.Write, this.Game.Config));
@@ -648,7 +648,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                                         {
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.FriendlyShip),
+                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)), SectorItem.HostileShip)
                                         }
             }, this.Game.Write, this.Game.Config));
@@ -665,7 +665,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.FriendlyShip),
+                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Write, this.Game.Config));
@@ -682,7 +682,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.FriendlyShip),
+                                new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Write, this.Game.Config));
@@ -699,7 +699,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.FriendlyShip),
+                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Write, this.Game.Config));
@@ -716,7 +716,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.FriendlyShip),
+                                new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Write, this.Game.Config));
@@ -733,7 +733,7 @@ namespace UnitTests.ShipTests.HostileTests
                 
                 SectorDefs = new SectorDefs
                             {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.FriendlyShip),
+                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Write, this.Game.Config));

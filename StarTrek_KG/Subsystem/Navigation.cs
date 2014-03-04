@@ -55,6 +55,11 @@ namespace StarTrek_KG.Subsystem
                     this.NavigateToObject();
                     break;
             }
+
+            //todo: upon arriving in quadrant, all damaged controls need to be enumerated
+            this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+
+            ShipConnectedTo.UpdateSectorNeighbors();
         }
 
         private void NavigateToObject()
@@ -109,9 +114,6 @@ namespace StarTrek_KG.Subsystem
             {
                 crs.Controls();
             }
-
-            //todo: upon arriving in quadrant, all damaged controls need to be enumerated
-            //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
         }
 
         public void WarpControls()

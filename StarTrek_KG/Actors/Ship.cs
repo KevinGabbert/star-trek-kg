@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -176,6 +176,8 @@ namespace StarTrek_KG.Actors
             }
 
             this.Map.Write.Line(scavengedText + " from destroyed " + scavengedFrom + " debris field. ");
+
+            this.UpdateSectorNeighbors();
         }
           
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
@@ -301,6 +303,76 @@ namespace StarTrek_KG.Actors
             }
 
             return condition;
+        }
+
+
+        /// <summary>
+        /// Used to get an idea of the area immediately surrounding the ship
+        /// This was created primarily to determine if a sector surrounding the ship is in another quadrant for navigation purposes
+        /// This function is called when the ship is set in place on the map.
+        /// 
+        /// Called at:
+        /// - The end of Map Initialization
+        /// - End of Navigation
+        /// - When destroyed Ships are cleaned up
+        /// </summary>
+        /// <returns></returns>
+        public void UpdateSectorNeighbors()
+        {
+            //Scan happens like this, in number order:
+            //036           //036                
+            //147           //1X7  <-- X is you 
+            //258           //258                   
+
+            var myLocation = this.GetLocation();
+
+            this.Sector.Neighbors = new List<SectorNeighborItem>();
+
+            int row = 0;
+
+            for (var sectorY = myLocation.Sector.Y - 1; 
+                              sectorY <= myLocation.Sector.Y + 1;
+                              sectorY++)
+            {
+                if (sectorY >= -1 && sectorY <= 8)
+                {
+                    for (var sectorX = myLocation.Sector.X - 1; sectorX <= myLocation.Sector.X + 1; sectorX++)
+                    {
+                        var currentResult = new SectorNeighborItem();
+                        currentResult.MyLocation = myLocation.Sector.X == sectorX && myLocation.Sector.Y == sectorY;
+                        currentResult.Location = new Location();
+
+                        if (sectorX >= -1 && sectorX <= 8)
+                        {
+                            var sectorsToQuery = myLocation.Quadrant.Sectors;
+
+                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX, sectorY, false));
+                            string stringToWrite = "";
+
+                            string sector = currentResult.Location.Sector == null ? "ANOTHER QUADRANT" : currentResult.Location.Sector.Item.ToString();
+
+                            stringToWrite += row + ": [" + sectorX + "," + sectorY + "] " + sector;
+
+                            this.Map.Write.SingleLine(stringToWrite);
+
+                        }
+
+                        //currentResult.Location.Quadrant = 
+                        row++;
+                    }
+                }
+
+                row++;
+            }
+        }
+
+        /// <summary>
+        /// This will be called when ship is set down, and after every turn
+        /// </summary>
+        public void UpdateLocalFiringRange()
+        {
+            this.Sector.Neighbors = new List<SectorNeighborItem>();
+
         }
     }
 }

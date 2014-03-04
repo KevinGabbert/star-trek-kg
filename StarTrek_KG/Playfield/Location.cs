@@ -12,7 +12,7 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Location(Quadrant quadrant, Sector sector)
+        public Location(Quadrant quadrant, ISector sector)
         {
             this.Quadrant = quadrant;
             this.Sector = sector;

@@ -76,7 +76,7 @@ namespace UnitTests.ShipTests
                                                              {
                                                                  new SectorDef(
                                                                      new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)),
-                                                                     SectorItem.FriendlyShip),
+                                                                     SectorItem.PlayerShip),
                                                                  //todo: this needs to be in a random spo
                                                              }
                                         }, this.Game.Write, this.Game.Config));
@@ -95,7 +95,7 @@ namespace UnitTests.ShipTests
                                                            new SectorDef(
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                new Coordinate(0, 0)),
-                                                               SectorItem.FriendlyShip),
+                                                               SectorItem.PlayerShip),
                                                            new SectorDef(
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                new Coordinate(0, 1)), SectorItem.HostileShip),
@@ -115,7 +115,7 @@ namespace UnitTests.ShipTests
                                                 new SectorDef(
                                                     new LocationDef(new Coordinate(0, 0),
                                                                     new Coordinate(0, 0)),
-                                                    SectorItem.FriendlyShip),
+                                                    SectorItem.PlayerShip),
                                                 new SectorDef(
                                                     new LocationDef(new Coordinate(0, 0),
                                                                     new Coordinate(0, 1)), SectorItem.HostileShip),
@@ -155,7 +155,7 @@ namespace UnitTests.ShipTests
                                             new SectorDef(
                                                 new LocationDef(new Coordinate(0, 0),
                                                                 friendlySector),
-                                                SectorItem.FriendlyShip),
+                                                SectorItem.PlayerShip),
                                             new SectorDef(
                                                 new LocationDef(new Coordinate(0, 0),
                                                                 hostileSector), SectorItem.HostileShip),
@@ -171,7 +171,7 @@ namespace UnitTests.ShipTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                 {
-                   new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.FriendlyShip)},
+                   new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.PlayerShip)},
               AddStars = false
             }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
@@ -186,7 +186,7 @@ namespace UnitTests.ShipTests
 
                 SectorDefs = new SectorDefs
                                     {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.FriendlyShip), //todo: this needs to be in a random spo
+                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
                                     }
             }, this.Game.Write, this.Game.Config));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -20,6 +21,7 @@ namespace StarTrek_KG.Playfield
             public ISectorObject Object { get; set; }
             public SectorType Type { get; set; }
             public Coordinate QuadrantDef { get; set; } //needed.  so it can set ship coordinate
+            public List<SectorNeighborItem> Neighbors { get; set; }
 
         #endregion
 
@@ -36,14 +38,6 @@ namespace StarTrek_KG.Playfield
             this.X = location.Sector.X;
             this.Y = location.Sector.Y;
             this.QuadrantDef = location.Quadrant;
-        }
-
-        public Sector(SectorDef sectorDef)
-        {
-            this.Type = SectorType.Space;
-            this.X = sectorDef.Sector.X;
-            this.Y = sectorDef.Sector.Y;
-            this.QuadrantDef = sectorDef.QuadrantDef;
         }
 
         public static Sector Get(Sectors sectors, int sX, int sY)
@@ -95,29 +89,34 @@ namespace StarTrek_KG.Playfield
         {
             return "Sector: " + this.X + ", " + this.Y;
         }
-
-        //public void IncrementBy(VectorCoordinate coordinate)
-        //{
-        //    this._enforceBoundsChecking = false;
-
-        //    var x = (int)Math.Round(coordinate.X, MidpointRounding.AwayFromZero);
-        //    var y = (int)Math.Round(coordinate.Y, MidpointRounding.AwayFromZero);
-
-        //    if (x > Constants.SECTOR_MIN || y > Constants.SECTOR_MIN || x < Constants.SECTOR_MAX || y < Constants.SECTOR_MAX)
-        //    {
-        //        this.X = x;
-        //        this.Y = y;
-        //    }
-        //}
-
-        public static Sector FromCoordinate(Coordinate coordinateToConvert)
-        {
-            var newSector = new Sector();
-            newSector.X = coordinateToConvert.X;
-            newSector.Y = coordinateToConvert.Y;
-
-            return newSector;
-        }
-
     }
 }
+
+    //public void IncrementBy(VectorCoordinate coordinate)
+    //{
+    //    this._enforceBoundsChecking = false;
+
+    //    var x = (int)Math.Round(coordinate.X, MidpointRounding.AwayFromZero);
+    //    var y = (int)Math.Round(coordinate.Y, MidpointRounding.AwayFromZero);
+
+    //    if (x > Constants.SECTOR_MIN || y > Constants.SECTOR_MIN || x < Constants.SECTOR_MAX || y < Constants.SECTOR_MAX)
+    //    {
+    //        this.X = x;
+    //        this.Y = y;
+    //    }
+    //}
+    //public static Sector FromCoordinate(Coordinate coordinateToConvert)
+    //{
+    //    var newSector = new Sector();
+    //    newSector.X = coordinateToConvert.X;
+    //    newSector.Y = coordinateToConvert.Y;
+
+    //    return newSector;
+    //}
+    //public Sector(SectorDef sectorDef)
+    //{
+    //    this.Type = SectorType.Space;
+    //    this.X = sectorDef.Sector.X;
+    //    this.Y = sectorDef.Sector.Y;
+    //    this.QuadrantDef = sectorDef.QuadrantDef;
+    //}
