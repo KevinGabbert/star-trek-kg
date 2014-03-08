@@ -357,7 +357,59 @@ namespace StarTrek_KG.Actors
                                 //This means we need to find what quad this sector is in.
                                 //TODO: look up or divine quadrant here, then set
 
-                                //Quadrant lookedUpQuadrant = null;
+                                Quadrant lookedUpQuadrant = null;
+
+                                //If on right
+                                if (sectorX < 8 && sectorY == 8)
+                                {
+                                    //then we are on the right
+                                }
+
+                                if (sectorX < -1 && sectorY == 8)
+                                {
+                                    //then we are on the topRight?
+                                }
+
+
+                                //If on top
+                                if (sectorX == 0 && sectorY == -1)
+                                {
+                                    //then we are on the topleft
+                                }
+
+                                if (sectorX == -1 && sectorY == -1)
+                                {
+                                    //then we are on the topLeft?
+                                }
+
+                                if (sectorX == -1 && sectorY == 8)
+                                {
+                                    //then we are on the topRight??
+                                }
+
+
+
+                                //If on bottom  ---------------
+                                if (sectorX == 8 && sectorY == -1)
+                                {
+                                    //then we are on the bottomright?
+                                }
+
+                                if (sectorX == 8 && sectorY < 8)
+                                {
+                                    //then we are on the bottom
+                                }
+
+                                if (sectorX == 8 && sectorY == 8)
+                                {
+                                    //then we are on the bottomright?
+                                }
+
+                                //--------------------------
+
+
+
+
 
                                 //currentResult.Location.Quadrant = lookedUpQuadrant;
 
