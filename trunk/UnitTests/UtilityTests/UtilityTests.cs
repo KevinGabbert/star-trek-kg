@@ -16,7 +16,7 @@ namespace UnitTests.UtilityTests
 
             for (int i = 0; i < 10; i++)
             {
-                x += Utility.NebulaUnit();
+                x += Utility.DamagedScannerUnit();
             }
         }
     }

@@ -330,23 +330,23 @@ namespace StarTrek_KG.Actors
 
             int row = 0;
 
-            for (var sectorY = myLocation.Sector.Y - 1; 
-                              sectorY <= myLocation.Sector.Y + 1;
-                              sectorY++)
+            for (var sectorY_L = myLocation.Sector.Y - 1; 
+                              sectorY_L <= myLocation.Sector.Y + 1;
+                              sectorY_L++)
             {
-                if (sectorY >= -1 && sectorY <= 8)
+                if (sectorY_L >= -1 && sectorY_L <= 8)
                 {
-                    for (var sectorX = myLocation.Sector.X - 1; sectorX <= myLocation.Sector.X + 1; sectorX++)
+                    for (var sectorX_T = myLocation.Sector.X - 1; sectorX_T <= myLocation.Sector.X + 1; sectorX_T++)
                     {
                         var currentResult = new SectorNeighborItem();
-                        currentResult.MyLocation = myLocation.Sector.X == sectorX && myLocation.Sector.Y == sectorY;
+                        currentResult.MyLocation = myLocation.Sector.X == sectorX_T && myLocation.Sector.Y == sectorY_L;
                         currentResult.Location = new Location();
 
-                        if (sectorX >= -1 && sectorX <= 8)
+                        if (sectorX_T >= -1 && sectorX_T <= 8)
                         {
                             var sectorsToQuery = myLocation.Quadrant.Sectors;
 
-                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX, sectorY, false));
+                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX_T, sectorY_L, false));
                             
                             string stringToWrite = "";
                             string sector;
@@ -359,57 +359,48 @@ namespace StarTrek_KG.Actors
 
                                 Quadrant lookedUpQuadrant = null;
 
-                                //If on right
-                                if (sectorX < 8 && sectorY == 8)
+                                sector = "ANOTHER QUADRANT"; 
+
+                                //LEFT
+                                if (sectorX_T < 8 && sectorY_L == -1)
                                 {
-                                    //then we are on the right
+                                    sector = "Quadrant to the Left";
                                 }
 
-                                if (sectorX < -1 && sectorY == 8)
+                                if (sectorX_T == -1 && sectorY_L == -1)
                                 {
-                                    //then we are on the topRight?
+                                    sector = "Quadrant to the topLeft";
                                 }
 
-
-                                //If on top
-                                if (sectorX == 0 && sectorY == -1)
+                                if (sectorX_T == -1 && sectorY_L < 8)
                                 {
-                                    //then we are on the topleft
+                                    sector = "Quadrant at the top";
                                 }
 
-                                if (sectorX == -1 && sectorY == -1)
+                                if (sectorX_T == -1 && sectorY_L == 8)
                                 {
-                                    //then we are on the topLeft?
+                                    sector = "Quadrant to the topRight";
                                 }
 
-                                if (sectorX == -1 && sectorY == 8)
+                                if (sectorX_T < 8 && sectorY_L == 8)
                                 {
-                                    //then we are on the topRight??
+                                    sector = "Quadrant to the right";
                                 }
 
-
-
-                                //If on bottom  ---------------
-                                if (sectorX == 8 && sectorY == -1)
+                                if (sectorX_T == 8 && sectorY_L == 8)
                                 {
-                                    //then we are on the bottomright?
+                                    sector = "Quadrant to the bottomRight";
                                 }
 
-                                if (sectorX == 8 && sectorY < 8)
+                                if (sectorX_T == 8 && sectorY_L < 8)
                                 {
-                                    //then we are on the bottom
+                                    sector = "Quadrant to the bottom";
                                 }
 
-                                if (sectorX == 8 && sectorY == 8)
+                                if (sectorX_T == 8 && sectorY_L == -1)
                                 {
-                                    //then we are on the bottomright?
+                                    sector = "Quadrant to the bottomLeft";
                                 }
-
-                                //--------------------------
-
-
-
-
 
                                 //currentResult.Location.Quadrant = lookedUpQuadrant;
 
@@ -417,15 +408,13 @@ namespace StarTrek_KG.Actors
 
                                 ////Do we really need this second assignment?
                                 //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX, sectorY, false));
-
-                                sector = "ANOTHER QUADRANT"; 
                             }
                             else
                             {
                                 sector = currentResult.Location.Sector.Item.ToString();
                             }
 
-                            stringToWrite += row + ": [" + sectorX + "," + sectorY + "] " + sector;
+                            stringToWrite += row + ": [" + sectorX_T + "," + sectorY_L + "] " + sector;
 
                             this.Map.Write.SingleLine(stringToWrite);
 

@@ -553,7 +553,7 @@ namespace StarTrek_KG.Output
 
                 if (dataPoint.Unknown)
                 {
-                    currentQuadrantResult = Utility.Utility.NebulaUnit();
+                    currentQuadrantResult = Utility.Utility.DamagedScannerUnit();
                 }
                 else if(dataPoint.GalacticBarrier)
                 {
