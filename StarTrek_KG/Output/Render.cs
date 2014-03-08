@@ -174,7 +174,7 @@ namespace StarTrek_KG.Output
                     case SectorItem.Empty:
 
                         //todo: might be good to put some false positives here  (jsut throw in some random faction letters)
-                        sb.Append(isNebula ? Utility.Utility.NebulaUnit() : Constants.EMPTY);
+                        sb.Append(isNebula ? Utility.Utility.DamagedScannerUnit() : Constants.EMPTY);
                         break;
 
                     case SectorItem.PlayerShip:
@@ -194,7 +194,7 @@ namespace StarTrek_KG.Output
                         {
                             if (isNebula)
                             {
-                                sb.Append(Utility.Utility.NebulaUnit());
+                                sb.Append(Utility.Utility.DamagedScannerUnit());
                             }
                         }
 
@@ -211,7 +211,7 @@ namespace StarTrek_KG.Output
                         {
                             if (isNebula)
                             {
-                                sb.Append(Utility.Utility.NebulaUnit());
+                                sb.Append(Utility.Utility.DamagedScannerUnit());
                             }
                         }
 

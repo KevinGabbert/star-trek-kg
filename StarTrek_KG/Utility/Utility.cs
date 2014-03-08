@@ -176,7 +176,7 @@ namespace StarTrek_KG.Utility
             }
         }
 
-        public static string NebulaUnit()
+        public static string DamagedScannerUnit()
         {
             const int places = 3;
             Double totalpossibilities = Math.Pow(2, places);
