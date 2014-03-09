@@ -9,6 +9,7 @@
         public bool MyLocation { get; set; }
         public bool GalacticBarrier { get; set; }
         public bool Unknown { get; set; }
+        public string Name { get; set; }
 
         public int Hostiles
         {

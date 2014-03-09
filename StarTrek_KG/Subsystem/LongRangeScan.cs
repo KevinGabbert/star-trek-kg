@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -28,7 +29,7 @@ namespace StarTrek_KG.Subsystem
             if (Damaged()) return;
 
             Location myLocation = this.ShipConnectedTo.GetLocation();
-            var renderedResults = this.RunLRSScan(myLocation);
+            var renderedResults = this.RunLRSScanNamesOnly(myLocation);
 
             foreach (var line in renderedResults)
             {
@@ -36,9 +37,28 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
+        //used by CRS
         public List<string> RunLRSScan(Location shipLocation)
         {
-            var testLRSResults = shipLocation.Quadrant.GetLRSData(shipLocation, this.Game);
+            var tlrsResults = shipLocation.Quadrant.GetLRSFullData(shipLocation, this.Game);
+            var renderedData = this.Game.Write.RenderLRSData(tlrsResults, this.Game);
+
+            return renderedData;
+        }
+
+        public IEnumerable<string> RunLRSScanNamesOnly(Location shipLocation)
+        {
+            //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
+            IEnumerable<LRSResult> lrsData = shipLocation.Quadrant.GetLRSFullData(shipLocation, this.Game);
+
+            var renderedData = this.Game.Write.RenderLRSNames(lrsData.ToList(), this.Game);
+
+            return renderedData;
+        }
+
+        public List<string> RunLRSScanNamesAndNumbers(Location shipLocation)
+        {
+            var testLRSResults = shipLocation.Quadrant.GetLRSFullData(shipLocation, this.Game);
             var renderedData = this.Game.Write.RenderLRSData(testLRSResults, this.Game);
 
             return renderedData;
@@ -53,6 +73,7 @@ namespace StarTrek_KG.Subsystem
                 quadrantResult.Hostiles = quadrantToScan.GetHostiles().Count;
                 quadrantResult.Starbases = quadrantToScan.GetStarbaseCount();
                 quadrantResult.Stars = quadrantToScan.GetStarCount();
+                quadrantResult.Name = quadrantToScan.Name;
             }
 
             quadrantToScan.Scanned = true;

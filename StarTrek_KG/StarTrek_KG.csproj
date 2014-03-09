@@ -135,7 +135,7 @@
     <Compile Include="Playfield\Quadrant.cs" />
     <Compile Include="Enums\SectorItem.cs" />
     <Compile Include="TypeSafeEnums\SubsystemType.cs" />
-    <Compile Include="Types\LRSData.cs" />
+    <Compile Include="Types\LRSFullData.cs" />
     <Compile Include="Types\LRSResult.cs" />
     <Compile Include="Utility\Console.cs" />
     <Compile Include="Subsystem\Debug.cs" />
