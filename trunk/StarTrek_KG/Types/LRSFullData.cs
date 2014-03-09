@@ -2,7 +2,7 @@
 
 namespace StarTrek_KG.Types
 {
-    public class LRSData: List<LRSResult>
+    public class LRSFullData: List<LRSResult>
     {
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using StarTrek_KG.Actors;
@@ -538,7 +539,7 @@ namespace StarTrek_KG.Output
             quadrant.Scanned = true;
         }
 
-        public List<string> RenderLRSData(LRSData lrsData, Game game)
+        public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game)
         {
             var renderedResults = new List<string>();
             int scanColumn = 0;
@@ -582,6 +583,60 @@ namespace StarTrek_KG.Output
             }
 
             renderedResults.Add("└─────┴─────┴─────┘");
+
+            return renderedResults;
+        }
+
+        public IEnumerable<string> RenderLRSNames(List<LRSResult> lrsData, Game game)
+        {
+            var renderedResults = new List<string>();
+            int scanColumn = 0;
+            string longestName = "";
+            foreach (LRSResult result in lrsData)
+            {
+                longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
+            }
+
+            var cellPadding = 1; //todo resource this
+            int cellLength = longestName.Length + cellPadding;
+
+            var cellLine = new string('─', cellLength + cellPadding);
+
+            renderedResults.Add("┌" + cellLine + "┬" + cellLine + "┬" + cellLine + "┐");
+
+            string currentLRSScanLine = "│";
+
+            foreach (LRSResult dataPoint in lrsData)
+            {
+                string currentQuadrantResult = null;
+
+                if (dataPoint.GalacticBarrier)
+                {
+                    currentQuadrantResult = game.Config.GetSetting<string>("GalacticBarrier");
+                }
+                else
+                {
+                    currentQuadrantResult += dataPoint.Name;
+                }
+
+                currentLRSScanLine += " " + currentQuadrantResult.PadRight(cellLength) + "│";
+
+                if (scanColumn == 2 || scanColumn == 5)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                    renderedResults.Add("├" + cellLine + "┼" + cellLine + "┼" + cellLine + "┤");
+                    currentLRSScanLine = "│";
+                }
+
+                if (scanColumn == 8)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                }
+
+                scanColumn++;
+            }
+
+            renderedResults.Add("└" + cellLine + "┴" + cellLine + "┴" + cellLine + "┘");
 
             return renderedResults;
         }

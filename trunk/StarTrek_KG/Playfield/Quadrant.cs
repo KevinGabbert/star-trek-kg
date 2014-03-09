@@ -543,9 +543,43 @@ namespace StarTrek_KG.Playfield
         //todo: hand LRS a List<LRSResult>(); and then it can build its little grid.
         //or rather.. LongRangeScan subsystem comes up with the numbers, then hands it to the Print
 
-        public LRSData GetLRSData(Location location, Game game)
+        public IEnumerable<LRSResult> GetLRSFullData(Location location, Game game)
         {
-            var scanData = new LRSData();
+            var scanData = new LRSFullData();
+
+            bool currentlyInNebula = location.Quadrant.Type == QuadrantType.Nebulae;
+
+            for (var quadrantY = location.Quadrant.Y - 1;
+                quadrantY <= location.Quadrant.Y + 1;
+                quadrantY++)
+            {
+                for (var quadrantX = location.Quadrant.X - 1;
+                    quadrantX <= location.Quadrant.X + 1;
+                    quadrantX++)
+                {
+                    var outOfBounds = game.Map.OutOfBounds(quadrantY, quadrantX);
+
+                    var currentResult = new LRSResult();
+                    if (!currentlyInNebula)
+                    {
+                        currentResult = this.GetQuadrantInfo(quadrantY, outOfBounds, quadrantX, game);
+                        currentResult.MyLocation = location.Quadrant.X == quadrantX &&
+                                                   location.Quadrant.Y == quadrantY;
+                    }
+                    else
+                    {
+                        //We are in a nebula.  LRS won't work here.
+                        currentResult.Unknown = true;
+                    }
+                    scanData.Add(currentResult);
+                }
+            }
+            return scanData;
+        }
+
+        public LRSFullData GetLRSNames(Location location, Game game)
+        {
+            var scanData = new LRSFullData();
 
             bool currentlyInNebula = location.Quadrant.Type == QuadrantType.Nebulae;
 
@@ -604,6 +638,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
+                quadrantResult.Name = quadrantToScan.Name;
                 quadrantResult.Unknown = true;
             }
 
@@ -688,18 +723,6 @@ namespace StarTrek_KG.Playfield
                 coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
             }
 
-
-            //---------
-
-            if (sectorT == -1 && sectorL == -1)
-            {
-                direction = "topLeft";
-                x = 7;
-                y = 7;
-                coordinateToGet.X = Sector.Decrement(coordinateToGet.X);
-                coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
-            }
-
             if (sectorT == -1 && sectorL == 8)
             {
                 direction = "topRight";
@@ -709,12 +732,24 @@ namespace StarTrek_KG.Playfield
                 coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
             }
 
+
+            //----Verify these below work.-----
+
+            if (sectorT == -1 && sectorL == -1)
+            {
+                direction = "topLeft";
+                x = 7;
+                y = 7;
+                //coordinateToGet.X = Sector.Decrement(coordinateToGet.X);
+                coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
+            }
+
             if (sectorT == 8 && sectorL == -1)
             {
                 direction = "bottomLeft";
                 x = 7;
                 y = 0;
-                coordinateToGet.X = Sector.Increment(coordinateToGet.X);
+                //coordinateToGet.X = Sector.Increment(coordinateToGet.X);
                 coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
             }
 
@@ -723,7 +758,7 @@ namespace StarTrek_KG.Playfield
                 direction = "bottomRight";
                 x = 0;
                 y = 0;
-                coordinateToGet.X = Sector.Increment(coordinateToGet.X);
+                //coordinateToGet.X = Sector.Increment(coordinateToGet.X);
                 coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
             }
 
