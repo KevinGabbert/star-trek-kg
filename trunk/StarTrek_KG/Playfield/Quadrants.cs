@@ -87,7 +87,6 @@ namespace StarTrek_KG.Playfield
             return activeQuadrants.Single();
         }
 
-
         public bool NoHostiles(List<IShip> hostiles)
         {
             if (hostiles.Count == 0)

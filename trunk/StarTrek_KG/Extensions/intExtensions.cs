@@ -31,11 +31,5 @@ namespace StarTrek_KG.Extensions
             float output;
             return float.TryParse(s, out output);
         }
-
-        //public static bool IsDouble(this string s)
-        //{
-        //    double output;
-        //    return Double.TryParse(s, out output);
-        //}
     }
 }

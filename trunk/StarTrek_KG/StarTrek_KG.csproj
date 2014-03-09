@@ -64,6 +64,7 @@
     <Compile Include="Config\Elements\SeverityValueTranslation.cs" />
     <Compile Include="Enums\MovementType.cs" />
     <Compile Include="Enums\ScanType.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Playfield\SectorNeighborItem.cs" />
     <Compile Include="Types\FactionThreat.cs" />
     <Compile Include="Subsystem\CombinedRangeScan.cs" />
