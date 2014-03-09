@@ -92,7 +92,7 @@ namespace StarTrek_KG.Playfield
 
         public static int Increment(int coordinateDimension)
         {
-            return coordinateDimension > Constants.SECTOR_MAX ? 0 : coordinateDimension + 1;
+            return coordinateDimension >= Constants.SECTOR_MAX ? 0 : coordinateDimension + 1;
         }
 
         public static int Decrement(int coordinateDimension)

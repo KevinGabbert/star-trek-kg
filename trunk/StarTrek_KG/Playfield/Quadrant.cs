@@ -653,24 +653,23 @@ namespace StarTrek_KG.Playfield
             var locationToGet = new Location();
             var coordinateToGet = new Coordinate(this.X, this.Y);
             var direction = "";
-            int x = -2;
-            int y = -2;
+            int x = 0;
+            int y = 0;
 
             if (sectorT < 8 && sectorL == -1)
             {
                 direction = "left";
                 x = 7;
                 y = sectorT;
-                coordinateToGet.X -= 1;
+                coordinateToGet.X = Sector.Decrement(coordinateToGet.X);
             }
 
-            if (sectorT == -1 && sectorL == -1)
+            if (sectorT < 8 && sectorL == 8)
             {
-                direction = "topLeft";
-                x = 7;
-                y = 7;
-                coordinateToGet.Y -= 1;
-                coordinateToGet.X -= 1;
+                direction = "right";
+                x = 0;
+                y = sectorT;
+                coordinateToGet.X = Sector.Increment(coordinateToGet.X);
             }
 
             if (sectorT == -1 && sectorL < 8)
@@ -678,27 +677,9 @@ namespace StarTrek_KG.Playfield
                 direction = "top";
                 x = sectorL;
                 y = 7;
-                coordinateToGet.Y -= 1;
+                coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
             }
 
-            if (sectorT == -1 && sectorL == 8)
-            {
-                direction = "topRight";
-                x = 0;
-                y = 7;
-                coordinateToGet.Y -= 1;
-                coordinateToGet.X += 1;
-            }
-
-            if (sectorT < 8 && sectorL == 8)
-            {
-                direction = "right";
-                x = 0;
-                y = 0;
-                coordinateToGet.X += 1;
-            }
-
-            //---------------
             if (sectorT == 8 && sectorL < 8)
             {
                 direction = "bottom";
@@ -707,27 +688,46 @@ namespace StarTrek_KG.Playfield
                 coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
             }
 
+
+            //---------
+
+            if (sectorT == -1 && sectorL == -1)
+            {
+                direction = "topLeft";
+                x = 7;
+                y = 7;
+                coordinateToGet.X = Sector.Decrement(coordinateToGet.X);
+                coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
+            }
+
+            if (sectorT == -1 && sectorL == 8)
+            {
+                direction = "topRight";
+                x = 0;
+                y = 7;
+                //coordinateToGet.X = Sector.Increment(coordinateToGet.X);  //cause 'right' incremented it
+                coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
+            }
+
             if (sectorT == 8 && sectorL == -1)
             {
                 direction = "bottomLeft";
                 x = 7;
                 y = 0;
+                coordinateToGet.X = Sector.Increment(coordinateToGet.X);
                 coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
-                coordinateToGet.X += 1;
             }
-
-            //-----------------
 
             if (sectorT == 8 && sectorL == 8)
             {
                 direction = "bottomRight";
                 x = 0;
                 y = 0;
-                coordinateToGet.Y += 1;
-                coordinateToGet.X += 1;
+                coordinateToGet.X = Sector.Increment(coordinateToGet.X);
+                coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
             }
 
-            map.Write.SingleLine("Quadrant to the " + direction);
+            map.Write.WithNoEndCR("Quadrant to the " + direction + "= [" + coordinateToGet.X + "," + coordinateToGet.Y +"]: ");
             var gotQuadrant = Quadrants.Get(map, coordinateToGet);
 
             locationToGet.Quadrant = gotQuadrant;
