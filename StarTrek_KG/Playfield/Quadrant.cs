@@ -647,6 +647,94 @@ namespace StarTrek_KG.Playfield
 
             return quadrantToScan;
         }
+
+        internal Location GetNeighbor(int sectorT, int sectorL, IMap map)
+        {
+            var locationToGet = new Location();
+            var coordinateToGet = new Coordinate(this.X, this.Y);
+            var direction = "";
+            int x = -2;
+            int y = -2;
+
+            if (sectorT < 8 && sectorL == -1)
+            {
+                direction = "left";
+                x = 7;
+                y = sectorT;
+                coordinateToGet.X -= 1;
+            }
+
+            if (sectorT == -1 && sectorL == -1)
+            {
+                direction = "topLeft";
+                x = 7;
+                y = 7;
+                coordinateToGet.Y -= 1;
+                coordinateToGet.X -= 1;
+            }
+
+            if (sectorT == -1 && sectorL < 8)
+            {
+                direction = "top";
+                x = sectorL;
+                y = 7;
+                coordinateToGet.Y -= 1;
+            }
+
+            if (sectorT == -1 && sectorL == 8)
+            {
+                direction = "topRight";
+                x = 0;
+                y = 7;
+                coordinateToGet.Y -= 1;
+                coordinateToGet.X += 1;
+            }
+
+            if (sectorT < 8 && sectorL == 8)
+            {
+                direction = "right";
+                x = 0;
+                y = 0;
+                coordinateToGet.X += 1;
+            }
+
+            //---------------
+            if (sectorT == 8 && sectorL < 8)
+            {
+                direction = "bottom";
+                x = sectorL;
+                y = 0;
+                coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
+            }
+
+            if (sectorT == 8 && sectorL == -1)
+            {
+                direction = "bottomLeft";
+                x = 7;
+                y = 0;
+                coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
+                coordinateToGet.X += 1;
+            }
+
+            //-----------------
+
+            if (sectorT == 8 && sectorL == 8)
+            {
+                direction = "bottomRight";
+                x = 0;
+                y = 0;
+                coordinateToGet.Y += 1;
+                coordinateToGet.X += 1;
+            }
+
+            map.Write.SingleLine("Quadrant to the " + direction);
+            var gotQuadrant = Quadrants.Get(map, coordinateToGet);
+
+            locationToGet.Quadrant = gotQuadrant;
+            locationToGet.Sector = gotQuadrant.Sectors.Single(s => s.X == x && s.Y == y);
+
+            return locationToGet;
+        }
     }
 }
 

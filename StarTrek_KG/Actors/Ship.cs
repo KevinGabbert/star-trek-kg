@@ -322,7 +322,25 @@ namespace StarTrek_KG.Actors
             //Scan happens like this, in number order:
             //036           //036                
             //147           //1X7  <-- X is you 
-            //258           //258                   
+            //258           //258      
+            
+            //Immediate Range Scan
+
+                      //Busted
+            //↑|↑|→   //+|-|+
+            //E|P|→   //+|+|+
+            //E|E|→   //-|-|-
+
+            //Longhand
+            //[3,6] E [3,7] S [3,→] FreeHold
+            //[4,6] E [4,7] P [4,→] FreeHold
+            //[5,6] E [5,7] E [5,→] FreeHold
+
+            //←	↑	→	↓	
+            //Portal to other Galaxy - ⇄
+            //⇶
+
+            //http://en.wikipedia.org/wiki/Template:Unicode_chart_Arrows
 
             var myLocation = this.GetLocation();
 
@@ -330,26 +348,25 @@ namespace StarTrek_KG.Actors
 
             int row = 0;
 
-            for (var sectorY_L = myLocation.Sector.Y - 1; 
-                              sectorY_L <= myLocation.Sector.Y + 1;
-                              sectorY_L++)
+            for (var sectorL = myLocation.Sector.Y - 1; 
+                              sectorL <= myLocation.Sector.Y + 1;
+                              sectorL++)
             {
-                if (sectorY_L >= -1 && sectorY_L <= 8)
+                if (sectorL >= -1 && sectorL <= 8)
                 {
-                    for (var sectorX_T = myLocation.Sector.X - 1; sectorX_T <= myLocation.Sector.X + 1; sectorX_T++)
+                    for (var sectorT = myLocation.Sector.X - 1; sectorT <= myLocation.Sector.X + 1; sectorT++)
                     {
                         var currentResult = new SectorNeighborItem();
-                        currentResult.MyLocation = myLocation.Sector.X == sectorX_T && myLocation.Sector.Y == sectorY_L;
+                        currentResult.MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL;
                         currentResult.Location = new Location();
 
-                        if (sectorX_T >= -1 && sectorX_T <= 8)
+                        if (sectorT >= -1 && sectorT <= 8)
                         {
                             var sectorsToQuery = myLocation.Quadrant.Sectors;
 
-                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX_T, sectorY_L, false));
+                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL, false));
                             
                             string stringToWrite = "";
-                            string sector;
                             bool nullSector = currentResult.Location.Sector == null;
 
                             if (nullSector)
@@ -357,70 +374,24 @@ namespace StarTrek_KG.Actors
                                 //This means we need to find what quad this sector is in.
                                 //TODO: look up or divine quadrant here, then set
 
-                                Quadrant lookedUpQuadrant = null;
+                                Location lookedUpLocation = myLocation.Quadrant.GetNeighbor(sectorT, sectorL, this.Map);
+                                currentResult.Location.Quadrant = lookedUpLocation.Quadrant;
 
-                                sector = "ANOTHER QUADRANT"; 
+                                sectorsToQuery = currentResult.Location.Quadrant.Sectors;
 
-                                //LEFT
-                                if (sectorX_T < 8 && sectorY_L == -1)
-                                {
-                                    sector = "Quadrant to the Left";
-                                }
-
-                                if (sectorX_T == -1 && sectorY_L == -1)
-                                {
-                                    sector = "Quadrant to the topLeft";
-                                }
-
-                                if (sectorX_T == -1 && sectorY_L < 8)
-                                {
-                                    sector = "Quadrant at the top";
-                                }
-
-                                if (sectorX_T == -1 && sectorY_L == 8)
-                                {
-                                    sector = "Quadrant to the topRight";
-                                }
-
-                                if (sectorX_T < 8 && sectorY_L == 8)
-                                {
-                                    sector = "Quadrant to the right";
-                                }
-
-                                if (sectorX_T == 8 && sectorY_L == 8)
-                                {
-                                    sector = "Quadrant to the bottomRight";
-                                }
-
-                                if (sectorX_T == 8 && sectorY_L < 8)
-                                {
-                                    sector = "Quadrant to the bottom";
-                                }
-
-                                if (sectorX_T == 8 && sectorY_L == -1)
-                                {
-                                    sector = "Quadrant to the bottomLeft";
-                                }
-
-                                //currentResult.Location.Quadrant = lookedUpQuadrant;
-
-                                //sectorsToQuery = lookedUpQuadrant.Sectors;
+                                this.Map.Write.SingleLine(currentResult.Location.Quadrant.Name);
 
                                 ////Do we really need this second assignment?
-                                //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorX, sectorY, false));
+                                //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(lookedUpLocation.Sector.X, lookedUpLocation.Sector.Y, false));
                             }
                             else
                             {
-                                sector = currentResult.Location.Sector.Item.ToString();
+                                string sector = currentResult.Location.Sector.Item.ToString();
+                                stringToWrite += row + ": [" + sectorT + "," + sectorL + "] " + sector;
+
+                                this.Map.Write.SingleLine(stringToWrite);
                             }
-
-                            stringToWrite += row + ": [" + sectorX_T + "," + sectorY_L + "] " + sector;
-
-                            this.Map.Write.SingleLine(stringToWrite);
-
                         }
-
-                        
                         row++;
                     }
                 }
