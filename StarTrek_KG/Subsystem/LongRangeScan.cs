@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Extensions.System;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Types;
@@ -29,7 +30,7 @@ namespace StarTrek_KG.Subsystem
             if (Damaged()) return;
 
             Location myLocation = this.ShipConnectedTo.GetLocation();
-            var renderedResults = this.RunLRSScanNamesOnly(myLocation);
+            var renderedResults = this.RunFullLRSScan(myLocation);
 
             foreach (var line in renderedResults)
             {
@@ -46,20 +47,12 @@ namespace StarTrek_KG.Subsystem
             return renderedData;
         }
 
-        public IEnumerable<string> RunLRSScanNamesOnly(Location shipLocation)
+        public IEnumerable<string> RunFullLRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<LRSResult> lrsData = shipLocation.Quadrant.GetLRSFullData(shipLocation, this.Game);
 
-            var renderedData = this.Game.Write.RenderLRSNames(lrsData.ToList(), this.Game);
-
-            return renderedData;
-        }
-
-        public List<string> RunLRSScanNamesAndNumbers(Location shipLocation)
-        {
-            var testLRSResults = shipLocation.Quadrant.GetLRSFullData(shipLocation, this.Game);
-            var renderedData = this.Game.Write.RenderLRSData(testLRSResults, this.Game);
+            var renderedData = this.Game.Write.RenderLRSWithNames(lrsData.ToList(), this.Game);
 
             return renderedData;
         }

@@ -6,6 +6,7 @@ using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
+using StarTrek_KG.Extensions.System;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
@@ -587,50 +588,76 @@ namespace StarTrek_KG.Output
             return renderedResults;
         }
 
-        public IEnumerable<string> RenderLRSNames(List<LRSResult> lrsData, Game game)
+        public IEnumerable<string> RenderLRSWithNames(List<LRSResult> lrsData, Game game)
         {
             var renderedResults = new List<string>();
             int scanColumn = 0;
             string longestName = "";
             foreach (LRSResult result in lrsData)
             {
-                longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
+                if (result != null)
+                {
+                    if (result.Name != null)
+                    {
+                        longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
+                    }
+                }
             }
 
+            var barrierID = "Galactic Barrier"; //todo resource this
             var cellPadding = 1; //todo resource this
-            int cellLength = longestName.Length + cellPadding;
+
+            int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
+            cellLength += cellPadding;
 
             var cellLine = new string('─', cellLength + cellPadding);
 
+            renderedResults.Add("");
+            renderedResults.Add("*** Log Range Scan ***".PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.  todo: resource this out.
             renderedResults.Add("┌" + cellLine + "┬" + cellLine + "┬" + cellLine + "┐");
 
-            string currentLRSScanLine = "│";
+            string currentLRSScanLine1 = "│";
+            string currentLRSScanLine2 = "│";
 
             foreach (LRSResult dataPoint in lrsData)
             {
+                string currentQuadrantName = null;
                 string currentQuadrantResult = null;
 
-                if (dataPoint.GalacticBarrier)
+                if (dataPoint.Unknown)
                 {
+                    currentQuadrantName += dataPoint.Name;
+                    currentQuadrantResult = Utility.Utility.DamagedScannerUnit();
+                }
+                else if (dataPoint.GalacticBarrier)
+                {
+                    currentQuadrantName += barrierID;
                     currentQuadrantResult = game.Config.GetSetting<string>("GalacticBarrier");
                 }
                 else
                 {
-                    currentQuadrantResult += dataPoint.Name;
+                    currentQuadrantName += dataPoint.Name;
+                    currentQuadrantResult += dataPoint;
                 }
 
-                currentLRSScanLine += " " + currentQuadrantResult.PadRight(cellLength) + "│";
+                currentLRSScanLine1 += " " + currentQuadrantName.PadCenter(cellLength) + "│";
+                currentLRSScanLine2 += currentQuadrantResult.PadCenter(cellLength + 1) + "│";
 
                 if (scanColumn == 2 || scanColumn == 5)
                 {
-                    renderedResults.Add(currentLRSScanLine);
+                    renderedResults.Add(currentLRSScanLine1);
+                    renderedResults.Add(currentLRSScanLine2);
+
                     renderedResults.Add("├" + cellLine + "┼" + cellLine + "┼" + cellLine + "┤");
-                    currentLRSScanLine = "│";
+
+                    currentLRSScanLine1 = "│";
+                    currentLRSScanLine2 = "│";
                 }
 
                 if (scanColumn == 8)
                 {
-                    renderedResults.Add(currentLRSScanLine);
+                    renderedResults.Add(currentLRSScanLine1);
+                    renderedResults.Add(currentLRSScanLine2);
                 }
 
                 scanColumn++;
