@@ -14,8 +14,8 @@ namespace UnitTests.ShipTests.SectorTests
 
         //    var shipLocation = Navigation.For(_testMap.Playership);
 
-        //    var shipX = shipLocation.quadrantX;
-        //    var shipY = shipLocation.quadrantY;
+        //    var shipX = shipLocation.RegionX;
+        //    var shipY = shipLocation.RegionY;
 
         //    foreach (var sector in gotSectors)
         //    {
@@ -24,7 +24,7 @@ namespace UnitTests.ShipTests.SectorTests
 
         //    }
 
-        //    foreach (var mapQuad in _testMap.Quadrants)
+        //    foreach (var mapRegion in _testMap.Regions)
         //    {
                 
 
@@ -32,12 +32,12 @@ namespace UnitTests.ShipTests.SectorTests
         //    }
 
 
-        //    //compare all quadrant XYs
-        //    //compare sectorXYs for each quadrant
+        //    //compare all Region XYs
+        //    //compare sectorXYs for each Region
         //}
 
 
-        //TODO: Test that enforces a single starbase per quadrant
+        //TODO: Test that enforces a single starbase per Region
 
     }
 }

@@ -29,14 +29,14 @@ namespace UnitTests.ShipTests.AppSettingTests
         }
 
         [Test]
-        public void QuadrantsNoHostileShips()
+        public void RegionsNoHostileShips()
         {
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("QuadrantsNoHostileShips"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("QuadrantsNotSetUp"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("QuadrantsNeedToBeSetup1"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DebugNoSetUpSectorsInQuadrant"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionsNoHostileShips"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionsNotSetUp"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionsNeedToBeSetup1"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DebugNoSetUpSectorsInRegion"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DebugSettingUpPlayership"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DebugAddingNewQuadrant"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DebugAddingNewRegion"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("InvalidPlayershipSetup"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("ErrorPlayershipSetup"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DebugModeEnd"));
@@ -45,9 +45,9 @@ namespace UnitTests.ShipTests.AppSettingTests
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("TheCurrentLocation"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("InvalidXCoordinate"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("InvalidYCoordinate"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DestinationQuadrantY"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DestinationQuadrantX"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("LocatedInQuadrant"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DestinationRegionY"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DestinationRegionX"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("LocatedInRegion"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("MaxWarpFactorMessage"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("WarpEnginesRepaired"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("WarpEnginesDamaged"));
@@ -70,16 +70,16 @@ namespace UnitTests.ShipTests.AppSettingTests
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("ShieldsDownLevel"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MIN"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MAX"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("QUADRANT_MIN"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("QuadrantMax"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("Region_MIN"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionMax"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("CommandPrompt"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("CommandPromptNavigation"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotSeed"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotDeprecationLevel"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DisruptorEnergyAdjustment"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DamageSeed"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("quadrantX"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("quadrantY"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionX"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionY"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("sectorX"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("sectorY"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("warpDriveDamage"));

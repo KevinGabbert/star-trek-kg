@@ -25,8 +25,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var phasers = new Phasers(_setup.TestMap.Playership, this.Game);
 
-            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
             phasers.Fire(testBoltEnergy, _setup.TestMap.Playership);
 
             //Verifies energy subtracted from firing ship.
@@ -58,7 +58,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             const int testBoltEnergy = 89;
 
-            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership); 
 
             //Verifies energy subtracted from firing ship.
@@ -75,7 +75,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             const int testBoltEnergy = 4000;
 
-            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership);
 
             //Todo: Mock up Output so we can see the text result
@@ -94,7 +94,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             const int testBoltEnergy = -1;
 
-            //This action will hit every single hostile in the quadrant.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership);
 
             //Todo: Mock up Output so we can see the text result
@@ -110,19 +110,19 @@ namespace UnitTests.ShipTests.SubSystemTests
             _setup.SetupMapWith1HostileAtSector(new Coordinate(2, 1), new Coordinate(2,6));
 
             //todo: why active? are hostiles in the same sector?
-            var activeQuadrant = _setup.TestMap.Quadrants.GetActive();
+            var activeRegion = _setup.TestMap.Regions.GetActive();
 
-            Assert.AreEqual(1, activeQuadrant.GetHostiles().Count);
+            Assert.AreEqual(1, activeRegion.GetHostiles().Count);
 
             //Verify ship's location
-            Assert.AreEqual(2, activeQuadrant.GetHostiles()[0].Sector.X);
-            Assert.AreEqual(6, activeQuadrant.GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Sector.X);
+            Assert.AreEqual(6, activeRegion.GetHostiles()[0].Sector.Y);
 
             //verify position on map.
-            Assert.AreEqual(SectorItem.HostileShip, activeQuadrant.Sectors[22].Item);
+            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[22].Item);
 
             //set its energy
-            Shields.For(activeQuadrant.GetHostiles()[0]).Energy = 50;
+            Shields.For(activeRegion.GetHostiles()[0]).Energy = 50;
 
             //todo: verify firing ship's starting energy.
 
@@ -132,16 +132,16 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             const int testBoltEnergy = 89;
 
-            //This action will hit every single hostile in the quadrant
+            //This action will hit every single hostile in the Region
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy, _setup.TestMap.Playership); //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
 
             //Verifies energy subtracted from firing ship.  (greater, because of auto-salvage operation)
             Assert.GreaterOrEqual(startingEnergy - testBoltEnergy, _setup.TestMap.Playership.Energy);
 
             //in space. no one can hear you scream.
-            Assert.AreEqual(0, activeQuadrant.GetHostiles().Count);
-            Assert.AreEqual(null, activeQuadrant.Sectors[22].Object);
-            Assert.AreEqual(SectorItem.Empty, activeQuadrant.Sectors[22].Item);
+            Assert.AreEqual(0, activeRegion.GetHostiles().Count);
+            Assert.AreEqual(null, activeRegion.Sectors[22].Object);
+            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[22].Item);
         }
 
         [Ignore]
@@ -154,7 +154,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
         public void HitThatWounds()
         {
-            //_testMap.Quadrants.GetHostile(0).Shields = 20
+            //_testMap.Regions.GetHostile(0).Shields = 20
 
             //todo: ensure that baddie has less than 50 (from config?)
             Phasers.For(_setup.TestMap.Playership).Fire(50, _setup.TestMap.Playership);

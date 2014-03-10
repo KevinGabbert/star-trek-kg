@@ -83,10 +83,10 @@ namespace StarTrek_KG.Playfield
             this.Y = newLocation.Sector.Y;
         }
 
-        public Quadrant ToQuadrant()
+        public Region ToRegion()
         {
-            var newQuadrant = new Quadrant(this);
-            return newQuadrant;
+            var newRegion = new Region(this);
+            return newRegion;
         }
     }
 }

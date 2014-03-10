@@ -3,23 +3,23 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Extensions
 {
-    public static class QuadrantExtensions
+    public static class RegionExtensions
     {
         /// <summary>
-        /// This will populate the entire quadrant with Nebulae.
+        /// This will populate the entire Region with Nebulae.
         /// A sector that is of type: nebula can still have sector items in it, but you might not be able to see it on the SRS
         /// </summary>
-        /// <param name="quadrant"></param>
-        public static void TransformIntoNebulae(this Quadrant quadrant)
+        /// <param name="Region"></param>
+        public static void TransformIntoNebulae(this Region Region)
         {
             //todo: later, find a way to name all contigious nebula sectors
 
-            foreach (Sector sector in quadrant.Sectors)
+            foreach (Sector sector in Region.Sectors)
             {
                 sector.Type = SectorType.Nebula;
             }
 
-            quadrant.Type = QuadrantType.Nebulae;
+            Region.Type = RegionType.Nebulae;
         }
     }
 }

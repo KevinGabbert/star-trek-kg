@@ -24,8 +24,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
         }
 
         //For this test to work, InvalidCourseCheck needs to be mocked

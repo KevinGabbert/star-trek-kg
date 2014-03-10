@@ -31,7 +31,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Quadrants(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Quadrants.GetHostiles())) return;
+                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles())) return;
 
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
@@ -67,7 +67,7 @@ namespace StarTrek_KG.Subsystem
             var angle = Utility.Utility.ComputeAngle(direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
-            Quadrant quadrant = Quadrants.Get(this.Game.Map, torpedoStartingLocation.Quadrant);
+            Region Region = Regions.Get(this.Game.Map, torpedoStartingLocation.Region);
 
             //var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
             //var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
@@ -82,13 +82,13 @@ namespace StarTrek_KG.Subsystem
             var lastPosition = new Coordinate(-1, -1, false);
 
             var newLocation = new Location();
-            newLocation.Quadrant = quadrant;
+            newLocation.Region = Region;
             newLocation.Sector = new Sector();
 
             ////todo: condense WHILE to be a function of Coordinate
             ////todo: eliminate the twice rounding of torpedo location, as the same value is evaluated twice
             ////todo: the rounding can happen once in a variable, and then referred to twice (see note below)
-            //while (Torpedoes.IsInQuadrant(currentLocation))
+            //while (Torpedoes.IsInRegion(currentLocation))
             //{
             //    //Increment to next Sector
             //    if (this.HitSomething(currentLocation, lastPosition, newLocation))
@@ -115,7 +115,7 @@ namespace StarTrek_KG.Subsystem
         //    {
         //        this.Game.Write.DebugLine(string.Format("  ~{0},{1}~", lastPosition.X, lastPosition.Y));
 
-        //        var outputCoordinate = Utility.Utility.HideXorYIfNebula(this.ShipConnectedTo.GetQuadrant(), newLocation.Sector.X.ToString(), newLocation.Sector.Y.ToString());
+        //        var outputCoordinate = Utility.Utility.HideXorYIfNebula(this.ShipConnectedTo.GetRegion(), newLocation.Sector.X.ToString(), newLocation.Sector.Y.ToString());
 
         //        this.Game.Write.Line(string.Format("  [{0},{1}]", outputCoordinate.X, outputCoordinate.Y));
 
@@ -132,7 +132,7 @@ namespace StarTrek_KG.Subsystem
             return torpedoLastPosition.X != newTorpedoLocation.Sector.X || torpedoLastPosition.Y != newTorpedoLocation.Sector.Y;
         }
 
-        //private static bool IsInQuadrant(VectorCoordinate torpedoLocation)
+        //private static bool IsInRegion(VectorCoordinate torpedoLocation)
         //{
         //    var torpedoXIsNotMin = torpedoLocation.X >= Constants.SECTOR_MIN;
         //    var torpedoYIsNotMIN = torpedoLocation.Y >= Constants.SECTOR_MIN;
@@ -161,7 +161,7 @@ namespace StarTrek_KG.Subsystem
                 return true;
             }
 
-            if (this.HitSomethingElse(this.Game.Map, location.Quadrant, location.Sector.Y, location.Sector.X))
+            if (this.HitSomethingElse(this.Game.Map, location.Region, location.Sector.Y, location.Sector.X))
             {
                 //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
                 this.Game.ALLHostilesAttack(this.Game.Map);
@@ -173,9 +173,9 @@ namespace StarTrek_KG.Subsystem
 
         private bool HitHostile(int newY, int newX)
         {
-            var thisQuadrant = this.Game.Map.Quadrants.GetActive();
-            var hostilesInQuadrant = thisQuadrant.GetHostiles();
-            IShip hostileInSector = hostilesInQuadrant.SingleOrDefault(hostileShip => hostileShip.Sector.X == newX &&
+            var thisRegion = this.Game.Map.Regions.GetActive();
+            var hostilesInRegion = thisRegion.GetHostiles();
+            IShip hostileInSector = hostilesInRegion.SingleOrDefault(hostileShip => hostileShip.Sector.X == newX &&
                                                                                       hostileShip.Sector.Y == newY);
             if (hostileInSector != null)
             {
@@ -202,7 +202,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (Constants.DEBUG_MODE)
             {
-                List<Sector> qLocations = newLocation.Quadrant.Sectors.Where(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y).ToList();
+                List<Sector> qLocations = newLocation.Region.Sectors.Where(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y).ToList();
 
                 var qLocation = new Sector();
 
@@ -219,13 +219,13 @@ namespace StarTrek_KG.Subsystem
         }
 
         private bool HitSomethingElse(IMap map,
-                                      IQuadrant quadrant, 
+                                      IRegion Region, 
                                       int newY, 
                                       int newX)
         {
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
-            List<Sector> qLocations = quadrant.Sectors.Where(s => s.X == newX && s.Y == newY).ToList();
+            List<Sector> qLocations = Region.Sectors.Where(s => s.X == newX && s.Y == newY).ToList();
 
             var qLocation = new Sector();
 
@@ -284,11 +284,11 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.Write.Line("");
 
-            var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
-            var thisQuadrantHostiles = thisQuadrant.GetHostiles();
+            var thisRegion = this.ShipConnectedTo.GetRegion();
+            var thisRegionHostiles = thisRegion.GetHostiles();
 
             //todo: once starbases are an object, then they are merely another hostile.  Delete this IF and the rest of the code should work fine.
-            if (thisQuadrant.GetStarbaseCount() > 0)
+            if (thisRegion.GetStarbaseCount() > 0)
             {
                 if (Game.PlayerNowEnemyToFederation)
                 {
@@ -296,22 +296,22 @@ namespace StarTrek_KG.Subsystem
                 }
             }
 
-            if (thisQuadrantHostiles.Count == 0)
+            if (thisRegionHostiles.Count == 0)
             {
-                this.Game.Write.Line("There are no Hostile ships in this quadrant.");
+                this.Game.Write.Line("There are no Hostile ships in this Region.");
                 this.Game.Write.Line("");
                 return;
             }
 
             Location location = this.ShipConnectedTo.GetLocation();
 
-            foreach (var ship in thisQuadrantHostiles)
+            foreach (var ship in thisRegionHostiles)
             {
                 string shipSectorX = (ship.Sector.X).ToString();
                 string shipSectorY = (ship.Sector.Y).ToString();
                 string direction = string.Format("{0:#.##}", Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y));
 
-                direction = Utility.Utility.AdjustIfNebula(thisQuadrant, direction, ref shipSectorX, ref shipSectorY);
+                direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);
 
                 this.Game.Write.Line(string.Format("Hostile ship in sector [{0},{1}]. Direction {2}: ", shipSectorX, shipSectorY, direction));
             }
@@ -332,7 +332,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line("");
             this.Game.Write.Line("Objects to Target:");
 
-            Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+            Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
             this.Game.Write.Line("");

@@ -17,8 +17,8 @@ namespace UnitTests.ShipTests.StarbaseTests
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
         }
 
 
@@ -27,7 +27,7 @@ namespace UnitTests.ShipTests.StarbaseTests
         {
             _setup.SetupMapWithStarbase();
 
-            Assert.IsNotNull(_setup.TestMap.Quadrants[0].Sectors);
+            Assert.IsNotNull(_setup.TestMap.Regions[0].Sectors);
         }
     }
 }

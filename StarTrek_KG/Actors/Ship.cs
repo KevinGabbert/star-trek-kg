@@ -17,13 +17,13 @@ namespace StarTrek_KG.Actors
     //TODO: ship.Energy not decrementing after being hit
     public class Ship : ISystem, IShip
     {
-        //todo: needs access to quadrants and utility and game for subsystem FOR mnemonic to work for DI
+        //todo: needs access to Regions and utility and game for subsystem FOR mnemonic to work for DI
         #region Properties
 
-            //todo: (maybe) create function GetQuadrant() to replace this (will query map.quadrants for ship)
+            //todo: (maybe) create function GetRegion() to replace this (will query map.Regions for ship)
             public Coordinate Coordinate { get; set; }
 
-            //todo: create function GetSector() to replace this (will query map.quadrants.active for ship)
+            //todo: create function GetSector() to replace this (will query map.Regions.active for ship)
             public ISector Sector { get; set; } //This is a ship's location in a sector
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
@@ -39,7 +39,7 @@ namespace StarTrek_KG.Actors
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log Log { get; set; } //
 
-            //todo: get current quadrant of ship so list of baddies can be kept.
+            //todo: get current Region of ship so list of baddies can be kept.
         #endregion
 
         public Ship(FactionName faction, string name, ISector sector, IConfig map)
@@ -51,9 +51,9 @@ namespace StarTrek_KG.Actors
                 throw new GameException("null faction for Ship Creation.  *Everyone* has a Faction!");
             }
 
-            if (this.Map.Quadrants == null)
+            if (this.Map.Regions == null)
             {
-                throw new GameException("Map not set up with quadrants");
+                throw new GameException("Map not set up with Regions");
             }
 
             if (this.Map.Config == null)
@@ -63,13 +63,13 @@ namespace StarTrek_KG.Actors
             
             this.Config = (IStarTrekKGSettings)CheckParam(map.Config);
 
-            if (sector.QuadrantDef == null)
+            if (sector.RegionDef == null)
             {
-                throw new GameConfigException("Ship has no sector.QuadrantDef set up.");
+                throw new GameConfigException("Ship has no sector.RegionDef set up.");
             }
             else
             {
-                this.Coordinate = sector.QuadrantDef;
+                this.Coordinate = sector.RegionDef;
                 this.Sector = (ISector)CheckParam(sector);
             }
 
@@ -191,7 +191,7 @@ namespace StarTrek_KG.Actors
             var shields = Shields.For(this);
             shields.Energy -= attackingEnergy;
 
-            bool shieldsWorking = (this.GetQuadrant().Type != QuadrantType.Nebulae);
+            bool shieldsWorking = (this.GetRegion().Type != RegionType.Nebulae);
 
             if (!shieldsWorking)
             {
@@ -241,15 +241,15 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        //todo: create a GetLastQuadrant & GetLastSector
-        public Quadrant GetQuadrant()
+        //todo: create a GetLastRegion & GetLastSector
+        public Playfield.Region GetRegion()
         {
             //todo: get rid of this.Map ?
-            var retVal = this.Map.Quadrants.Where(s => s.X == this.Coordinate.X && s.Y == this.Coordinate.Y).ToList();
+            var retVal = this.Map.Regions.Where(s => s.X == this.Coordinate.X && s.Y == this.Coordinate.Y).ToList();
 
             if (retVal == null)
             {
-                throw new GameConfigException("Quadrant X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
+                throw new GameConfigException("Region X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
             }
 
             if (!retVal.Any())
@@ -260,7 +260,7 @@ namespace StarTrek_KG.Actors
                 }
                 else
                 {
-                    throw new GameConfigException("Quadrant X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
+                    throw new GameConfigException("Region X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
                 }
             }
 
@@ -271,7 +271,7 @@ namespace StarTrek_KG.Actors
         {
             var shipLocation = new Location();
             shipLocation.Sector = this.Sector;
-            shipLocation.Quadrant = this.GetQuadrant();
+            shipLocation.Region = this.GetRegion();
 
             return shipLocation;
         }
@@ -283,16 +283,16 @@ namespace StarTrek_KG.Actors
 
         public string GetConditionAndSetIcon()
         {
-            var currentQuadrant = this.GetQuadrant();
+            var currentRegion = this.GetRegion();
             var condition = "GREEN";
 
-            if (currentQuadrant.GetHostiles().Count > 0)
+            if (currentRegion.GetHostiles().Count > 0)
             {
                 condition = "RED";
 
                 ConsoleHelper.SetConsoleIcon(SystemIcons.Error);
             }
-            else if (this.AtLowEnergyLevel() || currentQuadrant.IsNebulae())
+            else if (this.AtLowEnergyLevel() || currentRegion.IsNebulae())
             {
                 condition = "YELLOW";
                 ConsoleHelper.SetConsoleIcon(SystemIcons.Exclamation);
@@ -308,7 +308,7 @@ namespace StarTrek_KG.Actors
 
         /// <summary>
         /// Used to get an idea of the area immediately surrounding the ship
-        /// This was created primarily to determine if a sector surrounding the ship is in another quadrant for navigation purposes
+        /// This was created primarily to determine if a sector surrounding the ship is in another Region for navigation purposes
         /// This function is called when the ship is set in place on the map.
         /// 
         /// Called at:
@@ -362,7 +362,7 @@ namespace StarTrek_KG.Actors
 
                         if (sectorT >= -1 && sectorT <= 8)
                         {
-                            var sectorsToQuery = myLocation.Quadrant.Sectors;
+                            var sectorsToQuery = myLocation.Region.Sectors;
 
                             currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL, false));
                             
@@ -371,15 +371,15 @@ namespace StarTrek_KG.Actors
 
                             if (nullSector)
                             {
-                                //This means we need to find what quad this sector is in.
-                                //TODO: look up or divine quadrant here, then set
+                                //This means we need to find what Region this sector is in.
+                                //TODO: look up or divine Region here, then set
 
-                                Location lookedUpLocation = myLocation.Quadrant.GetNeighbor(sectorT, sectorL, this.Map);
-                                currentResult.Location.Quadrant = lookedUpLocation.Quadrant;
+                                Location lookedUpLocation = myLocation.Region.GetNeighbor(sectorT, sectorL, this.Map);
+                                currentResult.Location.Region = lookedUpLocation.Region;
 
-                                sectorsToQuery = currentResult.Location.Quadrant.Sectors;
+                                sectorsToQuery = currentResult.Location.Region.Sectors;
 
-                                this.Map.Write.SingleLine(currentResult.Location.Quadrant.Name);
+                                this.Map.Write.SingleLine(currentResult.Location.Region.Name);
 
                                 ////Do we really need this second assignment?
                                 //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(lookedUpLocation.Sector.X, lookedUpLocation.Sector.Y, false));

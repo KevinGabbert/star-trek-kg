@@ -58,9 +58,9 @@ namespace UnitTests.ShipTests
             var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
             var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
 
-            var activeQuad = this.TestMap.Quadrants.GetActive();
-            activeQuad.AddShip(hostileShip, hostileShip.Sector);
-            activeQuad.AddShip(hostileShip2, hostileShip2.Sector);
+            var activeRegion = this.TestMap.Regions.GetActive();
+            activeRegion.AddShip(hostileShip, hostileShip.Sector);
+            activeRegion.AddShip(hostileShip2, hostileShip2.Sector);
 
             this.VerifyMap();
         }
@@ -195,8 +195,8 @@ namespace UnitTests.ShipTests
             ////add a ship
             //var starbase = new Starbase("starbaseAlpha", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
 
-            //var activeQuad = _testMap.Quadrants.GetActive();
-            //activeQuad.AddShip(starbase, starbase.Sector);
+            //var activeRegion = _testMap.Regions.GetActive();
+            //activeRegion.AddShip(starbase, starbase.Sector);
             this.VerifyMap();
         }
 
@@ -222,15 +222,15 @@ namespace UnitTests.ShipTests
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
 
             this.Game = new Game((new StarTrekKGSettings()), false);
             this.Config = Game.Config;
 
             TestRunner.GetTestConstants();
 
-            Assert.AreEqual(8, Constants.QUADRANT_MAX);
+            Assert.AreEqual(8, Constants.Region_MAX);
         }
     }
 }

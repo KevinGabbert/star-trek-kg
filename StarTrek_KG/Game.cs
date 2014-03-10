@@ -98,8 +98,8 @@ namespace StarTrek_KG
             Constants.SECTOR_MIN = this.Config.GetSetting<int>("SECTOR_MIN");
             Constants.SECTOR_MAX = this.Config.GetSetting<int>("SECTOR_MAX");
 
-            Constants.QUADRANT_MIN = this.Config.GetSetting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = this.Config.GetSetting<int>("QuadrantMax");
+            Constants.Region_MIN = this.Config.GetSetting<int>("Region_MIN");
+            Constants.Region_MAX = this.Config.GetSetting<int>("RegionMax");
 
             Constants.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
             Constants.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");  
@@ -181,7 +181,7 @@ namespace StarTrek_KG
 
         private bool HostileCheck(IMap map)
         {
-            if (!map.Quadrants.GetHostiles().Any())
+            if (!map.Regions.GetHostiles().Any())
             {
                 this.Write.Line("ERROR: --- No Hostiles have been set up.");
 
@@ -378,7 +378,7 @@ namespace StarTrek_KG
 
             //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
 
-            var starbasesLeft = this.Map.Quadrants.GetStarbaseCount();
+            var starbasesLeft = this.Map.Regions.GetStarbaseCount();
 
             if (this.PlayerNowEnemyToFederation)
             {
@@ -391,7 +391,7 @@ namespace StarTrek_KG
             {
                 this.gameOver = !(this.Map.Playership.Energy > 0 &&
                                 !this.Map.Playership.Destroyed &&
-                                (this.Map.Quadrants.GetHostileCount() > 0) &&                              
+                                (this.Map.Regions.GetHostileCount() > 0) &&                              
                                 this.Map.timeRemaining > 0);
             }
 
@@ -399,9 +399,9 @@ namespace StarTrek_KG
             return gameOver;
         }
 
-        public void MoveTimeForward(IMap map, Coordinate lastQuadrant, Coordinate quadrant)
+        public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
         {
-            if (lastQuadrant.X != quadrant.X || lastQuadrant.Y != quadrant.Y)
+            if (lastRegion.X != Region.X || lastRegion.Y != Region.Y)
             {
                 map.timeRemaining--;
                 map.Stardate++;
@@ -413,8 +413,8 @@ namespace StarTrek_KG
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
         }
 
         /// <summary>
@@ -428,10 +428,10 @@ namespace StarTrek_KG
             //this is called from torpedo control/phaser control, and navigation control
 
             var returnValue = false;
-            var activeQuadrant = map.Quadrants.GetActive();
-            var hostilesAttacking = activeQuadrant.GetHostiles();
+            var activeRegion = map.Regions.GetActive();
+            var hostilesAttacking = activeRegion.GetHostiles();
 
-            this.HostileStarbasesAttack(map, activeQuadrant);
+            this.HostileStarbasesAttack(map, activeRegion);
 
             returnValue = this.HostileShipsAttack(map, hostilesAttacking, returnValue);
 
@@ -457,13 +457,13 @@ namespace StarTrek_KG
             return returnValue;
         }
 
-        private void HostileStarbasesAttack(IMap map, IQuadrant activeQuadrant)
+        private void HostileStarbasesAttack(IMap map, IRegion activeRegion)
         {
             if (this.PlayerNowEnemyToFederation)
             {
-                if (activeQuadrant.Type != QuadrantType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
+                if (activeRegion.Type != RegionType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
                 {
-                    var starbasesAttacking = activeQuadrant.GetStarbaseCount();
+                    var starbasesAttacking = activeRegion.GetStarbaseCount();
 
                     for (int i = 0; i < starbasesAttacking; i++)
                     {
@@ -507,7 +507,7 @@ namespace StarTrek_KG
             int seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed")*
                                           (Utility.Utility.Random).Next();
 
-            var inNebula = badGuy.GetQuadrant().Type == QuadrantType.Nebulae;
+            var inNebula = badGuy.GetRegion().Type == RegionType.Nebulae;
 
             //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()
             //todo: the -1 should be the ship energy you want to allocate
@@ -546,18 +546,18 @@ namespace StarTrek_KG
         }
 
         /// <summary>
-        /// All enemies in PlayerShip's quadrant shall now commence to unclog their noses in the general direction of the player.
+        /// All enemies in PlayerShip's Region shall now commence to unclog their noses in the general direction of the player.
         /// </summary>
         public void EnemiesWillNowTaunt()
         {
             //todo: move this to communications subsystem eventually
-            var currentQuadrant = this.Map.Playership.GetQuadrant();
-            var hostilesInQuadrant = currentQuadrant.GetHostiles();
+            var currentRegion = this.Map.Playership.GetRegion();
+            var hostilesInRegion = currentRegion.GetHostiles();
             string currentThreat = "";
 
             this.LatestTaunts = new List<FactionThreat>();
 
-            foreach (var ship in hostilesInQuadrant)
+            foreach (var ship in hostilesInRegion)
             {
                 bool tauntLikely = Utility.Utility.Random.Next(5) == 1; //todo: resource this out.
 
@@ -676,11 +676,11 @@ namespace StarTrek_KG
             return currentShipName;
         }
 
-        public static bool Auto_Raise_Shields(IMap map, IQuadrant quadrant)
+        public static bool Auto_Raise_Shields(IMap map, IRegion Region)
         {
             bool shieldsRaised = false;
 
-            if (quadrant.Type != QuadrantType.Nebulae)
+            if (Region.Type != RegionType.Nebulae)
             {
                 var thisShip = map.Playership;
                 var thisShipEnergy = thisShip.Energy;

@@ -8,7 +8,7 @@ namespace StarTrek_KG.Interfaces
     {
         SectorItem Item { get; set; }
         ISectorObject Object { get; set; }
-        Coordinate QuadrantDef { get; set; }
+        Coordinate RegionDef { get; set; }
         SectorType Type { get; set; }
         List<SectorNeighborItem> Neighbors { get; set; }
 

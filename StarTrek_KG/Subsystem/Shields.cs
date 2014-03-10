@@ -47,7 +47,7 @@ namespace StarTrek_KG.Subsystem
                     return;
             }
 
-            if (this.ShipConnectedTo.GetQuadrant().Type == QuadrantType.Nebulae)
+            if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
             {
                 this.Game.Write.Line("Energy cannot be added to shields while in a nebula.");
             }
@@ -142,12 +142,12 @@ namespace StarTrek_KG.Subsystem
             return (Shields)SubSystem_Base.For(ship, SubsystemType.Shields);
         }
 
-        public bool AutoRaiseShieldsIfNeeded(IQuadrant quadrant)
+        public bool AutoRaiseShieldsIfNeeded(IRegion Region)
         {
             bool shieldsAutoRaised = false;
-            if (quadrant.GetHostiles().Count > 0)
+            if (Region.GetHostiles().Count > 0)
             {
-                shieldsAutoRaised = Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, quadrant);
+                shieldsAutoRaised = Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, Region);
             }
 
             return shieldsAutoRaised;

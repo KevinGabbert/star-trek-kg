@@ -39,8 +39,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
 
             this.Game.Map = null;
         }
@@ -52,7 +52,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             for (int i = 0; i < 100; i++)
             {
                 this.Game.Write.Console.Write("-");
-                this.CheckStarsInQuadrant();
+                this.CheckStarsInRegion();
             }
         }
 
@@ -60,10 +60,10 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void GetStarInfoFromScanner()
         {
             this.CheckStarsWithScanner();
-            this.CheckStarsInQuadrant();
+            this.CheckStarsInRegion();
         }
 
-        private void CheckStarsInQuadrant()
+        private void CheckStarsInRegion()
         {
             this.Game.Map = new Map(new SetupOptions
                                       {
@@ -83,8 +83,8 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
-            Quadrant quadrant = Quadrants.Get(this.Game.Map, new Coordinate(0, 0));
-            int starCount = quadrant.GetStarCount();
+            Region Region = Regions.Get(this.Game.Map, new Coordinate(0, 0));
+            int starCount = Region.GetStarCount();
             Assert.AreEqual(2, starCount);
         }
 
@@ -111,8 +111,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             int starCount;
             int hostileCount;
 
-            var x = _setup.TestLongRangeScan.Execute(this.Game.Map.Quadrants[0]);
-            //pulls count from Quadrant object
+            var x = _setup.TestLongRangeScan.Execute(this.Game.Map.Regions[0]);
+            //pulls count from Region object
 
             Assert.AreEqual(2, x.Stars);
         }
@@ -164,7 +164,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1), new Coordinate(Constants.QUADRANT_MAX - 1, Constants.QUADRANT_MAX - 1)), SectorItem.PlayerShip)
+                        new SectorDef(new LocationDef(new Coordinate(Constants.Region_MAX - 1, Constants.Region_MAX - 1), new Coordinate(Constants.Region_MAX - 1, Constants.Region_MAX - 1)), SectorItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
@@ -194,7 +194,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
-            var x = _setup.TestLongRangeScan.Execute(this.Game.Map.Quadrants[0]); //pulls count from Quadrant object
+            var x = _setup.TestLongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
 
             Assert.AreEqual(2, x.Hostiles);
         }
@@ -222,7 +222,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
 
-            var x = _setup.TestLongRangeScan.Execute(this.Game.Map.Quadrants[0]); //pulls count from Quadrant object
+            var x = _setup.TestLongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
 
             Assert.AreEqual(5, x.Starbases);
             Assert.AreEqual(0, x.Stars);
@@ -252,7 +252,7 @@ namespace UnitTests.ShipTests.SubSystemTests
                 AddStars = false
             }, this.Game.Write, this.Game.Config);
 
-            var x = LongRangeScan.For(this.Game.Map.Playership).Execute(this.Game.Map.Quadrants[0]); //pulls count from Quadrant object
+            var x = LongRangeScan.For(this.Game.Map.Playership).Execute(this.Game.Map.Regions[0]); //pulls count from Region object
 
             Assert.AreEqual(5, x.Starbases);
         }
@@ -263,7 +263,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             //todo: fix hostiles and starbases and stars to test fully
 
-            var x = LongRangeScan.For(this.Game.Map.Playership).Execute(this.Game.Map.Quadrants[0]); //pulls count from Quadrant object
+            var x = LongRangeScan.For(this.Game.Map.Playership).Execute(this.Game.Map.Regions[0]); //pulls count from Region object
 
             Assert.Greater(0, x.Hostiles);
             Assert.Greater(0, x.Starbases);

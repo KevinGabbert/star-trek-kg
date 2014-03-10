@@ -26,33 +26,33 @@ namespace StarTrek_KG.Output
             this.Write.Config = config;
         }
 
-        public void CreateSRSViewScreen(IQuadrant quadrant, IMap map, Location shipLocation, int totalHostiles, string quadrantDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
+        public void CreateSRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegionIndicator"), quadrantDisplayName);
+            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
 
             int srsRows = Convert.ToInt32(this.Config.GetText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
             {
-                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), quadrant.Sectors, totalHostiles, isNebula);
+                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Region.Sectors, totalHostiles, isNebula);
             }
 
             this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
-        public void CreateCRSViewScreen(IQuadrant quadrant, IMap map, Location shipLocation, int totalHostiles, string quadrantDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
+        public void CreateCRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
             List<string> lrsResults = LongRangeScan.For(map.Playership).RunLRSScan(shipLocation);
 
             var topBorder = this.Config.GetText("CRSTopBorder");
 
-            this.CRS_Region_ScanLine(quadrantDisplayName, topBorder, shipLocation);
+            this.CRS_Region_ScanLine(RegionDisplayName, topBorder, shipLocation);
             this.ScanLine(topBorder, String.Format(" Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy));
 
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
             for (int i = 0; i < crsRows; i++) 
             {
                 var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults, totalHostiles);
-                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, quadrant.Sectors, totalHostiles, isNebula);
+                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, Region.Sectors, totalHostiles, isNebula);
             }
 
             string lrsBottom = null;
@@ -71,7 +71,7 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    retVal += String.Format(this.Config.GetText("SRSQuadrantIndicator"), Convert.ToString(location.Quadrant.X), Convert.ToString(location.Quadrant.Y));
+                    retVal += String.Format(this.Config.GetText("SRSRegionIndicator"), Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y));
                     break;
                 case 1:
                     retVal += String.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
@@ -111,18 +111,18 @@ namespace StarTrek_KG.Output
             this.Write.SingleLine(srsLine.ToString());
         }
 
-        private void CRS_Region_ScanLine(string quadrantName, string topBorder, Location location)
+        private void CRS_Region_ScanLine(string RegionName, string topBorder, Location location)
         {
             int topBorderAreaMeasurement = topBorder.Length + 1;
-            var regionLineBuilder = new StringBuilder(String.Format("Region: {0}", quadrantName).PadRight(topBorderAreaMeasurement));
+            var regionLineBuilder = new StringBuilder(String.Format("Region: {0}", RegionName).PadRight(topBorderAreaMeasurement));
 
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - (topBorderAreaMeasurement));
 
-            var quadIndicator = String.Format("Quad: [{0},{1}]  Sec: [{2},{3}]",
-                                Convert.ToString(location.Quadrant.X), Convert.ToString(location.Quadrant.Y),
+            var RegionIndicator = String.Format(" Coord: [{0},{1}]  Sec: [{2},{3}]",
+                                Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y),
                                 Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
 
-            regionLineBuilder.Insert(topBorderAreaMeasurement, quadIndicator);
+            regionLineBuilder.Insert(topBorderAreaMeasurement, RegionIndicator);
 
             this.Write.SingleLine(regionLineBuilder.ToString());
         }
@@ -280,11 +280,11 @@ namespace StarTrek_KG.Output
             sb.Append(factionDesignator);
         }
 
-        public void OutputScanWarnings(IQuadrant quadrant, IMap map, bool shieldsAutoRaised)
+        public void OutputScanWarnings(IRegion Region, IMap map, bool shieldsAutoRaised)
         {
-            if (quadrant.GetHostiles().Count > 0)
+            if (Region.GetHostiles().Count > 0)
             {                
-                this.SRSScanHostile(quadrant);
+                this.SRSScanHostile(Region);
             }
 
             this.Write.OutputConditionAndWarnings(map.Playership, this.Config.GetSetting<int>("ShieldsDownLevel"));
@@ -296,14 +296,14 @@ namespace StarTrek_KG.Output
         }
 
         //todo: this function needs to be part of SRS
-        private void SRSScanHostile(IQuadrant quadrant)
+        private void SRSScanHostile(IRegion Region)
         {
             this.Write.Console.WriteLine(this.Config.GetText("HostileDetected"),
-                              (quadrant.GetHostiles().Count == 1 ? "" : "s"));
+                              (Region.GetHostiles().Count == 1 ? "" : "s"));
 
-            bool inNebula = quadrant.Type == QuadrantType.Nebulae;
+            bool inNebula = Region.Type == RegionType.Nebulae;
 
-            foreach (var hostile in quadrant.GetHostiles())
+            foreach (var hostile in Region.GetHostiles())
             {
                 var hostileName = hostile.Name;
 

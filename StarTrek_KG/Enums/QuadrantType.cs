@@ -1,6 +1,6 @@
 ﻿namespace StarTrek_KG.Enums
 {
-    public enum QuadrantType
+    public enum RegionType
     {
         GalacticSpace = 0,
         Nebulae = 1 //,

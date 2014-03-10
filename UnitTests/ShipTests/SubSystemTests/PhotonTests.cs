@@ -12,7 +12,7 @@ namespace UnitTests.ShipTests.SubSystemTests
     public class PhotonTests : TestClass_Base
     {
         private Torpedoes _photonsToTest;
-        private Quadrant _testQuadrant;
+        private Region _testRegion;
 
         [SetUp]
         public void Setup()
@@ -27,7 +27,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _setup.SetupMapWith1Friendly();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            _testRegion = _setup.TestMap.Playership.GetRegion();
 
             Assert.AreEqual(10, _photonsToTest.Count);
 
@@ -54,7 +54,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _setup.SetupMapWith1Friendly();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            _testRegion = _setup.TestMap.Playership.GetRegion();
 
             Constants.DEBUG_MODE = true;
 
@@ -83,9 +83,9 @@ namespace UnitTests.ShipTests.SubSystemTests
             _setup.SetupMapWith1Hostile();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            _testRegion = _setup.TestMap.Playership.GetRegion();
 
-            IShip hostile = _testQuadrant.GetHostiles().Single();
+            IShip hostile = _testRegion.GetHostiles().Single();
 
             //Verify ship's location
             Assert.AreEqual(0, hostile.Sector.X);
@@ -95,7 +95,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _photonsToTest.Shoot(7);
 
-            var noMoreHostile = _testQuadrant.GetHostiles();
+            var noMoreHostile = _testRegion.GetHostiles();
 
             //Verify ship's location is no more
             Assert.AreEqual(0, noMoreHostile.Count);
@@ -108,9 +108,9 @@ namespace UnitTests.ShipTests.SubSystemTests
             _setup.SetupMapWith1Hostile();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            _testRegion = _setup.TestMap.Playership.GetRegion();
 
-            IShip hostile = _testQuadrant.GetHostiles().Single();
+            IShip hostile = _testRegion.GetHostiles().Single();
 
             //Verify ship's location
             Assert.AreEqual(0, hostile.Sector.X);
@@ -128,7 +128,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             _photonsToTest.Shoot(5);
             _photonsToTest.Shoot(3);
 
-            var noMoreHostile = _testQuadrant.GetHostiles();
+            var noMoreHostile = _testRegion.GetHostiles();
 
             //Verify ship's location is no more
             Assert.AreEqual(0, noMoreHostile.Count);
@@ -148,9 +148,9 @@ namespace UnitTests.ShipTests.SubSystemTests
             srs.Controls();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            _testRegion = _setup.TestMap.Playership.GetRegion();
 
-            IShip hostile = _testQuadrant.GetHostiles().Single();
+            IShip hostile = _testRegion.GetHostiles().Single();
 
             Assert.AreEqual(0, _photonsToTest.ShipConnectedTo.Sector.X, "Playership.X not at 0");
             Assert.AreEqual(0, _photonsToTest.ShipConnectedTo.Sector.Y, "Playership.Y not at 0");
@@ -169,7 +169,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _photonsToTest.Shoot(7);
 
-            var noMoreHostile = _testQuadrant.GetHostiles();
+            var noMoreHostile = _testRegion.GetHostiles();
 
             //Verify ship's location is no more
             Assert.AreEqual(0, noMoreHostile.Count, "Hostile Not destroyed.");
@@ -239,9 +239,9 @@ namespace UnitTests.ShipTests.SubSystemTests
             srs.Controls();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            _testRegion = _setup.TestMap.Playership.GetRegion();
 
-            IShip hostile = _testQuadrant.GetHostiles().Single();
+            IShip hostile = _testRegion.GetHostiles().Single();
 
             Assert.AreEqual(friendlySector.X, _photonsToTest.ShipConnectedTo.Sector.X, "Playership.X not at 0");
             Assert.AreEqual(friendlySector.Y, _photonsToTest.ShipConnectedTo.Sector.Y, "Playership.Y not at 0");
@@ -256,7 +256,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Constants.DEBUG_MODE = debugMode;
             _photonsToTest.Shoot(directionToShoot);
 
-            var noMoreHostile = _testQuadrant.GetHostiles();
+            var noMoreHostile = _testRegion.GetHostiles();
 
             //Verify ship's location is no more
             Assert.AreEqual(0, noMoreHostile.Count, "Hostile Not destroyed.");

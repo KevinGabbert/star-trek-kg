@@ -173,7 +173,7 @@ namespace StarTrek_KG.Output
 
         }
 
-        public void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
+        public void RenderRegionCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
         {
             if (renderingMyLocation)
             {
@@ -190,7 +190,7 @@ namespace StarTrek_KG.Output
             }
         }
 
-        public string RenderQuadrantCounts(int starbaseCount, int starCount, int hostileCount)
+        public string RenderRegionCounts(int starbaseCount, int starCount, int hostileCount)
         {
             string counts = "";
 
@@ -212,7 +212,7 @@ namespace StarTrek_KG.Output
             return counts;
         }
 
-        public void RenderUnscannedQuadrant(bool renderingMyLocation)
+        public void RenderUnscannedRegion(bool renderingMyLocation)
         {
             if (renderingMyLocation)
             {
@@ -260,7 +260,7 @@ namespace StarTrek_KG.Output
             ACTIVITY_PANEL.Add("─────────────────────────────");
             ACTIVITY_PANEL.Add("pha = Phaser Control");
             ACTIVITY_PANEL.Add("tor = Photon Torpedo Control");
-            ACTIVITY_PANEL.Add("toq = Target Object in this Quadrant");
+            ACTIVITY_PANEL.Add("toq = Target Object in this Region");
             ACTIVITY_PANEL.Add("─────────────────────────────");
             ACTIVITY_PANEL.Add("she = Shield Control");
             ACTIVITY_PANEL.Add("com = Access Computer");
@@ -464,10 +464,10 @@ namespace StarTrek_KG.Output
 
         public static string ShipHitMessage(IShip attacker)
         {
-            var attackerQuadrant = attacker.GetQuadrant();
-            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerQuadrant, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
+            var attackerRegion = attacker.GetRegion();
+            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
 
-            string attackerName = attackerQuadrant.Type == QuadrantType.Nebulae ? "Unknown Ship" : attacker.Name;
+            string attackerName = attackerRegion.Type == RegionType.Nebulae ? "Unknown Ship" : attacker.Name;
 
             if (attacker.Faction == FactionName.Federation)
             {
@@ -492,7 +492,7 @@ namespace StarTrek_KG.Output
                 this.ResourceLine("LowEnergyLevel");
             }
 
-            if (ship.GetQuadrant().Type == QuadrantType.Nebulae)
+            if (ship.GetRegion().Type == RegionType.Nebulae)
             {
                 this.SingleLine("");
                 this.ResourceLine("NebulaWarning");
@@ -507,18 +507,18 @@ namespace StarTrek_KG.Output
         public void RenderSector(SectorScanType scanType, ISubsystem subsystem)
         {
             var location = subsystem.ShipConnectedTo.GetLocation();
-            Quadrant quadrant = Quadrants.Get(subsystem.Game.Map, location.Quadrant);
-            var shieldsAutoRaised = Shields.For(subsystem.ShipConnectedTo).AutoRaiseShieldsIfNeeded(quadrant);
+            Region Region = Regions.Get(subsystem.Game.Map, location.Region);
+            var shieldsAutoRaised = Shields.For(subsystem.ShipConnectedTo).AutoRaiseShieldsIfNeeded(Region);
             var printSector = (new Render(this, subsystem.Game.Config));
 
-            int totalHostiles = subsystem.Game.Map.Quadrants.GetHostileCount();
-            var isNebula = (quadrant.Type == QuadrantType.Nebulae);
-            string quadrantDisplayName = quadrant.Name;
+            int totalHostiles = subsystem.Game.Map.Regions.GetHostileCount();
+            var isNebula = (Region.Type == RegionType.Nebulae);
+            string RegionDisplayName = Region.Name;
             var sectorScanStringBuilder = new StringBuilder();
 
             if (isNebula)
             {
-                quadrantDisplayName += " Nebula"; //todo: resource out.
+                RegionDisplayName += " Nebula"; //todo: resource out.
             }
 
             this.Line("");
@@ -526,18 +526,18 @@ namespace StarTrek_KG.Output
             switch (scanType)
             {
                 case SectorScanType.CombinedRange:
-                    printSector.CreateCRSViewScreen(quadrant, subsystem.Game.Map, location, totalHostiles, quadrantDisplayName, isNebula, sectorScanStringBuilder);
+                    printSector.CreateCRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);
                     break;
 
                 case SectorScanType.ShortRange:
-                    printSector.CreateSRSViewScreen(quadrant, subsystem.Game.Map, location, totalHostiles, quadrantDisplayName, isNebula, sectorScanStringBuilder);         
+                    printSector.CreateSRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);         
                     break;
             }
 
-            printSector.OutputScanWarnings(quadrant, subsystem.Game.Map, shieldsAutoRaised);
+            printSector.OutputScanWarnings(Region, subsystem.Game.Map, shieldsAutoRaised);
 
-            quadrant.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
-            quadrant.Scanned = true;
+            Region.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
+            Region.Scanned = true;
         }
 
         public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game)
@@ -551,22 +551,22 @@ namespace StarTrek_KG.Output
 
             foreach (LRSResult dataPoint in lrsData)
             {
-                string currentQuadrantResult = null;
+                string currentRegionResult = null;
 
                 if (dataPoint.Unknown)
                 {
-                    currentQuadrantResult = Utility.Utility.DamagedScannerUnit();
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
                 }
                 else if(dataPoint.GalacticBarrier)
                 {
-                    currentQuadrantResult = game.Config.GetSetting<string>("GalacticBarrier");
+                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
                 }
                 else
                 {
-                    currentQuadrantResult += dataPoint;
+                    currentRegionResult += dataPoint;
                 }
 
-                currentLRSScanLine += " " +  currentQuadrantResult + " " + "│";
+                currentLRSScanLine += " " +  currentRegionResult + " " + "│";
 
                 if (scanColumn == 2 || scanColumn == 5)
                 {
@@ -621,27 +621,27 @@ namespace StarTrek_KG.Output
 
             foreach (LRSResult dataPoint in lrsData)
             {
-                string currentQuadrantName = null;
-                string currentQuadrantResult = null;
+                string currentRegionName = null;
+                string currentRegionResult = null;
 
                 if (dataPoint.Unknown)
                 {
-                    currentQuadrantName += dataPoint.Name;
-                    currentQuadrantResult = Utility.Utility.DamagedScannerUnit();
+                    currentRegionName += dataPoint.Name;
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
                 }
                 else if (dataPoint.GalacticBarrier)
                 {
-                    currentQuadrantName += barrierID;
-                    currentQuadrantResult = game.Config.GetSetting<string>("GalacticBarrier");
+                    currentRegionName += barrierID;
+                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
                 }
                 else
                 {
-                    currentQuadrantName += dataPoint.Name;
-                    currentQuadrantResult += dataPoint;
+                    currentRegionName += dataPoint.Name;
+                    currentRegionResult += dataPoint;
                 }
 
-                currentLRSScanLine1 += " " + currentQuadrantName.PadCenter(cellLength) + "│";
-                currentLRSScanLine2 += currentQuadrantResult.PadCenter(cellLength + 1) + "│";
+                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + "│";
+                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + "│";
 
                 if (scanColumn == 2 || scanColumn == 5)
                 {

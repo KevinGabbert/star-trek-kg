@@ -37,9 +37,9 @@ namespace StarTrek_KG.Subsystem
                 return objects;
             }
 
-            var thisQuadrant = this.ShipConnectedTo.GetQuadrant();
+            var thisRegion = this.ShipConnectedTo.GetRegion();
 
-            IEnumerable<Sector> sectorsWithObjects = thisQuadrant.Sectors.Where(s => s.Item != SectorItem.Empty);
+            IEnumerable<Sector> sectorsWithObjects = thisRegion.Sectors.Where(s => s.Item != SectorItem.Empty);
 
             return sectorsWithObjects;
         }

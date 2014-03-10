@@ -56,7 +56,7 @@ namespace StarTrek_KG.Subsystem
                     break;
             }
 
-            //todo: upon arriving in quadrant, all damaged controls need to be enumerated
+            //todo: upon arriving in Region, all damaged controls need to be enumerated
             this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
             ShipConnectedTo.UpdateSectorNeighbors();
@@ -70,9 +70,9 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.Game.Write.Line("");
-            this.Game.Write.Line("Objects in Quadrant:");
+            this.Game.Write.Line("Objects in Region:");
 
-            Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+            Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
             this.Game.Write.PromptUser("Enter number of Object to travel to: ", out userReply);
@@ -95,15 +95,15 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return;
 
-            int lastQuadY;
-            int lastQuadX;
+            int lastRegionY;
+            int lastRegionX;
 
-            if (!Impulse.Engage(direction, distance, out lastQuadY, out lastQuadX, this.Game.Map))
+            if (!Impulse.Engage(direction, distance, out lastRegionY, out lastRegionX, this.Game.Map))
             {
                 return;
             }
 
-            this.RepairOrTakeDamage(lastQuadX, lastQuadY);
+            this.RepairOrTakeDamage(lastRegionX, lastRegionY);
 
             var crs = CombinedRangeScan.For(this.ShipConnectedTo);
             if (crs.Damaged())
@@ -134,15 +134,15 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Warp.InvalidWarpFactorCheck(this.MaxWarpFactor, out distance)) return;
 
-            int lastQuadY;
-            int lastQuadX;
+            int lastRegionY;
+            int lastRegionX;
 
-            if (!Warp.Engage(direction, distance, out lastQuadY, out lastQuadX, this.Game.Map))
+            if (!Warp.Engage(direction, distance, out lastRegionY, out lastRegionX, this.Game.Map))
             {
                 return;
             }
 
-            this.RepairOrTakeDamage(lastQuadX, lastQuadY);
+            this.RepairOrTakeDamage(lastRegionX, lastRegionY);
 
             var crs = CombinedRangeScan.For(this.ShipConnectedTo);
             if (crs.Damaged())
@@ -154,11 +154,11 @@ namespace StarTrek_KG.Subsystem
                 crs.Controls();
             }
 
-            //todo: upon arriving in quadrant, all damaged controls need to be enumerated
+            //todo: upon arriving in Region, all damaged controls need to be enumerated
             //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
         }
 
-        private void RepairOrTakeDamage(int lastQuadX, int lastQuadY)
+        private void RepairOrTakeDamage(int lastRegionX, int lastRegionY)
         {
             this.Docked = false;
 
@@ -167,7 +167,7 @@ namespace StarTrek_KG.Subsystem
             if (!this.Game.PlayerNowEnemyToFederation) //No Docking allowed if they hate you.
             {
                 this.Docked = this.Game.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X,
-                    this.Game.Map.Quadrants.GetActive().Sectors);
+                    this.Game.Map.Regions.GetActive().Sectors);
             }
 
             if (Docked)
@@ -176,7 +176,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.TakeAttackDamageOrRepair(this.Game.Map, lastQuadY, lastQuadX);
+                this.TakeAttackDamageOrRepair(this.Game.Map, lastRegionY, lastRegionX);
             }
         }
 
@@ -193,23 +193,23 @@ namespace StarTrek_KG.Subsystem
         }
 
         //todo: move to Game() object
-        private void TakeAttackDamageOrRepair(IMap map, int lastQuadY, int lastQuadX)
+        private void TakeAttackDamageOrRepair(IMap map, int lastRegionY, int lastRegionX)
         {
             var thisShip = this.ShipConnectedTo.GetLocation();
 
-            var currentQuadrant = Quadrants.Get(map, thisShip.Quadrant);
+            var currentRegion = Regions.Get(map, thisShip.Region);
 
-            var hostiles = currentQuadrant.GetHostiles();
+            var hostiles = currentRegion.GetHostiles();
             var baddiesHangingAround = hostiles.Count > 0;
 
-            var hostileFedsInQuadrant = hostiles.Any(h => h.Faction == FactionName.Federation);
+            var hostileFedsInRegion = hostiles.Any(h => h.Faction == FactionName.Federation);
                 //todo: Cheap.  Use a property for this.
 
-            var stillInSameQuadrant = lastQuadX == thisShip.Quadrant.X && lastQuadY == thisShip.Quadrant.Y;
+            var stillInSameRegion = lastRegionX == thisShip.Region.X && lastRegionY == thisShip.Region.Y;
 
-            if ((baddiesHangingAround && stillInSameQuadrant) ||
-                hostileFedsInQuadrant ||
-                (this.Game.PlayerNowEnemyToFederation && currentQuadrant.GetStarbaseCount() > 0))
+            if ((baddiesHangingAround && stillInSameRegion) ||
+                hostileFedsInRegion ||
+                (this.Game.PlayerNowEnemyToFederation && currentRegion.GetStarbaseCount() > 0))
             {
                 this.Game.ALLHostilesAttack(this.Game.Map);
             }
@@ -227,41 +227,41 @@ namespace StarTrek_KG.Subsystem
 
             var thisShip = this.ShipConnectedTo.GetLocation();
 
-            int quadX;
-            int quadY;
+            int RegionX;
+            int RegionY;
 
-            this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInQuadrant"),
-                (thisShip.Quadrant.X), (thisShip.Quadrant.Y)));
+            this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInRegion"),
+                (thisShip.Region.X), (thisShip.Region.Y)));
 
-            if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationQuadrantX"), out quadX)
-                || quadX < (Constants.QUADRANT_MIN + 1)
-                || quadX > Constants.QUADRANT_MAX)
+            if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX)
+                || RegionX < (Constants.Region_MIN + 1)
+                || RegionX > Constants.Region_MAX)
             {
                 this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidXCoordinate"));
                 return;
             }
 
-            if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationQuadrantY"), out quadY)
-                || quadY < (Constants.QUADRANT_MIN + 1)
-                || quadY > Constants.QUADRANT_MAX)
+            if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY)
+                || RegionY < (Constants.Region_MIN + 1)
+                || RegionY > Constants.Region_MAX)
             {
                 this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidYCoordinate"));
                 return;
             }
 
             this.Game.Write.Line("");
-            var qx = ((int) (quadX)) - 1;
-            var qy = ((int) (quadY)) - 1;
-            if (qx == thisShip.Quadrant.X && qy == thisShip.Quadrant.Y)
+            var qx = ((int) (RegionX)) - 1;
+            var qy = ((int) (RegionY)) - 1;
+            if (qx == thisShip.Region.X && qy == thisShip.Region.Y)
             {
                 this.Game.Write.Line(this.Game.Config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 
             this.Game.Write.Line(string.Format("Direction: {0:#.##}",
-                Utility.Utility.ComputeDirection(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+                Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy)));
             this.Game.Write.Line(string.Format("Distance:  {0:##.##}",
-                Utility.Utility.Distance(thisShip.Quadrant.X, thisShip.Quadrant.Y, qx, qy)));
+                Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy)));
         }
 
         public void StarbaseCalculator(Ship shipConnectedTo)
@@ -273,9 +273,9 @@ namespace StarTrek_KG.Subsystem
 
             var mySector = shipConnectedTo.Sector;
 
-            var thisQuadrant = shipConnectedTo.GetQuadrant();
+            var thisRegion = shipConnectedTo.GetRegion();
 
-            var starbasesInSector = thisQuadrant.Sectors.Where(s => s.Item == SectorItem.Starbase).ToList();
+            var starbasesInSector = thisRegion.Sectors.Where(s => s.Item == SectorItem.Starbase).ToList();
 
             if (starbasesInSector.Any())
             {
@@ -290,7 +290,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.Game.Write.Line("There are no starbases in this quadrant.");
+                this.Game.Write.Line("There are no starbases in this Region.");
             }
         }
 

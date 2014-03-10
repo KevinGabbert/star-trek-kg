@@ -15,6 +15,6 @@ namespace StarTrek_KG.Interfaces
         Subsystems Subsystems { get; set; }
         Coordinate Coordinate { get; set; }
 
-        Quadrant GetQuadrant();
+        Region GetRegion();
     }
 }

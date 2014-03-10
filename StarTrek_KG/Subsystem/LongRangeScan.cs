@@ -41,7 +41,7 @@ namespace StarTrek_KG.Subsystem
         //used by CRS
         public List<string> RunLRSScan(Location shipLocation)
         {
-            var tlrsResults = shipLocation.Quadrant.GetLRSFullData(shipLocation, this.Game);
+            var tlrsResults = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
             var renderedData = this.Game.Write.RenderLRSData(tlrsResults, this.Game);
 
             return renderedData;
@@ -50,35 +50,35 @@ namespace StarTrek_KG.Subsystem
         public IEnumerable<string> RunFullLRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
-            IEnumerable<LRSResult> lrsData = shipLocation.Quadrant.GetLRSFullData(shipLocation, this.Game);
+            IEnumerable<LRSResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
 
             var renderedData = this.Game.Write.RenderLRSWithNames(lrsData.ToList(), this.Game);
 
             return renderedData;
         }
 
-        public LRSResult Execute(Quadrant quadrantToScan)
+        public LRSResult Execute(Region RegionToScan)
         {
-            var quadrantResult = new LRSResult();
+            var RegionResult = new LRSResult();
 
-            if (quadrantToScan.Type != QuadrantType.Nebulae)
+            if (RegionToScan.Type != RegionType.Nebulae)
             {
-                quadrantResult.Hostiles = quadrantToScan.GetHostiles().Count;
-                quadrantResult.Starbases = quadrantToScan.GetStarbaseCount();
-                quadrantResult.Stars = quadrantToScan.GetStarCount();
-                quadrantResult.Name = quadrantToScan.Name;
+                RegionResult.Hostiles = RegionToScan.GetHostiles().Count;
+                RegionResult.Starbases = RegionToScan.GetStarbaseCount();
+                RegionResult.Stars = RegionToScan.GetStarCount();
+                RegionResult.Name = RegionToScan.Name;
             }
 
-            quadrantToScan.Scanned = true;
+            RegionToScan.Scanned = true;
 
-            return quadrantResult;
+            return RegionResult;
         }
 
-        public void Debug_Scan_All_Quadrants(bool setScanned)
+        public void Debug_Scan_All_Regions(bool setScanned)
         {
-            foreach (var quadrant in this.Game.Map.Quadrants)
+            foreach (var Region in this.Game.Map.Regions)
             {
-                quadrant.Scanned = setScanned;
+                Region.Scanned = setScanned;
             }
         }
 

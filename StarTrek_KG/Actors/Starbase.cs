@@ -95,7 +95,7 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        public Quadrant GetQuadrant()
+        public Region GetRegion()
         {
             throw new NotImplementedException();
         }

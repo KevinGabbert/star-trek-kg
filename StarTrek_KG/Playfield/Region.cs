@@ -13,18 +13,18 @@ using StarTrek_KG.TypeSafeEnums;
 namespace StarTrek_KG.Playfield
 {
     /// <summary>
-    /// A Quadrant in this game is a named area of space. It can contain ships, starbases, or stars. 
+    /// A Region in this game is a named area of space. It can contain ships, starbases, or stars. 
     /// </summary>
-    public class Quadrant : Coordinate, IQuadrant
+    public class Region : Coordinate, IRegion
     {
         #region Properties
 
-        public QuadrantType Type { get; set; }
+        public RegionType Type { get; set; }
         public string Name { get; set; }
 
         public IMap Map { get; set; }
 
-        //TODO: This property needs to be changed to a function, and that function needs to count Hostiles in this quadrant when called
+        //TODO: This property needs to be changed to a function, and that function needs to count Hostiles in this Region when called
 
         //for this to work, each sector needs to be able to store a hostile
         //public List<Ship> Hostiles { get; set; } //TODO: this needs to be changed to a List<ship> that have a hostile property=true
@@ -37,22 +37,22 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-        public Quadrant(ICoordinate coordinate)
+        public Region(ICoordinate coordinate)
         {
             this.X = coordinate.X;
             this.Y = coordinate.Y;
         }
 
-        public Quadrant(IMap map, bool isNebulae = false)
+        public Region(IMap map, bool isNebulae = false)
         {
-            this.Type = isNebulae ? QuadrantType.Nebulae : QuadrantType.GalacticSpace;
+            this.Type = isNebulae ? RegionType.Nebulae : RegionType.GalacticSpace;
 
             this.Empty = true;
             this.Name = String.Empty;
             this.Map = map;
         }
 
-        public Quadrant(IMap map, Stack<string> baddieNames, FactionName stockBaddieFaction, bool isNebulae = false)
+        public Region(IMap map, Stack<string> baddieNames, FactionName stockBaddieFaction, bool isNebulae = false)
         {
             this.Empty = true;
             this.Map = map;
@@ -62,18 +62,18 @@ namespace StarTrek_KG.Playfield
         }
 
         //todo: we might want to avoid passing in baddie names and set up baddies later..
-        public Quadrant(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames, FactionName stockBaddieFaction,
+        public Region(IMap map, Stack<string> RegionNames, Stack<string> baddieNames, FactionName stockBaddieFaction,
             out int nameIndex, bool addStars = false, bool makeNebulae = false)
         {
-            this.Type = QuadrantType.GalacticSpace;
+            this.Type = RegionType.GalacticSpace;
             this.Empty = true;
 
-            this.Create(map, quadrantNames, baddieNames, stockBaddieFaction, out nameIndex, addStars, makeNebulae);
+            this.Create(map, RegionNames, baddieNames, stockBaddieFaction, out nameIndex, addStars, makeNebulae);
         }
 
         public void SetActive()
         {
-            this.Map.Quadrants.ClearActive();
+            this.Map.Regions.ClearActive();
 
             this.Active = true;
         }
@@ -89,7 +89,7 @@ namespace StarTrek_KG.Playfield
             this.InitializeSectors(this, new List<Sector>(), baddieNames, stockBaddieFaction, addStars, makeNebulae);
         }
 
-        public void Create(IMap map, Stack<string> quadrantNames, Stack<string> baddieNames,
+        public void Create(IMap map, Stack<string> RegionNames, Stack<string> baddieNames,
             FactionName stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false)
         {
             nameIndex = (Utility.Utility.Random).Next(baddieNames.Count);
@@ -97,49 +97,49 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
             this.InitializeSectors(this, new List<Sector>(), baddieNames, stockBaddieFaction, addStars, makeNebulae);
 
-            if (quadrantNames != null)
+            if (RegionNames != null)
             {
-                this.Name = quadrantNames.Pop();
+                this.Name = RegionNames.Pop();
             }
         }
 
-        public void Create(Stack<string> quadrantNames, Stack<String> baddieNames, FactionName stockBaddieFaction,
-            Coordinate quadrantXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true,
+        public void Create(Stack<string> RegionNames, Stack<String> baddieNames, FactionName stockBaddieFaction,
+            Coordinate RegionXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true,
             bool isNebulae = false)
         {
-            nameIndex = (Utility.Utility.Random).Next(quadrantNames.Count);
+            nameIndex = (Utility.Utility.Random).Next(RegionNames.Count);
 
-            this.Name = quadrantNames.Pop();
+            this.Name = RegionNames.Pop();
 
-            this.X = quadrantXY.X;
-            this.Y = quadrantXY.Y;
+            this.X = RegionXY.X;
+            this.Y = RegionXY.Y;
 
-            var itemsInQuadrant = new List<Sector>();
+            var itemsInRegion = new List<Sector>();
 
             if (itemsToPopulate != null)
             {
-                itemsInQuadrant =
-                    itemsToPopulate.Where(i => i.QuadrantDef.X == this.X && i.QuadrantDef.Y == this.Y).ToList();
+                itemsInRegion =
+                    itemsToPopulate.Where(i => i.RegionDef.X == this.X && i.RegionDef.Y == this.Y).ToList();
             }
 
-            this.InitializeSectors(this, itemsInQuadrant, baddieNames, stockBaddieFaction, addStars, isNebulae);
+            this.InitializeSectors(this, itemsInRegion, baddieNames, stockBaddieFaction, addStars, isNebulae);
         }
 
-        public void InitializeSectors(Quadrant quadrant,
+        public void InitializeSectors(Region Region,
             List<Sector> itemsToPopulate,
             Stack<string> baddieNames,
             FactionName stockBaddieFaction,
             bool addStars,
             bool makeNebulae = false)
         {
-            quadrant.Sectors = new Sectors(); //todo: pull from app.config. initialize with limit
+            Region.Sectors = new Sectors(); //todo: pull from app.config. initialize with limit
 
             //This loop creates empty sectors and populates as needed.
             for (var x = 0; x < Constants.SECTOR_MAX; x++) //todo: pull from app.config. initialize with limit
             {
                 for (var y = 0; y < Constants.SECTOR_MAX; y++)
                 {
-                    this.PopulateMatchingItem(quadrant, itemsToPopulate, x, y, baddieNames, stockBaddieFaction,
+                    this.PopulateMatchingItem(Region, itemsToPopulate, x, y, baddieNames, stockBaddieFaction,
                         makeNebulae);
                 }
             }
@@ -147,12 +147,12 @@ namespace StarTrek_KG.Playfield
             if (addStars)
             {
                 //Randomly throw stars in
-                this.AddStars(quadrant, (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
+                this.AddStars(Region, (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
             }
 
             if (makeNebulae)
             {
-                quadrant.TransformIntoNebulae();
+                Region.TransformIntoNebulae();
             }
 
             ////This is possible only in the test harness, as app code currently does not call this function with a null
@@ -165,50 +165,50 @@ namespace StarTrek_KG.Playfield
             //itemsToPopulate.AddRange(starsAdded);
 
             //todo: make this a test
-            //    if (itemsToPopulate.Count != (queryOfItems in quadrant.Sectors)
+            //    if (itemsToPopulate.Count != (queryOfItems in Region.Sectors)
             //    {
             //        //error.. error.. danger will robinson
             //        //actually, this check should go in a unit test.  dont need to do it here.
             //    }
         }
 
-        public IEnumerable<Sector> AddStars(Quadrant quadrant, int totalStarsInQuadrant)
+        public IEnumerable<Sector> AddStars(Region Region, int totalStarsInRegion)
         {
             Utility.Utility.ResetGreekLetterStack();
 
-            this.CreateStars(quadrant, totalStarsInQuadrant);
+            this.CreateStars(Region, totalStarsInRegion);
 
-            return quadrant.Sectors.Where(s => s.Item == SectorItem.Star);
+            return Region.Sectors.Where(s => s.Item == SectorItem.Star);
         }
 
-        public Sector AddStar(Quadrant quadrant)
+        public Sector AddStar(Region Region)
         {
             Utility.Utility.ResetGreekLetterStack();
 
-            const int totalStarsInQuadrant = 1;
+            const int totalStarsInRegion = 1;
 
-            var currentStarName = this.CreateStars(quadrant, totalStarsInQuadrant);
+            var currentStarName = this.CreateStars(Region, totalStarsInRegion);
 
-            return quadrant.Sectors.Single(s => s.Item == SectorItem.Star && ((Star) s.Object).Name == currentStarName);
+            return Region.Sectors.Single(s => s.Item == SectorItem.Star && ((Star) s.Object).Name == currentStarName);
         }
 
-        public string CreateStars(Quadrant quadrant, int totalStarsInQuadrant,
+        public string CreateStars(Region Region, int totalStarsInRegion,
             SectorType starSectorType = SectorType.StarSystem)
         {
             string currentStarName = "";
 
-            while (totalStarsInQuadrant > 0)
+            while (totalStarsInRegion > 0)
             {
                 var x = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
                 var y = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
 
                 //todo: just pass in coordinate and get its item
-                var sector = quadrant.Sectors.Single(s => s.X == x && s.Y == y);
+                var sector = Region.Sectors.Single(s => s.X == x && s.Y == y);
                 var sectorEmpty = sector.Item == SectorItem.Empty;
 
                 if (sectorEmpty)
                 {
-                    if (totalStarsInQuadrant > 0)
+                    if (totalStarsInRegion > 0)
                     {
                         var newStar = new Star();
                         bool foundStarName = false;
@@ -221,22 +221,22 @@ namespace StarTrek_KG.Playfield
                             counter++;
                             var newNameLetter = Utility.Utility.RandomGreekLetter.Pop();
 
-                            var starsInQuadrant =
-                                quadrant.Sectors.Where(s => s.Object != null && s.Object.Type.Name == "Star").ToList();
+                            var starsInRegion =
+                                Region.Sectors.Where(s => s.Object != null && s.Object.Type.Name == "Star").ToList();
                             var allStarsDontHaveNewDesignation =
-                                starsInQuadrant.All(s => ((Star) s.Object).Designation != newNameLetter);
+                                starsInRegion.All(s => ((Star) s.Object).Designation != newNameLetter);
 
                             if (allStarsDontHaveNewDesignation)
                             {
                                 foundStarName = true;
 
-                                if (quadrant.Name == null) //todo: why do we have null quadrant names???
+                                if (Region.Name == null) //todo: why do we have null Region names???
                                 {
-                                    quadrant.Name = "UNKNOWN QUADRANT " + newNameLetter + " " + counter;
+                                    Region.Name = "UNKNOWN Region " + newNameLetter + " " + counter;
                                         //todo: this could get dupes
                                 }
 
-                                currentStarName = quadrant.Name.ToUpper() + " " + newNameLetter;
+                                currentStarName = Region.Name.ToUpper() + " " + newNameLetter;
 
                                 newStar.Name = currentStarName;
                                 newStar.Designation = newNameLetter;
@@ -244,7 +244,7 @@ namespace StarTrek_KG.Playfield
                                 sector.Type = starSectorType;
 
                                 sector.Object = newStar;
-                                totalStarsInQuadrant--;
+                                totalStarsInRegion--;
                             }
 
                             //Assuming we are using the greek alphabet for star names, we don't want to create a lockup.
@@ -261,7 +261,7 @@ namespace StarTrek_KG.Playfield
             return currentStarName;
         }
 
-        public void PopulateMatchingItem(Quadrant quadrant, ICollection<Sector> itemsToPopulate, int x, int y,
+        public void PopulateMatchingItem(Region Region, ICollection<Sector> itemsToPopulate, int x, int y,
             Stack<string> baddieNames, FactionName stockBaddieFaction, bool isNebula)
         {
             var sectorItemToPopulate = SectorItem.Empty;
@@ -276,7 +276,7 @@ namespace StarTrek_KG.Playfield
 
                         if (sectorToPopulate != null)
                         {
-                            if ((quadrant.Type == QuadrantType.Nebulae) &&
+                            if ((Region.Type == RegionType.Nebulae) &&
                                 (sectorToPopulate.Item == SectorItem.Starbase))
                             {
                                 sectorItemToPopulate = SectorItem.Empty;
@@ -308,45 +308,45 @@ namespace StarTrek_KG.Playfield
                 //throw new GameException(ex.Message);
             }
 
-            this.AddSector(quadrant, x, y, sectorItemToPopulate, baddieNames, stockBaddieFaction);
+            this.AddSector(Region, x, y, sectorItemToPopulate, baddieNames, stockBaddieFaction);
         }
 
-        public void AddSector(Quadrant quadrant, int x, int y, SectorItem itemToPopulate, Stack<string> stockBaddieNames,
+        public void AddSector(Region Region, int x, int y, SectorItem itemToPopulate, Stack<string> stockBaddieNames,
             FactionName stockBaddieFaction)
         {
-            var newlyCreatedSector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
-            this.Map.Write.DebugLine("Added new Empty Sector to Quadrant: " + quadrant.Name + " Coordinate: " +
+            var newlyCreatedSector = Sector.CreateEmpty(Region, new Coordinate(x, y));
+            this.Map.Write.DebugLine("Added new Empty Sector to Region: " + Region.Name + " Coordinate: " +
                                      newlyCreatedSector);
 
             if (itemToPopulate == SectorItem.HostileShip)
             {
                 //if a baddie name is passed, then use it.  otherwise
                 var newShip = this.CreateHostileShip(newlyCreatedSector, stockBaddieNames, stockBaddieFaction);
-                quadrant.AddShip(newShip, newlyCreatedSector);
+                Region.AddShip(newShip, newlyCreatedSector);
             }
             else
             {
                 newlyCreatedSector.Item = itemToPopulate;
             }
 
-            quadrant.Sectors.Add(newlyCreatedSector);
+            Region.Sectors.Add(newlyCreatedSector);
         }
 
         public void AddShip(IShip ship, ISector toSector)
         {
             if (toSector == null)
             {
-                this.Map.Write.DebugLine("No Sector passed. cannot add to Quadrant: " + this.Name);
-                throw new GameException("No Sector passed. cannot add to Quadrant: " + this.Name);
+                this.Map.Write.DebugLine("No Sector passed. cannot add to Region: " + this.Name);
+                throw new GameException("No Sector passed. cannot add to Region: " + this.Name);
             }
 
             if (ship == null)
             {
-                this.Map.Write.DebugLine("No ship passed. cannot add to Quadrant: " + this.Name);
-                throw new GameException("No ship passed. cannot add to Quadrant: " + this.Name);
+                this.Map.Write.DebugLine("No ship passed. cannot add to Region: " + this.Name);
+                throw new GameException("No ship passed. cannot add to Region: " + this.Name);
             }
 
-            this.Map.Write.DebugLine("Adding Ship: " + ship.Name + " to Quadrant: " + this.Name + " Sector: " + toSector);
+            this.Map.Write.DebugLine("Adding Ship: " + ship.Name + " to Region: " + this.Name + " Sector: " + toSector);
 
             var addToSector = this.GetSector(toSector) ?? toSector;
                 //if we can't retrieve it, then it hasn't been created yet, so add to our new variable and the caller of this function can add it if they want
@@ -404,25 +404,25 @@ namespace StarTrek_KG.Playfield
             return hostileShip;
         }
 
-        public void AddEmptySector(Quadrant quadrant, int x, int y)
+        public void AddEmptySector(Region Region, int x, int y)
         {
-            var sector = Sector.CreateEmpty(quadrant, new Coordinate(x, y));
+            var sector = Sector.CreateEmpty(Region, new Coordinate(x, y));
 
-            quadrant.Sectors.Add(sector);
+            Region.Sectors.Add(sector);
         }
 
         public bool NoHostiles(List<Ship> hostiles)
         {
             if (hostiles.Count == 0)
             {
-                this.Map.Write.Line(this.Map.Config.GetSetting<string>("QuadrantsNoHostileShips"));
+                this.Map.Write.Line(this.Map.Config.GetSetting<string>("RegionsNoHostileShips"));
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// goes through each sector in this quadrant and counts hostiles
+        /// goes through each sector in this Region and counts hostiles
         /// </summary>
         /// <returns></returns>
         public List<IShip> GetHostiles()
@@ -453,7 +453,7 @@ namespace StarTrek_KG.Playfield
                 }
                 else
                 {
-                    throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") +
+                    throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") +
                                             this.Name);
                 }
             }
@@ -466,7 +466,7 @@ namespace StarTrek_KG.Playfield
         }
 
         /// <summary>
-        /// goes through each sector in this quadrant and clears hostiles
+        /// goes through each sector in this Region and clears hostiles
         /// </summary>
         /// <returns></returns>
         public void ClearHostiles()
@@ -492,13 +492,13 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name +
+                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") + this.Name +
                                         ".");
             }
         }
 
         /// <summary>
-        /// goes through each sector in this quadrant and clears item requested
+        /// goes through each sector in this Region and clears item requested
         /// </summary>
         /// <returns></returns>
         public void ClearSectorsWithItem(SectorItem item)
@@ -514,7 +514,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInQuadrant") + this.Name +
+                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") + this.Name +
                                         ".");
             }
         }
@@ -536,7 +536,7 @@ namespace StarTrek_KG.Playfield
 
         public bool IsNebulae()
         {
-            return (this.Type == QuadrantType.Nebulae);
+            return (this.Type == RegionType.Nebulae);
         }
 
         //todo: refactor these functions with LRS
@@ -547,24 +547,24 @@ namespace StarTrek_KG.Playfield
         {
             var scanData = new LRSFullData();
 
-            bool currentlyInNebula = location.Quadrant.Type == QuadrantType.Nebulae;
+            bool currentlyInNebula = location.Region.Type == RegionType.Nebulae;
 
-            for (var quadrantY = location.Quadrant.Y - 1;
-                quadrantY <= location.Quadrant.Y + 1;
-                quadrantY++)
+            for (var RegionY = location.Region.Y - 1;
+                RegionY <= location.Region.Y + 1;
+                RegionY++)
             {
-                for (var quadrantX = location.Quadrant.X - 1;
-                    quadrantX <= location.Quadrant.X + 1;
-                    quadrantX++)
+                for (var RegionX = location.Region.X - 1;
+                    RegionX <= location.Region.X + 1;
+                    RegionX++)
                 {
-                    var outOfBounds = game.Map.OutOfBounds(quadrantY, quadrantX);
+                    var outOfBounds = game.Map.OutOfBounds(RegionY, RegionX);
 
                     var currentResult = new LRSResult();
                     if (!currentlyInNebula)
                     {
-                        currentResult = this.GetQuadrantInfo(quadrantY, outOfBounds, quadrantX, game);
-                        currentResult.MyLocation = location.Quadrant.X == quadrantX &&
-                                                   location.Quadrant.Y == quadrantY;
+                        currentResult = this.GetRegionInfo(RegionY, outOfBounds, RegionX, game);
+                        currentResult.MyLocation = location.Region.X == RegionX &&
+                                                   location.Region.Y == RegionY;
                     }
                     else
                     {
@@ -581,24 +581,24 @@ namespace StarTrek_KG.Playfield
         {
             var scanData = new LRSFullData();
 
-            bool currentlyInNebula = location.Quadrant.Type == QuadrantType.Nebulae;
+            bool currentlyInNebula = location.Region.Type == RegionType.Nebulae;
 
-            for (var quadrantY = location.Quadrant.Y - 1;
-                quadrantY <= location.Quadrant.Y + 1;
-                quadrantY++)
+            for (var RegionY = location.Region.Y - 1;
+                RegionY <= location.Region.Y + 1;
+                RegionY++)
             {
-                for (var quadrantX = location.Quadrant.X - 1;
-                    quadrantX <= location.Quadrant.X + 1;
-                    quadrantX++)
+                for (var RegionX = location.Region.X - 1;
+                    RegionX <= location.Region.X + 1;
+                    RegionX++)
                 {
-                    var outOfBounds = game.Map.OutOfBounds(quadrantY, quadrantX);
+                    var outOfBounds = game.Map.OutOfBounds(RegionY, RegionX);
 
                     var currentResult = new LRSResult();
                     if (!currentlyInNebula)
                     {
-                        currentResult = this.GetQuadrantInfo(quadrantY, outOfBounds, quadrantX, game);
-                        currentResult.MyLocation = location.Quadrant.X == quadrantX &&
-                                                   location.Quadrant.Y == quadrantY;
+                        currentResult = this.GetRegionInfo(RegionY, outOfBounds, RegionX, game);
+                        currentResult.MyLocation = location.Region.X == RegionX &&
+                                                   location.Region.Y == RegionY;
                     }
                     else
                     {
@@ -611,13 +611,13 @@ namespace StarTrek_KG.Playfield
             return scanData;
         }
 
-        private LRSResult GetQuadrantInfo(int quadrantY, bool outOfBounds, int quadrantX, Game game)
+        private LRSResult GetRegionInfo(int RegionY, bool outOfBounds, int RegionX, Game game)
         {
             var currentResult = new LRSResult();
 
             if (!outOfBounds)
             {
-                currentResult = GetQuadrantData(quadrantY, quadrantX, game);
+                currentResult = GetRegionData(RegionY, RegionX, game);
             }
             else
             {
@@ -627,60 +627,60 @@ namespace StarTrek_KG.Playfield
             return currentResult;
         }
 
-        private LRSResult GetQuadrantData(int quadrantY, int quadrantX, Game game)
+        private LRSResult GetRegionData(int RegionY, int RegionX, Game game)
         {
-            Quadrant quadrantToScan = Quadrants.Get(game.Map, this.CoordinateToScan(quadrantY, quadrantX, game.Config));
-            var quadrantResult = new LRSResult();
+            Region RegionToScan = Regions.Get(game.Map, this.CoordinateToScan(RegionY, RegionX, game.Config));
+            var RegionResult = new LRSResult();
 
-            if (quadrantToScan.Type != QuadrantType.Nebulae)
+            if (RegionToScan.Type != RegionType.Nebulae)
             {
-                quadrantResult = LongRangeScan.For(game.Map.Playership).Execute(quadrantToScan);
+                RegionResult = LongRangeScan.For(game.Map.Playership).Execute(RegionToScan);
             }
             else
             {
-                quadrantResult.Name = quadrantToScan.Name;
-                quadrantResult.Unknown = true;
+                RegionResult.Name = RegionToScan.Name;
+                RegionResult.Unknown = true;
             }
 
-            return quadrantResult;
+            return RegionResult;
         }
 
-        private Coordinate CoordinateToScan(int quadrantY, int quadrantX, IStarTrekKGSettings config)
+        private Coordinate CoordinateToScan(int RegionY, int RegionX, IStarTrekKGSettings config)
         {
-            var max = config.GetSetting<int>("QuadrantMax") - 1;
-            var min = config.GetSetting<int>("QUADRANT_MIN");
+            var max = config.GetSetting<int>("RegionMax") - 1;
+            var min = config.GetSetting<int>("Region_MIN");
 
-            int divinedQuadX = quadrantX;
-            int divinedQuadY = quadrantY;
+            int divinedRegionX = RegionX;
+            int divinedRegionY = RegionY;
 
-            if (quadrantX - 1 < min)
+            if (RegionX - 1 < min)
             {
-                divinedQuadX = min;
+                divinedRegionX = min;
             }
 
-            if ((quadrantX > max))
+            if ((RegionX > max))
             {
-                divinedQuadX = max;
+                divinedRegionX = max;
             }
 
-            if (quadrantX + 1 > max)
+            if (RegionX + 1 > max)
             {
-                divinedQuadX = max;
+                divinedRegionX = max;
             }
 
-            if (quadrantY - 1 < min)
+            if (RegionY - 1 < min)
             {
-                divinedQuadY = min;
+                divinedRegionY = min;
             }
 
-            if ((quadrantY > max))
+            if ((RegionY > max))
             {
-                divinedQuadY = max;
+                divinedRegionY = max;
             }
 
-            var quadrantToScan = new Coordinate(divinedQuadX, divinedQuadY);
+            var RegionToScan = new Coordinate(divinedRegionX, divinedRegionY);
 
-            return quadrantToScan;
+            return RegionToScan;
         }
 
         internal Location GetNeighbor(int sectorT, int sectorL, IMap map)
@@ -762,11 +762,11 @@ namespace StarTrek_KG.Playfield
                 coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
             }
 
-            map.Write.WithNoEndCR("Quadrant to the " + direction + "= [" + coordinateToGet.X + "," + coordinateToGet.Y +"]: ");
-            var gotQuadrant = Quadrants.Get(map, coordinateToGet);
+            map.Write.WithNoEndCR("Region to the " + direction + "= [" + coordinateToGet.X + "," + coordinateToGet.Y +"]: ");
+            var gotRegion = Regions.Get(map, coordinateToGet);
 
-            locationToGet.Quadrant = gotQuadrant;
-            locationToGet.Sector = gotQuadrant.Sectors.Single(s => s.X == x && s.Y == y);
+            locationToGet.Region = gotRegion;
+            locationToGet.Sector = gotRegion.Sectors.Single(s => s.X == x && s.Y == y);
 
             return locationToGet;
         }
@@ -774,19 +774,19 @@ namespace StarTrek_KG.Playfield
 }
 
 
-////todo: use 1 set of hostiles.  Create in sectors, count up for quadrants
-// public static void CreateHostileX(Quadrant quadrant, int x, int y, IList<string> listOfBaddies)
+////todo: use 1 set of hostiles.  Create in sectors, count up for Regions
+// public static void CreateHostileX(Region Region, int x, int y, IList<string> listOfBaddies)
 //{
 //    //todo: this should be a random baddie, from the list of baddies in app.config
 //    //todo: note, in leter versions, baddies and allies can fight each other automatically (when they move to within range of each other.  status of the battles can be kept in the ships log (if observed by a friendly)
 //
 //          var index = (Utility.Random).Next(listOfBaddies.Count);
-//        var hostileShip = new Ship(listOfBaddies[index], quadrant.Map, x, y);
+//        var hostileShip = new Ship(listOfBaddies[index], Region.Map, x, y);
 //      hostileShip.Sector = new Sector(x, y);
 
 //    Shields.For(hostileShip).Energy = 300 + (Utility.Random).Next(200);
 
-//  quadrant.Hostiles.Add(hostileShip);
+//  Region.Hostiles.Add(hostileShip);
 
 //listOfBaddies.RemoveAt(index); //remove name from our big list of names so we dont select it again
 //}
@@ -813,44 +813,44 @@ namespace StarTrek_KG.Playfield
 //        var x = (Utility.Random).Next(Constants.SECTOR_MAX);
 //        var y = (Utility.Random).Next(Constants.SECTOR_MAX);
 
-//        var quadrant = Quadrants.Get(map, x, y);
+//        var Region = Regions.Get(map, x, y);
 
-//        if (!quadrant.Starbase)
+//        if (!Region.Starbase)
 //        {
-//            quadrant.Starbase = true;
+//            Region.Starbase = true;
 //            starbases--;
 //        }
 
-//        if (quadrant.Hostiles.Count < 3) //todo: put 3 in app.config
+//        if (Region.Hostiles.Count < 3) //todo: put 3 in app.config
 //        {
-//            Quadrant.CreateHostile(quadrant, x, y, Map.baddieNames);
+//            Region.CreateHostile(Region, x, y, Map.baddieNames);
 //            hostiles--;
 //        }
 //    }
 //}
 
-//////todo: use 1 set of hostiles.  Create in sectors, count up for quadrants
-//private static void AddHostile(Quadrant quadrant, int x, int y)
+//////todo: use 1 set of hostiles.  Create in sectors, count up for Regions
+//private static void AddHostile(Region Region, int x, int y)
 //{
-//    //Quadrant.CreateHostile(quadrant, x, y, Map.baddieNames);
+//    //Region.CreateHostile(Region, x, y, Map.baddieNames);
 
-//    ////todo: a hostile was made, but he is not in any QUADRANT yet..
+//    ////todo: a hostile was made, but he is not in any Region yet..
 
-//    //List<Ship> allbadGuysInQuadrant = quadrant.Hostiles.Where(s => s.Allegiance == Allegiance.BadGuy).ToList();
+//    //List<Ship> allbadGuysInRegion = Region.Hostiles.Where(s => s.Allegiance == Allegiance.BadGuy).ToList();
 
-//    //var k = allbadGuysInQuadrant[0];
+//    //var k = allbadGuysInRegion[0];
 
 //    ////fixme
 
 //    ////all hostiles have the same XY.  this is rightfully failing
 
-//    //var badGuy = allbadGuysInQuadrant.Where(s =>  
+//    //var badGuy = allbadGuysInRegion.Where(s =>  
 //    //                            s.Sector.X == x && 
 //    //                            s.Sector.Y == y).Single();
 
 //    ////this needs to be linked
 //    ////add again?
-//    //quadrant.Hostiles.Add(badGuy);
+//    //Region.Hostiles.Add(badGuy);
 //}
 
 //Output as enum??
