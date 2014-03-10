@@ -696,7 +696,9 @@ namespace StarTrek_KG.Playfield
                 direction = "left";
                 x = 7;
                 y = sectorT;
-                coordinateToGet.X = Sector.Decrement(coordinateToGet.X);
+
+                var decremented = Sector.Decrement(coordinateToGet.X);
+                coordinateToGet.X = decremented;
             }
 
             if (sectorT < 8 && sectorL == 8)
