@@ -28,14 +28,14 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockSector = new Mock<ISector>();
             _mockSettings = new Mock<IStarTrekKGSettings>();
             _mockCoordinate = new Mock<ICoordinate>();
-            _mockMap.Setup(m => m.Quadrants).Returns(new Quadrants(_mockMap.Object, _mockWrite.Object));
+            _mockMap.Setup(m => m.Regions).Returns(new Regions(_mockMap.Object, _mockWrite.Object));
 
-            var quadrants = new Quadrants(_mockMap.Object, _mockWrite.Object);
-            quadrants.Add(new Quadrant(new Coordinate()));
+            var Regions = new Regions(_mockMap.Object, _mockWrite.Object);
+            Regions.Add(new Region(new Coordinate()));
 
-            _mockMap.Setup(m => m.Quadrants).Returns(quadrants);
+            _mockMap.Setup(m => m.Regions).Returns(Regions);
             _mockMap.Setup(m => m.Write).Returns(_mockWrite.Object);
-            _mockSector.Setup(c => c.QuadrantDef).Returns(new Coordinate());
+            _mockSector.Setup(c => c.RegionDef).Returns(new Coordinate());
 
             _mockMap.Setup(m => m.Config).Returns(_mockSettings.Object);
         }
@@ -126,7 +126,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
 
         }
 
-        //GetQuadrant()
+        //GetRegion()
         //GetLocation()
         //RepairEverything()
     }

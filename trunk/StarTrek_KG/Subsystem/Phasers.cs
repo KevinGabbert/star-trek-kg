@@ -12,7 +12,7 @@ namespace StarTrek_KG.Subsystem
     public class Phasers : SubSystem_Base, IWeapon
     {
         //dependencies to inject
-        //Quadrants
+        //Regions
         //Utility
 
         public Phasers(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
@@ -42,8 +42,8 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged()) return;
 
-            //todo:  this doesn't *work* too well as a feature of *quadrants*, but rather, of Ship?
-            if ((new Quadrants(this.Game.Map, this.Game.Write)).NoHostiles(this.ShipConnectedTo.Map.Quadrants.GetActive().GetHostiles()))
+            //todo:  this doesn't *work* too well as a feature of *Regions*, but rather, of Ship?
+            if ((new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.ShipConnectedTo.Map.Regions.GetActive().GetHostiles()))
             {
                 return;
             }
@@ -69,12 +69,12 @@ namespace StarTrek_KG.Subsystem
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
             var destroyedShips = new List<IShip>();
-            foreach (var badGuyShip in this.Game.Map.Quadrants.GetActive().GetHostiles())
+            foreach (var badGuyShip in this.Game.Map.Regions.GetActive().GetHostiles())
             {
                 this.FireOnShip(phaserEnergy, badGuyShip, inNebula, destroyedShips);
             }
 
-            if (this.ShipConnectedTo.GetQuadrant().GetStarbaseCount() > 0 && this.Game.PlayerNowEnemyToFederation)
+            if (this.ShipConnectedTo.GetRegion().GetStarbaseCount() > 0 && this.Game.PlayerNowEnemyToFederation)
             {
                 //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
                 
@@ -87,7 +87,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool InNebula()
         {
-            var inNebula = this.ShipConnectedTo.GetQuadrant().Type == QuadrantType.Nebulae;
+            var inNebula = this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae;
 
             if (inNebula)
             {
@@ -144,13 +144,13 @@ namespace StarTrek_KG.Subsystem
             string badGuyShipName = badGuyShip.Name;
             string badguyShieldEnergy = badGuyShields.Energy.ToString();
 
-            if (badGuyShip.GetQuadrant().Type == QuadrantType.Nebulae)
+            if (badGuyShip.GetRegion().Type == RegionType.Nebulae)
             {
                 badGuyShipName = "Unknown Hostile Ship";
                 badguyShieldEnergy = "Unknown level";
             }
 
-            var badGuy = Utility.Utility.HideXorYIfNebula(badGuyShip.GetQuadrant(), badGuyShip.Sector.X.ToString(), badGuyShip.Sector.Y.ToString());
+            var badGuy = Utility.Utility.HideXorYIfNebula(badGuyShip.GetRegion(), badGuyShip.Sector.X.ToString(), badGuyShip.Sector.Y.ToString());
 
             this.Game.Write.Line(
                 string.Format(
@@ -181,7 +181,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line("");
             this.Game.Write.Line("Objects to Target:");
 
-            List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+            List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply;
             this.Game.Write.Line("");

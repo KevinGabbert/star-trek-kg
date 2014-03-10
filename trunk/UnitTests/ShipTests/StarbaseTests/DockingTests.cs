@@ -12,13 +12,13 @@ namespace UnitTests.ShipTests.StarbaseTests
     {
         Map _testMapNoObjects;
         Movement _testMovement;
-        Coordinate _startingQuadrant;
+        Coordinate _startingRegion;
 
         int _startingSectorX;
         int _startingSectorY;
 
-        private int _lastQuadX;
-        private int _lastQuadY;
+        private int _lastRegionX;
+        private int _lastRegionY;
 
         [SetUp]
         public void SetUp()
@@ -32,8 +32,8 @@ namespace UnitTests.ShipTests.StarbaseTests
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
         }
 
 
@@ -54,8 +54,8 @@ namespace UnitTests.ShipTests.StarbaseTests
             ////add a ship
             //var starbase = new Starbase("starbaseAlpha", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
 
-            //var activeQuad = _testMap.Quadrants.GetActive();
-            //activeQuad.AddShip(starbase, starbase.Sector);
+            //var activeRegion = _testMap.Regions.GetActive();
+            //activeRegion.AddShip(starbase, starbase.Sector);
         }
 
         [Test]
@@ -78,15 +78,15 @@ namespace UnitTests.ShipTests.StarbaseTests
 
         //private void Move_Sector(string direction, int distance)
         //{
-        //    var playershipQuad = _testMapNoObjects.Playership.GetQuadrant();
+        //    var playershipRegion = _testMapNoObjects.Playership.GetRegion();
 
-        //    _startingQuadrant = new Coordinate(playershipQuad.X, playershipQuad.Y);
+        //    _startingRegion = new Coordinate(playershipRegion.X, playershipRegion.Y);
 
         //    _startingSectorX = _testMapNoObjects.Playership.Sector.X;
         //    _startingSectorY = _testMapNoObjects.Playership.Sector.Y;
 
         //    //verify that the ship is where we think it is before we start
-        //    Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Quadrants.GetActive().Sectors,
+        //    Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Regions.GetActive().Sectors,
         //                                                   _testMapNoObjects.Playership.Sector.X,
         //                                                   _testMapNoObjects.Playership.Sector.Y).Item);
 
@@ -94,11 +94,11 @@ namespace UnitTests.ShipTests.StarbaseTests
         //    _testMovement.BlockedByObstacle = false;
 
         //    var sectorItem =
-        //        Sector.Get(_testMovement.Game.Map.Quadrants.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
+        //        Sector.Get(_testMovement.Game.Map.Regions.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
         //                                                               _testMovement.Game.Map.Playership.Sector.Y).Item;
         //    Assert.AreEqual(SectorItem.Friendly, sectorItem);
 
-        //    _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastQuadX, out _lastQuadY);
+        //    _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastRegionX, out _lastRegionY);
 
         //    //EnergySubtracted changes an entered value of .1 to .8
         //    //todo: measure time passed

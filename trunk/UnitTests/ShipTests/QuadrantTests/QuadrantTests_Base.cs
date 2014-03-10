@@ -2,21 +2,21 @@
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
 
-namespace UnitTests.ShipTests.QuadrantTests
+namespace UnitTests.ShipTests.RegionTests
 {
-    public class QuadrantTests_Base: TestClass_Base
+    public class RegionTests_Base: TestClass_Base
     {
-        protected Quadrant _testQuadrant;
+        protected Region _testRegion;
 
-        protected void QuadrantNewAsserts()
+        protected void RegionNewAsserts()
         {
-            Assert.AreEqual(string.Empty, _testQuadrant.Name);
+            Assert.AreEqual(string.Empty, _testRegion.Name);
             
-            Assert.AreEqual(false, _testQuadrant.Scanned);
-            Assert.AreEqual(0, _testQuadrant.X);
-            Assert.AreEqual(0, _testQuadrant.Y);
-            Assert.AreEqual(true, _testQuadrant.Empty);
-            Assert.Throws(Is.TypeOf<GameException>().And.Message.EqualTo("No Sectors Set up in Quadrant: "), () => _testQuadrant.GetHostiles());
+            Assert.AreEqual(false, _testRegion.Scanned);
+            Assert.AreEqual(0, _testRegion.X);
+            Assert.AreEqual(0, _testRegion.Y);
+            Assert.AreEqual(true, _testRegion.Empty);
+            Assert.Throws(Is.TypeOf<GameException>().And.Message.EqualTo("No Sectors Set up in Region: "), () => _testRegion.GetHostiles());
         }
     }
 }

@@ -9,9 +9,9 @@ using StarTrek_KG.Interfaces;
 namespace StarTrek_KG.Playfield
 {
     /// <summary>
-    /// A Sector in this game is an empty XY position in a quadrant.  Only 1 item can occupy a sector at a time.
+    /// A Sector in this game is an empty XY position in a Region.  Only 1 item can occupy a sector at a time.
     /// </summary>
-    public class Sector: Coordinate, ISector //todo: this should be called SectorItems (or quadrantItems)
+    public class Sector: Coordinate, ISector //todo: this should be called SectorItems (or RegionItems)
     {
         #region Properties
 
@@ -20,12 +20,12 @@ namespace StarTrek_KG.Playfield
             public SectorItem Item { get; set; }
             public ISectorObject Object { get; set; }
             public SectorType Type { get; set; }
-            public Coordinate QuadrantDef { get; set; } //needed.  so it can set ship coordinate
+            public Coordinate RegionDef { get; set; } //needed.  so it can set ship coordinate
             public List<SectorNeighborItem> Neighbors { get; set; }
 
         #endregion
 
-        //todo: create a constructor overload that will let you create a sector without an associated quadrant
+        //todo: create a constructor overload that will let you create a sector without an associated Region
 
         public Sector()
         {
@@ -37,7 +37,7 @@ namespace StarTrek_KG.Playfield
             this.Type = SectorType.Space;
             this.X = location.Sector.X;
             this.Y = location.Sector.Y;
-            this.QuadrantDef = location.Quadrant;
+            this.RegionDef = location.Region;
         }
 
         public static Sector Get(Sectors sectors, int sX, int sY)
@@ -60,26 +60,26 @@ namespace StarTrek_KG.Playfield
 
         public static Sector GetFrom(Ship shipToGetFrom)
         {
-            var shipQuadrant = shipToGetFrom.GetQuadrant();
-            var gotSectors = shipQuadrant.Sectors.Where(s => s.X == shipToGetFrom.Sector.X && s.Y == shipToGetFrom.Sector.Y).ToList();
+            var shipRegion = shipToGetFrom.GetRegion();
+            var gotSectors = shipRegion.Sectors.Where(s => s.X == shipToGetFrom.Sector.X && s.Y == shipToGetFrom.Sector.Y).ToList();
 
             if (!gotSectors.Any())
             {
-                throw new GameConfigException("Sector not found:  X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipQuadrant.Sectors.Count());
+                throw new GameConfigException("Sector not found:  X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipRegion.Sectors.Count());
             }
 
             if (gotSectors.Count() > 1)
             {
-                throw new GameConfigException("Multiple sectors found. X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipQuadrant.Sectors.Count());
+                throw new GameConfigException("Multiple sectors found. X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipRegion.Sectors.Count());
             }
 
             //There can only be one active sector
             return gotSectors.Single();
         }
 
-        public static Sector CreateEmpty(Quadrant quadrant, Coordinate sectorDef)
+        public static Sector CreateEmpty(Region Region, Coordinate sectorDef)
         {
-            var sector = new Sector(new LocationDef(quadrant, sectorDef));
+            var sector = new Sector(new LocationDef(Region, sectorDef));
             sector.Item = SectorItem.Empty;
 
             return sector;
@@ -115,5 +115,5 @@ namespace StarTrek_KG.Playfield
     //    this.Type = SectorType.Space;
     //    this.X = sectorDef.Sector.X;
     //    this.Y = sectorDef.Sector.Y;
-    //    this.QuadrantDef = sectorDef.QuadrantDef;
+    //    this.RegionDef = sectorDef.RegionDef;
     //}

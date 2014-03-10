@@ -47,7 +47,7 @@ namespace UnitTests.ShipTests
             //todo: test this with a full map, and ship set up.  Then tell ship to move.  
             var map = new Map();
 
-            //MovementTests.Move_Quadrant("w", 1*8);
+            //MovementTests.Move_Region("w", 1*8);
 
             //Time has moved
             Assert.AreEqual(0, map.timeRemaining);

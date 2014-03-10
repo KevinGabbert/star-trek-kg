@@ -17,7 +17,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-            public Quadrants Quadrants { get; set; }
+            public Regions Regions { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
             public SetupOptions GameConfig { get; set; }
 
@@ -67,7 +67,7 @@ namespace StarTrek_KG.Playfield
 
                 //if (setupOptions.GenerateMap)
                 //{
-                //    //this.Quadrants.PopulateSectors(setupOptions.SectorDefs, this);
+                //    //this.Regions.PopulateSectors(setupOptions.SectorDefs, this);
                 //}
             }
         }
@@ -77,13 +77,13 @@ namespace StarTrek_KG.Playfield
             this.GetGlobalInfo();
 
             //This list should match baddie type that is created
-            List<string> quadrantNames = this.Config.GetStarSystems();
+            List<string> RegionNames = this.Config.GetStarSystems();
 
             this.Write.DebugLine("Got Starsystems");
 
-            //TODO: if there are less than 64 quadrant names then there will be problems..
+            //TODO: if there are less than 64 Region names then there will be problems..
 
-            var names = new Stack<string>(quadrantNames.Shuffle());
+            var names = new Stack<string>(RegionNames.Shuffle());
 
             var klingonShipNames = this.Config.FactionShips(this.DefaultHostile);
 
@@ -93,9 +93,9 @@ namespace StarTrek_KG.Playfield
             var klingonBaddieNames = new Stack<string>(klingonShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
-            this.InitializeQuadrantsWithBaddies(names, klingonBaddieNames, this.DefaultHostile, sectorDefs, generateWithNebulae);
+            this.InitializeRegionsWithBaddies(names, klingonBaddieNames, this.DefaultHostile, sectorDefs, generateWithNebulae);
 
-            this.Write.DebugLine("Intialized quadrants with Baddies");
+            this.Write.DebugLine("Intialized Regions with Baddies");
 
             if (sectorDefs != null)
             {
@@ -107,7 +107,7 @@ namespace StarTrek_KG.Playfield
             {
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
-                this.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new quadrant
+                this.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new Region
                 this.Write.Line(this.Config.GetSetting<string>("DebugModeEnd"));
                 this.Write.Line("");
             }
@@ -126,9 +126,9 @@ namespace StarTrek_KG.Playfield
                 {
                     this.SetUpPlayerShip(sectorDefs.PlayerShips().Single());
 
-                    var sectorToPlaceShip = Sector.Get(this.Quadrants.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
+                    var sectorToPlaceShip = Sector.Get(this.Regions.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
 
-                    //This places our newly created ship into our newly created List of Quadrants.
+                    //This places our newly created ship into our newly created List of Regions.
                     sectorToPlaceShip.Item = SectorItem.PlayerShip;
                 }
                 catch (InvalidOperationException ex)
@@ -142,20 +142,20 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                //this.Quadrants[0].Active = true;
-                this.Quadrants[0].SetActive();
+                //this.Regions[0].Active = true;
+                this.Regions[0].SetActive();
             }
         }
 
-        //Creates a 2D array of quadrants.  This is how all of our game pieces will be moving around.
-        public void InitializeQuadrantsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae)
+        //Creates a 2D array of Regions.  This is how all of our game pieces will be moving around.
+        public void InitializeRegionsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae)
         {
-            this.Quadrants = new Quadrants(this, this.Write);
+            this.Regions = new Regions(this, this.Write);
 
             //Friendlies are added separately
-            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Quadrants).Where(q => q.Item != SectorItem.PlayerShip).ToList();
+            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Regions).Where(q => q.Item != SectorItem.PlayerShip).ToList();
 
-            this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Quadrants: " + this.Quadrants.Count);
+            this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Regions: " + this.Regions.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
             this.GenerateSquareGalaxy(names, baddieNames, stockBaddieFaction, itemsToPopulateThatAreNotPlayerShip, generateWithNebulae);
@@ -163,18 +163,18 @@ namespace StarTrek_KG.Playfield
 
         public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebula)
         {
-            if (Constants.QUADRANT_MAX == 0)
+            if (Constants.Region_MAX == 0)
             {
-                throw new GameException("No quadrants to set up.  QUADRANT_MAX set to Zero");
+                throw new GameException("No Regions to set up.  Region_MAX set to Zero");
             }
 
-            for (var quadrantX = 0; quadrantX < Constants.QUADRANT_MAX; quadrantX++) //todo: app.config
+            for (var RegionX = 0; RegionX < Constants.Region_MAX; RegionX++) //todo: app.config
             {
-                for (var quadrantY = 0; quadrantY < Constants.QUADRANT_MAX; quadrantY++)
+                for (var RegionY = 0; RegionY < Constants.Region_MAX; RegionY++)
                 {
                     int index;
-                    var newQuadrant = new Quadrant(this);
-                    var quadrantXY = new Coordinate(quadrantX, quadrantY);
+                    var newRegion = new Region(this);
+                    var RegionXY = new Coordinate(RegionX, RegionY);
 
                     bool isNebulae = false;
                     if (generateWithNebula)
@@ -182,18 +182,18 @@ namespace StarTrek_KG.Playfield
                         isNebulae = Utility.Utility.Random.Next(11) == 10; //todo pull this setting from config
                     }
 
-                    newQuadrant.Create(names, baddieNames, stockBaddieFaction, quadrantXY, out index, itemsToPopulate,
+                    newRegion.Create(names, baddieNames, stockBaddieFaction, RegionXY, out index, itemsToPopulate,
                                        this.GameConfig.AddStars, isNebulae);
 
-                    this.Quadrants.Add(newQuadrant);
+                    this.Regions.Add(newRegion);
 
                     if (Constants.DEBUG_MODE)
                     {
-                        this.Write.SingleLine(this.Config.GetSetting<string>("DebugAddingNewQuadrant"));
+                        this.Write.SingleLine(this.Config.GetSetting<string>("DebugAddingNewRegion"));
 
-                        this.Write.DisplayPropertiesOf(newQuadrant);
+                        this.Write.DisplayPropertiesOf(newRegion);
 
-                        //TODO: each object within quadrant needs a .ToString()
+                        //TODO: each object within Region needs a .ToString()
 
                         this.Write.Line("");
                     }
@@ -232,16 +232,16 @@ namespace StarTrek_KG.Playfield
             this.Write.DebugLine(this.Config.GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
-            if (this.Quadrants == null)
+            if (this.Regions == null)
             {
-                throw new GameException(this.Config.GetSetting<string>("QuadrantsNeedToBeSetup1"));
+                throw new GameException(this.Config.GetSetting<string>("RegionsNeedToBeSetup1"));
             }
 
             //todo: if playershipDef.GetFromConfig then grab info from config.  else set up with default random numbers.
 
             var playerShipName = this.Config.GetSetting<string>("PlayerShip");
 
-            var startingSector = new Sector(new LocationDef(playerShipDef.QuadrantDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
+            var startingSector = new Sector(new LocationDef(playerShipDef.RegionDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
             this.Playership = new Ship(FactionName.Federation, playerShipName, startingSector, this)
                                   {
@@ -250,7 +250,7 @@ namespace StarTrek_KG.Playfield
 
             this.Playership.Energy = this.Config.GetSetting<int>("energy");
 
-            this.SetupPlayershipQuadrant(playerShipDef);
+            this.SetupPlayershipRegion(playerShipDef);
 
             this.SetupSubsystems();
 
@@ -309,23 +309,23 @@ namespace StarTrek_KG.Playfield
             //}
         }
 
-        public void SetupPlayershipQuadrant(SectorDef playerShipDef)
+        public void SetupPlayershipRegion(SectorDef playerShipDef)
         {
-            if (playerShipDef.QuadrantDef == null)
+            if (playerShipDef.RegionDef == null)
             {
-                playerShipDef.QuadrantDef = Coordinate.GetRandom();
+                playerShipDef.RegionDef = Coordinate.GetRandom();
             }
 
-            if(this.Quadrants.Count == 0)
+            if(this.Regions.Count == 0)
             {
-                throw new ArgumentException(this.Config.GetSetting<string>("QuadrantsNotSetUp"));
+                throw new ArgumentException(this.Config.GetSetting<string>("RegionsNotSetUp"));
             }
 
-            var m = this.Quadrants.Single(q => q.X == playerShipDef.QuadrantDef.X && q.Y == playerShipDef.QuadrantDef.Y);
+            var m = this.Regions.Single(q => q.X == playerShipDef.RegionDef.X && q.Y == playerShipDef.RegionDef.Y);
             this.Playership.Coordinate = new Coordinate(m.X, m.Y);
 
-            //this.Playership.GetQuadrant().Active = true;
-            this.Playership.GetQuadrant().SetActive();
+            //this.Playership.GetRegion().Active = true;
+            this.Playership.GetRegion().SetActive();
         }
 
         public void SetupPlayershipTorpedoes()
@@ -415,24 +415,24 @@ namespace StarTrek_KG.Playfield
         //    return false;
         //}
 
-        public SectorItem GetItem(int quadrantX, int quadrantY, int sectorX, int sectorY)
+        public SectorItem GetItem(int RegionX, int RegionY, int sectorX, int sectorY)
         {
-            var item = this.Get(quadrantX, quadrantY, sectorX, sectorY).Item;
+            var item = this.Get(RegionX, RegionY, sectorX, sectorY).Item;
             return item;
         }
 
-        public Sector Get(int quadrantX, int quadrantY, int sectorX, int sectorY)
+        public Sector Get(int RegionX, int RegionY, int sectorX, int sectorY)
         {
-            var item = this.Quadrants.Single(q => q.X == quadrantX &&
-                                                  q.Y == quadrantY).Sectors.Single(s => s.X == sectorX &&
+            var item = this.Regions.Single(q => q.X == RegionX &&
+                                                  q.Y == RegionY).Sectors.Single(s => s.X == sectorX &&
                                                                                         s.Y == sectorY);
             return item;
         }
 
         public void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips)
         {
-            map.Quadrants.Remove(destroyedShips);
-            map.Quadrants.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
+            map.Regions.Remove(destroyedShips);
+            map.Regions.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
         }
         public void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips)
         {
@@ -457,12 +457,12 @@ namespace StarTrek_KG.Playfield
 
         public void RemoveTargetFromSector(IMap map, IShip ship)
         {
-            map.Quadrants.Remove(ship);
+            map.Regions.Remove(ship);
         }
 
         /// <summary>
         ///  Removes all friendlies fromevery sector in the entire map.
-        ///  zips through all sectors in all quadrants.  remove any friendlies
+        ///  zips through all sectors in all Regions.  remove any friendlies
         ///  This is a bit of a brute force approach, and not preferred, as it disguises any bugs that might have to do with forgetting
         ///  to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
         ///  to have multiple friendlies, as is the eventual plan.
@@ -481,9 +481,9 @@ namespace StarTrek_KG.Playfield
         {
             this.RemovePlayership(map);
 
-            var activeQuadrant = map.Quadrants.GetActive();
+            var activeRegion = map.Regions.GetActive();
 
-            var newActiveSector = Sector.Get(activeQuadrant.Sectors, map.Playership.Sector.X, map.Playership.Sector.Y);
+            var newActiveSector = Sector.Get(activeRegion.Sectors, map.Playership.Sector.X, map.Playership.Sector.Y);
             newActiveSector.Item = SectorItem.PlayerShip;
         }
 
@@ -492,23 +492,23 @@ namespace StarTrek_KG.Playfield
             var federationShipNames = this.Config.FactionShips(FactionName.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
-            foreach (var quadrant in this.Quadrants)
+            foreach (var Region in this.Regions)
             {
-                var added = AddHostileFedToEmptyQuadrant(quadrant, federaleNames);
-                if (added) break; //we found an empty quad to dump new fed ships into..
+                var added = AddHostileFedToEmptyRegion(Region, federaleNames);
+                if (added) break; //we found an empty Region to dump new fed ships into..
             }
         }
 
-        private bool AddHostileFedToEmptyQuadrant(IQuadrant quadrant, Stack<string> federaleNames)
+        private bool AddHostileFedToEmptyRegion(IRegion Region, Stack<string> federaleNames)
         {
-            var hostilesInQuad = quadrant.GetHostiles();
-            if (hostilesInQuad.Any()) //we don't want to mix with Klingons just yet..
+            var hostilesInRegion = Region.GetHostiles();
+            if (hostilesInRegion.Any()) //we don't want to mix with Klingons just yet..
             {
-                var klingons = hostilesInQuad.Where(h => h.Faction == FactionName.Klingon);
+                var klingons = hostilesInRegion.Where(h => h.Faction == FactionName.Klingon);
 
                 if (!klingons.Any())
                 {
-                    this.AddHostilesToQuadrant(quadrant, federaleNames);
+                    this.AddHostilesToRegion(Region, federaleNames);
 
                     //we are only doing this once..
                     return true;
@@ -525,40 +525,40 @@ namespace StarTrek_KG.Playfield
             var federationShipNames = this.Config.FactionShips(FactionName.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
-            foreach (var quadrant in this.Quadrants)
+            foreach (var Region in this.Regions)
             {
                 if (Utility.Utility.Random.Next(5) == 1) //todo: resource this out.
                 {
-                    if (!quadrant.GetHostiles().Any()) //we don't want to mix with Klingons just yet..
+                    if (!Region.GetHostiles().Any()) //we don't want to mix with Klingons just yet..
                     {
-                        this.AddHostilesToQuadrant(quadrant, federaleNames);
+                        this.AddHostilesToRegion(Region, federaleNames);
                     }
                 }
             }
         }
 
-        private void AddHostilesToQuadrant(IQuadrant quadrant, Stack<string> federaleNames)
+        private void AddHostilesToRegion(IRegion Region, Stack<string> federaleNames)
         {
             var numberOfHostileFeds = Utility.Utility.Random.Next(2);
 
             for (int i = 0; i < numberOfHostileFeds; i++)
             {
-                //todo: refactor to Quadrant object
-                ISector sectorToAddTo = this.GetUnoccupiedRandomSector(quadrant);
-                this.AddHostileFederale(quadrant, sectorToAddTo, federaleNames);
+                //todo: refactor to Region object
+                ISector sectorToAddTo = this.GetUnoccupiedRandomSector(Region);
+                this.AddHostileFederale(Region, sectorToAddTo, federaleNames);
             }
         }
 
-        private ISector GetUnoccupiedRandomSector(IQuadrant quadrant)
+        private ISector GetUnoccupiedRandomSector(IRegion Region)
         {
             var randomCoordinate = GetRandomCoordinate();
 
-            ISector sector = quadrant.GetSector(randomCoordinate);
+            ISector sector = Region.GetSector(randomCoordinate);
             var sectorIsEmpty = (sector.Item == SectorItem.Empty);
 
             if (!sectorIsEmpty)
             {
-                sector = this.GetUnoccupiedRandomSector(quadrant);
+                sector = this.GetUnoccupiedRandomSector(Region);
             }
 
             return sector;
@@ -573,14 +573,14 @@ namespace StarTrek_KG.Playfield
             return randomCoordinate;
         }
 
-        private void AddHostileFederale(IQuadrant quadrant, ISector sector, Stack<string> federaleNames)
+        private void AddHostileFederale(IRegion Region, ISector sector, Stack<string> federaleNames)
         {
             var newPissedOffFederale = new Ship(FactionName.Federation, federaleNames.Pop(), sector, this);
             Shields.For(newPissedOffFederale).Energy = Utility.Utility.Random.Next(100, 500); //todo: resource those numbers out
 
-            quadrant.AddShip(newPissedOffFederale, sector);
+            Region.AddShip(newPissedOffFederale, sector);
 
-            this.Write.Line("Comm Reports a Federation starship has warped into Quadrant: " + quadrant.Name);
+            this.Write.Line("Comm Reports a Federation starship has warped into Region: " + Region.Name);
         }
 
         public IEnumerable<IShip> GetAllFederationShips()
@@ -589,13 +589,13 @@ namespace StarTrek_KG.Playfield
             return new List<Ship>();
         }
 
-        public bool OutOfBounds(int quadrantY, int quadrantX)
+        public bool OutOfBounds(int RegionY, int RegionX)
         {
-            var inTheNegative = quadrantX < 0 || quadrantY < 0;
-            var maxxed = quadrantX == Constants.QUADRANT_MAX || quadrantY == Constants.QUADRANT_MAX;
+            var inTheNegative = RegionX < 0 || RegionY < 0;
+            var maxxed = RegionX == Constants.Region_MAX || RegionY == Constants.Region_MAX;
 
-            var yOnMap = quadrantY >= 0 && quadrantY < Constants.QUADRANT_MAX;
-            var xOnMap = quadrantX >= 0 && quadrantX < Constants.QUADRANT_MAX;
+            var yOnMap = RegionY >= 0 && RegionY < Constants.Region_MAX;
+            var xOnMap = RegionX >= 0 && RegionX < Constants.Region_MAX;
 
             return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }
@@ -603,15 +603,15 @@ namespace StarTrek_KG.Playfield
 }
 
 
-//private static List<Sector> GetQuadrantObjects(int starbases, int HostilesToSetUp)
+//private static List<Sector> GetRegionObjects(int starbases, int HostilesToSetUp)
 //{
-//    var quadrantObjects = new List<Sector>();
+//    var RegionObjects = new List<Sector>();
 
-//    //get stars for quadrant and subtract from parameter (will be subtracted when this is hit next?)
-//    //newQuadrant.Stars = 1 + (Utility.Random).Next(Constants.SECTOR_MAX);
-//    //get hostiles for quadrant and subtract from big list
+//    //get stars for Region and subtract from parameter (will be subtracted when this is hit next?)
+//    //newRegion.Stars = 1 + (Utility.Random).Next(Constants.SECTOR_MAX);
+//    //get hostiles for Region and subtract from big list
 //    //get starbase T/F and subtract from big list
-//    return quadrantObjects;
+//    return RegionObjects;
 //}
 
 
@@ -623,7 +623,7 @@ namespace StarTrek_KG.Playfield
 //    //returns the location of every single object in the map
 
 //    //roll out every object in:
-//    //this.Quadrants;
+//    //this.Regions;
 //    //this.GameConfig;
             
 
@@ -631,10 +631,10 @@ namespace StarTrek_KG.Playfield
 //}
 
 //todo: finish this
-//public SectorItem GetShip(int quadrantX, int quadrantY, int sectorX, int sectorY)
+//public SectorItem GetShip(int RegionX, int RegionY, int sectorX, int sectorY)
 //{
-//    var t = this.Quadrants.Where(q => q.X == quadrantX &&
-//                                      q.Y == quadrantY).Single().Sectors.Where(s => s.X == sectorX &&
+//    var t = this.Regions.Where(q => q.X == RegionX &&
+//                                      q.Y == RegionY).Single().Sectors.Where(s => s.X == sectorX &&
 //                                                                                    s.Y == sectorY).Single().Item;
 
 
@@ -646,7 +646,7 @@ namespace StarTrek_KG.Playfield
 ///// <param name="map"></param>
 //public void RemoveAllFriendlies(IMap map)
 //{
-//    var sectorsWithFriendlies = map.Quadrants.SelectMany(quadrant => quadrant.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
+//    var sectorsWithFriendlies = map.Regions.SelectMany(Region => Region.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
 
 //    foreach (Sector sector in sectorsWithFriendlies)
 //    {

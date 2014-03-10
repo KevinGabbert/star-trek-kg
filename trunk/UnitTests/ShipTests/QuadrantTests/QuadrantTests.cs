@@ -6,32 +6,32 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 
-namespace UnitTests.ShipTests.QuadrantTests
+namespace UnitTests.ShipTests.RegionTests
 {
     [TestFixture]
-    public class QuadrantTests: QuadrantTests_Base
+    public class RegionTests: RegionTests_Base
     {
         [SetUp]
         public void Setup()
         {
-            base._testQuadrant = new Quadrant(this.Game.Map);
+            base._testRegion = new Region(this.Game.Map);
 
-            base._testQuadrant.Map = new Map(null, this.Game.Write, this.Game.Config);
-            base._testQuadrant.Name = "Setup";
-            base._testQuadrant.Scanned = false;
-            base._testQuadrant.X = 0;
-            base._testQuadrant.Y = 0;
+            base._testRegion.Map = new Map(null, this.Game.Write, this.Game.Config);
+            base._testRegion.Name = "Setup";
+            base._testRegion.Scanned = false;
+            base._testRegion.X = 0;
+            base._testRegion.Y = 0;
         }
     
         [Test]
         public void New()
         {
-            //*************** sector not being created with new quadrant
-            _testQuadrant = new Quadrant(this.Game.Map);
+            //*************** sector not being created with new Region
+            _testRegion = new Region(this.Game.Map);
 
-            Assert.IsInstanceOf<Map>(_testQuadrant.Map);
-            base.QuadrantNewAsserts();
-            Assert.IsNull(_testQuadrant.Sectors);
+            Assert.IsInstanceOf<Map>(_testRegion.Map);
+            base.RegionNewAsserts();
+            Assert.IsNull(_testRegion.Sectors);
         }
 
         [Test]
@@ -42,21 +42,21 @@ namespace UnitTests.ShipTests.QuadrantTests
             _setup.SetupMapWith1Friendly();
 
             //you need to set ItemsToPopulat
-            _testQuadrant = new Quadrant(this.Game.Map, baddieNames, null, false);
+            _testRegion = new Region(this.Game.Map, baddieNames, null, false);
 
             //todo: make sure that map is not set up with anyting
 
-            Assert.IsInstanceOf(typeof(Map), _testQuadrant.Map);
+            Assert.IsInstanceOf(typeof(Map), _testRegion.Map);
 
-            //UnitTests.ShipTests.MapTests.MapTests.NoInitializeAsserts(_testQuadrant.Map);
-            Assert.AreEqual(string.Empty, _testQuadrant.Name);
-            Assert.IsInstanceOf<Sectors>(_testQuadrant.Sectors);
-            Assert.AreEqual(false, _testQuadrant.Scanned);
-            Assert.AreEqual(0, _testQuadrant.X);
-            Assert.AreEqual(0, _testQuadrant.Y);
-            Assert.AreEqual(true, _testQuadrant.Empty);
+            //UnitTests.ShipTests.MapTests.MapTests.NoInitializeAsserts(_testRegion.Map);
+            Assert.AreEqual(string.Empty, _testRegion.Name);
+            Assert.IsInstanceOf<Sectors>(_testRegion.Sectors);
+            Assert.AreEqual(false, _testRegion.Scanned);
+            Assert.AreEqual(0, _testRegion.X);
+            Assert.AreEqual(0, _testRegion.Y);
+            Assert.AreEqual(true, _testRegion.Empty);
 
-            Assert.IsNotNull(_testQuadrant.Sectors);
+            Assert.IsNotNull(_testRegion.Sectors);
         }
 
         [Test]
@@ -70,22 +70,22 @@ namespace UnitTests.ShipTests.QuadrantTests
             var names = new Stack<string>(name);
 
             int index;
-            var newQuadrant = new Quadrant(_setup.Game.Map);
-            newQuadrant.Create(names,
+            var newRegion = new Region(_setup.Game.Map);
+            newRegion.Create(names,
                                new Stack<string>(klingonShipNames), null, 
                                new Coordinate(1, 1), out index, null);
 
-            Assert.IsInstanceOf(typeof (Map), _testQuadrant.Map);
+            Assert.IsInstanceOf(typeof (Map), _testRegion.Map);
 
             //todo: make sure that map is not set up with anyting
 
-            Assert.AreEqual(0, newQuadrant.GetHostiles().Count);
-            Assert.IsInstanceOf<Sectors>(newQuadrant.Sectors);
-            Assert.AreEqual(false, newQuadrant.Scanned);
-            Assert.AreEqual(1, newQuadrant.X);
-            Assert.AreEqual(1, newQuadrant.Y);
-            Assert.AreEqual(true, newQuadrant.Empty);
-            Assert.AreEqual("Ariel", newQuadrant.Name);
+            Assert.AreEqual(0, newRegion.GetHostiles().Count);
+            Assert.IsInstanceOf<Sectors>(newRegion.Sectors);
+            Assert.AreEqual(false, newRegion.Scanned);
+            Assert.AreEqual(1, newRegion.X);
+            Assert.AreEqual(1, newRegion.Y);
+            Assert.AreEqual(true, newRegion.Empty);
+            Assert.AreEqual("Ariel", newRegion.Name);
         }
 
         //When implemented:
@@ -97,7 +97,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         //GetItem
         //OutOfBounds
 
-        public void SetUpNewQuadrantWith(SectorItem item)
+        public void SetUpNewRegionWith(SectorItem item)
         {
             //throws in a random number of SectorItem
         }
@@ -110,7 +110,7 @@ namespace UnitTests.ShipTests.QuadrantTests
         [Test]
         public void VerifyNumberingSystem()
         {
-            //go through all quadrants and verify that 1. it is numbered right, 2. that there is 1 of each.
+            //go through all Regions and verify that 1. it is numbered right, 2. that there is 1 of each.
         }
 
     }

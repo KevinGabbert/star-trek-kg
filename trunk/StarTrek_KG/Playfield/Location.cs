@@ -4,7 +4,7 @@ namespace StarTrek_KG.Playfield
 {
     public class Location
     {
-        public Quadrant Quadrant { get; set; }
+        public Region Region { get; set; }
         public ISector Sector { get; set; }
 
         public Location()
@@ -12,9 +12,9 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Location(Quadrant quadrant, ISector sector)
+        public Location(Region Region, ISector sector)
         {
-            this.Quadrant = quadrant;
+            this.Region = Region;
             this.Sector = sector;
         }
     }

@@ -12,7 +12,7 @@ namespace UnitTests.GameTests
     [TestFixture]
     public class GameTests: TestClass_Base
     {
-        private Quadrant _testQuadrant;
+        private Region _testRegion;
 
         [Test]
         public void NewGame()
@@ -31,7 +31,7 @@ namespace UnitTests.GameTests
         {
             _setup.SetupMapWith1Hostile();
 
-            //_testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            //_testRegion = _setup.TestMap.Playership.GetRegion();
 
             Game.EnemiesWillNowTaunt();
 
@@ -42,7 +42,7 @@ namespace UnitTests.GameTests
         {
             _setup.SetupMapWith1FedHostile();
 
-            //_testQuadrant = _setup.TestMap.Playership.GetQuadrant();
+            //_testRegion = _setup.TestMap.Playership.GetRegion();
 
             Game.EnemiesWillNowTaunt();
 

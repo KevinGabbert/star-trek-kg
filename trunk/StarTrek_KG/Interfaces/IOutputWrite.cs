@@ -31,11 +31,11 @@ namespace StarTrek_KG.Interfaces
         void WithNoEndCR(string stringToOutput);
         void DisplayPropertiesOf(object @object);
 
-        void RenderQuadrantCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount);
-        string RenderQuadrantCounts(int starbaseCount, int starCount, int hostileCount);
+        void RenderRegionCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount);
+        string RenderRegionCounts(int starbaseCount, int starCount, int hostileCount);
 
         void RenderNebula(bool renderingMyLocation);
-        void RenderUnscannedQuadrant(bool renderingMyLocation);
+        void RenderUnscannedRegion(bool renderingMyLocation);
         List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game);
         IEnumerable<string> RenderLRSWithNames(List<LRSResult> lrsData, Game game);
 

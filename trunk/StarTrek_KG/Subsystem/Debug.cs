@@ -22,7 +22,7 @@ namespace StarTrek_KG.Subsystem
                                                     "--- > Debug/New Feature Test Mode ------------------------------------",
                                                     "  ",
                                                     "dbgm = Toggle Debug Mode",
-                                                    "dlrs = Scan All Quadrants in Galaxy",
+                                                    "dlrs = Scan All Regions in Galaxy",
                                                     "drec = Galactic Record With Ship's position",
                                                     "dnav = visual of NAV Track in an SRS window",
                                                     "dtor = Torpedo Track in an SRS window", //if this becomes a feature, then baddie needs to be replaced by explosion.  find a cool Unicode Character for it..
@@ -51,7 +51,7 @@ namespace StarTrek_KG.Subsystem
             switch (command.ToLower())
             {
                 case "dsrec":
-                    //this.PrintGalacticRecord(this.Map.Quadrants); 
+                    //this.PrintGalacticRecord(this.Map.Regions); 
                     this.Game.Write.Line("full galactic record with ship position as colored text, baddies as red");
                     this.Game.Write.Line("Not Implemented Yet");
                     break;
@@ -83,17 +83,17 @@ namespace StarTrek_KG.Subsystem
 
                     var testShipNames = this.Game.Config.FactionShips(FactionName.TestFaction).ToList().Shuffle();
 
-                    var quadX = Coordinate.GetRandom();
-                    var quadY = Coordinate.GetRandom();
+                    var RegionX = Coordinate.GetRandom();
+                    var RegionY = Coordinate.GetRandom();
 
-                    var randomSector = new Sector(new LocationDef(quadX, quadY));
+                    var randomSector = new Sector(new LocationDef(RegionX, RegionY));
 
                     this.Game.Map.Config = this.Game.Config;
 
                     var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.Game.Map);
                     Shields.For(hostileShip).Energy = Utility.Utility.Random.Next(100, 200); //todo: resource those numbers out
 
-                    this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+                    this.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
                     //todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
                     this.Game.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
@@ -101,30 +101,30 @@ namespace StarTrek_KG.Subsystem
                     break;
                 case "disb":
  
-                    //var quadX = Coordinate.GetRandom();
-                    //var quadY = Coordinate.GetRandom();
+                    //var RegionX = Coordinate.GetRandom();
+                    //var RegionY = Coordinate.GetRandom();
 
-                    //var randomSector = new Sector(new LocationDef(quadX, quadY));
+                    //var randomSector = new Sector(new LocationDef(RegionX, RegionY));
 
                     //this.Game.Map.Config = this.Game.Config;
 
                     //var starbase = new Starbase("starbaseAlpha", this.Game.Map, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
 
-                    var activeQuad = this.Game.Map.Quadrants.GetActive();
+                    var activeRegion = this.Game.Map.Regions.GetActive();
 
-                    //activeQuad[randomSector].Item = SectorItem.Starbase;
-                    //activeQuad.AddShip(starbase, starbase.Sector);
+                    //activeRegion[randomSector].Item = SectorItem.Starbase;
+                    //activeRegion.AddShip(starbase, starbase.Sector);
 
                     //var hostileShip = new Ship(testShipNames[0], randomSector, this.Game.Map);
 
-                    //this.Game.Map.Quadrants.GetActive().AddShip(hostileShip, hostileShip.Sector);
+                    //this.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
                     ////todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
                     //this.Game.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
                     //this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
                     break;
                 case "dist":
-                    var sectorWithNewStar = this.Game.Map.Quadrants.GetActive().AddStar(this.Game.Map.Quadrants.GetActive());
+                    var sectorWithNewStar = this.Game.Map.Regions.GetActive().AddStar(this.Game.Map.Regions.GetActive());
                     this.Game.Write.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
                     this.Game.Write.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
                     break;
@@ -135,8 +135,8 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "dlrs":
-                    LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Quadrants(Constants.DEBUG_MODE);
-                    this.Game.Write.Line("All Quadrants set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
+                    LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Regions(Constants.DEBUG_MODE);
+                    this.Game.Write.Line("All Regions set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
                     break;
 
                 default:

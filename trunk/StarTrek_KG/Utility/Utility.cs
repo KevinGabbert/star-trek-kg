@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Utility
@@ -187,14 +185,14 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
-        public static string AdjustIfNebula(Quadrant thisQuadrant, string direction, ref string shipSectorX, ref string shipSectorY)
+        public static string AdjustIfNebula(Region thisRegion, string direction, ref string shipSectorX, ref string shipSectorY)
         {
-            if (thisQuadrant.Type == QuadrantType.Nebulae)
+            if (thisRegion.Type == RegionType.Nebulae)
             {
                 direction = "Unknown, due to interference";
             }
 
-            var result = Utility.HideXorYIfNebula(thisQuadrant, shipSectorX, shipSectorY);
+            var result = Utility.HideXorYIfNebula(thisRegion, shipSectorX, shipSectorY);
 
             shipSectorX = result.X;
             shipSectorY = result.Y;
@@ -202,9 +200,9 @@ namespace StarTrek_KG.Utility
             return direction;
         }
 
-        public static OutputCoordinate HideXorYIfNebula(Quadrant thisQuadrant, string x, string y)
+        public static OutputCoordinate HideXorYIfNebula(Region thisRegion, string x, string y)
         {
-            if (thisQuadrant.Type == QuadrantType.Nebulae)
+            if (thisRegion.Type == RegionType.Nebulae)
             {
                 switch (StarTrek_KG.Utility.Utility.Random.Next(2))
                 {

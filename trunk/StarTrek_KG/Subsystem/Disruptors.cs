@@ -61,7 +61,7 @@ namespace StarTrek_KG.Subsystem
         //    this.Game.Write.Line("");
         //    this.Game.Write.Line("Objects to Target:");
 
-        //    List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInQuadrant();
+        //    List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
         //    string userReply;
         //    this.Game.Write.Line("");

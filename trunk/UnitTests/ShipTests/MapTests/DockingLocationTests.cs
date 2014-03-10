@@ -36,8 +36,8 @@ namespace UnitTests.ShipTests.MapTests
             Constants.SECTOR_MIN = 0;
             Constants.SECTOR_MAX = 0;
 
-            Constants.QUADRANT_MIN = 0;
-            Constants.QUADRANT_MAX = 0;
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
         }
 
         [Test]
@@ -119,9 +119,9 @@ namespace UnitTests.ShipTests.MapTests
 
         private bool IsDockingLocation(Map map, int sectorX, int sectorY, int locationX, int locationY)
         {
-            Sector.Get(map.Quadrants.GetActive().Sectors, sectorX, sectorY).Item = SectorItem.Starbase;
+            Sector.Get(map.Regions.GetActive().Sectors, sectorX, sectorY).Item = SectorItem.Starbase;
 
-            var isDockingLocation = map.IsDockingLocation(locationX, locationY, _testMapNoObjects.Quadrants.GetActive().Sectors);
+            var isDockingLocation = map.IsDockingLocation(locationX, locationY, _testMapNoObjects.Regions.GetActive().Sectors);
             return isDockingLocation;
         }
     }

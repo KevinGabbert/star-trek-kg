@@ -10,8 +10,8 @@ namespace UnitTests
             Constants.SECTOR_MIN = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MIN");
             Constants.SECTOR_MAX = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MAX");
 
-            Constants.QUADRANT_MIN = (new StarTrekKGSettings()).GetSetting<int>("QUADRANT_MIN");
-            Constants.QUADRANT_MAX = (new StarTrekKGSettings()).GetSetting<int>("QuadrantMax");
+            Constants.Region_MIN = (new StarTrekKGSettings()).GetSetting<int>("Region_MIN");
+            Constants.Region_MAX = (new StarTrekKGSettings()).GetSetting<int>("RegionMax");
         }
     }
 }

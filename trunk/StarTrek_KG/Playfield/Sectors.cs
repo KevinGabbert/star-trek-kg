@@ -40,14 +40,14 @@ namespace StarTrek_KG.Playfield
             return sectorFound.Count() == 1 ? sectorFound.Single() : null;
         }
 
-        //todo: refactor this against Quadrant.NotFound()
+        //todo: refactor this against Region.NotFound()
         public bool NotFound(Coordinate coordinate)
         {
             var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
             return notFound;
         }
 
-        public static void SetupNewSector(SectorDef sectorDef, Sectors newSectors, Quadrants quadrants)
+        public static void SetupNewSector(SectorDef sectorDef, Sectors newSectors, Regions Regions)
         {
             //todo: rewrite this function to get rid of GOTO
 
@@ -56,9 +56,9 @@ namespace StarTrek_KG.Playfield
 
             if (newSectors.NotFound(randomSector))
             {
-                Sectors.SetupRandomQuadrantDef(sectorDef, quadrants);
+                Sectors.SetupRandomRegionDef(sectorDef, Regions);
 
-                var locationDef = new LocationDef(sectorDef.QuadrantDef, new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
+                var locationDef = new LocationDef(sectorDef.RegionDef, new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
                 var newSector = new Sector(locationDef);
                 newSector.Item = sectorDef.Item;
 
@@ -71,20 +71,20 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        private static void SetupRandomQuadrantDef(SectorDef sectorDef, Quadrants quadrants)
+        private static void SetupRandomRegionDef(SectorDef sectorDef, Regions Regions)
         {
             StartOverQ:
-            if (sectorDef.QuadrantDef == null)
+            if (sectorDef.RegionDef == null)
             {
-                var randomQuadrant = Coordinate.GetRandom();
+                var randomRegion = Coordinate.GetRandom();
 
-                if (quadrants.NotFound(randomQuadrant))
+                if (Regions.NotFound(randomRegion))
                 {
-                    sectorDef.QuadrantDef = randomQuadrant;
+                    sectorDef.RegionDef = randomRegion;
                 }
                 else
                 {
-                    //we got a duplicate random number.  This quadrant is already set up.
+                    //we got a duplicate random number.  This Region is already set up.
                     goto StartOverQ; //todo: rewrite function to remove goto
                 }
             }

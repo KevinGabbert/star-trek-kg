@@ -22,8 +22,8 @@ namespace StarTrek_KG
         public static int SECTOR_MIN; 
         public static int SECTOR_MAX; 
 
-        public static int QUADRANT_MIN; 
-        public static int QUADRANT_MAX;
+        public static int Region_MIN; 
+        public static int Region_MAX;
 
         public static int SHIELDS_DOWN_LEVEL;
         public static int LOW_ENERGY_LEVEL;
