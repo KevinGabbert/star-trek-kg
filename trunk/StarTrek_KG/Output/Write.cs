@@ -613,49 +613,61 @@ namespace StarTrek_KG.Output
             var cellLine = new string('─', cellLength + cellPadding);
 
             renderedResults.Add("");
-            renderedResults.Add("*** Log Range Scan ***".PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.  todo: resource this out.
+            renderedResults.Add("*** Long Range Scan ***".PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.  todo: resource this out.
             renderedResults.Add("┌" + cellLine + "┬" + cellLine + "┬" + cellLine + "┐");
 
+            string currentLRSScanLine0 = "│";
             string currentLRSScanLine1 = "│";
             string currentLRSScanLine2 = "│";
 
             foreach (LRSResult dataPoint in lrsData)
             {
-                string currentRegionName = null;
+                string currentRegionName = "";
                 string currentRegionResult = null;
+                string regionCoordinate = "";
+
+                if (dataPoint.Coordinate != null)
+                {
+                    regionCoordinate = "[" + dataPoint.Coordinate.X + "," + dataPoint.Coordinate.Y + "]";
+                    currentRegionName += dataPoint.Name;
+                }
 
                 if (dataPoint.Unknown)
                 {
-                    currentRegionName += dataPoint.Name;
                     currentRegionResult = Utility.Utility.DamagedScannerUnit();
                 }
                 else if (dataPoint.GalacticBarrier)
                 {
-                    currentRegionName += barrierID;
+                    currentRegionName += barrierID; 
                     currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
                 }
                 else
                 {
-                    currentRegionName += dataPoint.Name;
                     currentRegionResult += dataPoint;
                 }
 
+                //breaks because coordinate is not populated when nebula
+
+                currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + "│";
                 currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + "│";
                 currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + "│";
 
                 if (scanColumn == 2 || scanColumn == 5)
                 {
+                    renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
                     renderedResults.Add(currentLRSScanLine2);
 
                     renderedResults.Add("├" + cellLine + "┼" + cellLine + "┼" + cellLine + "┤");
 
+                    currentLRSScanLine0 = "│";
                     currentLRSScanLine1 = "│";
                     currentLRSScanLine2 = "│";
                 }
 
                 if (scanColumn == 8)
                 {
+                    renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
                     renderedResults.Add(currentLRSScanLine2);
                 }

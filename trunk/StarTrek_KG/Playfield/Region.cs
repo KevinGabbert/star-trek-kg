@@ -549,75 +549,47 @@ namespace StarTrek_KG.Playfield
 
             bool currentlyInNebula = location.Region.Type == RegionType.Nebulae;
 
-            for (var RegionY = location.Region.Y - 1;
-                RegionY <= location.Region.Y + 1;
-                RegionY++)
+            for (var regionY = location.Region.Y - 1;
+                regionY <= location.Region.Y + 1;
+                regionY++)
             {
-                for (var RegionX = location.Region.X - 1;
-                    RegionX <= location.Region.X + 1;
-                    RegionX++)
+                for (var regionX = location.Region.X - 1;
+                    regionX <= location.Region.X + 1;
+                    regionX++)
                 {
-                    var outOfBounds = game.Map.OutOfBounds(RegionY, RegionX);
+                    var outOfBounds = game.Map.OutOfBounds(regionY, regionX);
 
                     var currentResult = new LRSResult();
+
+                    //todo: breaks here when regionX or regionY is 8
+                    currentResult.Coordinate = new Coordinate(regionX, regionY, false);
+
                     if (!currentlyInNebula)
                     {
-                        currentResult = this.GetRegionInfo(RegionY, outOfBounds, RegionX, game);
-                        currentResult.MyLocation = location.Region.X == RegionX &&
-                                                   location.Region.Y == RegionY;
+                        currentResult = this.GetRegionInfo(regionX, regionY, outOfBounds, game);
+                        currentResult.MyLocation = location.Region.X == regionX &&
+                                                   location.Region.Y == regionY;
                     }
                     else
                     {
                         //We are in a nebula.  LRS won't work here.
                         currentResult.Unknown = true;
+                        currentResult.Coordinate = new Coordinate(regionX, regionY); //because we at least know the coordinate of what we don't know is..
                     }
+
                     scanData.Add(currentResult);
                 }
             }
             return scanData;
         }
 
-        public LRSFullData GetLRSNames(Location location, Game game)
-        {
-            var scanData = new LRSFullData();
-
-            bool currentlyInNebula = location.Region.Type == RegionType.Nebulae;
-
-            for (var RegionY = location.Region.Y - 1;
-                RegionY <= location.Region.Y + 1;
-                RegionY++)
-            {
-                for (var RegionX = location.Region.X - 1;
-                    RegionX <= location.Region.X + 1;
-                    RegionX++)
-                {
-                    var outOfBounds = game.Map.OutOfBounds(RegionY, RegionX);
-
-                    var currentResult = new LRSResult();
-                    if (!currentlyInNebula)
-                    {
-                        currentResult = this.GetRegionInfo(RegionY, outOfBounds, RegionX, game);
-                        currentResult.MyLocation = location.Region.X == RegionX &&
-                                                   location.Region.Y == RegionY;
-                    }
-                    else
-                    {
-                        //We are in a nebula.  LRS won't work here.
-                        currentResult.Unknown = true;
-                    }
-                    scanData.Add(currentResult);
-                }
-            }
-            return scanData;
-        }
-
-        private LRSResult GetRegionInfo(int RegionY, bool outOfBounds, int RegionX, Game game)
+        private LRSResult GetRegionInfo(int regionX, int regionY, bool outOfBounds, Game game)
         {
             var currentResult = new LRSResult();
 
             if (!outOfBounds)
             {
-                currentResult = GetRegionData(RegionY, RegionX, game);
+                currentResult = this.GetRegionData(regionX, regionY, game);
             }
             else
             {
@@ -627,53 +599,54 @@ namespace StarTrek_KG.Playfield
             return currentResult;
         }
 
-        private LRSResult GetRegionData(int RegionY, int RegionX, Game game)
+        private LRSResult GetRegionData(int regionX, int regionY, Game game)
         {
-            Region RegionToScan = Regions.Get(game.Map, this.CoordinateToScan(RegionY, RegionX, game.Config));
-            var RegionResult = new LRSResult();
+            Region regionToScan = Regions.Get(game.Map, this.CoordinateToScan(regionX, regionY, game.Config));
+            var regionResult = new LRSResult();
 
-            if (RegionToScan.Type != RegionType.Nebulae)
+            if (regionToScan.Type != RegionType.Nebulae)
             {
-                RegionResult = LongRangeScan.For(game.Map.Playership).Execute(RegionToScan);
+                regionResult = LongRangeScan.For(game.Map.Playership).Execute(regionToScan);
             }
             else
             {
-                RegionResult.Name = RegionToScan.Name;
-                RegionResult.Unknown = true;
+                regionResult.Coordinate = new Coordinate(regionX, regionY);
+                regionResult.Name = regionToScan.Name;
+                regionResult.Unknown = true;
             }
 
-            return RegionResult;
+            return regionResult;
         }
 
-        private Coordinate CoordinateToScan(int RegionY, int RegionX, IStarTrekKGSettings config)
+        private Coordinate CoordinateToScan(int regionX, int regionY, IStarTrekKGSettings config)
         {
             var max = config.GetSetting<int>("RegionMax") - 1;
             var min = config.GetSetting<int>("Region_MIN");
 
-            int divinedRegionX = RegionX;
-            int divinedRegionY = RegionY;
+            int divinedRegionX = regionX;
+            int divinedRegionY = regionY;
 
-            if (RegionX - 1 < min)
+            if (regionX - 1 < min)
             {
                 divinedRegionX = min;
             }
 
-            if ((RegionX > max))
+            if ((regionX > max))
             {
                 divinedRegionX = max;
             }
 
-            if (RegionX + 1 > max)
+            if (regionX + 1 > max)
             {
                 divinedRegionX = max;
             }
 
-            if (RegionY - 1 < min)
+            if (regionY - 1 < min)
             {
                 divinedRegionY = min;
             }
 
-            if ((RegionY > max))
+            if ((regionY > max))
             {
                 divinedRegionY = max;
             }
@@ -683,7 +656,7 @@ namespace StarTrek_KG.Playfield
             return RegionToScan;
         }
 
-        internal Location GetNeighbor(int sectorT, int sectorL, IMap map)
+        public Location GetNeighbor(int sectorT, int sectorL, IMap map)
         {
             var locationToGet = new Location();
             var coordinateToGet = new Coordinate(this.X, this.Y);
@@ -771,6 +744,11 @@ namespace StarTrek_KG.Playfield
             locationToGet.Sector = gotRegion.Sectors.Single(s => s.X == x && s.Y == y);
 
             return locationToGet;
+        }
+
+        public Coordinate GetCoordinate()
+        {
+            return new Coordinate(this.X, this.Y, false);
         }
     }
 }

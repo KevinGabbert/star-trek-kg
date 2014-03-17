@@ -78,8 +78,8 @@
     <Compile Include="Extensions\QuadrantExtensions.cs" />
     <Compile Include="Interfaces\ICoordinate.cs" />
     <Compile Include="Interfaces\IOutputWrite.cs" />
-    <Compile Include="Interfaces\IQuadrant.cs" />
-    <Compile Include="Interfaces\IQuadrants.cs" />
+    <Compile Include="Interfaces\IRegion.cs" />
+    <Compile Include="Interfaces\IRegions.cs" />
     <Compile Include="Interfaces\ISector.cs" />
     <Compile Include="Interfaces\IStarTrekKGSettings.cs" />
     <Compile Include="Interfaces\IWrite.cs" />

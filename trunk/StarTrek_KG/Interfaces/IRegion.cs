@@ -20,6 +20,8 @@ namespace StarTrek_KG.Interfaces
         int X { get; set; }
         int Y { get; set; }
 
+        Coordinate GetCoordinate();
+
         void Create(Stack<string> baddieNames, FactionName stockBaddieFaction, bool addStars = true, bool makeNebulae = false);
         void Create(IMap map, Stack<string> RegionNames, Stack<string> baddieNames, FactionName stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false);
         void Create(Stack<string> RegionNames, Stack<String> baddieNames, FactionName stockBaddieFaction, Coordinate RegionXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true, bool isNebulae = false);

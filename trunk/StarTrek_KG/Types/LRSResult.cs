@@ -1,4 +1,6 @@
-﻿namespace StarTrek_KG.Types
+﻿using StarTrek_KG.Playfield;
+
+namespace StarTrek_KG.Types
 {
     public class LRSResult
     {
@@ -6,6 +8,7 @@
         private int _starbases = -1;
         private int _stars = -1;
 
+        public Coordinate Coordinate { get; set; }
         public bool MyLocation { get; set; }
         public bool GalacticBarrier { get; set; }
         public bool Unknown { get; set; }
