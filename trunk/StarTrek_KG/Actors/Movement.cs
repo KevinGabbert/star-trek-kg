@@ -97,7 +97,7 @@ namespace StarTrek_KG.Actors
                     case 7:
                         currentSX++; //right
                         break;
-                    case 8:
+                    case 0:
                         currentSX++; //right
                         currentSY++; //down
                         break;
