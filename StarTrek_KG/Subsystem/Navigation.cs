@@ -40,7 +40,6 @@ namespace StarTrek_KG.Subsystem
 
         public override void Controls(string command)
         {
-
             switch (command)
             {
                 case "wrp":
