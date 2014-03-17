@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Extensions.System;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Types;
@@ -57,19 +56,21 @@ namespace StarTrek_KG.Subsystem
             return renderedData;
         }
 
-        public LRSResult Execute(Region RegionToScan)
+        public LRSResult Execute(Region regionToScan)
         {
             var RegionResult = new LRSResult();
 
-            if (RegionToScan.Type != RegionType.Nebulae)
+            RegionResult.Coordinate = regionToScan.GetCoordinate();
+
+            if (regionToScan.Type != RegionType.Nebulae)
             {
-                RegionResult.Hostiles = RegionToScan.GetHostiles().Count;
-                RegionResult.Starbases = RegionToScan.GetStarbaseCount();
-                RegionResult.Stars = RegionToScan.GetStarCount();
-                RegionResult.Name = RegionToScan.Name;
+                RegionResult.Hostiles = regionToScan.GetHostiles().Count;
+                RegionResult.Starbases = regionToScan.GetStarbaseCount();
+                RegionResult.Stars = regionToScan.GetStarCount();
+                RegionResult.Name = regionToScan.Name;
             }
 
-            RegionToScan.Scanned = true;
+            regionToScan.Scanned = true;
 
             return RegionResult;
         }
