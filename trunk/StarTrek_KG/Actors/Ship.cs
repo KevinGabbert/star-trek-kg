@@ -374,7 +374,7 @@ namespace StarTrek_KG.Actors
                                 //This means we need to find what Region this sector is in.
                                 //TODO: look up or divine Region here, then set
 
-                                Location lookedUpLocation = myLocation.Region.GetSectorNeighbor(sectorT, sectorL, this.Map);
+                                Location lookedUpLocation = myLocation.Region.GetSectorNeighbor(new Coordinate(sectorT, sectorL, false), this.Map);
                                 currentResult.Location.Region = lookedUpLocation.Region;
 
                                 sectorsToQuery = currentResult.Location.Region.Sectors;
