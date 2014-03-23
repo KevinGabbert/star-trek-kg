@@ -247,7 +247,7 @@ namespace StarTrek_KG.Actors
             lastRegionY = playershipRegion.Y;
             lastRegionX = playershipRegion.X;
 
-            Region destinationRegion = Regions.GetByName(this.Game.Map.Regions, destinationRegionName);
+            Region destinationRegion = this.Game.Map.Regions.Get(destinationRegionName);
 
             //destinationRegion.Active = true;
             destinationRegion.SetActive();
