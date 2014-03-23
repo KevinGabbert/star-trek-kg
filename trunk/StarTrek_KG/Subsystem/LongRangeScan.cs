@@ -56,6 +56,29 @@ namespace StarTrek_KG.Subsystem
             return renderedData;
         }
 
+        public LRSResult GetInfo(Map map, string regionName)
+        {
+            var regionResult = new LRSResult();
+
+            Region regionToScan = map.Regions.Get(regionName);
+
+            regionResult.Coordinate = regionToScan.GetCoordinate();
+
+            if (regionToScan.Type != RegionType.Nebulae)
+            {
+                regionResult.Hostiles = regionToScan.GetHostiles().Count;
+                regionResult.Starbases = regionToScan.GetStarbaseCount();
+                regionResult.Stars = regionToScan.GetStarCount();
+            }
+
+            var barrierID = "Galactic Barrier"; //todo: resource this
+            regionResult.Name = regionResult.GalacticBarrier ? barrierID : regionToScan.Name;
+
+            regionToScan.Scanned = true;
+
+            return regionResult;
+        }
+
         public LRSResult Execute(Region regionToScan)
         {
             var RegionResult = new LRSResult();

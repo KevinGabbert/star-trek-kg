@@ -34,6 +34,12 @@ namespace StarTrek_KG.Playfield
             return i.Single();
         }
 
+        public Region Get(string name)
+        {
+            var i = this.Where(q => q.Name == name);
+            return i.Single();
+        }
+
         public static Region Get(IEnumerable<Region> Regions, Coordinate Region)
         {
             Region retVal = null;
@@ -54,25 +60,26 @@ namespace StarTrek_KG.Playfield
             return retVal;
         }
 
-        public static Region GetByName(IEnumerable<Region> Regions, string RegionName)
-        {
-            Region retVal = null;
+        //public Region GetName(Map map, string regionName)
+        //{
+        //    Region regionToScan = map.Regions.Get(regionName);
 
-            try
-            {
-                //todo: change this back to retval
-                retVal = Regions.Single(q => q.Name == RegionName);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message == "Sequence contains more than one element.  The fix for this is to remove dupes from app.config")
-                {
-                    //todo: why do we have more than 1 element?
-                }
-            }
+        //    var outOfBounds = false;
 
-            return retVal;
-        }
+        //    if (!outOfBounds)
+        //    {
+        //        currentResult = this.GetRegionData(regionX, regionY, game);
+        //    }
+        //    else
+        //    {
+        //        currentResult.GalacticBarrier = true;
+        //    }
+
+        //    var barrierID = "Galactic Barrier"; //todo: resource this
+        //    regionResult.Name = regionResult.GalacticBarrier ? barrierID : regionToScan.Name;
+
+        //    return regionResult;
+        //}
 
         public Region GetActive()
         {
