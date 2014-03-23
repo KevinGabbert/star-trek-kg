@@ -656,100 +656,100 @@ namespace StarTrek_KG.Playfield
             return RegionToScan;
         }
 
-        public Location GetSectorNeighbor(int sectorT, int sectorL, IMap map)
-        {
+        public Location GetSectorNeighbor(Coordinate currentSector, IMap map)
+        {//int sectorT, int sectorL
             var locationToGet = new Location();
             var regionCoordinateToGet = new Coordinate(this.X, this.Y);
 
             //todo: These Numbers are off
-            var sectorCoordinateToGet = new Coordinate(sectorT, sectorL, false);
+            var sectorCoordinateToGet = new Coordinate(currentSector.X, currentSector.Y, false);
 
             var direction = "";
             int x = 0;
             int y = 0;
 
-            if (sectorT < 8 && sectorL == -1)
+            if (currentSector.X < 8 && currentSector.Y == -1)
             {
                 direction = "left";
                 x = 7;
-                y = sectorT;
+                y = currentSector.X;
 
                 var decremented = Region.Decrement(regionCoordinateToGet.X);
                 regionCoordinateToGet.X = decremented;
 
-                sectorCoordinateToGet.Y = Sector.Decrement(sectorL);
+                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
             }
 
-            if (sectorT < 8 && sectorL == 8)
+            if (currentSector.X < 8 && currentSector.Y == 8)
             {
                 direction = "right";
                 x = 0;
-                y = sectorT;
+                y = currentSector.X;
                 regionCoordinateToGet.X = Region.Increment(regionCoordinateToGet.X);
-                sectorCoordinateToGet.Y = Sector.Increment(sectorL);
+                sectorCoordinateToGet.Y = Sector.Increment(currentSector.Y);
             }
 
-            if (sectorT == -1 && sectorL < 8)
+            if (currentSector.X == -1 && currentSector.Y < 8)
             {
                 direction = "top";
-                x = sectorL;
+                x = currentSector.Y;
                 y = 7;
 
                 regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.X = Sector.Decrement(sectorT);
+                sectorCoordinateToGet.X = Sector.Decrement(currentSector.X);
             }
 
-            if (sectorT == 8 && sectorL < 8)
+            if (currentSector.X == 8 && currentSector.Y < 8)
             {
                 direction = "bottom";
-                x = sectorL;
+                x = currentSector.Y;
                 y = 0;
 
                 regionCoordinateToGet.Y = Region.Increment(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.X = Sector.Increment(sectorT);
+                sectorCoordinateToGet.X = Sector.Increment(currentSector.Y);
             }
-            
 
 
 
-            if (sectorT == -1 && sectorL == 8)
+
+            if (currentSector.X == -1 && currentSector.Y == 8)
             {
                 direction = "topRight";
                 x = 0;
                 y = 7;
 
                 regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Decrement(sectorL);
+                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
             }
 
-            if (sectorT == -1 && sectorL == -1)
+            if (currentSector.X == -1 && currentSector.Y == -1)
             {
                 direction = "topLeft";
                 x = 7;
                 y = 7;
 
                 regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Decrement(sectorL);
+                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
             }
 
-            if (sectorT == 8 && sectorL == -1)
+            if (currentSector.X == 8 && currentSector.Y == -1)
             {
                 direction = "bottomLeft";
                 x = 7;
                 y = 0;
 
                 regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Decrement(sectorL);
+                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
             }
 
-            if (sectorT == 8 && sectorL == 8)
+            if (currentSector.X == 8 && currentSector.Y == 8)
             {
                 direction = "bottomRight";
                 x = 0;
                 y = 0;
 
                 regionCoordinateToGet.Y = Region.Increment(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Increment(sectorL);
+                sectorCoordinateToGet.Y = Sector.Increment(currentSector.Y);
             }
 
             Region neighborSectorRegion = Regions.Get(map, new Coordinate(regionCoordinateToGet.X, regionCoordinateToGet.Y, false));
@@ -764,14 +764,17 @@ namespace StarTrek_KG.Playfield
                 //todo: if neighbor is the same as me, then scan failed. return ?? or galactic barrier
  
 
-                map.Write.Line("Sector to the " + direction + 
+                //todo: look at current XY and compare neighboring XY to get an indication of direction (make a function to do this)
+                //string sectorDirection = Sector.GetNeighborDirection(currentSector, sectorCoordinateToGet);
+
+                map.Write.Line("Region to the " + direction + 
                                " = " + neighborSectorRegion.Name + 
                                " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
                                "], Sector: [" + sectorCoordinateToGet.X + "," + sectorCoordinateToGet.Y + "]"); //t,l
             }
             else
             {
-                map.Write.Line("Sector to the " + direction + " = " + "NULL" + " [" + sectorT +  "," + sectorL + "]");
+                map.Write.Line("Region to the " + direction + " = " + "NULL" + " [" + currentSector.X + "," + currentSector.Y + "]");
             }
 
             //this.Map.Write.SingleLine(currentResult.Location.Region.Name);

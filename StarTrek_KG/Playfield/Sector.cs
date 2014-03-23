@@ -137,6 +137,11 @@ namespace StarTrek_KG.Playfield
 
             return retVal;
         }
+
+        internal static string GetNeighborDirection(Coordinate currentSector, Coordinate sectorCoordinateToGet)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
