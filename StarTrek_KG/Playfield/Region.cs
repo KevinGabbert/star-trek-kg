@@ -656,7 +656,7 @@ namespace StarTrek_KG.Playfield
             return RegionToScan;
         }
 
-        public Location GetNeighbor(int sectorT, int sectorL, IMap map)
+        public Location GetSectorNeighbor(int sectorT, int sectorL, IMap map)
         {
             var locationToGet = new Location();
             var coordinateToGet = new Coordinate(this.X, this.Y);
@@ -664,12 +664,15 @@ namespace StarTrek_KG.Playfield
             int x = 0;
             int y = 0;
 
+            Region neighborSectorRegion = null;
+
             if (sectorT < 8 && sectorL == -1)
             {
                 direction = "left";
                 x = 7;
                 y = sectorT;
 
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X, coordinateToGet.Y - 1, false));
                 var decremented = Sector.Decrement(coordinateToGet.X);
                 coordinateToGet.X = decremented;
             }
@@ -679,6 +682,7 @@ namespace StarTrek_KG.Playfield
                 direction = "right";
                 x = 0;
                 y = sectorT;
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X + 1, coordinateToGet.Y, false));
                 coordinateToGet.X = Sector.Increment(coordinateToGet.X);
             }
 
@@ -687,6 +691,7 @@ namespace StarTrek_KG.Playfield
                 direction = "top";
                 x = sectorL;
                 y = 7;
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X, coordinateToGet.Y - 1, false));
                 coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
             }
 
@@ -695,6 +700,7 @@ namespace StarTrek_KG.Playfield
                 direction = "bottom";
                 x = sectorL;
                 y = 0;
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X, coordinateToGet.Y + 1, false));
                 coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
             }
 
@@ -703,7 +709,7 @@ namespace StarTrek_KG.Playfield
                 direction = "topRight";
                 x = 0;
                 y = 7;
-                //coordinateToGet.X = Sector.Increment(coordinateToGet.X);  //cause 'right' incremented it
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X, coordinateToGet.Y - 1, false));
                 coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
             }
 
@@ -715,7 +721,7 @@ namespace StarTrek_KG.Playfield
                 direction = "topLeft";
                 x = 7;
                 y = 7;
-                //coordinateToGet.X = Sector.Decrement(coordinateToGet.X);
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X, coordinateToGet.Y - 1, false));
                 coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
             }
 
@@ -724,7 +730,7 @@ namespace StarTrek_KG.Playfield
                 direction = "bottomLeft";
                 x = 7;
                 y = 0;
-                //coordinateToGet.X = Sector.Increment(coordinateToGet.X);
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X, coordinateToGet.Y - 1, false));
                 coordinateToGet.Y = Sector.Decrement(coordinateToGet.Y);
             }
 
@@ -733,11 +739,29 @@ namespace StarTrek_KG.Playfield
                 direction = "bottomRight";
                 x = 0;
                 y = 0;
-                //coordinateToGet.X = Sector.Increment(coordinateToGet.X);
+
+                neighborSectorRegion = Regions.Get(map, new Coordinate(coordinateToGet.X, coordinateToGet.Y + 1, false));
                 coordinateToGet.Y = Sector.Increment(coordinateToGet.Y);
             }
 
-            map.Write.WithNoEndCR("Region to the " + direction + "= [" + coordinateToGet.X + "," + coordinateToGet.Y +"]: ");
+            if (neighborSectorRegion != null)
+            {
+                //todo: sector needs to be adjusted at this point depending on what direction user was traveling
+                //if -1 then 7
+                //if 8 then 0
+                //etc..
+                map.Write.Line("Sector to the " + direction + " = " + neighborSectorRegion.Name + " [" + sectorT + "," + sectorL + "]");
+            }
+            else
+            {
+                map.Write.Line("Sector to the " + direction + " = " + "NULL" + " [" + sectorT +  "," + sectorL + "]");
+            }
+
+
+
+            //this.Map.Write.SingleLine(currentResult.Location.Region.Name);
+
+            //map.Write.WithNoEndCR("Region to the " + direction + "= [" + coordinateToGet.X + "," + coordinateToGet.Y +"]: ");
             var gotRegion = Regions.Get(map, coordinateToGet);
 
             locationToGet.Region = gotRegion;
