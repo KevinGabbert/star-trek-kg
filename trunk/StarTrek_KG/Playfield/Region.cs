@@ -52,6 +52,26 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
         }
 
+        public Region(IMap map, int x, int y, RegionType regionType)
+        {
+            this.Type = regionType;
+
+            if (regionType == RegionType.GalacticBarrier)
+            {
+                this._errorOnOutOfBounds = false;
+                this.Name = "Galactic Barrier"; //todo: resource this.
+            }
+            else
+            {
+                this.Name = "";
+            }
+
+            this.X = x;
+            this.Y = y;
+            this.Empty = true;
+            this.Map = map;
+        }
+
         public Region(IMap map, Stack<string> baddieNames, FactionName stockBaddieFaction, bool isNebulae = false)
         {
             this.Empty = true;
@@ -656,134 +676,139 @@ namespace StarTrek_KG.Playfield
             return RegionToScan;
         }
 
-        public Location GetSectorNeighbor(Coordinate currentSector, IMap map)
-        {//int sectorT, int sectorL
+        /// <summary>
+        /// Returns Location info on the location Requested.
+        /// If passed an area not in region passed, example: {ThisRegion}.[-1, 0], then the proper location will be divined & returned.
+        /// </summary>
+        /// <param name="locationToExamine"></param>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        public Location GetSectorNeighbor(Location locationToExamine, IMap map)
+        {
             var locationToGet = new Location();
-            var regionCoordinateToGet = new Coordinate(this.X, this.Y);
+            var regionCoordinateToGet = new Coordinate(locationToExamine.Region.X, locationToExamine.Region.Y, false);
 
             //todo: These Numbers are off
-            var sectorCoordinateToGet = new Coordinate(currentSector.X, currentSector.Y, false);
+            var sectorCoordinateToGet = new Coordinate(locationToExamine.Sector.X, locationToExamine.Sector.Y, false);
 
             var direction = "";
-            int x = 0;
-            int y = 0;
+            int currentLocationX = 0;
+            int currentLocationY = 0;
 
-            if (currentSector.X < 8 && currentSector.Y == -1)
+            if (locationToExamine.Sector.X < 8 && locationToExamine.Sector.Y == -1)
             {
                 direction = "left";
-                x = 7;
-                y = currentSector.X;
+                currentLocationX = 7;
+                currentLocationY = locationToExamine.Sector.X;
 
-                var decremented = Region.Decrement(regionCoordinateToGet.X);
-                regionCoordinateToGet.X = decremented;
-
-                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
+                regionCoordinateToGet.X -= 1; 
+                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
             }
 
-            if (currentSector.X < 8 && currentSector.Y == 8)
+            if (locationToExamine.Sector.X < 8 && locationToExamine.Sector.Y == 8)
             {
                 direction = "right";
-                x = 0;
-                y = currentSector.X;
-                regionCoordinateToGet.X = Region.Increment(regionCoordinateToGet.X);
-                sectorCoordinateToGet.Y = Sector.Increment(currentSector.Y);
+                currentLocationX = 0;
+                currentLocationY = locationToExamine.Sector.X;
+
+                regionCoordinateToGet.X += 1; 
+                sectorCoordinateToGet.Y = Sector.SIncrement(locationToExamine.Sector.Y);
             }
 
-            if (currentSector.X == -1 && currentSector.Y < 8)
+            if (locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y < 8)
             {
                 direction = "top";
-                x = currentSector.Y;
-                y = 7;
+                currentLocationX = locationToExamine.Sector.Y;
+                currentLocationY = 7;
 
-                regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.X = Sector.Decrement(currentSector.X);
+                regionCoordinateToGet.Y -= 1; 
+                sectorCoordinateToGet.X = Sector.SDecrement(locationToExamine.Sector.X);
             }
 
-            if (currentSector.X == 8 && currentSector.Y < 8)
+            if (locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y < 8)
             {
                 direction = "bottom";
-                x = currentSector.Y;
-                y = 0;
+                currentLocationX = locationToExamine.Sector.Y;
+                currentLocationY = 0;
 
-                regionCoordinateToGet.Y = Region.Increment(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.X = Sector.Increment(currentSector.Y);
+                regionCoordinateToGet.Y += 1; 
+                sectorCoordinateToGet.X = Sector.SIncrement(locationToExamine.Sector.Y);
             }
 
-
-
-
-            if (currentSector.X == -1 && currentSector.Y == 8)
+            if (locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y == 8)
             {
                 direction = "topRight";
-                x = 0;
-                y = 7;
+                currentLocationX = 0;
+                currentLocationY = 7;
 
-                regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
+                regionCoordinateToGet.Y -= 1; 
+                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
             }
 
-            if (currentSector.X == -1 && currentSector.Y == -1)
+            if (locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y == -1)
             {
                 direction = "topLeft";
-                x = 7;
-                y = 7;
+                currentLocationX = 7;
+                currentLocationY = 7;
 
-                regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
+                regionCoordinateToGet.Y -= 1; 
+                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
             }
 
-            if (currentSector.X == 8 && currentSector.Y == -1)
+            if (locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y == -1)
             {
                 direction = "bottomLeft";
-                x = 7;
-                y = 0;
+                currentLocationX = 7;
+                currentLocationY = 0;
 
-                regionCoordinateToGet.Y = Region.Decrement(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Decrement(currentSector.Y);
+                regionCoordinateToGet.X -= 1;
+                regionCoordinateToGet.Y -= 1; 
+
+                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
             }
 
-            if (currentSector.X == 8 && currentSector.Y == 8)
+            if (locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y == 8)
             {
                 direction = "bottomRight";
-                x = 0;
-                y = 0;
+                currentLocationX = 0;
+                currentLocationY = 0;
 
-                regionCoordinateToGet.Y = Region.Increment(regionCoordinateToGet.Y);
-                sectorCoordinateToGet.Y = Sector.Increment(currentSector.Y);
+                regionCoordinateToGet.X += 1;
+                regionCoordinateToGet.Y += 1;
+
+                sectorCoordinateToGet.Y = Sector.SIncrement(locationToExamine.Sector.Y);
             }
 
             Region neighborSectorRegion = Regions.Get(map, new Coordinate(regionCoordinateToGet.X, regionCoordinateToGet.Y, false));
 
-            if (neighborSectorRegion != null)
+            //todo: sector needs to be adjusted at this point depending on what direction user was traveling
+            //if -1 then 7
+            //if 8 then 0
+            //etc..
+
+            //todo: if neighbor is the same as me, then scan failed. return ?? or galactic barrier
+
+            locationToGet.Region = neighborSectorRegion;
+
+            if (locationToGet.Region.Type == RegionType.GalacticBarrier)
             {
-                //todo: sector needs to be adjusted at this point depending on what direction user was traveling
-                //if -1 then 7
-                //if 8 then 0
-                //etc..
-
-                //todo: if neighbor is the same as me, then scan failed. return ?? or galactic barrier
- 
-
-                //todo: look at current XY and compare neighboring XY to get an indication of direction (make a function to do this)
-                //string sectorDirection = Sector.GetNeighborDirection(currentSector, sectorCoordinateToGet);
-
-                map.Write.Line("Region to the " + direction + 
-                               " = " + neighborSectorRegion.Name + 
+                map.Write.Line("Region to the " + direction +
+                               " = " + neighborSectorRegion.Name +
                                " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
-                               "], Sector: [" + sectorCoordinateToGet.X + "," + sectorCoordinateToGet.Y + "]"); //t,l
+                               "]"); 
             }
             else
             {
-                map.Write.Line("Region to the " + direction + " = " + "NULL" + " [" + currentSector.X + "," + currentSector.Y + "]");
+                map.Write.Line("Region to the " + direction +
+               " = " + neighborSectorRegion.Name +
+               " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
+               "], Sector: [" + sectorCoordinateToGet.X + "," + sectorCoordinateToGet.Y + "]"); 
             }
 
-            //this.Map.Write.SingleLine(currentResult.Location.Region.Name);
-
-            //map.Write.WithNoEndCR("Region to the " + direction + "= [" + coordinateToGet.X + "," + coordinateToGet.Y +"]: ");
-            var gotRegion = Regions.Get(map, regionCoordinateToGet);
-
-            locationToGet.Region = gotRegion;
-            locationToGet.Sector = gotRegion.Sectors.Single(s => s.X == x && s.Y == y);
+            if (locationToGet.Region.Type != RegionType.GalacticBarrier)
+            {
+                locationToGet.Sector = neighborSectorRegion.Sectors.Single(s => s.X == currentLocationX && s.Y == currentLocationY);
+            }
 
             return locationToGet;
         }
@@ -794,54 +819,54 @@ namespace StarTrek_KG.Playfield
         }
 
 
-        //todo: refactor these with sector
-        public static int Increment(int coordinateDimension)
-        {
-            int retVal;
+        ////todo: refactor these with sector
+        //public static int GIncrement(int coordinateDimension)
+        //{
+        //    int retVal;
 
-            if (coordinateDimension >= Constants.SECTOR_MAX)
-            {
-                retVal = 0;
-            }
-            else
-            {
-                //todo: write a test for this in particular.  
-                if (coordinateDimension < 7)
-                {
-                    retVal = coordinateDimension + 1;
-                }
-                else
-                {
-                    retVal = coordinateDimension;
-                }
-            }
+        //    if (coordinateDimension >= Constants.SECTOR_MAX)
+        //    {
+        //        retVal = 0;
+        //    }
+        //    else
+        //    {
+        //        //todo: write a test for this in particular.  
+        //        if (coordinateDimension < 7)
+        //        {
+        //            retVal = coordinateDimension + 1;
+        //        }
+        //        else
+        //        {
+        //            retVal = coordinateDimension;
+        //        }
+        //    }
 
-            return retVal;
-        }
-        public static int Decrement(int coordinateDimension)
-        {
-            int retVal;
+        //    return retVal;
+        //}
+        //public static int GDecrement(int coordinateDimension)
+        //{
+        //    int retVal;
 
-            if (coordinateDimension < Constants.SECTOR_MIN)
-            {
-                retVal = 7;
-            }
+        //    if (coordinateDimension < Constants.SECTOR_MIN)
+        //    {
+        //        retVal = 7;
+        //    }
 
-            else
-            {
-                //todo: write a test for this in particular. 
-                if (coordinateDimension > 0)
-                {
-                    retVal = coordinateDimension - 1;
-                }
-                else
-                {
-                    retVal = coordinateDimension;
-                }
-            }
+        //    else
+        //    {
+        //        //todo: write a test for this in particular. 
+        //        if (coordinateDimension > 0)
+        //        {
+        //            retVal = coordinateDimension - 1;
+        //        }
+        //        else
+        //        {
+        //            retVal = coordinateDimension;
+        //        }
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
     }
 }
 
