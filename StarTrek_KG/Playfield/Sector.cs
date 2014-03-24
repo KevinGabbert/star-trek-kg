@@ -40,6 +40,15 @@ namespace StarTrek_KG.Playfield
             this.RegionDef = location.Region;
         }
 
+        public Sector(LocationDef location, bool enforceBoundsChecking)
+        {
+            this.Type = SectorType.Space;
+            this._errorOnOutOfBounds = enforceBoundsChecking;
+            this.X = location.Sector.X;
+            this.Y = location.Sector.Y;
+            this.RegionDef = location.Region;
+        }
+
         public static Sector Get(Sectors sectors, int sX, int sY)
         {
             var gotSectors = sectors.Where(s => s.X == sX && s.Y == sY).ToList();
@@ -90,7 +99,7 @@ namespace StarTrek_KG.Playfield
             return "Sector: " + this.X + ", " + this.Y;
         }
 
-        public static int Increment(int coordinateDimension)
+        public static int SIncrement(int coordinateDimension)
         {
             int retVal;
 
@@ -113,7 +122,7 @@ namespace StarTrek_KG.Playfield
 
             return retVal;
         }
-        public static int Decrement(int coordinateDimension)
+        public static int SDecrement(int coordinateDimension)
         {
             int retVal;
 

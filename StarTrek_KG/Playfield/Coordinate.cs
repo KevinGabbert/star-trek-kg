@@ -6,9 +6,11 @@ namespace StarTrek_KG.Playfield
 {
     public class Coordinate : ICoordinate
     {
-        protected bool _enforceBoundsChecking = true;
+        protected bool _errorOnOutOfBounds = true;
 
         #region Properties
+
+        public bool OutOfBounds { get; set; }
 
         private int _x;
         public int X
@@ -16,10 +18,11 @@ namespace StarTrek_KG.Playfield
             get { return _x; }
             set
             {
-                if (this._enforceBoundsChecking)
+                if (this._errorOnOutOfBounds)
                 {
-                    Coordinate.CheckForOutOfBounds(value);
+                    this.CheckForOutOfBounds(value);
                 }
+
                 _x = value;
             }
         }
@@ -31,9 +34,9 @@ namespace StarTrek_KG.Playfield
             get { return _y; }
             set
             {
-                if (this._enforceBoundsChecking)
+                if (this._errorOnOutOfBounds)
                 {
-                    Coordinate.CheckForOutOfBounds(value);
+                    this.CheckForOutOfBounds(value);
                 }
                 _y = value;
             }
@@ -47,7 +50,7 @@ namespace StarTrek_KG.Playfield
 
         public Coordinate(int x, int y, bool enforceBoundsChecking = true)
         {
-            _enforceBoundsChecking = enforceBoundsChecking;
+            _errorOnOutOfBounds = enforceBoundsChecking;
             this.X = x;
             this.Y = y;
         }
@@ -58,7 +61,7 @@ namespace StarTrek_KG.Playfield
                                   (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
         }
 
-        private static void CheckForOutOfBounds(int value)
+        private void CheckForOutOfBounds(int value)
         {
             //todo: we should not be hitting this in the game. User needs to be told that they hit the galactic barrier
             //todo: this might need to be moved somewhere else.  It can't be mocked like this.
@@ -68,7 +71,14 @@ namespace StarTrek_KG.Playfield
             if ((value > boundsHigh) || 
                  value < boundsLow) 
             {
-                throw new GameConfigException("Out of bounds");
+                if (this._errorOnOutOfBounds)
+                {
+                    throw new GameConfigException("Out of bounds");
+                }
+                else
+                {
+                    this.OutOfBounds = true;
+                }
             }
         }
 

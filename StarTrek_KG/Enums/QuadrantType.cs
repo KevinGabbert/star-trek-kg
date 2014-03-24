@@ -2,6 +2,7 @@
 {
     public enum RegionType
     {
+        GalacticBarrier = -1, //You can't travel here (well.. perhaps later you can, or get stuck in it.. but not for now)
         GalacticSpace = 0,
         Nebulae = 1 //,
         //DarkMatter = 2 Empty black space with gravity wells in it.  

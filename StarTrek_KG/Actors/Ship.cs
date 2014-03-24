@@ -371,18 +371,36 @@ namespace StarTrek_KG.Actors
 
                             if (nullSector)
                             {
-                                //This means we need to find what Region this sector is in.
-                                //TODO: look up or divine Region here, then set
+                                var currentRegion = myLocation.Region;
 
-                                Location lookedUpLocation = myLocation.Region.GetSectorNeighbor(new Coordinate(sectorT, sectorL, false), this.Map);
-                                currentResult.Location.Region = lookedUpLocation.Region;
+                                //todo: debug: fix this.
+                                if (sectorT == 8 || sectorT == -1)
+                                {
+                                    //todo: error here when game starts out.  is ship spawning in negative sector space?
+                                    //todo: if so, a solution could be to run GetSectorNeighbor() on currentLocation to fix.
+                                    int i;
+                                }
 
-                                sectorsToQuery = currentResult.Location.Region.Sectors;
+                                var boundsChecking = false;
+                                var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL, boundsChecking)), boundsChecking);
 
-                                //this.Map.Write.SingleLine(currentResult.Location.Region.Name);
+                                var locationToExamine = new Location(currentRegion, sectorToExamine);
 
-                                ////Do we really need this second assignment?
-                                //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(lookedUpLocation.Sector.X, lookedUpLocation.Sector.Y, false));
+                                Location neighborSectorLocation = myLocation.Region.GetSectorNeighbor(locationToExamine, this.Map);
+
+                                if (neighborSectorLocation.Region.Type != RegionType.GalacticBarrier)
+                                {
+                                    //todo: are we moving the Ship?  what's going on?
+
+                                    //currentResult.Location.Region = neighborSectorLocation.Region;
+
+                                    //sectorsToQuery = currentResult.Location.Region.Sectors;
+
+                                    //this.Map.Write.SingleLine(currentResult.Location.Region.Name);
+
+                                    ////Do we really need this second assignment?
+                                    //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(lookedUpLocation.Sector.X, lookedUpLocation.Sector.Y, false));
+                                }
                             }
                             else
                             {

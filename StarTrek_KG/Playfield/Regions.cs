@@ -28,10 +28,18 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
         }
 
-        public static Region Get(IMap map, Coordinate Region)
+        public static Region Get(IMap map, Coordinate region)
         {
-            var i = map.Regions.Where(q => q.X == Region.X && q.Y == Region.Y);
-            return i.Single();
+            List<Region> i = map.Regions.Where(q => q.X == region.X && q.Y == region.Y).ToList();
+
+            if (i.Any())
+            {
+                return i.Single();
+            }
+            else
+            {
+                return new Region(map, region.X, region.Y, RegionType.GalacticBarrier);
+            }
         }
 
         public Region Get(string name)
