@@ -382,9 +382,17 @@ namespace StarTrek_KG.Actors
                                 }
 
                                 var boundsChecking = false;
+
+                                
+
                                 var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL, boundsChecking)), boundsChecking);
 
+
+
+
                                 var locationToExamine = new Location(currentRegion, sectorToExamine);
+
+
 
                                 Location neighborSectorLocation = myLocation.Region.GetSectorNeighbor(locationToExamine, this.Map);
 

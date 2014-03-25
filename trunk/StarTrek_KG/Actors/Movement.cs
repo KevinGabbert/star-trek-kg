@@ -114,6 +114,9 @@ namespace StarTrek_KG.Actors
 
                 //**write a function in sector called .GetNeighbors() (returns 9 sectors)
                 //**write a function in sector called .GetNeighbor(SectorNeighborDirection.East) (in this case, if the neighbor is outside the Region, then it needs to call Region.GetNeighbor(direction), then ask it for the corresponding sectors.
+                
+                
+                
                 //**write a function in sector called .GetRegion()
 
                 //**write a function in Region called .GetNeighbors() (for LRS - or use what LRS uses)

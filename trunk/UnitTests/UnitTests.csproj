@@ -58,8 +58,9 @@
     <Compile Include="ShipTests\MapTests\MapTests.cs" />
     <Compile Include="ShipTests\MovementTests\MovementTests.cs" />
     <Compile Include="ShipTests\OutputTests.cs" />
-    <Compile Include="ShipTests\QuadrantTests\NebulaTests.cs" />
-    <Compile Include="ShipTests\QuadrantTests\QuadrantTests_Base.cs" />
+    <Compile Include="ShipTests\RegionTests\NebulaTests.cs" />
+    <Compile Include="ShipTests\RegionTests\RegionTests_Base.cs" />
+    <Compile Include="ShipTests\RegionTests\Region_GetNeighbor_Tests.cs" />
     <Compile Include="ShipTests\ShipObjectTests\SubsystemSetup.cs" />
     <Compile Include="ShipTests\ShipObjectTests\Test_ShipObject.cs" />
     <Compile Include="ShipTests\StarbaseTests\DockingTests.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="ShipTests\SubSystemTests\DamageTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\PhaserTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\PhotonTests.cs" />
-    <Compile Include="ShipTests\QuadrantTests\QuadrantTests.cs" />
+    <Compile Include="ShipTests\RegionTests\RegionTests.cs" />
     <Compile Include="ShipTests\SectorTests\SectorDefTests.cs" />
     <Compile Include="ShipTests\SectorTests\SectorTests.cs" />
     <Compile Include="ShipTests\SubSystemTests\LongRangeScanTests.cs" />
