@@ -122,6 +122,7 @@ namespace StarTrek_KG.Playfield
 
             return retVal;
         }
+
         public static int SDecrement(int coordinateDimension)
         {
             int retVal;

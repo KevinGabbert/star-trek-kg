@@ -66,6 +66,7 @@
     <Compile Include="Enums\ScanType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Playfield\SectorNeighborItem.cs" />
+    <Compile Include="Playfield\SectorNeighborResult.cs" />
     <Compile Include="Types\FactionThreat.cs" />
     <Compile Include="Subsystem\CombinedRangeScan.cs" />
     <Compile Include="Subsystem\DamageControl.cs" />

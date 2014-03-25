@@ -685,139 +685,240 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public Location GetSectorNeighbor(Location locationToExamine, IMap map)
         {
+            var result = new SectorNeighborResult();
+
             var locationToGet = new Location();
             var regionCoordinateToGet = new Coordinate(locationToExamine.Region.X, locationToExamine.Region.Y, false);
-
-            //todo: These Numbers are off
             var sectorCoordinateToGet = new Coordinate(locationToExamine.Sector.X, locationToExamine.Sector.Y, false);
 
-            var direction = "";
-            int currentLocationX = 0;
-            int currentLocationY = 0;
+            result = this.GetLeftEdgeResult(locationToExamine, result, regionCoordinateToGet, sectorCoordinateToGet);
+            result = this.GetRightEdgeResult(locationToExamine, result, regionCoordinateToGet, sectorCoordinateToGet);
+            result = this.GetTopEdgeResult(locationToExamine, result, regionCoordinateToGet, sectorCoordinateToGet);
+            result = this.GetBottomEdgeResult(locationToExamine, result, regionCoordinateToGet, sectorCoordinateToGet);
 
-            if (locationToExamine.Sector.X < 8 && locationToExamine.Sector.Y == -1)
+            result = this.GetBottomRightEdgeResult(locationToExamine, result, regionCoordinateToGet, sectorCoordinateToGet);
+            result = this.GetTopRightEdgeResult(locationToExamine, result, regionCoordinateToGet);
+            result = this.GetTopLeftEdgeResult(locationToExamine, result, regionCoordinateToGet);
+            result = this.GetBottomLeftEdgeResult(locationToExamine, result, regionCoordinateToGet);
+
+            locationToGet.Region = Regions.Get(map, new Coordinate(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y, false));
+
+            //todo: does result.SectorCoordinateToGet need to be read somewhere? (not just for the debug)
+
+            this.WriteDebugText(map, locationToGet, result.Direction, locationToGet.Region, result.SectorCoordinateToGet);
+
+            if (locationToGet.Region.Type != RegionType.GalacticBarrier)
             {
-                direction = "left";
-                currentLocationX = 7;
-                currentLocationY = locationToExamine.Sector.X;
-
-                regionCoordinateToGet.X -= 1; 
-                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
+                locationToGet.Sector = locationToGet.Region.Sectors.Single(s => s.X == result.CurrentLocationX && s.Y == result.CurrentLocationY);
             }
 
-            if (locationToExamine.Sector.X < 8 && locationToExamine.Sector.Y == 8)
+            return locationToGet;
+        }
+
+        private SectorNeighborResult GetBottomRightEdgeResult(Location locationToExamine, 
+                                                              SectorNeighborResult result,
+                                                              ICoordinate regionCoordinateToGet, 
+                                                              ICoordinate sectorCoordinateToGet)
+        {
+            if (this.OffBottomRightEdge(locationToExamine))
             {
-                direction = "right";
-                currentLocationX = 0;
-                currentLocationY = locationToExamine.Sector.X;
-
-                regionCoordinateToGet.X += 1; 
-                sectorCoordinateToGet.Y = Sector.SIncrement(locationToExamine.Sector.Y);
+                result = result.Get("bottomRight",
+                    regionCoordinateToGet.X += 1,
+                    regionCoordinateToGet.Y += 1,
+                    Sector.SIncrement(locationToExamine.Sector.X),
+                    sectorCoordinateToGet.Y,   //todo:  This shows as 8, but current position needs to be fixed.  don't fix here.
+                    0,
+                    0);
             }
+            return result;
+        }
 
-            if (locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y < 8)
+        private SectorNeighborResult GetBottomLeftEdgeResult(Location locationToExamine, 
+                                                             SectorNeighborResult result,
+                                                             ICoordinate regionCoordinateToGet)
+        {
+            if (this.OffBottomLeftEdge(locationToExamine))
             {
-                direction = "top";
-                currentLocationX = locationToExamine.Sector.Y;
-                currentLocationY = 7;
-
-                regionCoordinateToGet.Y -= 1; 
-                sectorCoordinateToGet.X = Sector.SDecrement(locationToExamine.Sector.X);
+                result = result.Get("bottomLeft",
+                    regionCoordinateToGet.X -= 1,
+                    regionCoordinateToGet.Y, // -= 1
+                    Sector.SIncrement(locationToExamine.Sector.X),
+                    Sector.SDecrement(locationToExamine.Sector.Y),
+                    7,
+                    0);
             }
+            return result;
+        }
 
-            if (locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y < 8)
+        private SectorNeighborResult GetTopLeftEdgeResult(Location locationToExamine, 
+                                                          SectorNeighborResult result,
+                                                          ICoordinate regionCoordinateToGet)
+        {
+            if (this.OffTopLeftEdge(locationToExamine))
             {
-                direction = "bottom";
-                currentLocationX = locationToExamine.Sector.Y;
-                currentLocationY = 0;
-
-                regionCoordinateToGet.Y += 1; 
-                sectorCoordinateToGet.X = Sector.SIncrement(locationToExamine.Sector.Y);
+                result = result.Get("topLeft",
+                    regionCoordinateToGet.X,
+                    regionCoordinateToGet.Y, //-= 1
+                    Sector.SDecrement(locationToExamine.Sector.X),
+                    Sector.SDecrement(locationToExamine.Sector.Y),
+                    7,
+                    7);
             }
+            return result;
+        }
 
-            if (locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y == 8)
+        private SectorNeighborResult GetTopRightEdgeResult(Location locationToExamine, 
+                                                           SectorNeighborResult result,
+                                                           ICoordinate regionCoordinateToGet)
+        {
+            if (this.OffTopRightEdge(locationToExamine))
             {
-                direction = "topRight";
-                currentLocationX = 0;
-                currentLocationY = 7;
-
-                regionCoordinateToGet.Y -= 1; 
-                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
+                result = result.Get("topRight",
+                    regionCoordinateToGet.X,
+                    regionCoordinateToGet.Y -= 1,
+                    Sector.SDecrement(locationToExamine.Sector.X),
+                    Sector.SIncrement(locationToExamine.Sector.Y),
+                    0,
+                    7);
             }
+            return result;
+        }
 
-            if (locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y == -1)
+        private SectorNeighborResult GetBottomEdgeResult(Location locationToExamine, 
+                                                         SectorNeighborResult result,
+                                                         ICoordinate regionCoordinateToGet, 
+                                                         ICoordinate sectorCoordinateToGet)
+        {
+            if (this.OffBottomEdge(locationToExamine))
             {
-                direction = "topLeft";
-                currentLocationX = 7;
-                currentLocationY = 7;
-
-                regionCoordinateToGet.Y -= 1; 
-                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
+                result = result.Get("bottom",
+                    regionCoordinateToGet.X,
+                    regionCoordinateToGet.Y += 1,
+                    Sector.SIncrement(locationToExamine.Sector.X),
+                    sectorCoordinateToGet.Y,
+                    locationToExamine.Sector.Y,
+                    0);
             }
+            return result;
+        }
 
-            if (locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y == -1)
+        private SectorNeighborResult GetTopEdgeResult(Location locationToExamine, 
+                                                      SectorNeighborResult result,
+                                                      ICoordinate regionCoordinateToGet, 
+                                                      ICoordinate sectorCoordinateToGet)
+        {
+            if (this.OffTopEdge(locationToExamine))
             {
-                direction = "bottomLeft";
-                currentLocationX = 7;
-                currentLocationY = 0;
-
-                regionCoordinateToGet.X -= 1;
-                regionCoordinateToGet.Y -= 1; 
-
-                sectorCoordinateToGet.Y = Sector.SDecrement(locationToExamine.Sector.Y);
+                result = result.Get("top",
+                    regionCoordinateToGet.X,
+                    regionCoordinateToGet.Y -= 1,
+                    Sector.SDecrement(locationToExamine.Sector.X),
+                    sectorCoordinateToGet.Y,
+                    locationToExamine.Sector.Y,
+                    7);
             }
+            return result;
+        }
 
-            if (locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y == 8)
+        private SectorNeighborResult GetRightEdgeResult(Location locationToExamine, 
+                                                        SectorNeighborResult result,
+                                                        ICoordinate regionCoordinateToGet, 
+                                                        ICoordinate sectorCoordinateToGet)
+        {
+            if (this.OffRightEdge(locationToExamine))
             {
-                direction = "bottomRight";
-                currentLocationX = 0;
-                currentLocationY = 0;
-
-                regionCoordinateToGet.X += 1;
-                regionCoordinateToGet.Y += 1;
-
-                sectorCoordinateToGet.Y = Sector.SIncrement(locationToExamine.Sector.Y);
+                result = result.Get("right",
+                    regionCoordinateToGet.X += 1,
+                    regionCoordinateToGet.Y,
+                    sectorCoordinateToGet.X,
+                    Sector.SIncrement(locationToExamine.Sector.Y),
+                    0,
+                    locationToExamine.Sector.X);
             }
+            return result;
+        }
 
-            Region neighborSectorRegion = Regions.Get(map, new Coordinate(regionCoordinateToGet.X, regionCoordinateToGet.Y, false));
+        private SectorNeighborResult GetLeftEdgeResult(Location locationToExamine, 
+                                                       SectorNeighborResult result,
+                                                       ICoordinate regionCoordinateToGet, 
+                                                       ICoordinate sectorCoordinateToGet)
+        {
+            if (this.OffLeftEdge(locationToExamine))
+            {
+                result = result.Get("left",
+                    regionCoordinateToGet.X -= 1,
+                    regionCoordinateToGet.Y,
+                    sectorCoordinateToGet.X,
+                    Sector.SDecrement(locationToExamine.Sector.Y),
+                    7,
+                    locationToExamine.Sector.X);
+            }
+            return result;
+        }
 
-            //todo: sector needs to be adjusted at this point depending on what direction user was traveling
-            //if -1 then 7
-            //if 8 then 0
-            //etc..
+        private bool OffBottomRightEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y == 8;
+        }
 
-            //todo: if neighbor is the same as me, then scan failed. return ?? or galactic barrier
+        private bool OffBottomLeftEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y == -1;
+        }
 
-            locationToGet.Region = neighborSectorRegion;
+        private bool OffTopLeftEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y == -1;
+        }
 
+        private bool OffTopRightEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y == 8;
+        }
+
+        private bool OffBottomEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X == 8 && locationToExamine.Sector.Y < 8;
+        }
+
+        private bool OffTopEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X == -1 && locationToExamine.Sector.Y < 8;
+        }
+
+        private bool OffRightEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X < 8 && locationToExamine.Sector.Y == 8;
+        }
+
+        private bool OffLeftEdge(Location locationToExamine)
+        {
+            return locationToExamine.Sector.X < 8 && locationToExamine.Sector.Y == -1;
+        }
+
+
+        private void WriteDebugText(IMap map, Location locationToGet, string direction, Region neighborSectorRegion, ICoordinate sectorCoordinateToGet)
+        {
             if (locationToGet.Region.Type == RegionType.GalacticBarrier)
             {
                 map.Write.Line("Region to the " + direction +
                                " = " + neighborSectorRegion.Name +
                                " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
-                               "]"); 
+                               "]");
             }
             else
             {
                 map.Write.Line("Region to the " + direction +
-               " = " + neighborSectorRegion.Name +
-               " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
-               "], Sector: [" + sectorCoordinateToGet.X + "," + sectorCoordinateToGet.Y + "]"); 
+                               " = " + neighborSectorRegion.Name +
+                               " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
+                               "], Sector: [" + sectorCoordinateToGet.X + "," + sectorCoordinateToGet.Y + "]");
             }
-
-            if (locationToGet.Region.Type != RegionType.GalacticBarrier)
-            {
-                locationToGet.Sector = neighborSectorRegion.Sectors.Single(s => s.X == currentLocationX && s.Y == currentLocationY);
-            }
-
-            return locationToGet;
         }
 
         public Coordinate GetCoordinate()
         {
             return new Coordinate(this.X, this.Y, false);
         }
-
 
         ////todo: refactor these with sector
         //public static int GIncrement(int coordinateDimension)
