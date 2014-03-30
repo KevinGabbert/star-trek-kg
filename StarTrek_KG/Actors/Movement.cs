@@ -5,6 +5,7 @@ using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG.Actors
 {
@@ -110,34 +111,26 @@ namespace StarTrek_KG.Actors
                         break;
                 }
 
-                //TODO: check to see if we have left Region - //DO BOUNDS CHECKING
-
-                //**write a function in sector called .GetNeighbors() (returns 9 sectors)
-                //**write a function in sector called .GetNeighbor(SectorNeighborDirection.East) (in this case, if the neighbor is outside the Region, then it needs to call Region.GetNeighbor(direction), then ask it for the corresponding sectors.
-                
-                
-                
-                //**write a function in sector called .GetRegion()
-
-                //**write a function in Region called .GetNeighbors() (for LRS - or use what LRS uses)
-                //**write a function in Region called .GetNeighbor(RegionNeighborDirection.North)
-                    //** now of course this neighbor could be a galactic barrier, so .GetNeighbor could then just return a new Region, of RegionType.Barrier
-
-                //  put currentSX & currentSY together and see if they blow the upper or lower BOUNDS of the sector edges
-                //      // Is X < 0 or > 8
-                        // is Y < 0 or > 8
-                //  if they do, then we need to figure out what Region is past those limits and get it
-                //  if there is *no* Region past those limits, then we need to say that we hit the galactic barrier.
-
-                //We will have to check for the galactic barrier immediately before pulling a new Region..
-                //var newRegion = new Region(currentRegion);
-
-                //If we get into a new Region, then we need to figure out where we are. (all obstacle checking still applies of course)
-                //   1. Reset the variable or variables that blew its bounds  -- either to 0 or 7
-                //   2. Both newRegion and newSector will be set here.
-                // Q. what if there is a star in the other sector? A. then we will stop. as below.  newSector will not be assigned.
-
+                //delete this
                 var newSector = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
+
+                //run IRS on sector we are moving into
+                var result =
+                    ImmediateRangeScan.For(this.ShipConnectedTo).Scan(
+                                           new LocationDef(currentRegion.X, 
+                                                           currentRegion.Y, 
+                                                           Convert.ToInt32(currentSX),
+                                                           Convert.ToInt32(currentSY)));
+
+
+                //if nextSector is out of bounds of the current sector, then we need to:
+                //1. read what is in it. If there is an obstacle, or galactic barrier, then we should stop
+                //1a. determine which direction it is out of our Region, 
+                //then we need to increment Region XY by calling this.TravelThroughRegions(1, Convert.ToInt32(direction), this.ShipConnectedTo);
+
+                //we then need to set our SectorXY to what it should be (GetNeighbors() might do this)
+                //   this function should Reset the variable or variables that blew its bounds  -- either to 0 or 7
+
 
                 var barrierHit = this.IsGalacticBarrier(ref currentSX, ref currentSY);  //XY will be set to safe value in here
                 if (barrierHit)
@@ -160,6 +153,12 @@ namespace StarTrek_KG.Actors
                     //    break;
                     //}
                 }
+
+
+                // newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), Convert.ToInt32(direction), this.ShipConnectedTo);
+                //this.ShipConnectedTo.Coordinate = newLocation;  
+
+
                 returnVal = newSector;
             }
 

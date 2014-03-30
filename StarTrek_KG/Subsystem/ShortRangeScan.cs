@@ -19,7 +19,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged()) return;
 
-            this.Game.Write.RenderSector(SectorScanType.ShortRange, this);
+            this.Game.Write.RenderSectors(SectorScanType.ShortRange, this);
         }
 
         public static ShortRangeScan For(IShip ship)

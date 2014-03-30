@@ -65,8 +65,12 @@
     <Compile Include="Enums\MovementType.cs" />
     <Compile Include="Enums\ScanType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Interfaces\IScanResult.cs" />
     <Compile Include="Playfield\SectorNeighborItem.cs" />
     <Compile Include="Playfield\SectorNeighborResult.cs" />
+    <Compile Include="Subsystem\ImmediateRangeScan.cs" />
+    <Compile Include="Enums\IRSScanDirection.cs" />
+    <Compile Include="Types\IRSResult.cs" />
     <Compile Include="Types\FactionThreat.cs" />
     <Compile Include="Subsystem\CombinedRangeScan.cs" />
     <Compile Include="Subsystem\DamageControl.cs" />
@@ -137,7 +141,6 @@
     <Compile Include="Playfield\Region.cs" />
     <Compile Include="Enums\SectorItem.cs" />
     <Compile Include="TypeSafeEnums\SubsystemType.cs" />
-    <Compile Include="Types\LRSFullData.cs" />
     <Compile Include="Types\LRSResult.cs" />
     <Compile Include="Utility\Console.cs" />
     <Compile Include="Subsystem\Debug.cs" />

@@ -565,7 +565,7 @@ namespace StarTrek_KG.Playfield
 
         public IEnumerable<LRSResult> GetLRSFullData(Location location, Game game)
         {
-            var scanData = new LRSFullData();
+            var scanData = new List<LRSResult>();
 
             bool currentlyInNebula = location.Region.Type == RegionType.Nebulae;
 
@@ -968,6 +968,11 @@ namespace StarTrek_KG.Playfield
 
         //    return retVal;
         //}
+
+        public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, Game game)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

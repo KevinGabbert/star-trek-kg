@@ -254,6 +254,7 @@ namespace StarTrek_KG.Output
             ACTIVITY_PANEL.Add("wrp = Warp Navigation");
             ACTIVITY_PANEL.Add("nto = Navigate To Object");
             ACTIVITY_PANEL.Add("─────────────────────────────");
+            ACTIVITY_PANEL.Add("irs = Immediate Range Scan");
             ACTIVITY_PANEL.Add("srs = Short Range Scan");
             ACTIVITY_PANEL.Add("lrs = Long Range Scan");
             ACTIVITY_PANEL.Add("crs = Combined Range Scan");
@@ -293,6 +294,10 @@ namespace StarTrek_KG.Output
                     Navigation.For(playerShip).Controls(command);
                     break;
 
+                case "irs":
+                    ImmediateRangeScan.For(playerShip).Controls();
+                    break;
+
                 case "srs":
                     ShortRangeScan.For(playerShip).Controls();
                     break;
@@ -305,7 +310,8 @@ namespace StarTrek_KG.Output
                     CombinedRangeScan.For(playerShip).Controls();
                     break;
 
-                case "pha": Phasers.For(playerShip).Controls(playerShip);
+                case "pha": 
+                    Phasers.For(playerShip).Controls(playerShip);
                     break;
 
                 case "tor":
@@ -504,7 +510,7 @@ namespace StarTrek_KG.Output
             }
         }
 
-        public void RenderSector(SectorScanType scanType, ISubsystem subsystem)
+        public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
         {
             var location = subsystem.ShipConnectedTo.GetLocation();
             Region Region = Regions.Get(subsystem.Game.Map, location.Region);
@@ -532,6 +538,9 @@ namespace StarTrek_KG.Output
                 case SectorScanType.ShortRange:
                     printSector.CreateSRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);         
                     break;
+
+                default:
+                    throw new NotImplementedException();
             }
 
             printSector.OutputScanWarnings(Region, subsystem.Game.Map, shieldsAutoRaised);
@@ -567,6 +576,54 @@ namespace StarTrek_KG.Output
                 }
 
                 currentLRSScanLine += " " +  currentRegionResult + " " + "│";
+
+                if (scanColumn == 2 || scanColumn == 5)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                    renderedResults.Add("├─────┼─────┼─────┤");
+                    currentLRSScanLine = "│";
+                }
+
+                if (scanColumn == 8)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                }
+
+                scanColumn++;
+            }
+
+            renderedResults.Add("└─────┴─────┴─────┘");
+
+            return renderedResults;
+        }
+
+        public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
+        {
+            var renderedResults = new List<string>();
+            int scanColumn = 0;
+
+            renderedResults.Add("┌─────┬─────┬─────┐");
+
+            string currentLRSScanLine = "│";
+
+            foreach (IRSResult dataPoint in irsData)
+            {
+                string currentRegionResult = null;
+
+                if (dataPoint.Unknown)
+                {
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
+                }
+                else if (dataPoint.GalacticBarrier)
+                {
+                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+                }
+                else
+                {
+                    currentRegionResult += dataPoint;
+                }
+
+                currentLRSScanLine += " " + currentRegionResult + " " + "│";
 
                 if (scanColumn == 2 || scanColumn == 5)
                 {
@@ -680,6 +737,11 @@ namespace StarTrek_KG.Output
             return renderedResults;
         }
 
+        public IEnumerable<string> RenderIRSWithNames(List<IRSResult> list, Game game)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Course()
         {
             return Environment.NewLine +
@@ -690,6 +752,7 @@ namespace StarTrek_KG.Output
                    " 2   1   8" + Environment.NewLine +
                    Environment.NewLine;
         }
+
     }
 }
 

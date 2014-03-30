@@ -86,6 +86,7 @@ namespace StarTrek_KG.Subsystem
                 this.OutputDamagedMessage();
                 return true;
             }
+
             return false;
         }
 
