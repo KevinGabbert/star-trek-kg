@@ -20,6 +20,7 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly SubsystemType DamageControl = new SubsystemType(9, "Damage Control");
         public static readonly SubsystemType CombinedRangeScan = new SubsystemType(10, "Combined Range Scan");
         public static readonly SubsystemType Disruptors = new SubsystemType(11, "Disruptors");
+        public static readonly SubsystemType ImmediateRangeScan = new SubsystemType(12, "Immediate Range Scan");
 
         private static Dictionary<string, SubsystemType> instance = new Dictionary<string, SubsystemType>();
 
@@ -59,6 +60,10 @@ namespace StarTrek_KG.TypeSafeEnums
             {
                 case "nav":
                     returnVal = SubsystemType.Navigation;
+                    break;
+
+                case "irs":
+                    returnVal = SubsystemType.ImmediateRangeScan;
                     break;
 
                 case "srs":

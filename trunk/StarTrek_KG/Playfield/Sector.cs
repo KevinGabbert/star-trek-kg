@@ -5,6 +5,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Types;
 
 namespace StarTrek_KG.Playfield
 {
@@ -150,6 +151,20 @@ namespace StarTrek_KG.Playfield
 
         internal static string GetNeighborDirection(Coordinate currentSector, Coordinate sectorCoordinateToGet)
         {
+            throw new NotImplementedException();
+        }
+
+        internal static IRSResult GetInfo(LocationDef locationToScan)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static IRSResult GetInfo(IMap iMap, LocationDef locationToScan)
+        {
+            //copy LRS Render
+
+            //var tlrsResults = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
+            //var renderedData = this.Game.Write.RenderLRSData(tlrsResults, this.Game);
             throw new NotImplementedException();
         }
     }

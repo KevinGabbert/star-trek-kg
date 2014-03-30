@@ -23,6 +23,7 @@ namespace StarTrek_KG.Subsystem
                                      new Shields(shipConnectedTo, game) { Energy = 0 },
                                      new Computer(shipConnectedTo, game),
                                      new Navigation(shipConnectedTo, game),
+                                     new ImmediateRangeScan(shipConnectedTo, game),
                                      new ShortRangeScan(shipConnectedTo, game),
                                      new LongRangeScan(shipConnectedTo, game),
                                      new CombinedRangeScan(shipConnectedTo, game),

@@ -1,8 +1,9 @@
-﻿using StarTrek_KG.Playfield;
+﻿using StarTrek_KG.Interfaces;
+using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Types
 {
-    public class LRSResult
+    public class LRSResult: IScanResult
     {
         private int _hostiles = -1;
         private int _starbases = -1;

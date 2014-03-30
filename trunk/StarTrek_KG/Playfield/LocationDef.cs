@@ -26,5 +26,10 @@ namespace StarTrek_KG.Playfield
             this.Region = Region;
             this.Sector = sector;
         }
+
+        internal bool IsNeighbor(Location currentShipLocation)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

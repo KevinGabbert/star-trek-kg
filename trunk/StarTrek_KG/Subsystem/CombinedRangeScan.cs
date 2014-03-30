@@ -21,7 +21,7 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.Line("Combined Scan needs SRS Subsystem in order to run.");
             }
 
-            this.Game.Write.RenderSector(SectorScanType.CombinedRange, this);
+            this.Game.Write.RenderSectors(SectorScanType.CombinedRange, this);
         }
 
         public static CombinedRangeScan For(IShip ship)

@@ -37,7 +37,10 @@ namespace StarTrek_KG.Interfaces
         void RenderNebula(bool renderingMyLocation);
         void RenderUnscannedRegion(bool renderingMyLocation);
         List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game);
+        IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsResults, Game game);
+
         IEnumerable<string> RenderLRSWithNames(List<LRSResult> lrsData, Game game);
+        IEnumerable<string> RenderIRSWithNames(List<IRSResult> list, Game game);
 
         void CreateCommandPanel();
         void Prompt(Ship playerShip, string mapText, Game game);
@@ -47,7 +50,7 @@ namespace StarTrek_KG.Interfaces
         bool PromptUser(string promptMessage, out string value);
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
-        void RenderSector(SectorScanType scanType, ISubsystem subsystem);
+        void RenderSectors(SectorScanType scanType, ISubsystem subsystem);
         string Course();
     }
 }

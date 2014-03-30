@@ -28,6 +28,8 @@ namespace StarTrek_KG.Subsystem
         {
             if (Damaged()) return;
 
+            //todo: refactor this pattern with LRS
+
             Location myLocation = this.ShipConnectedTo.GetLocation();
             var renderedResults = this.RunFullLRSScan(myLocation);
 
@@ -51,7 +53,7 @@ namespace StarTrek_KG.Subsystem
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<LRSResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
 
-            var renderedData = this.Game.Write.RenderLRSWithNames(lrsData.ToList(), this.Game);
+            IEnumerable<string> renderedData = this.Game.Write.RenderLRSWithNames(lrsData.ToList(), this.Game);
 
             return renderedData;
         }
