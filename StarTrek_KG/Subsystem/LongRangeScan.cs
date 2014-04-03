@@ -52,7 +52,6 @@ namespace StarTrek_KG.Subsystem
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<LRSResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
-
             IEnumerable<string> renderedData = this.Game.Write.RenderLRSWithNames(lrsData.ToList(), this.Game);
 
             return renderedData;
@@ -83,21 +82,21 @@ namespace StarTrek_KG.Subsystem
 
         public LRSResult Execute(Region regionToScan)
         {
-            var RegionResult = new LRSResult();
+            var regionResult = new LRSResult();
 
-            RegionResult.Coordinate = regionToScan.GetCoordinate();
+            regionResult.Coordinate = regionToScan.GetCoordinate();
 
             if (regionToScan.Type != RegionType.Nebulae)
             {
-                RegionResult.Hostiles = regionToScan.GetHostiles().Count;
-                RegionResult.Starbases = regionToScan.GetStarbaseCount();
-                RegionResult.Stars = regionToScan.GetStarCount();
-                RegionResult.Name = regionToScan.Name;
+                regionResult.Hostiles = regionToScan.GetHostiles().Count;
+                regionResult.Starbases = regionToScan.GetStarbaseCount();
+                regionResult.Stars = regionToScan.GetStarCount();
+                regionResult.Name = regionToScan.Name;
             }
 
             regionToScan.Scanned = true;
 
-            return RegionResult;
+            return regionResult;
         }
 
         public void Debug_Scan_All_Regions(bool setScanned)

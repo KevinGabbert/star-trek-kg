@@ -589,13 +589,13 @@ namespace StarTrek_KG.Playfield
             return new List<Ship>();
         }
 
-        public bool OutOfBounds(int RegionY, int RegionX)
+        public bool OutOfBounds(ICoordinate coordinate)
         {
-            var inTheNegative = RegionX < 0 || RegionY < 0;
-            var maxxed = RegionX == Constants.Region_MAX || RegionY == Constants.Region_MAX;
+            var inTheNegative = coordinate.X < 0 || coordinate.Y < 0;
+            var maxxed = coordinate.X == Constants.Region_MAX || coordinate.Y == Constants.Region_MAX;
 
-            var yOnMap = RegionY >= 0 && RegionY < Constants.Region_MAX;
-            var xOnMap = RegionX >= 0 && RegionX < Constants.Region_MAX;
+            var yOnMap = coordinate.Y >= 0 && coordinate.Y < Constants.Region_MAX;
+            var xOnMap = coordinate.X >= 0 && coordinate.X < Constants.Region_MAX;
 
             return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }

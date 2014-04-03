@@ -23,6 +23,7 @@ namespace StarTrek_KG.Playfield
             public SectorType Type { get; set; }
             public Coordinate RegionDef { get; set; } //needed.  so it can set ship coordinate
             public List<SectorNeighborItem> Neighbors { get; set; }
+            public bool Scanned { get; set; }
 
         #endregion
 
@@ -166,6 +167,11 @@ namespace StarTrek_KG.Playfield
             //var tlrsResults = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
             //var renderedData = this.Game.Write.RenderLRSData(tlrsResults, this.Game);
             throw new NotImplementedException();
+        }
+
+        public Coordinate GetCoordinate()
+        {
+            return new Coordinate(this.X, this.Y, false);
         }
     }
 }
