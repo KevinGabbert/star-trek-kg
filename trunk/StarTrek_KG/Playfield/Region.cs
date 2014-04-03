@@ -577,7 +577,7 @@ namespace StarTrek_KG.Playfield
                     regionX <= location.Region.X + 1;
                     regionX++)
                 {
-                    var outOfBounds = game.Map.OutOfBounds(regionY, regionX);
+                    var outOfBounds = game.Map.OutOfBounds(new Coordinate(regionY, regionX, false));
 
                     var currentResult = new LRSResult();
 
@@ -586,7 +586,7 @@ namespace StarTrek_KG.Playfield
 
                     if (!currentlyInNebula)
                     {
-                        currentResult = this.GetRegionInfo(regionX, regionY, outOfBounds, game);
+                        currentResult = this.GetRegionInfo(new Coordinate(regionY, regionX, false), outOfBounds, game);
                         currentResult.MyLocation = location.Region.X == regionX &&
                                                    location.Region.Y == regionY;
                     }
@@ -603,13 +603,13 @@ namespace StarTrek_KG.Playfield
             return scanData;
         }
 
-        private LRSResult GetRegionInfo(int regionX, int regionY, bool outOfBounds, Game game)
+        private LRSResult GetRegionInfo(ICoordinate region, bool outOfBounds, Game game)
         {
             var currentResult = new LRSResult();
 
             if (!outOfBounds)
             {
-                currentResult = this.GetRegionData(regionX, regionY, game);
+                currentResult = this.GetRegionData(region, game);
             }
             else
             {
@@ -619,9 +619,25 @@ namespace StarTrek_KG.Playfield
             return currentResult;
         }
 
-        private LRSResult GetRegionData(int regionX, int regionY, Game game)
+        private IRSResult GetSectorInfo(ICoordinate sector, bool outOfBounds, Game game)
         {
-            Region regionToScan = Regions.Get(game.Map, this.CoordinateToScan(regionX, regionY, game.Config));
+            var currentResult = new IRSResult();
+
+            if (!outOfBounds)
+            {
+                currentResult = this.GetSectorData(sector, game);
+            }
+            else
+            {
+                currentResult.GalacticBarrier = true;
+            }
+
+            return currentResult;
+        }
+
+        private LRSResult GetRegionData(ICoordinate region, Game game)
+        {
+            Region regionToScan = Regions.Get(game.Map, this.CoordinateToScan(region.X, region.Y, game.Config));
             var regionResult = new LRSResult();
 
             if (regionToScan.Type != RegionType.Nebulae)
@@ -630,12 +646,21 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                regionResult.Coordinate = new Coordinate(regionX, regionY);
+                regionResult.Coordinate = new Coordinate(region.X, region.Y);
                 regionResult.Name = regionToScan.Name;
                 regionResult.Unknown = true;
             }
 
             return regionResult;
+        }
+
+        private IRSResult GetSectorData(ICoordinate sector, Game game)
+        {
+            Sector sectorToScan = this.Sectors.Get(this.CoordinateToScan(sector.X, sector.Y, game.Config));
+
+            IRSResult sectorResult = ImmediateRangeScan.For(game.Map.Playership).Execute(sectorToScan);
+
+            return sectorResult;
         }
 
         private Coordinate CoordinateToScan(int regionX, int regionY, IStarTrekKGSettings config)
@@ -971,7 +996,33 @@ namespace StarTrek_KG.Playfield
 
         public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, Game game)
         {
-            throw new NotImplementedException();
+            var scanData = new List<IRSResult>();
+
+            //todo:  //bool currentlyInNebula = shipLocation.Sector.Type == RegionType.Nebulae;
+
+            for (var sectorY = shipLocation.Sector.Y - 1;
+                sectorY <= shipLocation.Sector.Y + 1;
+                sectorY++)
+            {
+                for (var sectorX = shipLocation.Sector.X - 1;
+                    sectorX <= shipLocation.Sector.X + 1;
+                    sectorX++)
+                {
+                    var outOfBounds = game.Map.OutOfBounds(shipLocation.Region);
+
+                    var currentResult = new IRSResult();
+
+                    //todo: breaks here when regionX or regionY is 8
+                    currentResult.Coordinate = new Coordinate(sectorX, sectorY, false);
+
+                    currentResult = this.GetSectorInfo(new Coordinate(sectorX, sectorY, false), outOfBounds, game);
+                    currentResult.MyLocation = shipLocation.Region.X == sectorX &&
+                                                shipLocation.Region.Y == sectorY;
+
+                    scanData.Add(currentResult);
+                }
+            }
+            return scanData;
         }
     }
 }

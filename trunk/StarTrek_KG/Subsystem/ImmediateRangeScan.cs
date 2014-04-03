@@ -35,12 +35,16 @@ namespace StarTrek_KG.Subsystem
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<IRSResult> irsData = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
-
             IEnumerable<string> renderedData = this.Game.Write.RenderIRSWithNames(irsData.ToList(), this.Game);
 
             return renderedData;
         }
 
+        /// <summary>
+        /// Used by CRS
+        /// </summary>
+        /// <param name="shipLocation"></param>
+        /// <returns></returns>
         public List<string> RunIRSScan(Location shipLocation)
         {
             var tlrsResults = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
@@ -63,6 +67,23 @@ namespace StarTrek_KG.Subsystem
             //}
 
             return result;
+        }
+
+        public IRSResult Execute(Sector sectorToScan)
+        {
+            var sectorResult = new IRSResult();
+
+            sectorResult.Coordinate = sectorToScan.GetCoordinate();
+
+            //todo: support sector level nebulae
+            //if (sectorToScan.Type != RegionType.Nebulae)
+            //{
+                sectorResult.Item = sectorToScan.Item;
+            //}
+
+            sectorToScan.Scanned = true;
+
+            return sectorResult;
         }
 
         public static ImmediateRangeScan For(IShip ship)
