@@ -78,7 +78,9 @@ namespace StarTrek_KG.Subsystem
             //todo: support sector level nebulae
             //if (sectorToScan.Type != RegionType.Nebulae)
             //{
+                //todo: these 2 concepts need to be combined
                 sectorResult.Item = sectorToScan.Item;
+                sectorResult.Object = sectorToScan.Object;
             //}
 
             sectorToScan.Scanned = true;

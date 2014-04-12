@@ -118,7 +118,7 @@ namespace StarTrek_KG.Output
 
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - (topBorderAreaMeasurement));
 
-            var RegionIndicator = String.Format(" Coord: [{0},{1}]  Sec: [{2},{3}]",
+            var RegionIndicator = String.Format(" Coord: [{0},{1}]  Sec: §{2}.{3}",
                                 Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y),
                                 Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
 

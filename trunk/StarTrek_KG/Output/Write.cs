@@ -602,7 +602,7 @@ namespace StarTrek_KG.Output
             var renderedResults = new List<string>();
             int scanColumn = 0;
 
-            renderedResults.Add("┌─────┬─────┬─────┐");
+            renderedResults.Add("╒═════╤═════╤═════╕");
 
             string currentLRSScanLine = "│";
 
@@ -628,7 +628,7 @@ namespace StarTrek_KG.Output
                 if (scanColumn == 2 || scanColumn == 5)
                 {
                     renderedResults.Add(currentLRSScanLine);
-                    renderedResults.Add("├─────┼─────┼─────┤");
+                    renderedResults.Add("╞═════╪═════╪═════╡");
                     currentLRSScanLine = "│";
                 }
 
@@ -640,7 +640,7 @@ namespace StarTrek_KG.Output
                 scanColumn++;
             }
 
-            renderedResults.Add("└─────┴─────┴─────┘");
+            renderedResults.Add("╘═════╧═════╧═════╛");
 
             return renderedResults;
         }
@@ -737,9 +737,97 @@ namespace StarTrek_KG.Output
             return renderedResults;
         }
 
-        public IEnumerable<string> RenderIRSWithNames(List<IRSResult> list, Game game)
+        //todo: refactor with RenderLRSWithNames
+        public IEnumerable<string> RenderIRSWithNames(List<IRSResult> irsData, Game game)
         {
-            throw new NotImplementedException();
+            var renderedResults = new List<string>();
+            int scanColumn = 0;
+            string longestName = "";
+            foreach (IRSResult result in irsData)
+            {
+                if (result != null)
+                {
+                    if (result.Name != null)
+                    {
+                        longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
+                    }
+                }
+            }
+
+            var barrierID = "Galactic Barrier"; //todo resource this
+            var cellPadding = 1; //todo resource this
+
+            int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
+            cellLength += cellPadding;
+
+            var cellLine = new string('═', cellLength + cellPadding);
+
+            renderedResults.Add("");
+            renderedResults.Add("*** Immediate Range Scan *** <skewed>".PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.  todo: resource this out.
+            renderedResults.Add("╒" + cellLine + "╤" + cellLine + "╤" + cellLine + "╕");
+
+            string currentLRSScanLine0 = "│";
+            string currentLRSScanLine1 = "│";
+            string currentLRSScanLine2 = "│";
+
+            foreach (IRSResult dataPoint in irsData)
+            {
+                string currentRegionName = "";
+                string currentRegionResult = null;
+                string regionCoordinate = "";
+
+                if (dataPoint.Coordinate != null)
+                {
+                    regionCoordinate = "§" + dataPoint.Coordinate.X + "." + dataPoint.Coordinate.Y + "";
+                    currentRegionName += dataPoint.Name;
+                }
+
+                if (dataPoint.Unknown)
+                {
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
+                }
+                else if (dataPoint.GalacticBarrier)
+                {
+                    currentRegionName += barrierID;
+                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+                }
+                else
+                {
+                    currentRegionResult += dataPoint;
+                }
+
+                //breaks because coordinate is not populated when nebula
+
+                currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + "│";
+                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + "│";
+                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + "│";
+
+                if (scanColumn == 2 || scanColumn == 5)
+                {
+                    renderedResults.Add(currentLRSScanLine0);
+                    renderedResults.Add(currentLRSScanLine1);
+                    renderedResults.Add(currentLRSScanLine2);
+
+                    renderedResults.Add("╞" + cellLine + "╪" + cellLine + "╪" + cellLine + "╡");
+
+                    currentLRSScanLine0 = "│";
+                    currentLRSScanLine1 = "│";
+                    currentLRSScanLine2 = "│";
+                }
+
+                if (scanColumn == 8)
+                {
+                    renderedResults.Add(currentLRSScanLine0);
+                    renderedResults.Add(currentLRSScanLine1);
+                    renderedResults.Add(currentLRSScanLine2);
+                }
+
+                scanColumn++;
+            }
+
+            renderedResults.Add("╘" + cellLine + "╧" + cellLine + "╧" + cellLine + "╛");
+
+            return renderedResults;
         }
 
         public string Course()

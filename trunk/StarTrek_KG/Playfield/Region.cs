@@ -563,6 +563,50 @@ namespace StarTrek_KG.Playfield
         //todo: hand LRS a List<LRSResult>(); and then it can build its little grid.
         //or rather.. LongRangeScan subsystem comes up with the numbers, then hands it to the Print
 
+        //todo: refactor this with GetLRSFullData.  Pay attention to OutOfBounds
+        public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, Game game)
+        {
+            var scanData = new List<IRSResult>();
+
+            //todo:  //bool currentlyInNebula = shipLocation.Sector.Type == RegionType.Nebulae;
+
+            for (var sectorY = shipLocation.Sector.Y - 1;
+                sectorY <= shipLocation.Sector.Y + 1;
+                sectorY++)
+            {
+                for (var sectorX = shipLocation.Sector.X - 1;
+                    sectorX <= shipLocation.Sector.X + 1;
+                    sectorX++)
+                {
+                    var outOfBounds = Region.OutOfBounds(shipLocation.Sector);
+
+                    var currentResult = new IRSResult();
+
+                    //todo: breaks here when regionX or regionY is 8
+                    currentResult.Coordinate = new Coordinate(sectorX, sectorY, false);
+
+                    currentResult = this.GetSectorInfo(new Coordinate(sectorX, sectorY, false), outOfBounds, game);
+                    currentResult.MyLocation = shipLocation.Region.X == sectorX &&
+                                                shipLocation.Region.Y == sectorY;
+
+                    scanData.Add(currentResult);
+                }
+            }
+            return scanData;
+        }
+
+        //todo: refactor this with Game.Map.OutOfBounds
+        public static bool OutOfBounds(ICoordinate coordinate)
+        {
+            var inTheNegative = coordinate.X < 0 || coordinate.Y < 0;
+            var maxxed = coordinate.X == Constants.SECTOR_MAX || coordinate.Y == Constants.SECTOR_MAX;
+
+            var yInRegion = coordinate.Y >= 0 && coordinate.Y < Constants.SECTOR_MAX;
+            var xInRegion = coordinate.X >= 0 && coordinate.X < Constants.SECTOR_MAX;
+
+            return (inTheNegative || maxxed) && !(yInRegion && xInRegion);
+        }
+
         public IEnumerable<LRSResult> GetLRSFullData(Location location, Game game)
         {
             var scanData = new List<LRSResult>();
@@ -994,36 +1038,6 @@ namespace StarTrek_KG.Playfield
         //    return retVal;
         //}
 
-        public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, Game game)
-        {
-            var scanData = new List<IRSResult>();
-
-            //todo:  //bool currentlyInNebula = shipLocation.Sector.Type == RegionType.Nebulae;
-
-            for (var sectorY = shipLocation.Sector.Y - 1;
-                sectorY <= shipLocation.Sector.Y + 1;
-                sectorY++)
-            {
-                for (var sectorX = shipLocation.Sector.X - 1;
-                    sectorX <= shipLocation.Sector.X + 1;
-                    sectorX++)
-                {
-                    var outOfBounds = game.Map.OutOfBounds(shipLocation.Region);
-
-                    var currentResult = new IRSResult();
-
-                    //todo: breaks here when regionX or regionY is 8
-                    currentResult.Coordinate = new Coordinate(sectorX, sectorY, false);
-
-                    currentResult = this.GetSectorInfo(new Coordinate(sectorX, sectorY, false), outOfBounds, game);
-                    currentResult.MyLocation = shipLocation.Region.X == sectorX &&
-                                                shipLocation.Region.Y == sectorY;
-
-                    scanData.Add(currentResult);
-                }
-            }
-            return scanData;
-        }
     }
 }
 
