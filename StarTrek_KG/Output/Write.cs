@@ -770,30 +770,30 @@ namespace StarTrek_KG.Output
             string currentLRSScanLine1 = "│";
             string currentLRSScanLine2 = "│";
 
-            foreach (IRSResult dataPoint in irsData)
+            foreach (IRSResult irsDataPoint in irsData)
             {
                 string currentRegionName = "";
                 string currentRegionResult = null;
                 string regionCoordinate = "";
 
-                if (dataPoint.Coordinate != null)
+                if (irsDataPoint.Coordinate != null)
                 {
-                    regionCoordinate = "§" + dataPoint.Coordinate.X + "." + dataPoint.Coordinate.Y + "";
-                    currentRegionName += dataPoint.Name;
+                    regionCoordinate = "§" + irsDataPoint.Coordinate.X + "." + irsDataPoint.Coordinate.Y + "";
+                    currentRegionName += irsDataPoint.RegionName;
                 }
 
-                if (dataPoint.Unknown)
+                if (irsDataPoint.Unknown)
                 {
                     currentRegionResult = Utility.Utility.DamagedScannerUnit();
                 }
-                else if (dataPoint.GalacticBarrier)
+                else if (irsDataPoint.GalacticBarrier)
                 {
                     currentRegionName += barrierID;
                     currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
                 }
                 else
                 {
-                    currentRegionResult += dataPoint;
+                    currentRegionResult += irsDataPoint;
                 }
 
                 //breaks because coordinate is not populated when nebula
