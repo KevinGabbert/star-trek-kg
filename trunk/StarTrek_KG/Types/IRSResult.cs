@@ -13,6 +13,7 @@ namespace StarTrek_KG.Types
         public bool GalacticBarrier { get; set; }
         public bool Unknown { get; set; }
         public string Name { get; set; }
+        public string RegionName { get; set; }
 
         public override string ToString()
         {

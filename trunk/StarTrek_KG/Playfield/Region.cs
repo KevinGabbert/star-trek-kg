@@ -670,6 +670,7 @@ namespace StarTrek_KG.Playfield
             if (!outOfBounds)
             {
                 currentResult = this.GetSectorData(sector, game);
+                currentResult.RegionName = this.Name;
             }
             else
             {
