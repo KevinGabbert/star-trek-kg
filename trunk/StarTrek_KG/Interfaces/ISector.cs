@@ -10,9 +10,9 @@ namespace StarTrek_KG.Interfaces
         ISectorObject Object { get; set; }
         Coordinate RegionDef { get; set; }
         SectorType Type { get; set; }
-        List<SectorNeighborItem> Neighbors { get; set; }
+        List<DivinedSectorItem> Neighbors { get; set; }
         bool Scanned { get; set; }
 
-        //void IncrementBy(VectorCoordinate coordinate);
+        Coordinate GetCoordinate();
     }
 }

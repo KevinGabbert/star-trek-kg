@@ -22,7 +22,7 @@ namespace StarTrek_KG.Playfield
             public ISectorObject Object { get; set; }
             public SectorType Type { get; set; }
             public Coordinate RegionDef { get; set; } //needed.  so it can set ship coordinate
-            public List<SectorNeighborItem> Neighbors { get; set; }
+            public List<DivinedSectorItem> Neighbors { get; set; }
             public bool Scanned { get; set; }
 
         #endregion

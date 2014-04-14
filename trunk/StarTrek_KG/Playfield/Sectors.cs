@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {
     public class Sectors: List<Sector>
     {
-        public Sector Get(Coordinate coordinate)
+        public Sector Get(ICoordinate coordinate)
         {
             var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
 
@@ -25,7 +25,7 @@ namespace StarTrek_KG.Playfield
             return gotSectors.Single();
         }
 
-        public Sector GetNoError(Coordinate coordinate)
+        public Sector GetNoError(ICoordinate coordinate)
         {
             var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
 

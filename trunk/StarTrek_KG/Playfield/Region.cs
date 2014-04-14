@@ -585,7 +585,7 @@ namespace StarTrek_KG.Playfield
                     //todo: breaks here when regionX or regionY is 8
                     currentResult.Coordinate = new Coordinate(sectorX, sectorY, false);
 
-                    currentResult = this.GetSectorInfo(new Coordinate(sectorX, sectorY, false), outOfBounds, game);
+                    currentResult = this.GetSectorInfo(shipLocation.Region, new Coordinate(sectorX, sectorY, false), outOfBounds, game);
                     currentResult.MyLocation = shipLocation.Region.X == sectorX &&
                                                 shipLocation.Region.Y == sectorY;
 
@@ -663,14 +663,13 @@ namespace StarTrek_KG.Playfield
             return currentResult;
         }
 
-        private IRSResult GetSectorInfo(ICoordinate sector, bool outOfBounds, Game game)
+        private IRSResult GetSectorInfo(Region currentRegion, ICoordinate sector, bool outOfBounds, Game game)
         {
             var currentResult = new IRSResult();
 
             if (!outOfBounds)
             {
-                currentResult = this.GetSectorData(sector, game);
-                currentResult.RegionName = this.Name;
+                currentResult = this.GetSectorData(currentRegion, sector, game);
             }
             else
             {
@@ -699,11 +698,28 @@ namespace StarTrek_KG.Playfield
             return regionResult;
         }
 
-        private IRSResult GetSectorData(ICoordinate sector, Game game)
+        private IRSResult GetSectorData(Region currentRegion, ICoordinate sector, Game game)
         {
-            Sector sectorToScan = this.Sectors.Get(this.CoordinateToScan(sector.X, sector.Y, game.Config));
+            Sector sectorToScan = this.Sectors.GetNoError(sector);
 
-            IRSResult sectorResult = ImmediateRangeScan.For(game.Map.Playership).Execute(sectorToScan);
+            Coordinate xx = sectorToScan ?? new Coordinate(sector.X, sector.Y, false);
+
+            ISector sectorToExamine = new Sector(new LocationDef(currentRegion, xx), false);
+            var locationToExamine = new Location(currentRegion, sectorToExamine);
+
+            Location divinedLocationOnMap = currentRegion.DivineSectorOnMap(locationToExamine, this.Map);
+
+            if (divinedLocationOnMap.Region.Type != RegionType.GalacticBarrier)
+            {
+                int i;
+            }
+            else
+            {
+                
+            }
+
+
+            IRSResult sectorResult = ImmediateRangeScan.For(game.Map.Playership).Execute(divinedLocationOnMap);
 
             return sectorResult;
         }
@@ -747,15 +763,23 @@ namespace StarTrek_KG.Playfield
         }
 
         /// <summary>
-        /// Returns Location info on the location Requested.
+        /// Returns map Location info on the location Requested.
         /// If passed an area not in region passed, example: {ThisRegion}.[-1, 0], then the proper location will be divined & returned.
         /// </summary>
         /// <param name="locationToExamine"></param>
         /// <param name="map"></param>
         /// <returns></returns>
-        public Location GetSectorNeighbor(Location locationToExamine, IMap map)
+        public Location DivineSectorOnMap(Location locationToExamine, IMap map)
         {
-            var result = new SectorNeighborResult();
+            var result = new DivinedSectorResult();
+
+            //todo: perhaps this code needs to be in the constructor -------------
+            result.RegionCoordinateToGet = locationToExamine.Region;
+            result.SectorCoordinateToGet = (Coordinate) locationToExamine.Sector;
+            result.CurrentLocationX = locationToExamine.Sector.X;
+            result.CurrentLocationY = locationToExamine.Sector.Y;
+            result.Direction = "Here";
+            //todo: perhaps this code needs to be in the constructor -------------
 
             var locationToGet = new Location();
             var regionCoordinateToGet = new Coordinate(locationToExamine.Region.X, locationToExamine.Region.Y, false);
@@ -771,6 +795,12 @@ namespace StarTrek_KG.Playfield
             result = this.GetTopLeftEdgeResult(locationToExamine, result, regionCoordinateToGet);
             result = this.GetBottomLeftEdgeResult(locationToExamine, result, regionCoordinateToGet);
 
+            if (result.RegionCoordinateToGet == null)
+            {
+                string error;
+                throw new ArgumentException();
+            }
+
             locationToGet.Region = Regions.Get(map, new Coordinate(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y, false));
 
             if (locationToGet.Region.Type != RegionType.GalacticBarrier)
@@ -783,8 +813,8 @@ namespace StarTrek_KG.Playfield
 
         #region GetNeighbor Code
 
-        private SectorNeighborResult GetBottomRightEdgeResult(Location locationToExamine, 
-                                                              SectorNeighborResult result,
+        private DivinedSectorResult GetBottomRightEdgeResult(Location locationToExamine, 
+                                                              DivinedSectorResult result,
                                                               ICoordinate regionCoordinateToGet, 
                                                               ICoordinate sectorCoordinateToGet)
         {
@@ -801,8 +831,8 @@ namespace StarTrek_KG.Playfield
             return result;
         }
 
-        private SectorNeighborResult GetBottomLeftEdgeResult(Location locationToExamine, 
-                                                             SectorNeighborResult result,
+        private DivinedSectorResult GetBottomLeftEdgeResult(Location locationToExamine, 
+                                                             DivinedSectorResult result,
                                                              ICoordinate regionCoordinateToGet)
         {
             if (this.OffBottomLeftEdge(locationToExamine))
@@ -818,8 +848,8 @@ namespace StarTrek_KG.Playfield
             return result;
         }
 
-        private SectorNeighborResult GetTopLeftEdgeResult(Location locationToExamine, 
-                                                          SectorNeighborResult result,
+        private DivinedSectorResult GetTopLeftEdgeResult(Location locationToExamine, 
+                                                          DivinedSectorResult result,
                                                           ICoordinate regionCoordinateToGet)
         {
             if (this.OffTopLeftEdge(locationToExamine))
@@ -835,8 +865,8 @@ namespace StarTrek_KG.Playfield
             return result;
         }
 
-        private SectorNeighborResult GetTopRightEdgeResult(Location locationToExamine, 
-                                                           SectorNeighborResult result,
+        private DivinedSectorResult GetTopRightEdgeResult(Location locationToExamine, 
+                                                           DivinedSectorResult result,
                                                            ICoordinate regionCoordinateToGet)
         {
             if (this.OffTopRightEdge(locationToExamine))
@@ -852,8 +882,8 @@ namespace StarTrek_KG.Playfield
             return result;
         }
 
-        private SectorNeighborResult GetBottomEdgeResult(Location locationToExamine, 
-                                                         SectorNeighborResult result,
+        private DivinedSectorResult GetBottomEdgeResult(Location locationToExamine, 
+                                                         DivinedSectorResult result,
                                                          ICoordinate regionCoordinateToGet, 
                                                          ICoordinate sectorCoordinateToGet)
         {
@@ -870,8 +900,8 @@ namespace StarTrek_KG.Playfield
             return result;
         }
 
-        private SectorNeighborResult GetTopEdgeResult(Location locationToExamine, 
-                                                      SectorNeighborResult result,
+        private DivinedSectorResult GetTopEdgeResult(Location locationToExamine, 
+                                                      DivinedSectorResult result,
                                                       ICoordinate regionCoordinateToGet, 
                                                       ICoordinate sectorCoordinateToGet)
         {
@@ -888,8 +918,8 @@ namespace StarTrek_KG.Playfield
             return result;
         }
 
-        private SectorNeighborResult GetRightEdgeResult(Location locationToExamine, 
-                                                        SectorNeighborResult result,
+        private DivinedSectorResult GetRightEdgeResult(Location locationToExamine, 
+                                                        DivinedSectorResult result,
                                                         ICoordinate regionCoordinateToGet, 
                                                         ICoordinate sectorCoordinateToGet)
         {
@@ -906,8 +936,8 @@ namespace StarTrek_KG.Playfield
             return result;
         }
 
-        private SectorNeighborResult GetLeftEdgeResult(Location locationToExamine, 
-                                                       SectorNeighborResult result,
+        private DivinedSectorResult GetLeftEdgeResult(Location locationToExamine, 
+                                                       DivinedSectorResult result,
                                                        ICoordinate regionCoordinateToGet, 
                                                        ICoordinate sectorCoordinateToGet)
         {

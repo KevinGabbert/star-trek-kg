@@ -1,7 +1,7 @@
 ﻿
 namespace StarTrek_KG.Playfield
 {
-    public class SectorNeighborItem
+    public class DivinedSectorItem
     {
         public bool MyLocation { get; set; }
         public Location Location { get; set; }

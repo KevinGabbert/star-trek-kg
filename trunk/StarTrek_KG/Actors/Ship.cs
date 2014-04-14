@@ -177,7 +177,7 @@ namespace StarTrek_KG.Actors
 
             this.Map.Write.Line(scavengedText + " from destroyed " + scavengedFrom + " debris field. ");
 
-            this.UpdateSectorNeighbors();
+            this.UpdateDivinedSectors();
         }
           
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
@@ -317,7 +317,7 @@ namespace StarTrek_KG.Actors
         /// - When destroyed Ships are cleaned up
         /// </summary>
         /// <returns></returns>
-        public void UpdateSectorNeighbors()
+        public void UpdateDivinedSectors()
         {
             //Scan happens like this, in number order:
             //036           //036                
@@ -344,7 +344,7 @@ namespace StarTrek_KG.Actors
 
             var myLocation = this.GetLocation();
 
-            this.Sector.Neighbors = new List<SectorNeighborItem>();
+            this.Sector.Neighbors = new List<DivinedSectorItem>();
 
             int row = 0;
 
@@ -356,13 +356,13 @@ namespace StarTrek_KG.Actors
                 {
                     for (var sectorT = myLocation.Sector.X - 1; sectorT <= myLocation.Sector.X + 1; sectorT++)
                     {
-                        var currentResult = new SectorNeighborItem();
+                        var currentResult = new DivinedSectorItem();
                         currentResult.MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL;
                         currentResult.Location = new Location();
 
                         if (sectorT >= -1 && sectorT <= 8)
                         {
-                            var sectorsToQuery = myLocation.Region.Sectors;
+                            Sectors sectorsToQuery = myLocation.Region.Sectors;
 
                             currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL, false));
                             
@@ -376,7 +376,7 @@ namespace StarTrek_KG.Actors
                                 if (sectorT == 8 || sectorT == -1)
                                 {
                                     //todo: error here when game starts out.  is ship spawning in negative sector space?
-                                    //todo: if so, a solution could be to run GetSectorNeighbor() on currentLocation to fix.
+                                    //todo: if so, a solution could be to run GetDivinedSector() on currentLocation to fix.
                                     int i;
                                 }
 
@@ -385,7 +385,8 @@ namespace StarTrek_KG.Actors
                                 var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL, boundsChecking)), boundsChecking);
                                 var locationToExamine = new Location(currentRegion, sectorToExamine);
 
-                                Location neighborSectorLocation = myLocation.Region.GetSectorNeighbor(locationToExamine, this.Map);
+                                //todo: this could be currentRegion.GetDivinedSector()
+                                Location neighborSectorLocation = myLocation.Region.DivineSectorOnMap(locationToExamine, this.Map);
 
                                 if (neighborSectorLocation.Region.Type != RegionType.GalacticBarrier)
                                 {
@@ -415,7 +416,7 @@ namespace StarTrek_KG.Actors
         /// </summary>
         public void UpdateLocalFiringRange()
         {
-            this.Sector.Neighbors = new List<SectorNeighborItem>();
+            this.Sector.Neighbors = new List<DivinedSectorItem>();
 
         }
     }

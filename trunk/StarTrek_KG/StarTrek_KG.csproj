@@ -66,8 +66,8 @@
     <Compile Include="Enums\ScanType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interfaces\IScanResult.cs" />
-    <Compile Include="Playfield\SectorNeighborItem.cs" />
-    <Compile Include="Playfield\SectorNeighborResult.cs" />
+    <Compile Include="Playfield\DivinedSectorItem.cs" />
+    <Compile Include="Playfield\DivinedSectorResult.cs" />
     <Compile Include="Subsystem\ImmediateRangeScan.cs" />
     <Compile Include="Enums\IRSScanDirection.cs" />
     <Compile Include="Types\IRSResult.cs" />

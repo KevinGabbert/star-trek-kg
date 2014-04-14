@@ -69,21 +69,22 @@ namespace StarTrek_KG.Subsystem
             return result;
         }
 
-        public IRSResult Execute(Sector sectorToScan)
+        public IRSResult Execute(Location locationToScan)
         {
             var sectorResult = new IRSResult();
 
-            sectorResult.Coordinate = sectorToScan.GetCoordinate();
+            sectorResult.Coordinate = locationToScan.Sector.GetCoordinate();
 
             //todo: support sector level nebulae
             //if (sectorToScan.Type != RegionType.Nebulae)
             //{
                 //todo: these 2 concepts need to be combined
-                sectorResult.Item = sectorToScan.Item;
-                sectorResult.Object = sectorToScan.Object;
+                sectorResult.Item = locationToScan.Sector.Item;
+                sectorResult.Object = locationToScan.Sector.Object;
+                sectorResult.RegionName = locationToScan.Region.Name;
             //}
 
-            sectorToScan.Scanned = true;
+            locationToScan.Sector.Scanned = true;
 
             return sectorResult;
         }
