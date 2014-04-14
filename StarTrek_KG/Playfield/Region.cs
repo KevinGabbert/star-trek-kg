@@ -630,7 +630,7 @@ namespace StarTrek_KG.Playfield
 
                     if (!currentlyInNebula)
                     {
-                        currentResult = this.GetRegionInfo(new Coordinate(regionY, regionX, false), outOfBounds, game);
+                        currentResult = this.GetRegionInfo(new Coordinate(regionX, regionY, false), outOfBounds, game);
                         currentResult.MyLocation = location.Region.X == regionX &&
                                                    location.Region.Y == regionY;
                     }
