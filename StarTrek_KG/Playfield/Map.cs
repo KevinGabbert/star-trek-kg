@@ -112,7 +112,7 @@ namespace StarTrek_KG.Playfield
                 this.Write.Line("");
             }
 
-            this.Playership.UpdateSectorNeighbors();
+            this.Playership.UpdateDivinedSectors();
         }
 
         public void SetupPlayerShipInSectors(SectorDefs sectorDefs)
@@ -452,7 +452,7 @@ namespace StarTrek_KG.Playfield
                 //todo: add else if for starbase when the time comes
             }
 
-            this.Playership.UpdateSectorNeighbors();
+            this.Playership.UpdateDivinedSectors();
         }
 
         public void RemoveTargetFromSector(IMap map, IShip ship)

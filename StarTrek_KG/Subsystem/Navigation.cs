@@ -58,7 +58,7 @@ namespace StarTrek_KG.Subsystem
             //todo: upon arriving in Region, all damaged controls need to be enumerated
             this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            ShipConnectedTo.UpdateSectorNeighbors();
+            ShipConnectedTo.UpdateDivinedSectors();
         }
 
         private void NavigateToObject()

@@ -1,6 +1,6 @@
 ﻿namespace StarTrek_KG.Playfield
 {
-    public class SectorNeighborResult
+    public class DivinedSectorResult
     {
         public string Direction { get; set; }
         public int CurrentLocationX { get; set; }
@@ -8,7 +8,7 @@
         public Coordinate RegionCoordinateToGet { get; set; }
         public Coordinate SectorCoordinateToGet { get; set; }
 
-        public SectorNeighborResult Get(string direction,
+        public DivinedSectorResult Get(string direction,
                                         int regionX,
                                         int regionY,
                                         int sectorX,
