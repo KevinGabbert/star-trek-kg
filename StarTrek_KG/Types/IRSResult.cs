@@ -22,14 +22,14 @@ namespace StarTrek_KG.Types
             switch (this.Item)
             {
                 case SectorItem.Empty:
-                    returnVal = "Empty";
+                    returnVal = "Empty Space"; //todo: resource this out
                     break;
 
                 case SectorItem.FriendlyShip:
                 case SectorItem.HostileShip:
                 case SectorItem.Star:
 
-                    returnVal = this.Object != null ? this.Object.Name : "SectorObject Error";
+                    returnVal = this.Object != null ? this.Object.Name : Constants.SECTOR_INDICATOR + " Error"; //todo: resource this out
 
                     break;
 
@@ -38,7 +38,7 @@ namespace StarTrek_KG.Types
                     break;
 
                 case SectorItem.PlayerShip:
-                    returnVal = "<This Ship>";
+                    returnVal = "<This Ship>"; //todo: identify ship
                     break;
 
                 case SectorItem.Debug:
@@ -46,7 +46,7 @@ namespace StarTrek_KG.Types
                     break;
 
                 default:
-                    returnVal = "Unknown";
+                    returnVal = "Unknown"; //todo: resource this out
                     break;
             }
 

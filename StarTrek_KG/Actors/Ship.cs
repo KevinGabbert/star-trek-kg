@@ -366,7 +366,6 @@ namespace StarTrek_KG.Actors
 
                             currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL, false));
                             
-                            string stringToWrite = "";
                             bool nullSector = currentResult.Location.Sector == null;
 
                             if (nullSector)
@@ -383,16 +382,8 @@ namespace StarTrek_KG.Actors
 
                                 var boundsChecking = false;
 
-                                
-
                                 var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL, boundsChecking)), boundsChecking);
-
-
-
-
                                 var locationToExamine = new Location(currentRegion, sectorToExamine);
-
-
 
                                 Location neighborSectorLocation = myLocation.Region.GetSectorNeighbor(locationToExamine, this.Map);
 
@@ -409,13 +400,6 @@ namespace StarTrek_KG.Actors
                                     ////Do we really need this second assignment?
                                     //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(lookedUpLocation.Sector.X, lookedUpLocation.Sector.Y, false));
                                 }
-                            }
-                            else
-                            {
-                                string sector = currentResult.Location.Sector.Item.ToString();
-                                stringToWrite += row + ": [" + sectorT + "," + sectorL + "] " + sector;
-
-                                this.Map.Write.SingleLine(stringToWrite);
                             }
                         }
                         row++;

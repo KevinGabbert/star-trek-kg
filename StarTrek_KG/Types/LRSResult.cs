@@ -41,5 +41,18 @@ namespace StarTrek_KG.Types
 
             return returnVal;
         }
+
+        /// <summary>
+        /// Used in LRS
+        /// </summary>
+        /// <returns></returns>
+        public string ToLongString()
+        {
+            string returnVal = null;
+
+            returnVal = this.Hostiles.ToString() + " ∙ " + this.Starbases.ToString() + " ∙ " + this.Stars.ToString();
+
+            return returnVal;
+        }
     }
 }

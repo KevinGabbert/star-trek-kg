@@ -700,7 +700,7 @@ namespace StarTrek_KG.Output
                 }
                 else
                 {
-                    currentRegionResult += dataPoint;
+                    currentRegionResult += dataPoint.ToLongString();
                 }
 
                 //breaks because coordinate is not populated when nebula
@@ -778,7 +778,7 @@ namespace StarTrek_KG.Output
 
                 if (irsDataPoint.Coordinate != null)
                 {
-                    regionCoordinate = "§" + irsDataPoint.Coordinate.X + "." + irsDataPoint.Coordinate.Y + "";
+                    regionCoordinate = Constants.SECTOR_INDICATOR + irsDataPoint.Coordinate.X + "." + irsDataPoint.Coordinate.Y + "";
                     currentRegionName += irsDataPoint.RegionName;
                 }
 
