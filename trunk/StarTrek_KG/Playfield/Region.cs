@@ -773,10 +773,6 @@ namespace StarTrek_KG.Playfield
 
             locationToGet.Region = Regions.Get(map, new Coordinate(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y, false));
 
-            //todo: does result.SectorCoordinateToGet need to be read somewhere? (not just for the debug)
-
-            this.WriteDebugText(map, locationToGet, result.Direction, locationToGet.Region, result.SectorCoordinateToGet);
-
             if (locationToGet.Region.Type != RegionType.GalacticBarrier)
             {
                 locationToGet.Sector = locationToGet.Region.Sectors.Single(s => s.X == result.CurrentLocationX && s.Y == result.CurrentLocationY);
@@ -784,6 +780,8 @@ namespace StarTrek_KG.Playfield
 
             return locationToGet;
         }
+
+        #region GetNeighbor Code
 
         private SectorNeighborResult GetBottomRightEdgeResult(Location locationToExamine, 
                                                               SectorNeighborResult result,
@@ -966,79 +964,12 @@ namespace StarTrek_KG.Playfield
             return locationToExamine.Sector.X < 8 && locationToExamine.Sector.Y == -1;
         }
 
-
-        private void WriteDebugText(IMap map, Location locationToGet, string direction, Region neighborSectorRegion, ICoordinate sectorCoordinateToGet)
-        {
-            if (locationToGet.Region.Type == RegionType.GalacticBarrier)
-            {
-                map.Write.Line("Region to the " + direction +
-                               " = " + neighborSectorRegion.Name +
-                               " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
-                               "]");
-            }
-            else
-            {
-                map.Write.Line("Region to the " + direction +
-                               " = " + neighborSectorRegion.Name +
-                               " [" + neighborSectorRegion.X + "," + neighborSectorRegion.Y +
-                               "], Sector: [" + sectorCoordinateToGet.X + "," + sectorCoordinateToGet.Y + "]");
-            }
-        }
+        #endregion
 
         public Coordinate GetCoordinate()
         {
             return new Coordinate(this.X, this.Y, false);
         }
-
-        ////todo: refactor these with sector
-        //public static int GIncrement(int coordinateDimension)
-        //{
-        //    int retVal;
-
-        //    if (coordinateDimension >= Constants.SECTOR_MAX)
-        //    {
-        //        retVal = 0;
-        //    }
-        //    else
-        //    {
-        //        //todo: write a test for this in particular.  
-        //        if (coordinateDimension < 7)
-        //        {
-        //            retVal = coordinateDimension + 1;
-        //        }
-        //        else
-        //        {
-        //            retVal = coordinateDimension;
-        //        }
-        //    }
-
-        //    return retVal;
-        //}
-        //public static int GDecrement(int coordinateDimension)
-        //{
-        //    int retVal;
-
-        //    if (coordinateDimension < Constants.SECTOR_MIN)
-        //    {
-        //        retVal = 7;
-        //    }
-
-        //    else
-        //    {
-        //        //todo: write a test for this in particular. 
-        //        if (coordinateDimension > 0)
-        //        {
-        //            retVal = coordinateDimension - 1;
-        //        }
-        //        else
-        //        {
-        //            retVal = coordinateDimension;
-        //        }
-        //    }
-
-        //    return retVal;
-        //}
-
     }
 }
 
