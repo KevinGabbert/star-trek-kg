@@ -34,24 +34,24 @@ namespace StarTrek_KG.Subsystem
         public IEnumerable<string> RunFullIRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
-            IEnumerable<IRSResult> irsData = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
+            IEnumerable<IScanResult> irsData = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
             IEnumerable<string> renderedData = this.Game.Write.RenderIRSWithNames(irsData.ToList(), this.Game);
 
             return renderedData;
         }
 
-        /// <summary>
-        /// Used by CRS
-        /// </summary>
-        /// <param name="shipLocation"></param>
-        /// <returns></returns>
-        public List<string> RunIRSScan(Location shipLocation)
-        {
-            var tlrsResults = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
-            var renderedData = this.Game.Write.RenderIRSData(tlrsResults, this.Game);
+        ///// <summary>
+        ///// Used by CRS
+        ///// </summary>
+        ///// <param name="shipLocation"></param>
+        ///// <returns></returns>
+        //public List<string> RunIRSScan(Location shipLocation)
+        //{
+        //    var tlrsResults = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
+        //    var renderedData = this.Game.Write.RenderIRSData(tlrsResults, this.Game);
 
-            return renderedData.ToList();
-        }
+        //    return renderedData.ToList();
+        //}
 
         public IRSResult Scan(LocationDef locationToScan)
         {
