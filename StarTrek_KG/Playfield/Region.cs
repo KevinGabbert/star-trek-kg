@@ -570,13 +570,13 @@ namespace StarTrek_KG.Playfield
 
             //todo:  //bool currentlyInNebula = shipLocation.Sector.Type == RegionType.Nebulae;
 
-            for (var sectorY = shipLocation.Sector.Y - 1;
-                sectorY <= shipLocation.Sector.Y + 1;
-                sectorY++)
+            for (var sectorX = shipLocation.Sector.X - 1;
+                sectorX <= shipLocation.Sector.X + 1;
+                sectorX++)
             {
-                for (var sectorX = shipLocation.Sector.X - 1;
-                    sectorX <= shipLocation.Sector.X + 1;
-                    sectorX++)
+                for (var sectorY = shipLocation.Sector.Y - 1;
+                    sectorY <= shipLocation.Sector.Y + 1;
+                    sectorY++)
                 {
                     var outOfBounds = Region.OutOfBounds(shipLocation.Sector);
 
