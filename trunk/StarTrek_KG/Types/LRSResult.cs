@@ -46,7 +46,7 @@ namespace StarTrek_KG.Types
         /// Used in LRS
         /// </summary>
         /// <returns></returns>
-        public string ToLongString()
+        public string ToScanString()
         {
             string returnVal = null;
 

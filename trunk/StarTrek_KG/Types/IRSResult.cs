@@ -15,7 +15,7 @@ namespace StarTrek_KG.Types
         public string Name { get; set; }
         public string RegionName { get; set; }
 
-        public override string ToString()
+        public string ToScanString()
         {
             string returnVal;
 

@@ -51,7 +51,7 @@ namespace StarTrek_KG.Subsystem
         public IEnumerable<string> RunFullLRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
-            IEnumerable<LRSResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
+            IEnumerable<IScanResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
             IEnumerable<string> renderedData = this.Game.Write.RenderLRSWithNames(lrsData.ToList(), this.Game);
 
             return renderedData;

@@ -9,5 +9,7 @@ namespace StarTrek_KG.Interfaces
         bool GalacticBarrier { get; set; }
         bool Unknown { get; set; }
         string Name { get; set; }
+
+        string ToScanString();
     }
 }

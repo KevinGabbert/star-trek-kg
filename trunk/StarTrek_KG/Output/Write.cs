@@ -597,55 +597,55 @@ namespace StarTrek_KG.Output
             return renderedResults;
         }
 
-        public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
-        {
-            var renderedResults = new List<string>();
-            int scanColumn = 0;
+        //public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
+        //{
+        //    var renderedResults = new List<string>();
+        //    int scanColumn = 0;
 
-            renderedResults.Add("╒═════╤═════╤═════╕");
+        //    renderedResults.Add("╒═════╤═════╤═════╕");
 
-            string currentLRSScanLine = "│";
+        //    string currentLRSScanLine = "│";
 
-            foreach (IRSResult dataPoint in irsData)
-            {
-                string currentRegionResult = null;
+        //    foreach (IRSResult dataPoint in irsData)
+        //    {
+        //        string currentRegionResult = null;
 
-                if (dataPoint.Unknown)
-                {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
-                }
-                else if (dataPoint.GalacticBarrier)
-                {
-                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
-                }
-                else
-                {
-                    currentRegionResult += dataPoint;
-                }
+        //        if (dataPoint.Unknown)
+        //        {
+        //            currentRegionResult = Utility.Utility.DamagedScannerUnit();
+        //        }
+        //        else if (dataPoint.GalacticBarrier)
+        //        {
+        //            currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+        //        }
+        //        else
+        //        {
+        //            currentRegionResult += dataPoint;
+        //        }
 
-                currentLRSScanLine += " " + currentRegionResult + " " + "│";
+        //        currentLRSScanLine += " " + currentRegionResult + " " + "│";
 
-                if (scanColumn == 2 || scanColumn == 5)
-                {
-                    renderedResults.Add(currentLRSScanLine);
-                    renderedResults.Add("╞═════╪═════╪═════╡");
-                    currentLRSScanLine = "│";
-                }
+        //        if (scanColumn == 2 || scanColumn == 5)
+        //        {
+        //            renderedResults.Add(currentLRSScanLine);
+        //            renderedResults.Add("╞═════╪═════╪═════╡");
+        //            currentLRSScanLine = "│";
+        //        }
 
-                if (scanColumn == 8)
-                {
-                    renderedResults.Add(currentLRSScanLine);
-                }
+        //        if (scanColumn == 8)
+        //        {
+        //            renderedResults.Add(currentLRSScanLine);
+        //        }
 
-                scanColumn++;
-            }
+        //        scanColumn++;
+        //    }
 
-            renderedResults.Add("╘═════╧═════╧═════╛");
+        //    renderedResults.Add("╘═════╧═════╧═════╛");
 
-            return renderedResults;
-        }
+        //    return renderedResults;
+        //}
 
-        public IEnumerable<string> RenderLRSWithNames(List<LRSResult> lrsData, Game game)
+        public IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, Game game)
         {
             var renderedResults = new List<string>();
             int scanColumn = 0;
@@ -700,7 +700,7 @@ namespace StarTrek_KG.Output
                 }
                 else
                 {
-                    currentRegionResult += dataPoint.ToLongString();
+                    currentRegionResult += dataPoint.ToScanString();
                 }
 
                 //breaks because coordinate is not populated when nebula
@@ -738,7 +738,7 @@ namespace StarTrek_KG.Output
         }
 
         //todo: refactor with RenderLRSWithNames
-        public IEnumerable<string> RenderIRSWithNames(List<IRSResult> irsData, Game game)
+        public IEnumerable<string> RenderIRSWithNames(List<IScanResult> irsData, Game game)
         {
             var renderedResults = new List<string>();
             int scanColumn = 0;
@@ -793,7 +793,7 @@ namespace StarTrek_KG.Output
                 }
                 else
                 {
-                    currentRegionResult += irsDataPoint;
+                    currentRegionResult += irsDataPoint.ToScanString();
                 }
 
                 //breaks because coordinate is not populated when nebula
