@@ -35,7 +35,7 @@ namespace StarTrek_KG.Subsystem
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<IScanResult> irsData = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
-            IEnumerable<string> renderedData = this.Game.Write.RenderIRSWithNames(irsData.ToList(), this.Game);
+            IEnumerable<string> renderedData = this.Game.Write.RenderScanWithNames(ScanRenderType.DoubleSingleLine, "*** Immediate Range Scan ***", irsData.ToList(), this.Game);
 
             return renderedData;
         }

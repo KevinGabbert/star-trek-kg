@@ -168,6 +168,11 @@ namespace StarTrek_KG.Config
             return setting;
         }
 
+        public string Setting(string name)
+        {
+            return this.GetSetting<string>(name);
+        }
+
         #endregion
 
         public T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false)

@@ -36,6 +36,7 @@ namespace StarTrek_KG.Interfaces
         string GetText(string textToGet, string textToGet2);
         string GetText(string name);
         T GetSetting<T>(string name);
+        string Setting(string name);
         T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false);
         void Reset();
     }

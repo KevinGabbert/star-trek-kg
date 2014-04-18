@@ -15,6 +15,12 @@ namespace StarTrek_KG.Types
         public bool Unknown { get; set; }
         public string Name { get; set; }
 
+        public string RegionName
+        {
+            get { return Name; }
+            set { this.Name = value; }
+        }
+
         public int Hostiles
         {
             get { return _hostiles; }

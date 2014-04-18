@@ -6,9 +6,11 @@ namespace StarTrek_KG.Interfaces
     {
         Coordinate Coordinate { get; set; }
         bool MyLocation { get; set; }
+
         bool GalacticBarrier { get; set; }
         bool Unknown { get; set; }
         string Name { get; set; }
+        string RegionName { get; set; }
 
         string ToScanString();
     }

@@ -63,13 +63,14 @@
     <Compile Include="Config\Elements\Name.cs" />
     <Compile Include="Config\Elements\SeverityValueTranslation.cs" />
     <Compile Include="Enums\MovementType.cs" />
-    <Compile Include="Enums\ScanType.cs" />
+    <Compile Include="Enums\SectorScanType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interfaces\IScanResult.cs" />
     <Compile Include="Playfield\DivinedSectorItem.cs" />
     <Compile Include="Playfield\DivinedSectorResult.cs" />
     <Compile Include="Subsystem\ImmediateRangeScan.cs" />
     <Compile Include="Enums\IRSScanDirection.cs" />
+    <Compile Include="TypeSafeEnums\ScanRenderType.cs" />
     <Compile Include="Types\IRSResult.cs" />
     <Compile Include="Types\FactionThreat.cs" />
     <Compile Include="Subsystem\CombinedRangeScan.cs" />
