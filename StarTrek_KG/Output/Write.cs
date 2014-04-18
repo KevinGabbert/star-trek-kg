@@ -649,18 +649,8 @@ namespace StarTrek_KG.Output
         public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, Game game)
         {
             var renderedResults = new List<string>();
-            int scanColumn = 0;
-            string longestName = "";
-            foreach (IScanResult result in data)
-            {
-                if (result != null)
-                {
-                    if (result.Name != null)
-                    {
-                        longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
-                    }
-                }
-            }
+            int scanColumn = 0;  //todo resource this
+            string longestName = Write.GetLongestName(data);
 
             var galacticBarrierText = this.Config.GetSetting<string>("GalacticBarrierText");
             var barrierID = galacticBarrierText; 
@@ -669,14 +659,9 @@ namespace StarTrek_KG.Output
             int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
             cellLength += cellPadding;
 
-
             var topLeft = this.Config.Setting(scanRenderType + "TopLeft");
             var topMiddle = this.Config.Setting(scanRenderType + "TopMiddle");
             var topRight = this.Config.Setting(scanRenderType + "TopRight");
-
-            var middleLeft = this.Config.Setting(scanRenderType + "MiddleLeft");
-            var middle = this.Config.Setting(scanRenderType + "Middle");
-            var middleRight = this.Config.Setting(scanRenderType + "MiddleRight");
 
             var bottomLeft = this.Config.Setting(scanRenderType + "BottomLeft");
             var bottomMiddle = this.Config.Setting(scanRenderType + "BottomMiddle");
@@ -684,16 +669,35 @@ namespace StarTrek_KG.Output
 
             var cellLine = new string(Convert.ToChar(this.Config.Setting(scanRenderType + "CellLine")), cellLength + cellPadding);
 
+            renderedResults.Add("");
+            renderedResults.Add(title.PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.   //todo resource this
+            renderedResults.Add(topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight);
+
+            this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine);
+
+            renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
+
+            return renderedResults;
+        }
+
+        private void RenderMiddle(ScanRenderType scanRenderType, 
+                                  IEnumerable<IScanResult> data, 
+                                  string barrierID, 
+                                  string galacticBarrierText,
+                                  int cellLength, 
+                                  int scanColumn, 
+                                  ICollection<string> renderedResults, 
+                                  string cellLine)
+        {
             var verticalBoxLine = this.Config.Setting("VerticalBoxLine");
 
-            renderedResults.Add("");
-            renderedResults.Add(title.PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better. 
-
-            renderedResults.Add(topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight);
+            var middleLeft = this.Config.Setting(scanRenderType + "MiddleLeft");
+            var middle = this.Config.Setting(scanRenderType + "Middle");
+            var middleRight = this.Config.Setting(scanRenderType + "MiddleRight");
 
             string currentLRSScanLine0 = verticalBoxLine;
             string currentLRSScanLine1 = verticalBoxLine;
-            string currentLRSScanLine2 = verticalBoxLine; 
+            string currentLRSScanLine2 = verticalBoxLine;
 
             foreach (IScanResult scanDataPoint in data)
             {
@@ -703,7 +707,8 @@ namespace StarTrek_KG.Output
 
                 if (scanDataPoint.Coordinate != null)
                 {
-                    regionCoordinate = Constants.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." + scanDataPoint.Coordinate.Y + "";
+                    regionCoordinate = Constants.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." +
+                                       scanDataPoint.Coordinate.Y + "";
                     currentRegionName += scanDataPoint.RegionName;
                 }
 
@@ -725,9 +730,9 @@ namespace StarTrek_KG.Output
 
                 currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
                 currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + verticalBoxLine;
-                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + verticalBoxLine;
+                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + verticalBoxLine; //todo resource this
 
-                if (scanColumn == 2 || scanColumn == 5)
+                if (scanColumn == 2 || scanColumn == 5) //todo resource this
                 {
                     renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
@@ -740,7 +745,7 @@ namespace StarTrek_KG.Output
                     currentLRSScanLine2 = verticalBoxLine;
                 }
 
-                if (scanColumn == 8)
+                if (scanColumn == 8) //todo resource this
                 {
                     renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
@@ -749,10 +754,24 @@ namespace StarTrek_KG.Output
 
                 scanColumn++;
             }
+        }
 
-            renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
+        private static string GetLongestName(IEnumerable<IScanResult> data)
+        {
+            string longestName = "";
 
-            return renderedResults;
+            foreach (IScanResult result in data)
+            {
+                if (result != null)
+                {
+                    if (result.Name != null)
+                    {
+                        longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
+                    }
+                }
+            }
+
+            return longestName;
         }
 
         public string Course()
