@@ -645,105 +645,13 @@ namespace StarTrek_KG.Output
         //    return renderedResults;
         //}
 
-        public IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, Game game)
-        {
-            var renderedResults = new List<string>();
-            int scanColumn = 0;
-            string longestName = "";
-            foreach (LRSResult result in lrsData)
-            {
-                if (result != null)
-                {
-                    if (result.Name != null)
-                    {
-                        longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
-                    }
-                }
-            }
-
-            var barrierID = "Galactic Barrier"; //todo resource this
-            var cellPadding = 1; //todo resource this
-
-            int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
-            cellLength += cellPadding;
-
-            var cellLine = new string('─', cellLength + cellPadding);
-
-            renderedResults.Add("");
-            renderedResults.Add("*** Long Range Scan ***".PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.  todo: resource this out.
-            renderedResults.Add("┌" + cellLine + "┬" + cellLine + "┬" + cellLine + "┐");
-
-            string currentLRSScanLine0 = "│";
-            string currentLRSScanLine1 = "│";
-            string currentLRSScanLine2 = "│";
-
-            foreach (LRSResult dataPoint in lrsData)
-            {
-                string currentRegionName = "";
-                string currentRegionResult = null;
-                string regionCoordinate = "";
-
-                if (dataPoint.Coordinate != null)
-                {
-                    regionCoordinate = "[" + dataPoint.Coordinate.X + "," + dataPoint.Coordinate.Y + "]";
-                    currentRegionName += dataPoint.Name;
-                }
-
-                if (dataPoint.Unknown)
-                {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
-                }
-                else if (dataPoint.GalacticBarrier)
-                {
-                    currentRegionName += barrierID; 
-                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
-                }
-                else
-                {
-                    currentRegionResult += dataPoint.ToScanString();
-                }
-
-                //breaks because coordinate is not populated when nebula
-
-                currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + "│";
-                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + "│";
-                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + "│";
-
-                if (scanColumn == 2 || scanColumn == 5)
-                {
-                    renderedResults.Add(currentLRSScanLine0);
-                    renderedResults.Add(currentLRSScanLine1);
-                    renderedResults.Add(currentLRSScanLine2);
-
-                    renderedResults.Add("├" + cellLine + "┼" + cellLine + "┼" + cellLine + "┤");
-
-                    currentLRSScanLine0 = "│";
-                    currentLRSScanLine1 = "│";
-                    currentLRSScanLine2 = "│";
-                }
-
-                if (scanColumn == 8)
-                {
-                    renderedResults.Add(currentLRSScanLine0);
-                    renderedResults.Add(currentLRSScanLine1);
-                    renderedResults.Add(currentLRSScanLine2);
-                }
-
-                scanColumn++;
-            }
-
-            renderedResults.Add("└" + cellLine + "┴" + cellLine + "┴" + cellLine + "┘");
-
-            return renderedResults;
-        }
-
         //todo: refactor with RenderLRSWithNames
-        public IEnumerable<string> RenderIRSWithNames(List<IScanResult> irsData, Game game)
+        public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, Game game)
         {
             var renderedResults = new List<string>();
             int scanColumn = 0;
             string longestName = "";
-            foreach (IRSResult result in irsData)
+            foreach (IScanResult result in data)
             {
                 if (result != null)
                 {
@@ -754,53 +662,70 @@ namespace StarTrek_KG.Output
                 }
             }
 
-            var barrierID = "Galactic Barrier"; //todo resource this
+            var galacticBarrierText = this.Config.GetSetting<string>("GalacticBarrierText");
+            var barrierID = galacticBarrierText; 
             var cellPadding = 1; //todo resource this
 
             int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
             cellLength += cellPadding;
 
-            var cellLine = new string('═', cellLength + cellPadding);
+
+            var topLeft = this.Config.Setting(scanRenderType + "TopLeft");
+            var topMiddle = this.Config.Setting(scanRenderType + "TopMiddle");
+            var topRight = this.Config.Setting(scanRenderType + "TopRight");
+
+            var middleLeft = this.Config.Setting(scanRenderType + "MiddleLeft");
+            var middle = this.Config.Setting(scanRenderType + "Middle");
+            var middleRight = this.Config.Setting(scanRenderType + "MiddleRight");
+
+            var bottomLeft = this.Config.Setting(scanRenderType + "BottomLeft");
+            var bottomMiddle = this.Config.Setting(scanRenderType + "BottomMiddle");
+            var bottomRight = this.Config.Setting(scanRenderType + "BottomRight");
+
+            var cellLine = new string(Convert.ToChar(this.Config.Setting(scanRenderType + "CellLine")), cellLength + cellPadding);
+
+            var verticalBoxLine = this.Config.Setting("VerticalBoxLine");
 
             renderedResults.Add("");
-            renderedResults.Add("*** Immediate Range Scan *** <skewed>".PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.  todo: resource this out.
-            renderedResults.Add("╒" + cellLine + "╤" + cellLine + "╤" + cellLine + "╕");
+            renderedResults.Add(title.PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better. 
 
-            string currentLRSScanLine0 = "│";
-            string currentLRSScanLine1 = "│";
-            string currentLRSScanLine2 = "│";
+            renderedResults.Add(topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight);
 
-            foreach (IRSResult irsDataPoint in irsData)
+            string currentLRSScanLine0 = verticalBoxLine;
+            string currentLRSScanLine1 = verticalBoxLine;
+            string currentLRSScanLine2 = verticalBoxLine; 
+
+            foreach (IScanResult scanDataPoint in data)
             {
                 string currentRegionName = "";
                 string currentRegionResult = null;
                 string regionCoordinate = "";
 
-                if (irsDataPoint.Coordinate != null)
+                if (scanDataPoint.Coordinate != null)
                 {
-                    regionCoordinate = Constants.SECTOR_INDICATOR + irsDataPoint.Coordinate.X + "." + irsDataPoint.Coordinate.Y + "";
-                    currentRegionName += irsDataPoint.RegionName;
+                    regionCoordinate = Constants.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." + scanDataPoint.Coordinate.Y + "";
+                    currentRegionName += scanDataPoint.RegionName;
                 }
 
-                if (irsDataPoint.Unknown)
+                if (scanDataPoint.Unknown)
                 {
                     currentRegionResult = Utility.Utility.DamagedScannerUnit();
                 }
-                else if (irsDataPoint.GalacticBarrier)
+                else if (scanDataPoint.GalacticBarrier)
                 {
                     currentRegionName += barrierID;
-                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+                    currentRegionResult = galacticBarrierText;
                 }
                 else
                 {
-                    currentRegionResult += irsDataPoint.ToScanString();
+                    currentRegionResult += scanDataPoint.ToScanString();
                 }
 
                 //breaks because coordinate is not populated when nebula
 
-                currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + "│";
-                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + "│";
-                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + "│";
+                currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
+                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + verticalBoxLine;
+                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + verticalBoxLine;
 
                 if (scanColumn == 2 || scanColumn == 5)
                 {
@@ -808,11 +733,11 @@ namespace StarTrek_KG.Output
                     renderedResults.Add(currentLRSScanLine1);
                     renderedResults.Add(currentLRSScanLine2);
 
-                    renderedResults.Add("╞" + cellLine + "╪" + cellLine + "╪" + cellLine + "╡");
+                    renderedResults.Add(middleLeft + cellLine + middle + cellLine + middle + cellLine + middleRight);
 
-                    currentLRSScanLine0 = "│";
-                    currentLRSScanLine1 = "│";
-                    currentLRSScanLine2 = "│";
+                    currentLRSScanLine0 = verticalBoxLine;
+                    currentLRSScanLine1 = verticalBoxLine;
+                    currentLRSScanLine2 = verticalBoxLine;
                 }
 
                 if (scanColumn == 8)
@@ -825,7 +750,7 @@ namespace StarTrek_KG.Output
                 scanColumn++;
             }
 
-            renderedResults.Add("╘" + cellLine + "╧" + cellLine + "╧" + cellLine + "╛");
+            renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
 
             return renderedResults;
         }
@@ -840,7 +765,6 @@ namespace StarTrek_KG.Output
                    " 2   1   8" + Environment.NewLine +
                    Environment.NewLine;
         }
-
     }
 }
 

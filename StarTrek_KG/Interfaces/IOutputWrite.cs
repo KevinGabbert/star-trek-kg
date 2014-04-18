@@ -2,6 +2,7 @@
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Types;
+using StarTrek_KG.TypeSafeEnums;
 using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Interfaces
@@ -39,8 +40,8 @@ namespace StarTrek_KG.Interfaces
         List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game);
         //IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsResults, Game game);
 
-        IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, Game game);
-        IEnumerable<string> RenderIRSWithNames(List<IScanResult> list, Game game);
+        //IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, Game game);
+        IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> list, Game game);
 
         void CreateCommandPanel();
         void Prompt(Ship playerShip, string mapText, Game game);
