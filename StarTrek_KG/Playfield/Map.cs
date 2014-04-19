@@ -487,6 +487,30 @@ namespace StarTrek_KG.Playfield
             newActiveSector.Item = SectorItem.PlayerShip;
         }
 
+        /// <summary>
+        /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
+        /// </summary>
+        /// <param name="map"></param>
+        public void SetPlayershipInLocation(IMap map, Location newLocation)
+        {
+            this.RemovePlayership(map);
+
+            //todo: look up location on map where newLocation.Region & newLocation.Sector points to
+            var newShipLocation = this.LookUpLocation(newLocation);
+            
+            //todo:
+            //newShipLocation.SetActive()
+            //newShipLocation.Sector.Item = SectorItem.PlayerShip
+            //newShipLocation.Sector.Object = ??
+
+            throw new NotImplementedException();
+        }
+
+        private object LookUpLocation(Location newLocation)
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddACoupleHostileFederationShipsToExistingMap()
         {
             var federationShipNames = this.Config.FactionShips(FactionName.Federation);
@@ -589,13 +613,13 @@ namespace StarTrek_KG.Playfield
             return new List<Ship>();
         }
 
-        public bool OutOfBounds(ICoordinate coordinate)
+        public bool OutOfBounds(Region region)
         {
-            var inTheNegative = coordinate.X < 0 || coordinate.Y < 0;
-            var maxxed = coordinate.X == Constants.Region_MAX || coordinate.Y == Constants.Region_MAX;
+            var inTheNegative = region.X < 0 || region.Y < 0;
+            var maxxed = region.X == Constants.Region_MAX || region.Y == Constants.Region_MAX;
 
-            var yOnMap = coordinate.Y >= 0 && coordinate.Y < Constants.Region_MAX;
-            var xOnMap = coordinate.X >= 0 && coordinate.X < Constants.Region_MAX;
+            var yOnMap = region.Y >= 0 && region.Y < Constants.Region_MAX;
+            var xOnMap = region.X >= 0 && region.X < Constants.Region_MAX;
 
             return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }
