@@ -74,6 +74,7 @@ namespace StarTrek_KG.Interfaces
         void AddHostileFederationShipsToExistingMap();
         void AddACoupleHostileFederationShipsToExistingMap();
 
-        bool OutOfBounds(ICoordinate coordinate);
+        bool OutOfBounds(Region region);
+        void SetPlayershipInLocation(IMap map, Location newLocation);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
@@ -6,6 +7,7 @@ using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Types;
 
 namespace StarTrek_KG.Actors
 {
@@ -36,9 +38,10 @@ namespace StarTrek_KG.Actors
             switch (movementType)
             {
                 case MovementType.Impulse:
-                    var newSector = this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
-                    newLocation = this.ShipConnectedTo.GetRegion();
-                    this.ShipConnectedTo.Sector = newSector;
+                    Location newShipLocation = this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
+
+                    this.Game.Map.SetPlayershipInLocation(this.Game.Map, newShipLocation);
+                    //this.ShipConnectedTo.SetLocation(newShipLocation);
                     break;
 
                 case MovementType.Warp:
@@ -46,6 +49,10 @@ namespace StarTrek_KG.Actors
                         this.ShipConnectedTo);
                     this.ShipConnectedTo.Coordinate = newLocation;   
                     break;
+
+                //todo:
+                //case MovementType.X:
+                //    newLocation = this.TravelThroughGalaxies()
 
                 default:
                     this.Game.Write.Line("Unsupported Movement Type");
@@ -61,7 +68,7 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        private ISector TravelThroughSectors(int distance, int direction, IShip playership)
+        private Location TravelThroughSectors(int distance, int direction, IShip playership)
         {
             // 4   5   6
             //   \ ↑ /
@@ -71,7 +78,7 @@ namespace StarTrek_KG.Actors
 
             direction = -direction + 8;
 
-            ISector returnVal = playership.Sector;
+            Location newLocation = null;
             var currentRegion = playership.GetRegion();
 
             int currentSX = playership.Sector.X;
@@ -111,27 +118,17 @@ namespace StarTrek_KG.Actors
                         break;
                 }
 
-                //delete this
-                var newSector = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
+                
+                //if on the edge of a Region, newSector will have negative numbers
+                var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, Convert.ToInt32(currentSX), Convert.ToInt32(currentSY), false), false);
+                var locationToScan = new Location(this.ShipConnectedTo.GetRegion(), newSectorCandidate);
 
                 //run IRS on sector we are moving into
-                var result =
-                    ImmediateRangeScan.For(this.ShipConnectedTo).Scan(
-                                           new LocationDef(currentRegion.X, 
-                                                           currentRegion.Y, 
-                                                           Convert.ToInt32(currentSX),
-                                                           Convert.ToInt32(currentSY)));
+                IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan);
 
+                //If newSectorCandidate had negative numbers, then scanResult will have the newly updated region in it
 
-                //if nextSector is out of bounds of the current sector, then we need to:
-                //1. read what is in it. If there is an obstacle, or galactic barrier, then we should stop
-                //1a. determine which direction it is out of our Region, 
-                //then we need to increment Region XY by calling this.TravelThroughRegions(1, Convert.ToInt32(direction), this.ShipConnectedTo);
-
-                //we then need to set our SectorXY to what it should be (GetNeighbors() might do this)
-                //   this function should Reset the variable or variables that blew its bounds  -- either to 0 or 7
-
-
+                //todo: pass in result
                 var barrierHit = this.IsGalacticBarrier(ref currentSX, ref currentSY);  //XY will be set to safe value in here
                 if (barrierHit)
                 {
@@ -139,7 +136,7 @@ namespace StarTrek_KG.Actors
                 }
                 else
                 {
-                    bool obstacleEncountered = this.SublightObstacleCheck((Coordinate)playership.Sector, newSector, currentRegion.Sectors);
+                    bool obstacleEncountered = this.SublightObstacleCheck((Coordinate)playership.Sector, newSectorCandidate, currentRegion.Sectors);
                     if (obstacleEncountered)
                     {
                         this.Game.Write.Line("All Stop.");
@@ -154,15 +151,22 @@ namespace StarTrek_KG.Actors
                     //}
                 }
 
+                //TODO: VERIFY NEWLOCATION CONTAINS UPDATED SECTOR!
+                //TODO: VERIFY NEWLOCATION CONTAINS UPDATED SECTOR!
+                //TODO: VERIFY NEWLOCATION CONTAINS UPDATED SECTOR!
+                //TODO: VERIFY NEWLOCATION CONTAINS UPDATED SECTOR!
+                //TODO: VERIFY NEWLOCATION CONTAINS UPDATED SECTOR!
 
-                // newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), Convert.ToInt32(direction), this.ShipConnectedTo);
-                //this.ShipConnectedTo.Coordinate = newLocation;  
+                //TODO: perhaps make a converter from IRSResult to Location
+                newLocation = locationToScan;
+                //newLocation.Sector.X = scanResult.Coordinate.X;
+                //newLocation.Sector.Y = scanResult.Coordinate.Y;
+                newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.Name).Single();
 
-
-                returnVal = newSector;
+                //this.ShipConnectedTo.Coordinate = newLocation;   
             }
 
-            return returnVal;
+            return new Location();
         }
 
         private Region TravelThroughRegions(int distance, int direction, IShip playership)

@@ -267,6 +267,8 @@ namespace StarTrek_KG.Actors
             return retVal.Single();
         }
 
+
+        //todo: refactor these 2 into prop?
         public Location GetLocation()
         {
             var shipLocation = new Location();
@@ -417,7 +419,6 @@ namespace StarTrek_KG.Actors
         public void UpdateLocalFiringRange()
         {
             this.Sector.Neighbors = new List<DivinedSectorItem>();
-
         }
     }
 }

@@ -18,12 +18,12 @@ namespace StarTrek_KG.Playfield
             this.Sector = sector;
         }
 
-        public LocationDef(int RegionX, int RegionY, int sectorX, int sectorY)
+        public LocationDef(int RegionX, int RegionY, int sectorX, int sectorY, bool enforceBoundsChecking = true)
         {
-            var Region = new Coordinate(RegionX, RegionY);
-            var sector = new Coordinate(sectorX, sectorY);
+            var region = new Coordinate(RegionX, RegionY, enforceBoundsChecking);
+            var sector = new Coordinate(sectorX, sectorY, enforceBoundsChecking);
 
-            this.Region = Region;
+            this.Region = region;
             this.Sector = sector;
         }
 

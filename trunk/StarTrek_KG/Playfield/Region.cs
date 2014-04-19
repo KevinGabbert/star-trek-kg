@@ -596,7 +596,7 @@ namespace StarTrek_KG.Playfield
         }
 
         //todo: refactor this with Game.Map.OutOfBounds
-        public static bool OutOfBounds(ICoordinate coordinate)
+        public static bool OutOfBounds(ISector coordinate)
         {
             var inTheNegative = coordinate.X < 0 || coordinate.Y < 0;
             var maxxed = coordinate.X == Constants.SECTOR_MAX || coordinate.Y == Constants.SECTOR_MAX;
@@ -621,7 +621,7 @@ namespace StarTrek_KG.Playfield
                     regionX <= location.Region.X + 1;
                     regionX++)
                 {
-                    var outOfBounds = game.Map.OutOfBounds(new Coordinate(regionY, regionX, false));
+                    var offMap = game.Map.OutOfBounds(new Region(new Coordinate(regionY, regionX, false)));
 
                     var currentResult = new LRSResult();
 
@@ -630,7 +630,7 @@ namespace StarTrek_KG.Playfield
 
                     if (!currentlyInNebula)
                     {
-                        currentResult = this.GetRegionInfo(new Coordinate(regionX, regionY, false), outOfBounds, game);
+                        currentResult = this.GetRegionInfo(new Coordinate(regionX, regionY, false), offMap, game);
                         currentResult.MyLocation = location.Region.X == regionX &&
                                                    location.Region.Y == regionY;
                     }
@@ -663,7 +663,7 @@ namespace StarTrek_KG.Playfield
             return currentResult;
         }
 
-        private IRSResult GetSectorInfo(Region currentRegion, ICoordinate sector, bool outOfBounds, Game game)
+        public IRSResult GetSectorInfo(Region currentRegion, ICoordinate sector, bool outOfBounds, Game game)
         {
             var currentResult = new IRSResult();
 
@@ -674,6 +674,7 @@ namespace StarTrek_KG.Playfield
             else
             {
                 currentResult.GalacticBarrier = true;
+                //todo: set region to Galactic barrier?
             }
 
             return currentResult;

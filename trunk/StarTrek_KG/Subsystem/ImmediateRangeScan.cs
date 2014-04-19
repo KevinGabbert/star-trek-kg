@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -53,19 +54,37 @@ namespace StarTrek_KG.Subsystem
         //    return renderedData.ToList();
         //}
 
-        public IRSResult Scan(LocationDef locationToScan)
+
+        /// <summary>
+        /// SectorToScan
+        /// </summary>
+        /// <param name="regionToScan">Region of sector passed in</param>
+        /// <param name="sectorToScan">if sector passed in has negative numbers, then they are in relation to regionToScan </param>
+        /// <returns></returns>
+        public IRSResult Scan(Location locationToScan)
         {
             IRSResult result = null;
 
             if (this.Damaged()) return result;
 
-            var currentShipLocation = this.ShipConnectedTo.GetLocation();
+            //todo: refactor this with region.GetIRSFullData() inner loop
+
+            var outOfBounds = this.Game.Map.OutOfBounds(locationToScan.Region);
+
+            ////todo: breaks here when regionX or regionY is 8
 
             //todo: perform scan on location passed
-            //if(locationToScan.IsNeighbor(currentShipLocation)){
-            //    result = Sector.GetInfo(this.ShipConnectedTo.Map, locationToScan);
-            //}
 
+            //locationToScan.Region needs to be divined to the new one when crossing barrier
+            result = this.ShipConnectedTo.GetRegion().GetSectorInfo(locationToScan.Region, locationToScan.Sector, outOfBounds, this.Game);
+
+            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
+            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
+            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
+            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
+            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
+
+            throw new NotImplementedException();
             return result;
         }
 
