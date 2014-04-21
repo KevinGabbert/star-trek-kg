@@ -4,7 +4,7 @@ namespace StarTrek_KG.Interfaces
 {
     public interface ISectorObject
     {
-        ISector Sector { get; } //todo: does this need to go away?
+        ISector Sector { get; set; }
         
         //int Mass { get; } //useful for stars or black holes
 

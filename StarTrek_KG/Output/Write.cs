@@ -764,9 +764,9 @@ namespace StarTrek_KG.Output
             {
                 if (result != null)
                 {
-                    if (result.Name != null)
+                    if (result.RegionName != null)
                     {
-                        longestName = longestName.Length > result.Name.Length ? longestName : result.Name;
+                        longestName = longestName.Length > result.RegionName.Length ? longestName : result.RegionName;
                     }
                 }
             }
