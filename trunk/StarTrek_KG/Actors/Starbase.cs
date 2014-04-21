@@ -11,6 +11,7 @@ namespace StarTrek_KG.Actors
         public ISector Sector
         {
             get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public bool Destroyed

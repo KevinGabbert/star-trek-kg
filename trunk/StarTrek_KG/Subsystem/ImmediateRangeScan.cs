@@ -54,18 +54,14 @@ namespace StarTrek_KG.Subsystem
         //    return renderedData.ToList();
         //}
 
-
         /// <summary>
         /// SectorToScan
         /// </summary>
-        /// <param name="regionToScan">Region of sector passed in</param>
-        /// <param name="sectorToScan">if sector passed in has negative numbers, then they are in relation to regionToScan </param>
+        /// <param name="locationToScan"></param>
         /// <returns></returns>
         public IRSResult Scan(Location locationToScan)
         {
-            IRSResult result = null;
-
-            if (this.Damaged()) return result;
+            if (this.Damaged()) return null;
 
             //todo: refactor this with region.GetIRSFullData() inner loop
 
@@ -75,17 +71,12 @@ namespace StarTrek_KG.Subsystem
 
             //todo: perform scan on location passed
 
-            //locationToScan.Region needs to be divined to the new one when crossing barrier
-            result = this.ShipConnectedTo.GetRegion().GetSectorInfo(locationToScan.Region, locationToScan.Sector, outOfBounds, this.Game);
+            var shipRegion = this.ShipConnectedTo.GetRegion();
 
-            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
-            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
-            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
-            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
-            //TODO: VERIFY THAT THIS RESULT HAS UPDATED SECTOR IN IT!
+            //locationToScan.Region is divined to the new one when crossing barrier
+            IRSResult divinedResult = shipRegion.GetSectorInfo(locationToScan.Region, locationToScan.Sector, outOfBounds, this.Game);
 
-            throw new NotImplementedException();
-            return result;
+            return divinedResult;
         }
 
         public IRSResult Execute(Location locationToScan)

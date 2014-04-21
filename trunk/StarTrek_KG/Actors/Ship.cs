@@ -24,7 +24,7 @@ namespace StarTrek_KG.Actors
             public Coordinate Coordinate { get; set; }
 
             //todo: create function GetSector() to replace this (will query map.Regions.active for ship)
-            public ISector Sector { get; set; } //This is a ship's location in a sector
+            public ISector Sector { get; set; } //This is a ship's location in a Region
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
             public Type Type { get; set; }

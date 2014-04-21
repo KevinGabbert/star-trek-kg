@@ -11,6 +11,7 @@ namespace StarTrek_KG.Actors
         public ISector Sector
         {
             get { throw new global::System.NotImplementedException(); }
+            set { throw new global::System.NotImplementedException(); }
         }
 
         public global::System.Type Type()

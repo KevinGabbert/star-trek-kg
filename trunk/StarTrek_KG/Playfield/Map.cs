@@ -491,24 +491,26 @@ namespace StarTrek_KG.Playfield
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
         /// <param name="map"></param>
-        public void SetPlayershipInLocation(IMap map, Location newLocation)
+        /// <param name="newLocation"></param>
+        public void SetPlayershipInLocation(IShip shipToSet, IMap map, Location newLocation)
         {
             this.RemovePlayership(map);
 
-            //todo: look up location on map where newLocation.Region & newLocation.Sector points to
-            var newShipLocation = this.LookUpLocation(newLocation);
-            
-            //todo:
-            //newShipLocation.SetActive()
-            //newShipLocation.Sector.Item = SectorItem.PlayerShip
-            //newShipLocation.Sector.Object = ??
+            newLocation.Region.SetActive();
 
-            throw new NotImplementedException();
+            var foundSector = this.LookupSector(shipToSet.GetRegion(), newLocation);
+            foundSector.Item = SectorItem.PlayerShip;
+
+            shipToSet.Coordinate = newLocation.Region;
+            shipToSet.Sector = foundSector;
         }
 
-        private object LookUpLocation(Location newLocation)
+        private Sector LookupSector(Region oldRegion, Location newLocation)
         {
-            throw new NotImplementedException();
+            //todo: divine where ship should be with old recgion and newlocation with negative numbers
+
+            var foundSector = newLocation.Region.Sectors.Single(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y);
+            return foundSector;
         }
 
         public void AddACoupleHostileFederationShipsToExistingMap()
