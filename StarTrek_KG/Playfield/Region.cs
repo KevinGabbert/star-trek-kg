@@ -806,6 +806,7 @@ namespace StarTrek_KG.Playfield
 
             if (locationToGet.Region.Type != RegionType.GalacticBarrier)
             {
+                //todo: moving to the 7th column in sector breaks things?
                 locationToGet.Sector = locationToGet.Region.Sectors.Single(s => s.X == result.CurrentLocationX && s.Y == result.CurrentLocationY);
             }
 
