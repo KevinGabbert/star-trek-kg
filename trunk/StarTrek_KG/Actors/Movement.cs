@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
@@ -113,11 +114,12 @@ namespace StarTrek_KG.Actors
 
                 //if on the edge of a Region, newSector will have negative numbers
                 var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, Convert.ToInt32(currentSX), Convert.ToInt32(currentSY), false), false);
+
                 var locationToScan = new Location(this.ShipConnectedTo.GetRegion(), newSectorCandidate);
 
                 //run IRS on sector we are moving into
-                IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan); 
-                
+                IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan);
+
                 //If newSectorCandidate had negative numbers, then scanResult will have the newly updated region in it
 
                 if (scanResult.GalacticBarrier)
@@ -127,7 +129,11 @@ namespace StarTrek_KG.Actors
                 }
                 else
                 {
-                    bool obstacleEncountered = this.SublightObstacleCheck((Coordinate)travellingShip.Sector, newSectorCandidate, currentRegion.Sectors);
+                    //throw new NotImplementedException(); //how we gonna check for obstacles if scanresult has bad numbers in it?
+
+                    //AdjustSectorToNewRegion may need to be called here
+
+                    bool obstacleEncountered = this.SublightObstacleCheck((Coordinate) travellingShip.Sector, newSectorCandidate, currentRegion.Sectors);
                     if (obstacleEncountered)
                     {
                         this.Game.Write.Line("All Stop.");
@@ -146,7 +152,12 @@ namespace StarTrek_KG.Actors
                 newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
 
                 //todo: finish this.
-                newLocation.Sector = this.AdjustSectorToNewRegion(newLocation, this.Game.Map, ShipConnectedTo.GetRegion(), newSectorCandidate);
+                var shipRegion = travellingShip.GetRegion();
+
+                if (newLocation.Region != shipRegion)
+                {
+                    newLocation.Sector = this.AdjustSectorToNewRegion(newLocation, this.Game.Map, shipRegion);
+                }
 
                 this.Game.Map.SetPlayershipInLocation(travellingShip, this.Game.Map, newLocation);
 
@@ -154,14 +165,33 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        private ISector AdjustSectorToNewRegion(Location locationToExamine, IMap map, Region oldRegion, Sector newSectorCandidate)
+        /// <summary>
+        /// This will take any segative or > max values and reset them to the new region
+        /// </summary>
+        /// <param name="locationWithNewRegionButBadSectorNumbers"></param>
+        /// <param name="map"></param>
+        /// <param name="currentRegion"></param>
+        /// <param name="newSectorCandidate"></param>
+        /// <returns></returns>
+        private ISector AdjustSectorToNewRegion(Location locationWithNewRegionButBadSectorNumbers, IMap map, Region currentRegion)
         {
             //you have the old region, and you have a sector with negative values. 
-            //there is already code to get the relative sector you should be in.
+            var result = currentRegion.DivineSectorOnMap(locationWithNewRegionButBadSectorNumbers, map);  //.  This should tell you what sector should be
 
-            //look at:  Region.DivineSectorOnMap(locationToExamine, map).  This should tell you what sector should be
+            //We are ignoring result.Region because it will be wrong.  
+            //TODO: Refactor .DivineSectorOnMap to take just a sector (or create overload)
 
-            throw new NotImplementedException();
+            //not sure why, but using .DivineSectorOnMap() this way switches the axes.  (another reason to refactor!) 
+
+
+            ////HACK: This is for test only.  Sector.Item/.Object etc will not be updated.
+            //var newY = result.Sector.X;
+            //var newX = result.Sector.Y;
+
+            //result.Sector.X = newX;
+            //result.Sector.Y = newY;
+
+            return result.Sector;
         }
 
         private Region TravelThroughRegions(int distance, int direction, IShip playership)
