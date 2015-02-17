@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -170,6 +171,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             //TestClass_Base called before this, doing some initialization a second time
             _setup.SetupMapWith1HostileAtSector(new Coordinate(2, 1), new Coordinate(2, 6), true);
+            Game.RandomFactorForTesting = new Random(123);
 
             //todo: why active? are hostiles in the same sector?
             var activeRegion = _setup.TestMap.Regions.GetActive();
@@ -242,6 +244,11 @@ namespace UnitTests.ShipTests.SubSystemTests
             //Assert.GreaterOrEqual(startingEnergy - testBoltEnergy, firingShip.Energy);
 
             //todo: calculate distance and damage that will be dealt 
+
+
+            //int seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed") * (Game.RandomFactorForTesting).Next();
+
+            //var attackingEnergy = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula); 
 
 
             Assert.AreEqual(firingShip.Energy, expectedFiringShipAfterEnergy, " Firing Ship: " + firingShip.Name + " expected energy: " + expectedFiringShipAfterEnergy + ". but was " + firingShip.Energy);
