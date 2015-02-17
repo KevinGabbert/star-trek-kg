@@ -463,9 +463,13 @@ namespace StarTrek_KG.Playfield
                             if (objectType == "Ship")
                             {
                                 var possibleShipToGet = (IShip) @object;
-                                if (possibleShipToGet.Allegiance == Allegiance.BadGuy)
+
+                                if (!possibleShipToGet.Destroyed)
                                 {
-                                    badGuys.Add(possibleShipToGet);
+                                    if (possibleShipToGet.Allegiance == Allegiance.BadGuy)
+                                    {
+                                        badGuys.Add(possibleShipToGet);
+                                    }
                                 }
                             }
                         }

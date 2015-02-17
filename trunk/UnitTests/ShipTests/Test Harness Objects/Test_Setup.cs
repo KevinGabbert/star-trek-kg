@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.ComponentModel;
+using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
@@ -144,12 +145,12 @@ namespace UnitTests.ShipTests
         //    this.VerifyMap();
         //}
 
-        public void SetupMapWith1HostileAtSector(Coordinate friendlySector, Coordinate hostileSector)
+        public void SetupMapWith1HostileAtSector(Coordinate friendlySector, Coordinate hostileSector, bool initialize = true)
         {
             this.TestMap = new Map(new SetupOptions
             {
                 AddStars = false,
-                Initialize = true,
+                Initialize = initialize,
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(

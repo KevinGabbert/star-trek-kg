@@ -19,16 +19,17 @@ namespace StarTrek_KG.Subsystem
         {
             this.Game.Write = this.Game.Write; //todo: remove this when all subsystems are converted
             this.Type = SubsystemType.Phasers;
+            this.ShipConnectedTo = shipConnectedTo;
         }
 
-        public void Fire(int energyToFire, IShip shipFiringPhasers)
+        public void Fire(int energyToFire) //, IShip shipFiringPhasers
         {
-            if (!this.EnergyCheckFail(energyToFire, shipFiringPhasers))
+            if (!this.EnergyCheckFail(energyToFire, this.ShipConnectedTo))
             {
                 //todo: move to Game() object
                 this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
 
-                shipFiringPhasers.Energy = this.ShipConnectedTo.Energy -= energyToFire;
+                this.ShipConnectedTo.Energy = this.ShipConnectedTo.Energy -= energyToFire;
                 Phasers.For(this.ShipConnectedTo).Execute(energyToFire);
             }
             else
@@ -58,7 +59,7 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.Write.Line("");
 
-            this.Fire(phaserEnergy, shipFiringPhasers);
+            this.Fire(phaserEnergy); //, shipFiringPhasers
             this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
         }
 
@@ -69,7 +70,10 @@ namespace StarTrek_KG.Subsystem
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
             var destroyedShips = new List<IShip>();
-            foreach (var badGuyShip in this.Game.Map.Regions.GetActive().GetHostiles())
+
+            List<IShip> hostiles = this.Game.Map.Regions.GetActive().GetHostiles();
+
+            foreach (var badGuyShip in hostiles)
             {
                 this.FireOnShip(phaserEnergy, badGuyShip, inNebula, destroyedShips);
             }
@@ -129,7 +133,8 @@ namespace StarTrek_KG.Subsystem
 
             var badGuyShields = Shields.For(badGuyShip);
             badGuyShields.Energy -= (int) deliveredEnergy;
-            if (badGuyShields.Energy <= 0)
+
+            if ((badGuyShields.Energy < 0) || badGuyShip.Energy < 0)
             {
                 Phasers.DestroyBadGuy(destroyedShips, badGuyShip);
             }
@@ -161,6 +166,10 @@ namespace StarTrek_KG.Subsystem
         private static void DestroyBadGuy(ICollection<IShip> destroyedShips, IShip badGuyShip)
         {
             badGuyShip.Destroyed = true;
+            badGuyShip.Energy = 0;
+            Shields.For(badGuyShip).Energy = 0;
+
+            //Other subsystems may retain some energy, for salvage mechanic.
 
             //Phasers hit all ships on a single turn, so this builds up a list of destroyed ships
             destroyedShips.Add(badGuyShip);

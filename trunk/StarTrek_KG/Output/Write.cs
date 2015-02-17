@@ -489,6 +489,27 @@ namespace StarTrek_KG.Output
             return String.Format("Your Ship has been hit by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }
 
+        public static string MisfireMessage(IShip attacker)
+        {
+            var attackerRegion = attacker.GetRegion();
+            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
+
+            string attackerName = attackerRegion.Type == RegionType.Nebulae ? "Unknown Ship" : attacker.Name;
+
+            if (attacker.Faction == FactionName.Federation)
+            {
+                attackerName = attacker.Name;
+            }
+
+            //HACK: until starbases become real objects.. getting tired of this.
+            if (attackerName == "Enterprise")
+            {
+                attackerName = "Hostile Starbase";
+            }
+
+            return String.Format("Misfire by" + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
+        }
+
         public void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel)
         {
             var condition = ship.GetConditionAndSetIcon();
