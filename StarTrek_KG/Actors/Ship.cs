@@ -131,6 +131,8 @@ namespace StarTrek_KG.Actors
             int energyScavenged = 0;
             string scavengedFrom = "";
 
+            //todo: if found a ship with destroyed = true and it is not removed from map, but has subsystems with energy, then pull energy from all those subsystems
+
             switch (scavengeType)
             {
                 case ScavengeType.Starbase:
@@ -177,6 +179,9 @@ namespace StarTrek_KG.Actors
 
             this.Map.Write.Line(scavengedText + " from destroyed " + scavengedFrom + " debris field. ");
 
+            //todo: credit scavenged energy to ship energy.
+            //note: create ship.autoscavenge, and turn it off for testing.
+
             this.UpdateDivinedSectors();
         }
           
@@ -184,12 +189,20 @@ namespace StarTrek_KG.Actors
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public void AbsorbHitFrom(IShip attacker, int attackingEnergy) 
         {
-            string hitMessage = Write.ShipHitMessage(attacker);
-
-            this.Map.Write.Line(hitMessage);
-
             var shields = Shields.For(this);
-            shields.Energy -= attackingEnergy;
+
+            if (attackingEnergy > 0)
+            {
+                string hitMessage = Write.ShipHitMessage(attacker);
+                this.Map.Write.Line(hitMessage);
+
+                shields.Energy -= attackingEnergy;
+            }
+            else
+            {
+                string message = Write.MisfireMessage(attacker);
+                this.Map.Write.Line(message);
+            }
 
             bool shieldsWorking = (this.GetRegion().Type != RegionType.Nebulae);
 
@@ -230,9 +243,12 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                //It hurts more when you have no shields.  This is a balance point
-                this.Energy = this.Energy - (attackingEnergy * 3 ); //todo: resource this out
-                    //todo: make this multiplier an app.config setting //todo: write a test to verify this behavior.
+                if (this.Energy > attackingEnergy)
+                {
+                    //It hurts more when you have no shields.  This is a balance point
+                    this.Energy -= attackingEnergy; //*3 //todo: resource this out
+                    //todo: make this multiplier an app.config setting //todo: write a test to verify this behavior. 
+                }
 
                 if (this.Energy < 0)
                 {
