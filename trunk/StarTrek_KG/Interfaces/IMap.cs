@@ -10,6 +10,7 @@ namespace StarTrek_KG.Interfaces
 {
     public interface IMap : IConfig
     {
+        Game Game { get; set; }
         Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
         Regions Regions { get; set; }
         SetupOptions GameConfig { get; set; }

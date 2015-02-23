@@ -97,6 +97,7 @@ namespace StarTrek_KG.Output
         public void PrintMission()
         {
             this.Console.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.Console.WriteLine(this.Config.GetText("HelpStatement"));
             this.Console.WriteLine();
         }
 
@@ -334,8 +335,17 @@ namespace StarTrek_KG.Output
                     this.DamageControlMenu(playerShip);
                     break;
 
+                //Utility Commands
                 case "dbg":
                     this.DebugMenu(playerShip);
+                    break;
+
+                case "ver":
+                    this.Console.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
+                    break;
+
+                case "cls":
+                    this.Console.Clear();
                     break;
 
                 default: //case "?":
@@ -507,7 +517,7 @@ namespace StarTrek_KG.Output
                 attackerName = "Hostile Starbase";
             }
 
-            return String.Format("Misfire by" + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
+            return String.Format("Misfire by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }
 
         public void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel)

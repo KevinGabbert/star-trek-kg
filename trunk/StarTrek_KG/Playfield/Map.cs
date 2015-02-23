@@ -17,6 +17,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
+            public Game Game { get; set; }
             public Regions Regions { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
             public SetupOptions GameConfig { get; set; }
@@ -185,6 +186,8 @@ namespace StarTrek_KG.Playfield
                     newRegion.Create(names, baddieNames, stockBaddieFaction, RegionXY, out index, itemsToPopulate,
                                        this.GameConfig.AddStars, isNebulae);
 
+                    newRegion.Game = this.Game;
+
                     this.Regions.Add(newRegion);
 
                     if (Constants.DEBUG_MODE)
@@ -243,12 +246,11 @@ namespace StarTrek_KG.Playfield
 
             var startingSector = new Sector(new LocationDef(playerShipDef.RegionDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
-            this.Playership = new Ship(FactionName.Federation, playerShipName, startingSector, this)
-                                  {
-                                      Allegiance = Allegiance.GoodGuy
-                                  };
-
-            this.Playership.Energy = this.Config.GetSetting<int>("energy");
+            this.Playership = new Ship(FactionName.Federation, playerShipName, startingSector, this, this.Game)
+            {
+                Allegiance = Allegiance.GoodGuy,
+                Energy = this.Config.GetSetting<int>("energy")
+            };
 
             this.SetupPlayershipRegion(playerShipDef);
 
@@ -601,7 +603,7 @@ namespace StarTrek_KG.Playfield
 
         private void AddHostileFederale(IRegion Region, ISector sector, Stack<string> federaleNames)
         {
-            var newPissedOffFederale = new Ship(FactionName.Federation, federaleNames.Pop(), sector, this);
+            var newPissedOffFederale = new Ship(FactionName.Federation, federaleNames.Pop(), sector, this, this.Game);
             Shields.For(newPissedOffFederale).Energy = Utility.Utility.Random.Next(100, 500); //todo: resource those numbers out
 
             Region.AddShip(newPissedOffFederale, sector);

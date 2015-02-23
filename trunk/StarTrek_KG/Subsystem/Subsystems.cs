@@ -12,8 +12,10 @@ namespace StarTrek_KG.Subsystem
         public Subsystems(IMap map, Ship shipConnectedTo, IStarTrekKGSettings config)
         {
             // TODO: Complete member initialization
-            var game = new Game(config, false);
-            game.Map = map;
+            var game = new Game(config, false)
+            {
+                Map = map
+            };
 
             var write = new Write(config);
             game.Write = write;

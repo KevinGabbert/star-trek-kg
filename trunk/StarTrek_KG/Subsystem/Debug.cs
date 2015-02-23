@@ -90,7 +90,7 @@ namespace StarTrek_KG.Subsystem
 
                     this.Game.Map.Config = this.Game.Config;
 
-                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.Game.Map);
+                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.Game.Map, this.Game);
                     Shields.For(hostileShip).Energy = Utility.Utility.Random.Next(100, 200); //todo: resource those numbers out
 
                     this.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
@@ -140,7 +140,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    this.Game.Write.Line("Invalid debug this.Write");
+                    this.Game.Write.Line(">> exiting Debug Mode..");
                     break;
             }
         }
