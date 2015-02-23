@@ -145,7 +145,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             Assert.AreEqual(startingEnergy, playershipBefore.Energy);
 
-            const int testBoltEnergy = 100;
+            const int testBoltEnergy = 92;
 
             //todo: wait.. what? why do I need to specify who is firing??
 
@@ -163,7 +163,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var playershipAfter = _setup.TestMap.Playership;
 
-            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1568);
+            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1576);
 
             var afterHostiles = activeRegion.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;
@@ -208,7 +208,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             Assert.AreEqual(startingEnergy, playershipBefore.Energy);
 
-            const int testBoltEnergy = 1000;
+            const int testBoltEnergy = 444;
 
             //Random numbers that are used in this operation:
             var phasers = Phasers.For(playershipBefore);
@@ -224,7 +224,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var playershipAfter = _setup.TestMap.Playership;
 
-            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 933);
+            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1489);
 
             var afterHostiles = activeRegion.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;
