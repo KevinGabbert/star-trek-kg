@@ -19,6 +19,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
+        public Game Game { get; set; }
         public RegionType Type { get; set; }
         public string Name { get; set; }
 
@@ -340,8 +341,9 @@ namespace StarTrek_KG.Playfield
 
             if (itemToPopulate == SectorItem.HostileShip)
             {
+                
                 //if a baddie name is passed, then use it.  otherwise
-                var newShip = this.CreateHostileShip(newlyCreatedSector, stockBaddieNames, stockBaddieFaction);
+                var newShip = this.CreateHostileShip(newlyCreatedSector, stockBaddieNames, stockBaddieFaction, this.Game);
                 Region.AddShip(newShip, newlyCreatedSector);
             }
             else
@@ -406,18 +408,24 @@ namespace StarTrek_KG.Playfield
         /// <param name="position"></param>
         /// <param name="listOfBaddies"></param>
         /// <param name="stockBaddieFaction"></param>
+        /// <param name="game"></param>
         /// <returns></returns>
-        public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, FactionName stockBaddieFaction)
+        public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, FactionName stockBaddieFaction, Game game)
         {
             //todo: modify this to populate more than a single baddie faction
 
             //todo: this should be a random baddie, from the list of baddies in app.config
-            var hostileShip = new Ship(stockBaddieFaction, listOfBaddies.Pop(), position, this.Map);
+            var hostileShip = new Ship(stockBaddieFaction, listOfBaddies.Pop(), position, this.Map, game)
+            {
                 //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
-            hostileShip.Sector.X = position.X;
-            hostileShip.Sector.Y = position.Y;
+                Sector = {X = position.X, Y = position.Y}
+            };
+               
+            var hostileShipShields = Shields.For(hostileShip);
+            //var testinghostileShipShields = hostileShipShields.Game.RandomFactorForTesting;
+            int hostileShipShieldsRandom = Utility.Utility.TestableRandom(hostileShipShields.Game); //testinghostileShipShields == 0 ? Utility.Utility.Random.Next(200) : testinghostileShipShields;
 
-            Shields.For(hostileShip).Energy = 300 + (Utility.Utility.Random).Next(200);
+            hostileShipShields.Energy = 300 + hostileShipShieldsRandom;
 
             this.Map.Write.DebugLine("Created Ship: " + hostileShip.Name);
 

@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -12,7 +11,6 @@ namespace UnitTests.ShipTests.SubSystemTests
     [TestFixture]
     public class PhaserTests: TestClass_Base
     {
-
         [SetUp]
         public void SetUp()
         {
@@ -137,7 +135,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[22].Item);
 
             //set badguy energy
-            Shields.For(beforeHostiles[0]).Energy = 50;
+            var badGuyShields = Shields.For(beforeHostiles[0]);
+            badGuyShields.Energy = 50;
 
             //todo: verify firing ship's starting energy.
             var startingEnergy = (new StarTrekKGSettings()).GetSetting<int>("energy");
@@ -150,12 +149,21 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //todo: wait.. what? why do I need to specify who is firing??
 
+            //Random numbers that are used in this operation:
+            var phasers = Phasers.For(playershipBefore);
+            phasers.Game.RandomFactorForTesting = 3;
+
+            playershipBefore.Game = phasers.Game;
+            Torpedoes.For(playershipBefore).Game.RandomFactorForTesting = 2;
+
+            badGuyShields.Game.RandomFactorForTesting = 200;
+
             //This action will hit every single hostile in the Region
-            Phasers.For(playershipBefore).Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
+            phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
 
             var playershipAfter = _setup.TestMap.Playership;
 
-            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1976);
+            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1568);
 
             var afterHostiles = activeRegion.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;
@@ -171,7 +179,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             //TestClass_Base called before this, doing some initialization a second time
             _setup.SetupMapWith1HostileAtSector(new Coordinate(2, 1), new Coordinate(2, 6), true);
-            Game.RandomFactorForTesting = new Random(123);
+            Game.RandomFactorForTesting = 123;
 
             //todo: why active? are hostiles in the same sector?
             var activeRegion = _setup.TestMap.Regions.GetActive();
@@ -190,7 +198,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[22].Item);
 
             //set badguy energy
-            Shields.For(beforeHostiles[0]).Energy = 50;
+            var badGuyShields = Shields.For(beforeHostiles[0]);
+            badGuyShields.Energy = 50;
 
             //todo: verify firing ship's starting energy.
             var startingEnergy = (new StarTrekKGSettings()).GetSetting<int>("energy");
@@ -199,14 +208,23 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             Assert.AreEqual(startingEnergy, playershipBefore.Energy);
 
-            const int testBoltEnergy = 190;
+            const int testBoltEnergy = 1000;
+
+            //Random numbers that are used in this operation:
+            var phasers = Phasers.For(playershipBefore);
+            phasers.Game.RandomFactorForTesting = 3;
+
+            playershipBefore.Game = phasers.Game;
+            Torpedoes.For(playershipBefore).Game.RandomFactorForTesting = 2;
+
+            badGuyShields.Game.RandomFactorForTesting = 200;
 
             //This action will hit every single hostile in the Region
-            Phasers.For(playershipBefore).Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
+            phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
 
             var playershipAfter = _setup.TestMap.Playership;
 
-            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1810);
+            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 933);
 
             var afterHostiles = activeRegion.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;
@@ -245,13 +263,13 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //todo: calculate distance and damage that will be dealt 
 
-
             //int seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed") * (Game.RandomFactorForTesting).Next();
 
             //var attackingEnergy = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula); 
 
-
-            Assert.AreEqual(firingShip.Energy, expectedFiringShipAfterEnergy, " Firing Ship: " + firingShip.Name + " expected energy: " + expectedFiringShipAfterEnergy + ". but was " + firingShip.Energy);
+            var firingShipEnergy = firingShip.Energy;
+            
+            Assert.AreEqual(firingShipEnergy, expectedFiringShipAfterEnergy, " Firing Ship: " + firingShip.Name + " expected energy: " + expectedFiringShipAfterEnergy + ". but was " + firingShipEnergy);
 
             //todo: verify that firing ship was not hit.
             Assert.Greater(Shields.For(firingShip).Energy, -1);

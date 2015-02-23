@@ -20,6 +20,8 @@ namespace StarTrek_KG.Actors
         //todo: needs access to Regions and utility and game for subsystem FOR mnemonic to work for DI
         #region Properties
 
+            public Game Game { get; set; }
+
             //todo: (maybe) create function GetRegion() to replace this (will query map.Regions for ship)
             public Coordinate Coordinate { get; set; }
 
@@ -42,8 +44,10 @@ namespace StarTrek_KG.Actors
             //todo: get current Region of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(FactionName faction, string name, ISector sector, IConfig map)
+        public Ship(FactionName faction, string name, ISector sector, IConfig map, Game game)
         {
+            this.Game = game;
+
             this.Map = (IMap)CheckParam(map);
 
             if (faction == null)
@@ -148,8 +152,15 @@ namespace StarTrek_KG.Actors
                     break;
 
                 case ScavengeType.OtherShip:
-                    photonsScavenged = Utility.Utility.Random.Next(2); //todo: resource out this number
-                    energyScavenged = Utility.Utility.Random.Next(100); //todo: resource out this number
+
+                    //var testingTorpsScavenged = Torpedoes.For(this).Game.RandomFactorForTesting;
+                    //var testingEnergyScavenged = this.Game.RandomFactorForTesting;
+                    
+                    //int randomPhotonsScavenged = testingTorpsScavenged == 0 ? Utility.Utility.Random.Next(2) : testingTorpsScavenged;
+                    //int randomEnergyScavenged = testingEnergyScavenged == 0 ? Utility.Utility.Random.Next(100) : testingEnergyScavenged;
+
+                    photonsScavenged = Utility.Utility.TestableRandom(this.Game, 2, 2); //randomPhotonsScavenged; //todo: resource out this number
+                    energyScavenged = Utility.Utility.TestableRandom(this.Game, 100, 100); //randomEnergyScavenged; //todo: resource out this number
                     scavengedFrom = "ship";
                     break;
             }

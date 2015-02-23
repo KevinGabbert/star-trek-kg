@@ -7,6 +7,7 @@ namespace StarTrek_KG.Interfaces
 {
     public interface IShip: ISectorObject
     {
+        Game Game { get; set; }
         FactionName Faction { get; set; }
         int Energy { get; set; }
         Allegiance Allegiance { get; set; }

@@ -209,7 +209,8 @@ namespace StarTrek_KG.Subsystem
             var hostilesHaveAttacked = false;
             if (!this.EnergyCheckFail(phaserEnergy, this.ShipConnectedTo))
             {
-                if (Utility.Utility.Random.Next(2) == 1)
+                int randomBadGuyShoots = Utility.Utility.TestableRandom(this.Game, 2, 2);
+                if (randomBadGuyShoots == 1)
                 {
                     this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.  
                     hostilesHaveAttacked = true;

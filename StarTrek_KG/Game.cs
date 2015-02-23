@@ -29,7 +29,11 @@ namespace StarTrek_KG
             public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
             public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
             public bool gameOver;
-            public Random RandomFactorForTesting { get; set; }
+            public int RandomFactorForTesting 
+            { 
+                get; 
+                set; 
+            }
 
         #endregion
 
@@ -39,7 +43,7 @@ namespace StarTrek_KG
         /// </summary>
         public Game(IStarTrekKGSettings config, bool startup = true)
         {
-            this.RandomFactorForTesting = null;
+            this.RandomFactorForTesting = 0;
             this.PlayerNowEnemyToFederation = false;  //todo: resource this out.
             this.Config = config;
             if(this.Write == null)
@@ -217,8 +221,8 @@ namespace StarTrek_KG
         private void PrintOpeningScreen()
         {
             this.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
-            
-            this.Write.ResourceLine("UnderConstructionMessage");
+
+            this.Write.ResourceLine(this.Config.GetText("AppVersion").TrimStart(' '), "UnderConstructionMessage");
 
             Output.PrintMission();
         }
@@ -446,14 +450,9 @@ namespace StarTrek_KG
                 {
                     foreach (var badGuy in hostilesAttacking)
                     {
-                        Random randomFactor = null;
+                        int randomHostileAttacksFactor = Utility.Utility.TestableRandom(this); //this.RandomFactorForTesting == 0 ? Utility.Utility.Random.Next() : this.RandomFactorForTesting;
 
-                        if (this.RandomFactorForTesting == null)
-                        {
-                            randomFactor = Utility.Utility.Random;
-                        }
-
-                        this.HostileAttacks(map, badGuy, randomFactor);
+                        this.HostileAttacks(map, badGuy, randomHostileAttacksFactor);
                     }
 
                     this.EnemiesWillNowTaunt();
@@ -474,12 +473,16 @@ namespace StarTrek_KG
 
                     for (int i = 0; i < starbasesAttacking; i++)
                     {
+                        int hostileStarbaseAttacksRandom = Utility.Utility.TestableRandom(this);  //this.RandomFactorForTesting == 0 ? Utility.Utility.Random.Next() : this.RandomFactorForTesting;
+                        
                         //todo: modify starbase to be its own ship object on the map
                         //HACK: this is a little bit of a cheat, saying that the playership is attacking itself, but until the starbase is its own object, this should be fine
-                        this.HostileAttacks(map, map.Playership, Utility.Utility.Random);
+                        this.HostileAttacks(map, map.Playership, hostileStarbaseAttacksRandom);
+
+                        int hostileStarbaseAttacksRandom2 = Utility.Utility.TestableRandom(this); //this.RandomFactorForTesting == 0 ? Utility.Utility.Random.Next() : this.RandomFactorForTesting;
 
                         //cause starbases are bastards like that.  hey.. You started it!
-                        this.HostileAttacks(map, map.Playership, Utility.Utility.Random);
+                        this.HostileAttacks(map, map.Playership, hostileStarbaseAttacksRandom2);
 
                         //todo: when starbases are their own object, they will fire once.. it will just hurt more.
                     }
@@ -491,7 +494,7 @@ namespace StarTrek_KG
             }
         }
 
-        private void HostileAttacks(IMap map, IShip badGuy, Random randomFactor)
+        private void HostileAttacks(IMap map, IShip badGuy, int randomFactor)
         {
             if (Navigation.For(map.Playership).Docked && !this.PlayerNowEnemyToFederation)
             {
@@ -503,7 +506,7 @@ namespace StarTrek_KG
             }
         }
 
-        private void AttackNonDockedPlayership(IMap map, IShip badGuy, Random randomFactor)
+        private void AttackNonDockedPlayership(IMap map, IShip badGuy, int randomFactor)
         {
             var playerShipLocation = map.Playership.GetLocation();
             var distance = Utility.Utility.Distance(playerShipLocation.Sector.X,
@@ -511,7 +514,7 @@ namespace StarTrek_KG
                                                     badGuy.Sector.X,
                                                     badGuy.Sector.Y);
 
-            int seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed") * (randomFactor).Next();
+            int seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed") * randomFactor;
 
             var inNebula = badGuy.GetRegion().Type == RegionType.Nebulae;
 

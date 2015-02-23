@@ -43,7 +43,7 @@ namespace StarTrek_KG.Interfaces
         void AddSector(Region Region, int x, int y, SectorItem itemToPopulate, Stack<string> baddieNames, FactionName stockBaddieFaction);
         void AddShip(IShip ship, ISector toSector);
         void RemoveShip(IShip ship);
-        Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, FactionName stockBaddieFaction);
+        Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, FactionName stockBaddieFaction, Game game);
         void AddEmptySector(Region Region, int x, int y);
         bool NoHostiles(List<Ship> hostiles);
 
