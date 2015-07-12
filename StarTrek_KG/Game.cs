@@ -444,21 +444,18 @@ namespace StarTrek_KG
 
         private bool HostileShipsAttack(IMap map, ICollection<IShip> hostilesAttacking, bool returnValue)
         {
-            if (hostilesAttacking != null) //todo: remove this.
+            if (hostilesAttacking?.Count > 0)
             {
-                if (hostilesAttacking.Count > 0)
+                foreach (var badGuy in hostilesAttacking)
                 {
-                    foreach (var badGuy in hostilesAttacking)
-                    {
-                        int randomHostileAttacksFactor = Utility.Utility.TestableRandom(this); //this.RandomFactorForTesting == 0 ? Utility.Utility.Random.Next() : this.RandomFactorForTesting;
+                    int randomHostileAttacksFactor = Utility.Utility.TestableRandom(this); //this.RandomFactorForTesting == 0 ? Utility.Utility.Random.Next() : this.RandomFactorForTesting;
 
-                        this.HostileAttacks(map, badGuy, randomHostileAttacksFactor);
-                    }
-
-                    this.EnemiesWillNowTaunt();
-
-                    returnValue = true;
+                    this.HostileAttacks(map, badGuy, randomHostileAttacksFactor);
                 }
+
+                this.EnemiesWillNowTaunt();
+
+                returnValue = true;
             }
             return returnValue;
         }
@@ -549,7 +546,7 @@ namespace StarTrek_KG
                 }
                 else
                 {
-                    this.Write.SingleLine(String.Format("Shields dropped to {0}.", Shields.For(map.Playership).Energy));
+                    this.Write.SingleLine($"Shields dropped to {Shields.For(map.Playership).Energy}.");
                 }
             }
         }
@@ -605,13 +602,13 @@ namespace StarTrek_KG
             }
             else if (currentFaction == FactionName.Klingon)
             {
-                this.Write.WithNoEndCR(String.Format("Klingon ship at {0} sends the following message: ",
-                    "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
+                this.Write.WithNoEndCR(
+                    $"Klingon ship at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
             }
             else
             {
-                this.Write.WithNoEndCR(String.Format("Hostile at {0} sends the following message: ",
-                    "[" + ship.Sector.X + "," + ship.Sector.Y + "]"));
+                this.Write.WithNoEndCR(
+                    $"Hostile at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
                 currentShipName = ship.Name;
             }
 
@@ -759,8 +756,7 @@ namespace StarTrek_KG
             qLocation.Item = SectorItem.Empty;
 
             //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
-            this.Write.Line(string.Format("You have destroyed A Federation starbase! (at sector [{0},{1}])",
-                newX, newY));
+            this.Write.Line($"You have destroyed A Federation starbase! (at sector [{newX},{newY}])");
 
             this.Map.Playership.Scavenge(ScavengeType.Starbase);
 

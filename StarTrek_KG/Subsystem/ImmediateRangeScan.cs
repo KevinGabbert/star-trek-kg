@@ -81,17 +81,18 @@ namespace StarTrek_KG.Subsystem
 
         public IRSResult Execute(Location locationToScan)
         {
-            var sectorResult = new IRSResult();
-
-            sectorResult.Coordinate = locationToScan.Sector.GetCoordinate();
+            var sectorResult = new IRSResult
+            {
+                Coordinate = locationToScan.Sector.GetCoordinate(),
+                Item = locationToScan.Sector.Item,
+                Object = locationToScan.Sector.Object,
+                RegionName = locationToScan.Region.Name
+            };
 
             //todo: support sector level nebulae
             //if (sectorToScan.Type != RegionType.Nebulae)
             //{
-                //todo: these 2 concepts need to be combined
-                sectorResult.Item = locationToScan.Sector.Item;
-                sectorResult.Object = locationToScan.Sector.Object;
-                sectorResult.RegionName = locationToScan.Region.Name;
+            //todo: these 2 concepts need to be combined
             //}
 
             locationToScan.Sector.Scanned = true;

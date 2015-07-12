@@ -82,9 +82,11 @@ namespace StarTrek_KG.Subsystem
 
         public LRSResult Execute(Region regionToScan)
         {
-            var regionResult = new LRSResult();
+            var regionResult = new LRSResult
+            {
+                Coordinate = regionToScan.GetCoordinate()
+            };
 
-            regionResult.Coordinate = regionToScan.GetCoordinate();
 
             if (regionToScan.Type != RegionType.Nebulae)
             {

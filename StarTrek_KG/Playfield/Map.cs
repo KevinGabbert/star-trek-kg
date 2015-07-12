@@ -21,16 +21,15 @@ namespace StarTrek_KG.Playfield
             public Regions Regions { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
             public SetupOptions GameConfig { get; set; }
+            public IOutputWrite Write { get; set; }
+            public IStarTrekKGSettings Config { get; set; }
+            public FactionName DefaultHostile { get; set; }
 
             public int Stardate { get; set; }
             public int timeRemaining { get; set; }
             public int starbases { get; set; }
             public string Text { get; set; }
-            public IOutputWrite Write { get; set; }
-            public IStarTrekKGSettings Config { get; set; }
             public int HostilesToSetUp { get; set; }
-
-            public FactionName DefaultHostile { get; set; }
 
         #endregion
 
@@ -375,12 +374,9 @@ namespace StarTrek_KG.Playfield
                 {
                     var gotSector = Sectors.GetNoError(x, y, sectors);
 
-                    if (gotSector != null)
+                    if (gotSector?.Item == SectorItem.Starbase)
                     {
-                        if (gotSector.Item == SectorItem.Starbase)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -442,14 +438,9 @@ namespace StarTrek_KG.Playfield
 
             foreach (var destroyedShip in destroyedShips)
             {
-                if (destroyedShip.Faction == FactionName.Federation)
-                {
-                    this.Playership.Scavenge(ScavengeType.FederationShip);
-                }
-                else
-                {
-                    this.Playership.Scavenge(ScavengeType.OtherShip);
-                }
+                this.Playership.Scavenge(destroyedShip.Faction == FactionName.Federation
+                    ? ScavengeType.FederationShip
+                    : ScavengeType.OtherShip);
 
                 //todo: add else if for starbase when the time comes
             }
@@ -492,6 +483,7 @@ namespace StarTrek_KG.Playfield
         /// <summary>
         /// Removes all friendlies fromevery sector in the entire map.  Sets down a friendly 
         /// </summary>
+        /// <param name="shipToSet"></param>
         /// <param name="map"></param>
         /// <param name="newLocation"></param>
         public void SetPlayershipInLocation(IShip shipToSet, IMap map, Location newLocation)
@@ -509,7 +501,7 @@ namespace StarTrek_KG.Playfield
 
         private Sector LookupSector(Region oldRegion, Location newLocation)
         {
-            //todo: divine where ship should be with old recgion and newlocation with negative numbers
+            //todo: divine where ship should be with old region and newlocation with negative numbers
 
             var foundSector = newLocation.Region.Sectors.Single(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y);
             return foundSector;

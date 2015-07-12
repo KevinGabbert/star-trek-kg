@@ -93,9 +93,8 @@ namespace StarTrek_KG.Subsystem
                     this.AddEnergy(transfer, adding);
                 }
 
-                this.Game.Write.Line(string.Format("Shield strength is now {0}. Total Energy level is now {1}.",
-                    this.Energy,
-                    this.ShipConnectedTo.Energy));
+                this.Game.Write.Line(
+                    $"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
 
                 this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
             }
@@ -104,7 +103,7 @@ namespace StarTrek_KG.Subsystem
         public new int TransferredFromUser()
         {
             int transfer;
-            bool readSuccess = this.Game.Write.PromptUser(String.Format("Enter amount of energy (1--{0}): ", this.MaxTransfer),
+            bool readSuccess = this.Game.Write.PromptUser($"Enter amount of energy (1--{this.MaxTransfer}): ",
                                                  out transfer);
 
             return EnergyValidation(transfer, readSuccess);

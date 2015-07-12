@@ -30,7 +30,7 @@ namespace StarTrek_KG
 
         public const int MOVEMENT_PRECISION = 10000;
 
-        public static readonly List<String> MAP_DIRECTION = new List<String>() { "1", "2", "3", "4", "5", "6", "7", "8" };
+        public static readonly List<string> MAP_DIRECTION = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8" };
         public static bool DEBUG_MODE;
 
 

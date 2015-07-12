@@ -5,30 +5,12 @@ namespace StarTrek_KG.Config.Elements
     public class NameAllegianceDesignator : ConfigurationElement
     {
         [ConfigurationProperty("name", IsRequired = true)]
-        public string name
-        {
-            get
-            {
-                return this["name"] as string;
-            }
-        }
+        public string name => this["name"] as string;
 
         [ConfigurationProperty("allegiance", IsRequired = true)]
-        public string allegiance
-        {
-            get
-            {
-                return this["allegiance"] as string;
-            }
-        }
+        public string allegiance => this["allegiance"] as string;
 
         [ConfigurationProperty("designator", IsRequired = true)]
-        public string designator
-        {
-            get
-            {
-                return this["designator"] as string;
-            }
-        }
+        public string designator => this["designator"] as string;
     }
 }

@@ -7,22 +7,10 @@ namespace StarTrek_KG.Config.Elements
     {
         [ConfigurationProperty("FactionThreats", IsDefaultCollection = true)]
         [ConfigurationCollection(typeof(FactionThreats), AddItemName = "FactionThreat")]
-        public FactionThreats FactionThreats
-        {
-            get
-            {
-                return (FactionThreats)base["FactionThreats"];
-            }
-        }
+        public FactionThreats FactionThreats => (FactionThreats)base["FactionThreats"];
 
         [ConfigurationProperty("FactionShips", IsDefaultCollection = true)]
         [ConfigurationCollection(typeof(FactionShips), AddItemName = "FactionShip")]
-        public FactionShips FactionShips
-        {
-            get
-            {
-                return (FactionShips)base["FactionShips"];
-            }
-        }
+        public FactionShips FactionShips => (FactionShips)base["FactionShips"];
     }
 }

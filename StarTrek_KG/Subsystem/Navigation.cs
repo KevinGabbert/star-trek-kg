@@ -257,10 +257,8 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            this.Game.Write.Line(string.Format("Direction: {0:#.##}",
-                Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy)));
-            this.Game.Write.Line(string.Format("Distance:  {0:##.##}",
-                Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy)));
+            this.Game.Write.Line($"Direction: {Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy):#.##}");
+            this.Game.Write.Line($"Distance:  {Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy):##.##}");
         }
 
         public void StarbaseCalculator(Ship shipConnectedTo)
@@ -281,10 +279,12 @@ namespace StarTrek_KG.Subsystem
                 foreach (var starbase in starbasesInSector)
                 {
                     this.Game.Write.Line("-----------------");
-                    this.Game.Write.Line(string.Format("Starbase in sector [{0},{1}].", (starbase.X + 1), (starbase.Y + 1)));
+                    this.Game.Write.Line($"Starbase in sector [{(starbase.X + 1)},{(starbase.Y + 1)}].");
 
-                    this.Game.Write.Line(string.Format("Direction: {0:#.##}", Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y)));
-                    this.Game.Write.Line(string.Format("Distance:  {0:##.##}", Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y) / Constants.SECTOR_MAX));
+                    this.Game.Write.Line(
+                        $"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
+                    this.Game.Write.Line(
+                        $"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/Constants.SECTOR_MAX:##.##}");
                 }
             }
             else
