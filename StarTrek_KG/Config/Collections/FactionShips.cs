@@ -5,7 +5,7 @@ namespace StarTrek_KG.Config.Collections
 {
     public class FactionShips : RegistryNameTypeClasses
     {
-        public RegistryNameTypeClass this[int index]
+        public new RegistryNameTypeClass this[int index]
         {
             get
             {

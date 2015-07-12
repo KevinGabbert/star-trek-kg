@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
@@ -155,31 +154,33 @@ namespace StarTrek_KG.Utility
 
         public static void ResetGreekLetterStack()
         {
-            var greekLetters = new List<string>();
-            greekLetters.Add("ALPHA");
-            greekLetters.Add("BETA");
-            greekLetters.Add("GAMMA");
-            greekLetters.Add("DELTA");
-            greekLetters.Add("EPSILON");
-            greekLetters.Add("ZETA");
-            greekLetters.Add("ETA");
-            greekLetters.Add("THETA");
-            greekLetters.Add("IOTA");
-            greekLetters.Add("KAPPA");
-            greekLetters.Add("LAMBDA");
-            greekLetters.Add("MU");
-            greekLetters.Add("NU");
-            greekLetters.Add("XI");
-            greekLetters.Add("OMICRON");
-            greekLetters.Add("PI");
-            greekLetters.Add("RHO");
-            greekLetters.Add("SIGMA");
-            greekLetters.Add("TAU");
-            greekLetters.Add("UPSILON");
-            greekLetters.Add("PHI");
-            greekLetters.Add("CHI");
-            greekLetters.Add("PSI");
-            greekLetters.Add("OMEGA");
+            var greekLetters = new List<string>
+            {
+                "ALPHA",
+                "BETA",
+                "GAMMA",
+                "DELTA",
+                "EPSILON",
+                "ZETA",
+                "ETA",
+                "THETA",
+                "IOTA",
+                "KAPPA",
+                "LAMBDA",
+                "MU",
+                "NU",
+                "XI",
+                "OMICRON",
+                "PI",
+                "RHO",
+                "SIGMA",
+                "TAU",
+                "UPSILON",
+                "PHI",
+                "CHI",
+                "PSI",
+                "OMEGA"
+            };
 
             greekLetters = greekLetters.Shuffle().Shuffle().ToList();
 
@@ -194,7 +195,7 @@ namespace StarTrek_KG.Utility
         public static string DamagedScannerUnit()
         {
             const int places = 3;
-            Double totalpossibilities = Math.Pow(2, places);
+            double totalpossibilities = Math.Pow(2, places);
             double exitNumber = Utility.Random.Next(Convert.ToInt32(totalpossibilities));
 
             var nebulaPattern = Convert.ToString(Convert.ToInt32(exitNumber), 2).PadLeft(places, '0').Replace('0', '-').Replace('1', '+');

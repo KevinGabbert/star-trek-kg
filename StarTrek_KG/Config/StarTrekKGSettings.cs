@@ -14,7 +14,7 @@ namespace StarTrek_KG.Config
     public class StarTrekKGSettings: ConfigurationSection, IStarTrekKGSettings
     {
         public StarTrekKGSettings Get { get; set; }
-        public new StarTrekKGSettings GetConfig()
+        public StarTrekKGSettings GetConfig()
         {
             StarTrekKGSettings settings;
 
@@ -38,7 +38,7 @@ namespace StarTrek_KG.Config
                      throw; //todo: output a message to the user
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //todo: output a message to the user
                 throw;
@@ -51,43 +51,19 @@ namespace StarTrek_KG.Config
 
         [ConfigurationProperty("StarSystems")]
         [ConfigurationCollection(typeof(Names), AddItemName = "StarSystem")]
-        public Names StarSystems
-        {
-            get
-            {
-                return (Names)this["StarSystems"];
-            }
-        }
+        public Names StarSystems => (Names)this["StarSystems"];
 
         [ConfigurationProperty("ConsoleText")]
         [ConfigurationCollection(typeof(NameValues), AddItemName = "Text")]
-        public NameValues ConsoleText
-        {
-            get
-            {
-                return (NameValues)this["ConsoleText"];
-            }
-        }
+        public NameValues ConsoleText => (NameValues)this["ConsoleText"];
 
         [ConfigurationProperty("Factions")]
         [ConfigurationCollection(typeof(Factions), AddItemName = "Faction")]
-        public Factions Factions
-        {
-            get
-            {
-                return (Factions)this["Factions"];             
-            }
-        }
+        public Factions Factions => (Factions)this["Factions"];
 
         [ConfigurationProperty("GameSettings")]
         [ConfigurationCollection(typeof(NameValues), AddItemName = "add")]
-        public NameValues GameSettings
-        {
-            get
-            {
-                return (NameValues)this["GameSettings"];
-            }
-        }
+        public NameValues GameSettings => (NameValues)this["GameSettings"];
 
         #endregion
 
@@ -207,10 +183,7 @@ namespace StarTrek_KG.Config
             }
             catch (Exception)
             {
-                throw new ConfigurationErrorsException(
-                    string.Format(
-                        "(DataType Error) Unable to cast config setting {0}. Check to make sure setting is filled out correctly.",
-                        name));
+                throw new ConfigurationErrorsException( $"(DataType Error) Unable to cast config setting {name}. Check to make sure setting is filled out correctly.");
             }
             return setting;
         }

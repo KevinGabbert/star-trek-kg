@@ -171,7 +171,6 @@ namespace StarTrek_KG.Actors
         /// <param name="locationWithNewRegionButBadSectorNumbers"></param>
         /// <param name="map"></param>
         /// <param name="currentRegion"></param>
-        /// <param name="newSectorCandidate"></param>
         /// <returns></returns>
         private ISector AdjustSectorToNewRegion(Location locationWithNewRegionButBadSectorNumbers, IMap map, Region currentRegion)
         {

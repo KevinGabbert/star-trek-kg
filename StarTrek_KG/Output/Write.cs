@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using StarTrek_KG.Actors;
@@ -37,6 +36,9 @@ namespace StarTrek_KG.Output
         }
 
         public List<string> ACTIVITY_PANEL  { get; set; }
+
+        public readonly string ENTER_DEBUG_COMMAND = "Enter Debug command: ";
+        public readonly string ENTER_COMPUTER_COMMAND = "Enter computer command: ";
 
         //TODO:  Have Game expose and raise an output event
         //Have UI subscribe to it.
@@ -249,24 +251,26 @@ namespace StarTrek_KG.Output
 
         public void CreateCommandPanel()
         {
-            ACTIVITY_PANEL = new List<string>();
+            ACTIVITY_PANEL = new List<string>
+            {
+                "imp = Impulse Navigation",
+                "wrp = Warp Navigation",
+                "nto = Navigate To Object",
+                "─────────────────────────────",
+                "irs = Immediate Range Scan",
+                "srs = Short Range Scan",
+                "lrs = Long Range Scan",
+                "crs = Combined Range Scan",
+                "─────────────────────────────",
+                "pha = Phaser Control",
+                "tor = Photon Torpedo Control",
+                "toq = Target Object in this Region",
+                "─────────────────────────────",
+                "she = Shield Control",
+                "com = Access Computer",
+                "dmg = Damage Control"
+            };
 
-            ACTIVITY_PANEL.Add("imp = Impulse Navigation");
-            ACTIVITY_PANEL.Add("wrp = Warp Navigation");
-            ACTIVITY_PANEL.Add("nto = Navigate To Object");
-            ACTIVITY_PANEL.Add("─────────────────────────────");
-            ACTIVITY_PANEL.Add("irs = Immediate Range Scan");
-            ACTIVITY_PANEL.Add("srs = Short Range Scan");
-            ACTIVITY_PANEL.Add("lrs = Long Range Scan");
-            ACTIVITY_PANEL.Add("crs = Combined Range Scan");
-            ACTIVITY_PANEL.Add("─────────────────────────────");
-            ACTIVITY_PANEL.Add("pha = Phaser Control");
-            ACTIVITY_PANEL.Add("tor = Photon Torpedo Control");
-            ACTIVITY_PANEL.Add("toq = Target Object in this Region");
-            ACTIVITY_PANEL.Add("─────────────────────────────");
-            ACTIVITY_PANEL.Add("she = Shield Control");
-            ACTIVITY_PANEL.Add("com = Access Computer");
-            ACTIVITY_PANEL.Add("dmg = Damage Control");
 
             if(Constants.DEBUG_MODE)
             {
@@ -372,7 +376,7 @@ namespace StarTrek_KG.Output
         private void DebugMenu(IShip playerShip)
         {
             this.Strings(Debug.CONTROL_PANEL);
-            this.WithNoEndCR("Enter Debug command: ");
+            this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
 
             //todo: readline needs to be done using an event
             var debugCommand = Console.ReadLine().Trim().ToLower();
@@ -385,7 +389,7 @@ namespace StarTrek_KG.Output
             if (Computer.For(playerShip).Damaged()) return;
 
             this.Strings(Computer.CONTROL_PANEL);
-            this.WithNoEndCR("Enter computer command: ");
+            this.WithNoEndCR(this.ENTER_COMPUTER_COMMAND);
 
             //todo: readline needs to be done using an event
             var computerCommand = Console.ReadLine().Trim().ToLower();
@@ -408,8 +412,10 @@ namespace StarTrek_KG.Output
         {
             if (Shields.For(playerShip).Damaged()) return;
 
-            Shields.SHIELD_PANEL = new List<string>();
-            Shields.SHIELD_PANEL.Add(Environment.NewLine);
+            Shields.SHIELD_PANEL = new List<string>
+            {
+                Environment.NewLine
+            };
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
@@ -517,7 +523,7 @@ namespace StarTrek_KG.Output
                 attackerName = "Hostile Starbase";
             }
 
-            return String.Format("Misfire by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
+            return string.Format("Misfire by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
         }
 
         public void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel)
@@ -740,6 +746,7 @@ namespace StarTrek_KG.Output
                 {
                     regionCoordinate = Constants.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." +
                                        scanDataPoint.Coordinate.Y + "";
+
                     currentRegionName += scanDataPoint.RegionName;
                 }
 
@@ -793,12 +800,9 @@ namespace StarTrek_KG.Output
 
             foreach (IScanResult result in data)
             {
-                if (result != null)
+                if (result?.RegionName != null)
                 {
-                    if (result.RegionName != null)
-                    {
-                        longestName = longestName.Length > result.RegionName.Length ? longestName : result.RegionName;
-                    }
+                    longestName = longestName.Length > result.RegionName.Length ? longestName : result.RegionName;
                 }
             }
 

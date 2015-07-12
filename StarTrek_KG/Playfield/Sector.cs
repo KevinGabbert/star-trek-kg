@@ -90,8 +90,10 @@ namespace StarTrek_KG.Playfield
 
         public static Sector CreateEmpty(Region Region, Coordinate sectorDef)
         {
-            var sector = new Sector(new LocationDef(Region, sectorDef));
-            sector.Item = SectorItem.Empty;
+            var sector = new Sector(new LocationDef(Region, sectorDef))
+            {
+                Item = SectorItem.Empty
+            };
 
             return sector;
         }

@@ -1,5 +1,5 @@
-﻿using StarTrek_KG.Interfaces;
-using StarTrek_KG.Playfield;
+﻿using System;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Actors
 {
@@ -10,34 +10,34 @@ namespace StarTrek_KG.Actors
         //(basically), this affects how many sectors around the black hole can pull the ship in
         public ISector Sector
         {
-            get { throw new global::System.NotImplementedException(); }
-            set { throw new global::System.NotImplementedException(); }
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
-        public global::System.Type Type()
+        public Type Type()
         {
-            throw new global::System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string Name
         {
-            get { throw new global::System.NotImplementedException(); }
+            get { throw new NotImplementedException(); }
         }
 
         public int Gravity
         {
-            get { throw new global::System.NotImplementedException(); }
+            get { throw new NotImplementedException(); }
         }
 
-        global::System.Type ISectorObject.Type
+        Type ISectorObject.Type
         {
             get
             {
-                throw new global::System.NotImplementedException();
+                throw new NotImplementedException();
             }
             set
             {
-                throw new global::System.NotImplementedException();
+                throw new NotImplementedException();
             }
         }
 

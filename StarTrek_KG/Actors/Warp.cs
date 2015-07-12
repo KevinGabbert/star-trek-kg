@@ -1,5 +1,4 @@
-﻿using System;
-using StarTrek_KG.Enums;
+﻿using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
@@ -36,7 +35,7 @@ namespace StarTrek_KG.Actors
                 distance *= 10; //Constants.SECTOR_MAX; // this computation ensures that any movement inside of a single sector is *free*, meaning no energy consumed
             }
 
-            var energyRequired = (int)distance; //rounds down for values < 1, meaning a distance of .1 is free
+            var energyRequired = distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
                 this.Write.Line("Insufficient energy to travel that speed.");
@@ -54,7 +53,7 @@ namespace StarTrek_KG.Actors
         }
         public bool InvalidWarpFactorCheck(int maxWarpFactor, out int distance)
         {
-            if (!this.Write.PromptUser(String.Format("Enter warp factor (1-{0}): ", maxWarpFactor), out distance)
+            if (!this.Write.PromptUser($"Enter warp factor (1-{maxWarpFactor}): ", out distance)
                 || distance < 0 
                 || distance > maxWarpFactor)
             {

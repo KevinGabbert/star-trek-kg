@@ -1,10 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
-using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Playfield;
-using StarTrek_KG.Settings;
-using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {

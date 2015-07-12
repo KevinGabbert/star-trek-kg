@@ -309,11 +309,12 @@ namespace StarTrek_KG.Subsystem
             {
                 string shipSectorX = (ship.Sector.X).ToString();
                 string shipSectorY = (ship.Sector.Y).ToString();
-                string direction = string.Format("{0:#.##}", Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y));
+                string direction =
+                    $"{Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y):#.##}";
 
                 direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);
 
-                this.Game.Write.Line(string.Format("Hostile ship in sector [{0},{1}]. Direction {2}: ", shipSectorX, shipSectorY, direction));
+                this.Game.Write.Line($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
             }
         }
 

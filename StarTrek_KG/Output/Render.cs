@@ -46,7 +46,7 @@ namespace StarTrek_KG.Output
             var topBorder = this.Config.GetText("CRSTopBorder");
 
             this.CRS_Region_ScanLine(RegionDisplayName, topBorder, shipLocation);
-            this.ScanLine(topBorder, String.Format(" Energy: {0}   Shields: {1}", map.Playership.Energy, Shields.For(map.Playership).Energy));
+            this.ScanLine(topBorder, $" Energy: {map.Playership.Energy}   Shields: {Shields.For(map.Playership).Energy}");
 
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
             for (int i = 0; i < crsRows; i++) 
@@ -114,13 +114,12 @@ namespace StarTrek_KG.Output
         private void CRS_Region_ScanLine(string RegionName, string topBorder, Location location)
         {
             int topBorderAreaMeasurement = topBorder.Length + 1;
-            var regionLineBuilder = new StringBuilder(String.Format("Region: {0}", RegionName).PadRight(topBorderAreaMeasurement));
+            var regionLineBuilder = new StringBuilder($"Region: {RegionName}".PadRight(topBorderAreaMeasurement));
 
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - (topBorderAreaMeasurement));
 
-            var RegionIndicator = String.Format(" Coord: [{0},{1}]  Sec: §{2}.{3}",
-                                Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y),
-                                Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
+            var RegionIndicator =
+                $" Coord: [{Convert.ToString(location.Region.X)},{Convert.ToString(location.Region.Y)}]  Sec: §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
 
             regionLineBuilder.Insert(topBorderAreaMeasurement, RegionIndicator);
 
@@ -134,11 +133,11 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    retVal += String.Format("Torpedoes: {0}  Hostiles Left: {1}", Torpedoes.For(map.Playership).Count, totalHostiles);
+                    retVal += $"Torpedoes: {Torpedoes.For(map.Playership).Count}  Hostiles Left: {totalHostiles}";
                     break;
 
                 case 1:
-                    retVal += String.Format("Time remaining: {0}", map.timeRemaining);
+                    retVal += $"Time remaining: {map.timeRemaining}";
                     break;
 
                 case 2:

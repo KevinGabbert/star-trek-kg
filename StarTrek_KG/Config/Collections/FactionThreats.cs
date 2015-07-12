@@ -5,7 +5,7 @@ namespace StarTrek_KG.Config.Collections
 {
     public class FactionThreats: SeverityValues
     {
-        public SeverityValueTranslation this[int index]
+        public new SeverityValueTranslation this[int index]
         {
             get
             {

@@ -244,6 +244,7 @@ namespace StarTrek_KG.Playfield
 
                             var starsInRegion =
                                 Region.Sectors.Where(s => s.Object != null && s.Object.Type.Name == "Star").ToList();
+
                             var allStarsDontHaveNewDesignation =
                                 starsInRegion.All(s => ((Star) s.Object).Designation != newNameLetter);
 
@@ -289,39 +290,36 @@ namespace StarTrek_KG.Playfield
 
             try
             {
-                if (itemsToPopulate != null)
+                if (itemsToPopulate?.Count > 0)
                 {
-                    if (itemsToPopulate.Count > 0)
-                    {
-                        Sector sectorToPopulate = itemsToPopulate.SingleOrDefault(i => i.X == x && i.Y == y);
+                    Sector sectorToPopulate = itemsToPopulate.SingleOrDefault(i => i.X == x && i.Y == y);
 
-                        if (sectorToPopulate != null)
-                        {
-                            if ((Region.Type == RegionType.Nebulae) &&
-                                (sectorToPopulate.Item == SectorItem.Starbase))
-                            {
-                                sectorItemToPopulate = SectorItem.Empty;
-                            }
-                            else
-                            {
-                                if (!(isNebula && (sectorToPopulate.Item == SectorItem.Starbase)))
-                                {
-                                    sectorItemToPopulate = sectorToPopulate.Item;
-                                }
-                            }
-                        }
-                        else
+                    if (sectorToPopulate != null)
+                    {
+                        if ((Region.Type == RegionType.Nebulae) &&
+                            (sectorToPopulate.Item == SectorItem.Starbase))
                         {
                             sectorItemToPopulate = SectorItem.Empty;
                         }
-
-                        //todo: plop item down on map
-
-                        //what does Output read?  cause output is blank
-                        //output reads SectorItem.  Is sectorItem.Hostile being added?
-                        //todo: new ship(coordinates)?
-                        //todo: add to hostiles? 
+                        else
+                        {
+                            if (!(isNebula && (sectorToPopulate.Item == SectorItem.Starbase)))
+                            {
+                                sectorItemToPopulate = sectorToPopulate.Item;
+                            }
+                        }
                     }
+                    else
+                    {
+                        sectorItemToPopulate = SectorItem.Empty;
+                    }
+
+                    //todo: plop item down on map
+
+                    //what does Output read?  cause output is blank
+                    //output reads SectorItem.  Is sectorItem.Hostile being added?
+                    //todo: new ship(coordinates)?
+                    //todo: add to hostiles? 
                 }
             }
             catch (Exception ex)
@@ -635,10 +633,12 @@ namespace StarTrek_KG.Playfield
                 {
                     var offMap = game.Map.OutOfBounds(new Region(new Coordinate(regionY, regionX, false)));
 
-                    var currentResult = new LRSResult();
+                    var currentResult = new LRSResult
+                    {
+                        Coordinate = new Coordinate(regionX, regionY, false)
+                    };
 
                     //todo: breaks here when regionX or regionY is 8
-                    currentResult.Coordinate = new Coordinate(regionX, regionY, false);
 
                     if (!currentlyInNebula)
                     {
@@ -784,14 +784,16 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public Location DivineSectorOnMap(Location locationToExamine, IMap map)
         {
-            var result = new DivinedSectorResult();
+            var result = new DivinedSectorResult
+            {
+                RegionCoordinateToGet = locationToExamine.Region,
+                SectorCoordinateToGet = (Coordinate) locationToExamine.Sector,
+                CurrentLocationX = locationToExamine.Sector.X,
+                CurrentLocationY = locationToExamine.Sector.Y,
+                Direction = "Here"
+            };
 
             //todo: perhaps this code needs to be in the constructor -------------
-            result.RegionCoordinateToGet = locationToExamine.Region;
-            result.SectorCoordinateToGet = (Coordinate) locationToExamine.Sector;
-            result.CurrentLocationX = locationToExamine.Sector.X;
-            result.CurrentLocationY = locationToExamine.Sector.Y;
-            result.Direction = "Here";
             //todo: perhaps this code needs to be in the constructor -------------
 
             var locationToGet = new Location();
@@ -810,7 +812,6 @@ namespace StarTrek_KG.Playfield
 
             if (result.RegionCoordinateToGet == null)
             {
-                string error;
                 throw new ArgumentException();
             }
 

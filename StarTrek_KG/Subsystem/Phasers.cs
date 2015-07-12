@@ -117,7 +117,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool PromptUserForPhaserEnergy(out int phaserEnergy)
         {
-            return this.Game.Write.PromptUser(String.Format("Enter phaser energy (1--{0}): ", this.ShipConnectedTo.Energy), out phaserEnergy);
+            return this.Game.Write.PromptUser($"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy);
         }
 
         //todo: move to Utility() object

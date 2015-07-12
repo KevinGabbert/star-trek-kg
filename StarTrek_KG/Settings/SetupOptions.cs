@@ -8,20 +8,8 @@ namespace StarTrek_KG.Settings
     public class SetupOptions 
     {
         public bool Initialize { get; set; }
-
-        private bool _addStars = true;
-        public bool AddStars
-        {
-            get { return _addStars; }
-            set { _addStars = value; }
-        }
-
-        private bool _addNebulae = true;
-        public bool AddNebulae
-        {
-            get { return _addNebulae; }
-            set { _addNebulae = value; }
-        }
+        public bool AddStars { get; set; } = true;
+        public bool AddNebulae { get; set; } = true;
 
         /// <summary>
         /// The plan here is to be able to start the game by throwing in all objects required for game with XY values

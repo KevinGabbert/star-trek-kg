@@ -5,7 +5,7 @@ namespace StarTrek_KG.Config.Collections
 {
     public class Factions : NameAllegianceDesignators
     {
-        public Faction this[int index]
+        public new Faction this[int index]
         {
             get
             {

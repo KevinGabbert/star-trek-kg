@@ -59,8 +59,10 @@ namespace StarTrek_KG.Playfield
                 Sectors.SetupRandomRegionDef(sectorDef, Regions);
 
                 var locationDef = new LocationDef(sectorDef.RegionDef, new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
-                var newSector = new Sector(locationDef);
-                newSector.Item = sectorDef.Item;
+                var newSector = new Sector(locationDef)
+                {
+                    Item = sectorDef.Item
+                };
 
                 newSectors.Add(newSector);    
             }
