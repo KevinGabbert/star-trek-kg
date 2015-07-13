@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -16,12 +13,14 @@ namespace StarTrek_KG.Actors
     {
         //todo: to fully abstract this out, this could be a Blocked by property, set to whatever stops us from moving.
         public bool BlockedByObstacle { get; set; }
-        public bool BlockedByGalacticBarrier { get; set; }
+        public bool BlockedByGalacticBarrier { get; private set; }
+
+        private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil";
 
         public Movement(Ship shipConnectedTo, Game game)
         {
-            this.Game = game;
-            this.ShipConnectedTo = shipConnectedTo;
+            base.Game = game;
+            base.ShipConnectedTo = shipConnectedTo;
         }
 
         public void Execute(MovementType movementType, int direction, int distance, out int lastRegionX, out int lastRegionY)
@@ -44,6 +43,7 @@ namespace StarTrek_KG.Actors
                 case MovementType.Warp:
                     Region newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), Convert.ToInt32(direction),
                         this.ShipConnectedTo);
+
                     this.ShipConnectedTo.Coordinate = newLocation;
 
                     if (newLocation != null)
@@ -201,63 +201,74 @@ namespace StarTrek_KG.Actors
             //   / ↓ \
             // 2   1   8
 
+            Region currentRegion = playership.GetRegion();
+            Region newRegion = currentRegion;
+
             //todo: get rid of this double-stuff. I'm only doing this so that IsGalacticBarrier can be used by both Region and Sector Navigation.
-            int currentQX = playership.GetRegion().X;
-            int currentQY = playership.GetRegion().Y;
+            int futureShipRegionX = currentRegion.X;
+            int futureShipRegionY = currentRegion.Y;
 
             for (int i = 0; i < distance; i++)
             {
                 switch (direction)
                 {
-                    case 3: 
-                        currentQX--; //left
+                    case 3:
+                        futureShipRegionX--; //left
                         break;
                     case 4:
-                        currentQX--; //left
-                        currentQY--; //up
+                        futureShipRegionX--; //left
+                        futureShipRegionY--; //up
                         break;
                     case 5:
-                        currentQY--; //up
+                        futureShipRegionY--; //up
                         break;
                     case 6:
-                        currentQX++; //right
-                        currentQY--; //up
+                        futureShipRegionX++; //right
+                        futureShipRegionY--; //up
                         break;
                     case 7:
-                        currentQX++; //right
+                        futureShipRegionX++; //right
                         break;
                     case 8:
-                        currentQX++; //right
-                        currentQY++; //down
+                        futureShipRegionX++; //right
+                        futureShipRegionY++; //down
                         break;
                     case 1:
-                        currentQY++; //down
+                        futureShipRegionY++; //down
                         break;
                     case 2:
-                        currentQX--; //left
-                        currentQY++; //down
+                        futureShipRegionX--; //left
+                        futureShipRegionY++; //down
                         break;
                 }
 
                 //todo: check if Region is nebula or out of bounds
 
-                var barrierHit = this.IsGalacticBarrier(ref currentQX, ref currentQY);  //XY will be set to safe value in here
+                bool barrierHit = this.Game.Map.Regions.IsGalacticBarrier(futureShipRegionX, futureShipRegionY);  //XY will be set to safe value in here
+                this.BlockedByGalacticBarrier = barrierHit;
+
                 if (barrierHit)
                 {
+                    //ship location is not updated. this means the ship will stop right before the barrier
+                    //todo: later, a config option could be that the ship can be thrown to an adjacent region.
                     break;
                 }
                 else
                 {
-                    bool nebulaEncountered = Regions.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentQX), Convert.ToInt32(currentQY)));
+                    //set ship location to the new location
+                    newRegion = Regions.Get(this.ShipConnectedTo.Map, new Coordinate(futureShipRegionX, futureShipRegionY));
+
+                    bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
                     if (nebulaEncountered)
                     {
-                        this.Game.Write.Line("Nebula Encountered. Navigation stopped to manually recalibrate warp coil");
+                        base.Game.Write.Line(this.NEBULA_ENCOUNTERED);
                         break;
                     }
                 }
-            }
 
-            return Regions.Get(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentQX), Convert.ToInt32(currentQY)));
+            } //for loop end
+
+            return newRegion;
 
             //todo: once we have found Region..
             //is target location blocked?
@@ -297,7 +308,7 @@ namespace StarTrek_KG.Actors
         /// <param name="activeSectors"> </param>
         /// <param name="lastSector"> </param>
         /// <returns></returns>
-        public bool SublightObstacleCheck(Coordinate lastSector, Coordinate sector, Sectors activeSectors)
+        private bool SublightObstacleCheck(Coordinate lastSector, Coordinate sector, Sectors activeSectors)
         {
             //todo:  I think I destroyed a star and appeared in its place when navigating to a new Region.  (That or LRS is broken, or maybe it is working fine!)
             try
@@ -383,47 +394,7 @@ namespace StarTrek_KG.Actors
 
         //    return newActiveRegion; //contains the newly set sector in it
         //}
-
-        public bool IsGalacticBarrier(ref int x, ref int y)
-        {
-            //todo: this barrier needs to be a computed size based upon app.config xy settings of how big the galaxy is.
-            //Star Trek lore gives us a good excuse to limit playfield size.
-
-            var upperBound = 7;
-
-            this.BlockedByGalacticBarrier = false;
-
-            if (x < 0)
-            {
-                x = 0; //todo: gridXLowerBound in app.config or calculated
-                this.BlockedByGalacticBarrier = true;
-            }
-            else if (x > upperBound)
-            {
-                x = upperBound; //todo: gridXUpperBound in app.config or calculated
-                this.BlockedByGalacticBarrier = true;
-            }
-
-            if (y < 0)
-            {
-                y = 0; //todo: gridYLowerBound in app.config or calculated
-                this.BlockedByGalacticBarrier = true;
-            }
-            else if (y > upperBound)
-            {
-                y = upperBound; //todo: gridYUpperBound in app.config or calculated
-                this.BlockedByGalacticBarrier = true;
-            }
-
-            if (this.BlockedByGalacticBarrier)
-            {
-                //todo: which one?  name it.
-                this.Game.Write.Line("Galactic Barrier hit. Navigation stopped..");
-            }
-
-            return this.BlockedByGalacticBarrier;
-        }
-
+        
         //This prompt needs to be exposed to the user as an event
         public bool InvalidCourseCheck(out int direction)
         {

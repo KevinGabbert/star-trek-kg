@@ -64,6 +64,7 @@
     <Compile Include="Config\Collections\FactionThreats.cs" />
     <Compile Include="Config\Elements\Name.cs" />
     <Compile Include="Config\Elements\SeverityValueTranslation.cs" />
+    <Compile Include="TypeSafeEnums\Menu.cs" />
     <Compile Include="Enums\MovementType.cs" />
     <Compile Include="Enums\SectorScanType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="Subsystem\Torpedoes.cs" />
     <Compile Include="Actors\System.cs" />
     <Compile Include="Utility\ConsoleHelper.cs" />
+    <Compile Include="Utility\EnumUtil.cs" />
     <Compile Include="Utility\MelodyPlayer.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Actors\Warp.cs" />

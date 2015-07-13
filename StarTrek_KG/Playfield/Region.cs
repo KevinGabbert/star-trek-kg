@@ -19,7 +19,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-        public Game Game { get; set; }
+        public Game Game { private get; set; }
         public RegionType Type { get; set; }
         public string Name { get; set; }
 

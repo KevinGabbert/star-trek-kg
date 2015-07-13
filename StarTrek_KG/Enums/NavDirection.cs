@@ -9,6 +9,6 @@
         West = 3,
         NorthWest = 4,
         North = 5,
-        NorthEast = 6,
+        NorthEast = 6
     }
 }

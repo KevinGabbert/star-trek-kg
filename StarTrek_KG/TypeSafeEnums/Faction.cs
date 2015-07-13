@@ -5,7 +5,7 @@ namespace StarTrek_KG.TypeSafeEnums
 {
     public sealed class FactionName
     {
-        private readonly String name;
+        private readonly string name;
         private readonly int value;
 
         public static readonly FactionName Federation = new FactionName(1, "Federation");
@@ -18,7 +18,7 @@ namespace StarTrek_KG.TypeSafeEnums
 
         private static Dictionary<string, FactionName> instance = new Dictionary<string, FactionName>();
 
-        private FactionName(int value, String name)
+        private FactionName(int value, string name)
         {
             this.name = name;
             this.value = value;
@@ -32,7 +32,7 @@ namespace StarTrek_KG.TypeSafeEnums
             instance[name] = this;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return name;
         }

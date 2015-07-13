@@ -5,7 +5,7 @@ namespace StarTrek_KG.TypeSafeEnums
 {
     public sealed class SubsystemType
     {
-        private readonly String name;
+        private readonly string name;
         private readonly int value;
 
         public static readonly SubsystemType None = new SubsystemType(1, "None");
@@ -24,7 +24,7 @@ namespace StarTrek_KG.TypeSafeEnums
 
         private static Dictionary<string, SubsystemType> instance = new Dictionary<string, SubsystemType>();
 
-        private SubsystemType(int value, String name)
+        private SubsystemType(int value, string name)
         {
             this.name = name;
             this.value = value;
@@ -38,7 +38,7 @@ namespace StarTrek_KG.TypeSafeEnums
             instance[name] = this;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return name;
         }
@@ -56,51 +56,41 @@ namespace StarTrek_KG.TypeSafeEnums
         {
             SubsystemType returnVal = SubsystemType.None;
 
-            switch (subsystemToFix)
+            if (subsystemToFix == Menu.nav.ToString())
             {
-                case "nav":
-                    returnVal = SubsystemType.Navigation;
-                    break;
-
-                case "irs":
-                    returnVal = SubsystemType.ImmediateRangeScan;
-                    break;
-
-                case "srs":
-                    returnVal = SubsystemType.ShortRangeScan;
-                    break;
-
-                case "lrs":
-                    returnVal = SubsystemType.LongRangeScan;
-                    break;
-
-                case "crs":
-                    returnVal = SubsystemType.CombinedRangeScan;
-                    break;
-
-                case "pha":
-                    returnVal = SubsystemType.Phasers;
-                    break;
-
-                case "tor":
-                    returnVal = SubsystemType.Torpedoes;
-                    break;
-
-                case "she":
-                    returnVal = SubsystemType.Shields;
-                    break;
-
-                case "com":
-                    returnVal = SubsystemType.Computer;
-                    break;
-
-                //case "dmg":
-                //    returnVal = SubsystemType.DamageControl;
-                //    break;
-
-                //case "dbg":
-                //    returnVal = SubsystemType.Debug;
-                //    break;
+                returnVal = SubsystemType.Navigation;
+            }
+            else if (subsystemToFix == Menu.irs.ToString())
+            {
+                returnVal = SubsystemType.ImmediateRangeScan;
+            }
+            else if (subsystemToFix == Menu.srs.ToString())
+            {
+                returnVal = SubsystemType.ShortRangeScan;
+            }
+            else if (subsystemToFix == Menu.lrs.ToString())
+            {
+                returnVal = SubsystemType.LongRangeScan;
+            }
+            else if (subsystemToFix == Menu.crs.ToString())
+            {
+                returnVal = SubsystemType.CombinedRangeScan;
+            }
+            else if (subsystemToFix == Menu.pha.ToString())
+            {
+                returnVal = SubsystemType.Phasers;
+            }
+            else if (subsystemToFix == Menu.tor.ToString())
+            {
+                returnVal = SubsystemType.Torpedoes;
+            }
+            else if (subsystemToFix == Menu.she.ToString())
+            {
+                returnVal = SubsystemType.Shields;
+            }
+            else if (subsystemToFix == Menu.com.ToString())
+            {
+                returnVal = SubsystemType.Computer;
             }
 
             return returnVal;
