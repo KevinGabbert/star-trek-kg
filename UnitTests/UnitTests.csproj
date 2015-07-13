@@ -69,6 +69,7 @@
     <Compile Include="Tests\ShipObjectTests\Test_ShipObject.cs" />
     <Compile Include="Tests\StarbaseTests\DockingTests.cs" />
     <Compile Include="Tests\StarbaseTests\Starbase_Tests.cs" />
+    <Compile Include="Tests\SubSystemTests\CombinedRangeScanTests.cs" />
     <Compile Include="Tests\SubSystemTests\DamageTests.cs" />
     <Compile Include="Tests\SubSystemTests\PhaserTests.cs" />
     <Compile Include="Tests\SubSystemTests\PhotonTests.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Tests\SubSystemTests\ShieldTests.cs" />
     <Compile Include="Tests\ShipTests.cs" />
     <Compile Include="Tests\SubSystemTests\ComputerTests.cs" />
+    <Compile Include="Tests\SubSystemTests\ShortRangeScanTests.cs" />
     <Compile Include="Tests\SubSystemTests\Subsystem_BaseTests.cs" />
     <Compile Include="Tests\SubSystemTests\Subsystem_Base_Tests.cs" />
     <Compile Include="Tests\Test Harness Objects\TestClass_Base.cs" />

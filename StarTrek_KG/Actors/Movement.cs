@@ -113,7 +113,7 @@ namespace StarTrek_KG.Actors
                 }
 
                 //if on the edge of a Region, newSector will have negative numbers
-                var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, Convert.ToInt32(currentSX), Convert.ToInt32(currentSY), false), false);
+                var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, currentSX, currentSY), false);
 
                 var locationToScan = new Location(this.ShipConnectedTo.GetRegion(), newSectorCandidate);
 

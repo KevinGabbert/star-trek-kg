@@ -147,7 +147,7 @@ namespace UnitTests.ShipTests.RegionTests
 
             _setup.TestLongRangeScan = new LongRangeScan(_setup.TestMap.Playership, _setup.Game);
 
-            var x = _setup.TestLongRangeScan.Execute(_testRegion);
+            var x = LongRangeScan.Execute(_testRegion);
                 //pulls count from Region object
 
             Assert.AreEqual(expectedBaddies, x.Hostiles);

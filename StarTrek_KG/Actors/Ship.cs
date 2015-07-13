@@ -385,15 +385,17 @@ namespace StarTrek_KG.Actors
                 {
                     for (var sectorT = myLocation.Sector.X - 1; sectorT <= myLocation.Sector.X + 1; sectorT++)
                     {
-                        var currentResult = new DivinedSectorItem();
-                        currentResult.MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL;
-                        currentResult.Location = new Location();
+                        var currentResult = new DivinedSectorItem
+                        {
+                            MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL,
+                            Location = new Location()
+                        };
 
                         if (sectorT >= -1 && sectorT <= 8)
                         {
                             Sectors sectorsToQuery = myLocation.Region.Sectors;
 
-                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL, false));
+                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL));
                             
                             bool nullSector = currentResult.Location.Sector == null;
 
@@ -409,9 +411,7 @@ namespace StarTrek_KG.Actors
                                     int i;
                                 }
 
-                                var boundsChecking = false;
-
-                                var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL, boundsChecking)), boundsChecking);
+                                var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL)));
                                 var locationToExamine = new Location(currentRegion, sectorToExamine);
 
                                 //todo: this could be currentRegion.GetDivinedSector()

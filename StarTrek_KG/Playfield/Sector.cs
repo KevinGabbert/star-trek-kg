@@ -45,7 +45,6 @@ namespace StarTrek_KG.Playfield
         public Sector(LocationDef location, bool enforceBoundsChecking)
         {
             this.Type = SectorType.Space;
-            this._errorOnOutOfBounds = enforceBoundsChecking;
             this.X = location.Sector.X;
             this.Y = location.Sector.Y;
             this.RegionDef = location.Region;
@@ -173,7 +172,7 @@ namespace StarTrek_KG.Playfield
 
         public Coordinate GetCoordinate()
         {
-            return new Coordinate(this.X, this.Y, false);
+            return new Coordinate(this.X, this.Y);
         }
     }
 }

@@ -79,11 +79,13 @@ namespace StarTrek_KG.Subsystem
 
             //todo: add in a constructor to turn off coordinate bounds checking for this object only
             //either that, or come up with a null location so that the first WHILE will work
-            var lastPosition = new Coordinate(-1, -1, false);
+            var lastPosition = new Coordinate(-1, -1);
 
-            var newLocation = new Location();
-            newLocation.Region = Region;
-            newLocation.Sector = new Sector();
+            var newLocation = new Location
+            {
+                Region = Region,
+                Sector = new Sector()
+            };
 
             ////todo: condense WHILE to be a function of Coordinate
             ////todo: eliminate the twice rounding of torpedo location, as the same value is evaluated twice

@@ -5,9 +5,11 @@ namespace StarTrek_KG.Types
 {
     public class LRSResult: IScanResult
     {
-        private int _hostiles = -1;
-        private int _starbases = -1;
-        private int _stars = -1;
+        public string RegionName
+        {
+            get { return Name; }
+            set { this.Name = value; }
+        }
 
         public Coordinate Coordinate { get; set; }
         public bool MyLocation { get; set; }
@@ -15,35 +17,15 @@ namespace StarTrek_KG.Types
         public bool Unknown { get; set; }
         public string Name { get; set; }
 
-        public string RegionName
-        {
-            get { return Name; }
-            set { this.Name = value; }
-        }
-
-        public int Hostiles
-        {
-            get { return _hostiles; }
-            set { _hostiles = value; }
-        }
-
-        public int Starbases
-        {
-            get { return _starbases; }
-            set { _starbases = value; }
-        }
-
-        public int Stars
-        {
-            get { return _stars; }
-            set { _stars = value; }
-        }
+        public int Hostiles { get; set; } = -1;
+        public int Starbases { get; set; } = -1;
+        public int Stars { get; set; } = -1;
 
         public override string ToString()
         {
             string returnVal = null;
 
-            returnVal = this.Hostiles.ToString() + this.Starbases.ToString() + this.Stars.ToString();
+            returnVal = $"{this.Hostiles}{this.Starbases}{this.Stars}";
 
             return returnVal;
         }
@@ -56,7 +38,7 @@ namespace StarTrek_KG.Types
         {
             string returnVal = null;
 
-            returnVal = this.Hostiles.ToString() + " ∙ " + this.Starbases.ToString() + " ∙ " + this.Stars.ToString();
+            returnVal = $"{this.Hostiles} ∙ {this.Starbases} ∙ {this.Stars}";
 
             return returnVal;
         }
