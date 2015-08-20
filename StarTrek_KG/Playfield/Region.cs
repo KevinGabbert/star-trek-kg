@@ -19,7 +19,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-        public Game Game { get; set; }
+        public Game Game { private get; set; }
         public RegionType Type { get; set; }
         public string Name { get; set; }
 
@@ -49,7 +49,7 @@ namespace StarTrek_KG.Playfield
             this.Type = isNebulae ? RegionType.Nebulae : RegionType.GalacticSpace;
 
             this.Empty = true;
-            this.Name = String.Empty;
+            this.Name = string.Empty;
             this.Map = map;
         }
 
@@ -59,7 +59,6 @@ namespace StarTrek_KG.Playfield
 
             if (regionType == RegionType.GalacticBarrier)
             {
-                this._errorOnOutOfBounds = false;
                 this.Name = "Galactic Barrier"; //todo: resource this.
             }
             else
@@ -491,8 +490,11 @@ namespace StarTrek_KG.Playfield
                 }
                 else
                 {
-                    throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") +
-                                            this.Name);
+                    if (this.Type != RegionType.GalacticBarrier && this.Type != RegionType.Unknown)
+                    {
+                        throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") +
+                                                this.Name);
+                    }
                 }
             }
             catch (Exception ex)
@@ -559,12 +561,12 @@ namespace StarTrek_KG.Playfield
 
         public int GetStarbaseCount()
         {
-            return Sectors.Count(sector => sector.Item == SectorItem.Starbase);
+            return Sectors?.Count(sector => sector.Item == SectorItem.Starbase) ?? 0;
         }
 
         public int GetStarCount()
         {
-            return Sectors.Count(sector => sector.Item == SectorItem.Star);
+            return Sectors?.Count(sector => sector.Item == SectorItem.Star) ?? 0;
         }
 
         public ISector GetSector(ICoordinate coordinate)
@@ -601,9 +603,9 @@ namespace StarTrek_KG.Playfield
                     var currentResult = new IRSResult();
 
                     //todo: breaks here when regionX or regionY is 8
-                    currentResult.Coordinate = new Coordinate(sectorX, sectorY, false);
+                    currentResult.Coordinate = new Coordinate(sectorX, sectorY);
 
-                    currentResult = this.GetSectorInfo(shipLocation.Region, new Coordinate(sectorX, sectorY, false), outOfBounds, game);
+                    currentResult = this.GetSectorInfo(shipLocation.Region, new Coordinate(sectorX, sectorY), outOfBounds, game);
                     currentResult.MyLocation = shipLocation.Region.X == sectorX &&
                                                 shipLocation.Region.Y == sectorY;
 
@@ -625,62 +627,82 @@ namespace StarTrek_KG.Playfield
             return (inTheNegative || maxxed) && !(yInRegion && xInRegion);
         }
 
+        /// <summary>
+        /// Returns a list of "LRSResult" objects.  These objects show basic information of the area surrounding the passed location.
+        /// </summary>
+        /// <param name="location"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
         public IEnumerable<LRSResult> GetLRSFullData(Location location, Game game)
         {
-            var scanData = new List<LRSResult>();
-
             bool currentlyInNebula = location.Region.Type == RegionType.Nebulae;
 
-            for (var regionY = location.Region.Y - 1;
-                regionY <= location.Region.Y + 1;
-                regionY++)
+            //todo: rewrite scanning method. this one is not very clear.
+
+            //todo: if you create a coordinate that is not legal, then an exception is thrown.  this is bad.
+
+            //1. get all regions next to location.Region
+
+            //-1 -1
+            //-1 +1
+            //-1 0
+            //0 -1
+            //0 0
+            //0 +1
+            //+1 0
+            //+1 -1
+            //+1 +1
+
+            int locationX = location.Region.X;
+            int locationY = location.Region.Y;
+            List<Region> thisRegionAndThoseNextToThisOne = new List<Region>
             {
-                for (var regionX = location.Region.X - 1;
-                    regionX <= location.Region.X + 1;
-                    regionX++)
-                {
-                    var offMap = game.Map.OutOfBounds(new Region(new Coordinate(regionY, regionX, false)));
+                this.Item(currentlyInNebula, game, locationX, locationY),
+                this.Item(currentlyInNebula, game, locationX - 1, locationY),
+                this.Item(currentlyInNebula, game, locationX, locationY - 1),
+                this.Item(currentlyInNebula, game, locationX + 1, locationY),
+                this.Item(currentlyInNebula, game, locationX, locationY + 1),
+                this.Item(currentlyInNebula, game, locationX + 1, locationY - 1),
+                this.Item(currentlyInNebula, game, locationX - 1, locationY + 1),
+                this.Item(currentlyInNebula, game, locationX + 1, locationY + 1),
+                this.Item(currentlyInNebula, game, locationX - 1, locationY - 1)
+            };
 
-                    var currentResult = new LRSResult
-                    {
-                        Coordinate = new Coordinate(regionX, regionY, false)
-                    };
+            //build map
+            IEnumerable<LRSResult> scanData = thisRegionAndThoseNextToThisOne.Select(this.GetRegionData).ToList();
 
-                    //todo: breaks here when regionX or regionY is 8
+            //todo: set up galactic barrier space orr
+            scanData.Single(r => r.Coordinate.X == location.Region.X && r.Coordinate.Y == location.Region.Y).MyLocation = true;
 
-                    if (!currentlyInNebula)
-                    {
-                        currentResult = this.GetRegionInfo(new Coordinate(regionX, regionY, false), offMap, game);
-                        currentResult.MyLocation = location.Region.X == regionX &&
-                                                   location.Region.Y == regionY;
-                    }
-                    else
-                    {
-                        //We are in a nebula.  LRS won't work here.
-                        currentResult.Unknown = true;
-                        currentResult.Coordinate = new Coordinate(regionX, regionY); //because we at least know the coordinate of what we don't know is..
-                    }
-
-                    scanData.Add(currentResult);
-                }
-            }
             return scanData;
         }
 
-        private LRSResult GetRegionInfo(ICoordinate region, bool outOfBounds, Game game)
+        private Region Item(bool currentlyInNebula, Game game, int locationX, int locationY)
         {
-            var currentResult = new LRSResult();
+            Region region;
 
-            if (!outOfBounds)
+            if (!currentlyInNebula)
             {
-                currentResult = this.GetRegionData(region, game);
+                region = game.Map.Regions.SingleOrDefault(r => r.X == locationX && r.Y == locationY) ??
+                             new Region(new Coordinate(locationX, locationY))
+                             { 
+                                 Game = game,
+                                 Empty = true,
+                                 Type = RegionType.GalacticBarrier,
+                                 Name = "Galactic Barrier",
+                                 Scanned = true
+                             };
             }
             else
             {
-                currentResult.GalacticBarrier = true;
+                region = new Region(new Coordinate(locationX, locationY))
+                {
+                    Game = game,
+                    Type = RegionType.Unknown
+                };
             }
 
-            return currentResult;
+            return region;
         }
 
         public IRSResult GetSectorInfo(Region currentRegion, ICoordinate sector, bool outOfBounds, Game game)
@@ -689,7 +711,16 @@ namespace StarTrek_KG.Playfield
 
             if (!outOfBounds)
             {
-                currentResult = this.GetSectorData(currentRegion, sector, game);
+                if (!currentRegion.IsNebulae())
+                {
+                    currentResult = this.GetSectorData(currentRegion, sector, game);
+                }
+                else
+                {
+                    //currentResult.RegionName = "Unknown";
+                    currentResult.Unknown = true;
+                    currentResult.Coordinate = new Coordinate(currentRegion.X, currentRegion.Y);
+                }
             }
             else
             {
@@ -700,20 +731,20 @@ namespace StarTrek_KG.Playfield
             return currentResult;
         }
 
-        private LRSResult GetRegionData(ICoordinate region, Game game)
+        private LRSResult GetRegionData(Region region)
         {
-            Region regionToScan = Regions.Get(game.Map, this.CoordinateToScan(region.X, region.Y, game.Config));
+            //Region regionToScan; // = Regions.Get(game.Map, this.CoordinateToScan(region.X, region.Y, game.Config));
             var regionResult = new LRSResult();
 
-            if (regionToScan.Type != RegionType.Nebulae)
+            if (region.Type != RegionType.Nebulae)
             {
-                regionResult = LongRangeScan.For(game.Map.Playership).Execute(regionToScan);
+                regionResult = LongRangeScan.Execute(region);
             }
             else
             {
                 regionResult.Coordinate = new Coordinate(region.X, region.Y);
-                regionResult.Name = regionToScan.Name;
-                regionResult.Unknown = true;
+                regionResult.Name = region.Name;
+                //regionResult.Unknown = true; //todo: is it?
             }
 
             return regionResult;
@@ -723,7 +754,7 @@ namespace StarTrek_KG.Playfield
         {
             Sector sectorToScan = this.Sectors.GetNoError(sector);
 
-            Coordinate xx = sectorToScan ?? new Coordinate(sector.X, sector.Y, false);
+            Coordinate xx = sectorToScan ?? new Coordinate(sector.X, sector.Y);
 
             ISector sectorToExamine = new Sector(new LocationDef(currentRegion, xx), false);
             var locationToExamine = new Location(currentRegion, sectorToExamine);
@@ -805,8 +836,8 @@ namespace StarTrek_KG.Playfield
             //todo: perhaps this code needs to be in the constructor -------------
 
             var locationToGet = new Location();
-            var regionCoordinateToGet = new Coordinate(locationToExamine.Region.X, locationToExamine.Region.Y, false);
-            var sectorCoordinateToGet = new Coordinate(locationToExamine.Sector.X, locationToExamine.Sector.Y, false);
+            var regionCoordinateToGet = new Coordinate(locationToExamine.Region.X, locationToExamine.Region.Y);
+            var sectorCoordinateToGet = new Coordinate(locationToExamine.Sector.X, locationToExamine.Sector.Y);
 
             result = this.GetLeftEdgeResult(locationToExamine, result, regionCoordinateToGet, sectorCoordinateToGet);
             result = this.GetRightEdgeResult(locationToExamine, result, regionCoordinateToGet, sectorCoordinateToGet);
@@ -823,7 +854,7 @@ namespace StarTrek_KG.Playfield
                 throw new ArgumentException();
             }
 
-            locationToGet.Region = Regions.Get(map, new Coordinate(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y, false));
+            locationToGet.Region = Regions.Get(map, new Coordinate(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y));
 
             if (locationToGet.Region.Type != RegionType.GalacticBarrier)
             {
@@ -1021,7 +1052,7 @@ namespace StarTrek_KG.Playfield
 
         public Coordinate GetCoordinate()
         {
-            return new Coordinate(this.X, this.Y, false);
+            return new Coordinate(this.X, this.Y);
         }
     }
 }

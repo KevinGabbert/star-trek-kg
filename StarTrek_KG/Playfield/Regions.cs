@@ -28,18 +28,28 @@ namespace StarTrek_KG.Playfield
             this.Map = map;
         }
 
+        /// <summary>
+        /// basically, this just means "out of bounds" of the passed map
+        /// </summary>
+        /// <param name="regionX"></param>
+        /// <param name="regionY"></param>
+        /// <returns></returns>
+        public bool IsGalacticBarrier(int regionX, int regionY)
+        {
+            bool isGalacticBarrier = false;
+
+           Region gotRegion = (this.Map?.Regions)?.FirstOrDefault(region => region.X == regionX && region.Y == regionY);
+
+            isGalacticBarrier = gotRegion == null;
+
+            return isGalacticBarrier;
+        }
+
         public static Region Get(IMap map, Coordinate region)
         {
             List<Region> i = map.Regions.Where(q => q.X == region.X && q.Y == region.Y).ToList();
 
-            if (i.Any())
-            {
-                return i.Single();
-            }
-            else
-            {
-                return new Region(map, region.X, region.Y, RegionType.GalacticBarrier);
-            }
+            return i.Any() ? i.Single() : new Region(map, region.X, region.Y, RegionType.GalacticBarrier);
         }
 
         public Region Get(string name)

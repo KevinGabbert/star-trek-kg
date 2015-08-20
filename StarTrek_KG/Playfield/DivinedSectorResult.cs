@@ -21,8 +21,8 @@
             this.CurrentLocationX = currentX;
             this.CurrentLocationY = currentY; 
 
-            this.RegionCoordinateToGet = new Coordinate(regionX, regionY, false);
-            this.SectorCoordinateToGet = new Coordinate(sectorX, sectorY, false);
+            this.RegionCoordinateToGet = new Coordinate(regionX, regionY);
+            this.SectorCoordinateToGet = new Coordinate(sectorX, sectorY);
 
             return this;
         }

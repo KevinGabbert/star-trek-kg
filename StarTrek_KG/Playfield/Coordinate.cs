@@ -1,13 +1,10 @@
 ﻿using StarTrek_KG.Config;
-using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {
     public class Coordinate : ICoordinate
     {
-        protected bool _errorOnOutOfBounds = true;
-
         #region Properties
 
         public bool OutOfBounds { get; set; }
@@ -18,10 +15,7 @@ namespace StarTrek_KG.Playfield
             get { return _x; }
             set
             {
-                if (this._errorOnOutOfBounds)
-                {
-                    this.CheckForOutOfBounds(value);
-                }
+               this.CheckForOutOfBounds(value);
 
                 _x = value;
             }
@@ -34,10 +28,6 @@ namespace StarTrek_KG.Playfield
             get { return _y; }
             set
             {
-                if (this._errorOnOutOfBounds)
-                {
-                    this.CheckForOutOfBounds(value);
-                }
                 _y = value;
             }
         }
@@ -48,9 +38,8 @@ namespace StarTrek_KG.Playfield
         {
         }
 
-        public Coordinate(int x, int y, bool enforceBoundsChecking = true)
+        public Coordinate(int x, int y)
         {
-            _errorOnOutOfBounds = enforceBoundsChecking;
             this.X = x;
             this.Y = y;
         }
@@ -71,14 +60,7 @@ namespace StarTrek_KG.Playfield
             if ((value > boundsHigh) || 
                  value < boundsLow) 
             {
-                if (this._errorOnOutOfBounds)
-                {
-                    throw new GameConfigException("Out of bounds");
-                }
-                else
-                {
-                    this.OutOfBounds = true;
-                }
+                this.OutOfBounds = true;
             }
         }
 

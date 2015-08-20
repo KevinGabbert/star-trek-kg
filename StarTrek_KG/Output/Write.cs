@@ -67,7 +67,7 @@ namespace StarTrek_KG.Output
         //missionResult needs to be an enum
         public void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
         {
-            var missionEndResult = String.Empty;
+            var missionEndResult = string.Empty;
 
             if (ship.Destroyed)
             {
@@ -249,6 +249,11 @@ namespace StarTrek_KG.Output
             }
         }
 
+        private string Display(Menu menuItem)
+        {
+            return $"{menuItem.Name} = {menuItem.Description}";
+        }
+
         public void CreateCommandPanel()
         {
             ACTIVITY_PANEL = new List<string>
@@ -276,7 +281,7 @@ namespace StarTrek_KG.Output
             {
                 ACTIVITY_PANEL.Add("");
                 ACTIVITY_PANEL.Add("─────────────────────────────");
-                ACTIVITY_PANEL.Add("dbg = Debug Test Mode");
+                ACTIVITY_PANEL.Add(this.Display(Menu.dbg));
             }
         }
 
@@ -290,72 +295,67 @@ namespace StarTrek_KG.Output
             var readLine = this.Console.ReadLine();
             if (readLine == null) return;
 
-            var command = readLine.Trim().ToLower();
-            switch (command)
+            string command = readLine.Trim().ToLower();
+            if (command == Menu.wrp.ToString() || command == Menu.imp.ToString() || command == Menu.nto.ToString())
             {
-                case "wrp":
-                case "imp":
-                case "nto":
-                    Navigation.For(playerShip).Controls(command);
-                    break;
-
-                case "irs":
-                    ImmediateRangeScan.For(playerShip).Controls();
-                    break;
-
-                case "srs":
-                    ShortRangeScan.For(playerShip).Controls();
-                    break;
-
-                case "lrs":
-                    LongRangeScan.For(playerShip).Controls();
-                    break;
-
-                case "crs":
-                    CombinedRangeScan.For(playerShip).Controls();
-                    break;
-
-                case "pha": 
-                    Phasers.For(playerShip).Controls(playerShip);
-                    break;
-
-                case "tor":
-                    Torpedoes.For(playerShip).Controls();
-                    break;
-
-                case "she":
-                    this.ShieldMenu(playerShip);
-                    break;
-
-                case "com":
-                    this.ComputerMenu(playerShip);
-                    break;
-
-                case "toq":
-                    Computer.For(playerShip).Controls(command);
-                    break;
-
-                case "dmg":
-                    this.DamageControlMenu(playerShip);
-                    break;
-
-                //Utility Commands
-                case "dbg":
-                    this.DebugMenu(playerShip);
-                    break;
-
-                case "ver":
-                    this.Console.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
-                    break;
-
-                case "cls":
-                    this.Console.Clear();
-                    break;
-
-                default: //case "?":
-                    this.CreateCommandPanel();
-                    this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
-                    break;
+                Navigation.For(playerShip).Controls(command);
+            }
+            else if (command == Menu.irs.ToString())
+            {
+                ImmediateRangeScan.For(playerShip).Controls();
+            }
+            else if (command == Menu.srs.ToString())
+            {
+                ShortRangeScan.For(playerShip).Controls();
+            }
+            else if (command == Menu.lrs.ToString())
+            {
+                LongRangeScan.For(playerShip).Controls();
+            }
+            else if (command == Menu.crs.ToString())
+            {
+                CombinedRangeScan.For(playerShip).Controls();
+            }
+            else if (command == Menu.pha.ToString())
+            {
+                Phasers.For(playerShip).Controls(playerShip);
+            }
+            else if (command == Menu.tor.ToString())
+            {
+                Torpedoes.For(playerShip).Controls();
+            }
+            else if (command == Menu.she.ToString())
+            {
+                this.ShieldMenu(playerShip);
+            }
+            else if (command == Menu.com.ToString())
+            {
+                this.ComputerMenu(playerShip);
+            }
+            else if (command == Menu.toq.ToString())
+            {
+                Computer.For(playerShip).Controls(command);
+            }
+            else if (command == Menu.dmg.ToString())
+            {
+                this.DamageControlMenu(playerShip);
+            }
+            else if (command == Menu.dbg.ToString())
+            {
+                this.DebugMenu(playerShip);
+            }
+            else if (command == Menu.ver.ToString())
+            {
+                this.Console.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
+            }
+            else if (command == Menu.cls.ToString())
+            {
+                this.Console.Clear();
+            }
+            else
+            {
+                this.CreateCommandPanel();
+                this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
             }
         }
 

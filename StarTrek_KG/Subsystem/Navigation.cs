@@ -14,9 +14,9 @@ namespace StarTrek_KG.Subsystem
         public bool Docked { get; set; } //todo: move this to ship
         public int MaxWarpFactor { get; set; }
 
-        public Warp Warp { get; set; }
-        public Impulse Impulse { get; set; }
-        public Movement Movement { get; set; }
+        public Warp Warp { get;}
+        public Impulse Impulse { get; }
+        public Movement Movement { get; }
 
         #endregion
 
@@ -129,7 +129,6 @@ namespace StarTrek_KG.Subsystem
             {
                 return;
             }
-
 
             if (this.Warp.InvalidWarpFactorCheck(this.MaxWarpFactor, out distance)) return;
 

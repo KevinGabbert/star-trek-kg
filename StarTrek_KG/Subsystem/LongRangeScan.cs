@@ -26,7 +26,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Controls()
         {
-            if (Damaged()) return;
+            if (this.Damaged()) return;
 
             //todo: refactor this pattern with LRS
 
@@ -80,7 +80,7 @@ namespace StarTrek_KG.Subsystem
             return regionResult;
         }
 
-        public LRSResult Execute(Region regionToScan)
+        public static LRSResult Execute(Region regionToScan)
         {
             var regionResult = new LRSResult
             {

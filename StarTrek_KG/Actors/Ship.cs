@@ -418,7 +418,7 @@ namespace StarTrek_KG.Actors
                         {
                             Sectors sectorsToQuery = myLocation.Region.Sectors;
 
-                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL, false));
+                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL));
                             
                             bool nullSector = currentResult.Location.Sector == null;
 
@@ -434,9 +434,7 @@ namespace StarTrek_KG.Actors
                                     int i;
                                 }
 
-                                var boundsChecking = false;
-
-                                var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL, boundsChecking)), boundsChecking);
+                                var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL)));
                                 var locationToExamine = new Location(currentRegion, sectorToExamine);
 
                                 //todo: this could be currentRegion.GetDivinedSector()
