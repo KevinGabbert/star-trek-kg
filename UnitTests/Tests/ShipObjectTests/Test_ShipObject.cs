@@ -101,7 +101,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockSector.Verify(s => s.Y, Times.Exactly(1));
 
             _mockWrite.Verify(w => w.Line(It.IsAny<string>()), Times.Exactly(2));
-            _mockWrite.Verify(w => w.Line("Your Ship has been hit by The attacking Ship at sector [-2,-3]."), Times.AtLeastOnce());
+            _mockWrite.Verify(w => w.Line(Moq.It.Is<string>(s => s.StartsWith("Your ship has been hit by"))), Times.AtLeastOnce());
             _mockWrite.Verify(w => w.Line("No Damage."), Times.Once());
         }
 

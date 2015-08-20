@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
+using UnitTests.ShipTests;
 
-namespace UnitTests.ShipTests.HostileTests
+namespace UnitTests.Tests.HostileTests
 {
     [TestFixture]
     public class HostileTests: TestClass_Base
