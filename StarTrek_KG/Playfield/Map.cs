@@ -85,15 +85,15 @@ namespace StarTrek_KG.Playfield
 
             var names = new Stack<string>(RegionNames.Shuffle());
 
-            var klingonShipNames = this.Config.FactionShips(this.DefaultHostile);
+            var baddieShipNames = this.Config.FactionShips(this.DefaultHostile);
 
             this.Write.DebugLine("Got Baddies");
 
             //todo: modify this to populate with multiple faction types..
-            var klingonBaddieNames = new Stack<string>(klingonShipNames.Shuffle());
+            var baddieNames = new Stack<string>(baddieShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
-            this.InitializeRegionsWithBaddies(names, klingonBaddieNames, this.DefaultHostile, sectorDefs, generateWithNebulae);
+            this.InitializeRegionsWithBaddies(names, baddieNames, this.DefaultHostile, sectorDefs, generateWithNebulae);
 
             this.Write.DebugLine("Intialized Regions with Baddies");
 
@@ -112,7 +112,7 @@ namespace StarTrek_KG.Playfield
                 this.Write.Line("");
             }
 
-            this.Playership.UpdateDivinedSectors();
+            this.Playership?.UpdateDivinedSectors();
         }
 
         public void SetupPlayerShipInSectors(SectorDefs sectorDefs)

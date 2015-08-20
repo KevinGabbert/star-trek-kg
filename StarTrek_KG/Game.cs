@@ -495,7 +495,7 @@ namespace StarTrek_KG
         {
             if (Navigation.For(map.Playership).Docked && !this.PlayerNowEnemyToFederation)
             {
-                this.AttackDockedPlayership(badGuy);
+                this.AttackDockedPlayership(badGuy, 0);
             }
             else
             {
@@ -511,7 +511,10 @@ namespace StarTrek_KG
                                                     badGuy.Sector.X,
                                                     badGuy.Sector.Y);
 
-            int seedEnergyToPowerWeapon = this.Config.GetSetting<int>("DisruptorShotSeed") * randomFactor;
+            int disruptorShotSeed = this.Config.GetSetting<int>("DisruptorShotSeed");
+
+            //todo: randomFactor is blowing out the top of the int
+            int seedEnergyToPowerWeapon = disruptorShotSeed; // * (randomFactor/5);
 
             var inNebula = badGuy.GetRegion().Type == RegionType.Nebulae;
 
@@ -526,9 +529,9 @@ namespace StarTrek_KG
             this.ReportShieldsStatus(map, shieldsValueBeforeHit);
         }
 
-        private void AttackDockedPlayership(IShip attacker)
+        private void AttackDockedPlayership(IShip attacker, int attackingEnergy)
         {
-            string hitMessage = W.ShipHitMessage(attacker);
+            string hitMessage = W.ShipHitMessage(attacker, attackingEnergy);
 
             this.Write.Line(hitMessage + " No damage due to starbase shields.");
         }

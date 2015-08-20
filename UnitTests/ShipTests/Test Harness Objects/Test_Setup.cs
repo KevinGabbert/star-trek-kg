@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
@@ -89,6 +90,7 @@ namespace UnitTests.ShipTests
         {
             this.TestMap = new Map(new SetupOptions
                                   {
+                                      AddNebulae = false,
                                       AddStars = false,
                                       Initialize = true,
                                       SectorDefs = new SectorDefs
@@ -103,6 +105,10 @@ namespace UnitTests.ShipTests
                                                        }
                                   }, this.Game.Write, this.Game.Config);
             this.VerifyMap();
+
+            var hostileShip = this.TestMap.Regions.GetHostiles().Single();
+
+            Assert.IsTrue(hostileShip.Energy > 0);
         }
 
         public void SetupMapWith1FedHostile()

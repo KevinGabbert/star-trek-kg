@@ -416,16 +416,21 @@ namespace StarTrek_KG.Playfield
             var hostileShip = new Ship(stockBaddieFaction, listOfBaddies.Pop(), position, this.Map, game)
             {
                 //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
-                Sector = {X = position.X, Y = position.Y}
+                Sector = {X = position.X, Y = position.Y},
             };
                
             var hostileShipShields = Shields.For(hostileShip);
+
             //var testinghostileShipShields = hostileShipShields.Game.RandomFactorForTesting;
             int hostileShipShieldsRandom = Utility.Utility.TestableRandom(hostileShipShields.Game); //testinghostileShipShields == 0 ? Utility.Utility.Random.Next(200) : testinghostileShipShields;
 
-            hostileShipShields.Energy = 300 + hostileShipShieldsRandom;
+            hostileShipShields.Energy = 300 + hostileShipShieldsRandom; //todo: resource this out
 
-            this.Map.Write.DebugLine("Created Ship: " + hostileShip.Name);
+            //int hostileShipEnergyRandom = Utility.Utility.TestableRandom(hostileShipShields.Game);
+            hostileShip.Energy = 300; //todo: resource this out// + hostileShipEnergyRandom;
+
+            string shipInfo = hostileShip.ToString();
+            this.Map.Write.DebugLine($"Created {shipInfo}");
 
             return hostileShip;
         }
@@ -472,6 +477,9 @@ namespace StarTrek_KG.Playfield
 
                                 if (!possibleShipToGet.Destroyed)
                                 {
+                                    //todo: what if we find a ship that has no energy?
+
+
                                     if (possibleShipToGet.Allegiance == Allegiance.BadGuy)
                                     {
                                         badGuys.Add(possibleShipToGet);

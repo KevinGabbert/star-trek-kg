@@ -484,7 +484,7 @@ namespace StarTrek_KG.Output
             return false;
         }
 
-        public static string ShipHitMessage(IShip attacker)
+        public static string ShipHitMessage(IShip attacker, int attackingEnergy)
         {
             var attackerRegion = attacker.GetRegion();
             var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
@@ -502,7 +502,7 @@ namespace StarTrek_KG.Output
                 attackerName = "Hostile Starbase";
             }
 
-            return String.Format("Your Ship has been hit by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
+            return $"Your ship has been hit by {attackerName} at sector [{attackerSector.X},{attackerSector.Y}], {attackingEnergy} megawatts of energy.";
         }
 
         public static string MisfireMessage(IShip attacker)

@@ -91,6 +91,20 @@ namespace StarTrek_KG.Actors
             //refactor from Game.GetGlobalInfo()
         }
 
+        public override string ToString()
+        {
+            return $"Name: {this.Name} " +
+                   $"Allegiance: {this.Allegiance} " +
+                   $"Faction: {this.Faction} " +
+                   $"Coordinate: {this.Coordinate} " +
+                   $"Destroyed: {this.Destroyed} " +
+                   $"Config: {this.Config} " +
+                   $"Sector: {this.Sector} " +
+                   $"Type: {this.Type} " +
+                   $"SubSystems: {this.Subsystems} " +
+                   $"Energy: {this.Energy} ";
+        }
+
         private static object CheckParam(object prop)
         {
             if (prop == null)
@@ -204,7 +218,7 @@ namespace StarTrek_KG.Actors
 
             if (attackingEnergy > 0)
             {
-                string hitMessage = Write.ShipHitMessage(attacker);
+                string hitMessage = Write.ShipHitMessage(attacker, attackingEnergy);
                 this.Map.Write.Line(hitMessage);
 
                 shields.Energy -= attackingEnergy;
@@ -246,24 +260,33 @@ namespace StarTrek_KG.Actors
             bool assignedDamage = this.Subsystems.TakeDamageIfWeCan(attackingEnergy);
 
             this.Map.Write.Line("Energy is now at: " + this.Energy);
-            if (!assignedDamage)
+
+            if (this.Energy <= 0)
             {
-                //this means there was nothing left to damage.  Blow the ship up.
-                this.Energy = 0;
                 this.Destroyed = true;
             }
-            else
-            {
-                if (this.Energy > attackingEnergy)
-                {
-                    //It hurts more when you have no shields.  This is a balance point
-                    this.Energy -= attackingEnergy; //*3 //todo: resource this out
-                    //todo: make this multiplier an app.config setting //todo: write a test to verify this behavior. 
-                }
 
-                if (this.Energy < 0)
+            if (!this.Destroyed)
+            {
+                if (!assignedDamage)
                 {
+                    //this means there was nothing left to damage.  Blow the ship up.
+                    this.Energy = 0;
                     this.Destroyed = true;
+                }
+                else
+                {
+                    if (this.Energy > attackingEnergy)
+                    {
+                        //It hurts more when you have no shields.  This is a balance point
+                        this.Energy -= attackingEnergy; //*3 //todo: resource this out
+                        //todo: make this multiplier an app.config setting //todo: write a test to verify this behavior. 
+                    }
+
+                    if (this.Energy < 0)
+                    {
+                        this.Destroyed = true;
+                    }
                 }
             }
         }
@@ -385,9 +408,11 @@ namespace StarTrek_KG.Actors
                 {
                     for (var sectorT = myLocation.Sector.X - 1; sectorT <= myLocation.Sector.X + 1; sectorT++)
                     {
-                        var currentResult = new DivinedSectorItem();
-                        currentResult.MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL;
-                        currentResult.Location = new Location();
+                        var currentResult = new DivinedSectorItem
+                        {
+                            MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL,
+                            Location = new Location()
+                        };
 
                         if (sectorT >= -1 && sectorT <= 8)
                         {

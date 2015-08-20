@@ -130,6 +130,8 @@ namespace StarTrek_KG.Utility
         }
 
         //todo: move to Utility() object
+        //todo: this needs to indicate what beam weapon it is from
+        //todo: this needs to subtract energy from ship's beam weapon
         public static double ShootBeamWeapon(double energyToPowerWeapon, double distance, string deprecationRateConfigKey, string energyAdjustmentConfigKey, bool inNebula)
         {
             var deprecationRate = (new StarTrekKGSettings()).GetSetting<double>(deprecationRateConfigKey);
@@ -146,7 +148,7 @@ namespace StarTrek_KG.Utility
                 actualDeprecationRate = deprecationRate;
             }
 
-            double deliveredEnergy = StarTrek_KG.Utility.Utility.ComputeBeamWeaponIntensity(energyToPowerWeapon, energyAdjustment, distance, actualDeprecationRate);
+            double deliveredEnergy = Utility.ComputeBeamWeaponIntensity(energyToPowerWeapon, energyAdjustment, distance, actualDeprecationRate);
             double actualDeliveredEnergy = (deliveredEnergy < 0) ? 0 : deliveredEnergy;
 
             return actualDeliveredEnergy;

@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
@@ -44,27 +46,42 @@ namespace UnitTests.ShipTests.HostileTests
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
         }
 
+        /// <summary>
+        /// This test is very sensitive to the evolving ship damage mechanic.
+        /// </summary>
         [Test]
         public void ALLHostilesAttack_ShipUndocked_WithNoShields()
         {
-            //todo:  verify that Regions are set up correctly.
-            //todo: This test does not run alone.  what do the other tests set up that this needs?  why don't thea other tests tear down their stuff?
-
-            //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
+            //todo:  This test needs to be tuned to proper gameplay
             _setup.SetupMapWith1Hostile();
 
+            Ship badGuy = ((Ship) _setup.TestMap.Regions.GetHostiles().Single());
+            badGuy.Energy = 2000;
+            badGuy.Subsystems.Add(new Disruptors(badGuy, badGuy.Game) { Energy = 500});
+            Disruptors disruptorsForBadGuy = (Disruptors)badGuy.Subsystems.Single(s => s.Type == SubsystemType.Disruptors);
+
             Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            Shields.For(_setup.TestMap.Playership).SetEnergy(0); 
+            Shields.For(_setup.TestMap.Playership).SetEnergy(0);
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
+            _setup.TestMap.Playership.Energy = 100;
 
-            const int expectedHitsTilldestruction = 4;
+            const int expectedHitsTilldestruction = 12;
             for (int i = 0; i < 100; i++)
             {
                 var testGame = (new Game((new StarTrekKGSettings())));
 
                 TakeShots(testGame, expectedHitsTilldestruction);
+
+                if (_setup.TestMap.Playership.Destroyed)
+                {
+                    break;
+                }
+                else
+                {
+                    disruptorsForBadGuy.Energy = 1000;
+                    badGuy.Energy = 2000;
+                }
             }
 
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.

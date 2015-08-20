@@ -6,7 +6,7 @@ namespace UnitTests.ShipTests.AppSettingTests
 {
     /// <summary>
     /// This fixture ensures we catch when a new setting is added during development.
-    /// After development, heslps to know whon the default configuration might be messed up.
+    /// After development, helps to know when the default configuration might be messed up.
     /// </summary>
     [TestFixture]
     public class AppSettingCounts
@@ -22,14 +22,14 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfSettings()
         {
-            Assert.AreEqual(63, config.Get.GameSettings.Count);
+            Assert.AreEqual(85, config.Get.GameSettings.Count);
         }
 
         [Test]
         public void CountOfSettingstarSystems()
         {
 
-            Assert.AreEqual(78, config.Get.StarSystems.Count);
+            Assert.AreEqual(91, config.Get.StarSystems.Count);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfFactionShips()
         {
-            Assert.AreEqual(976, config.Get.Factions[FactionName.Federation.ToString()].FactionShips.Count);
+            Assert.AreEqual(961, config.Get.Factions[FactionName.Federation.ToString()].FactionShips.Count);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfConsoleText()
         {
-            Assert.AreEqual(185, config.Get.ConsoleText.Count);
+            Assert.AreEqual(186, config.Get.ConsoleText.Count);
         }
     }
 }
