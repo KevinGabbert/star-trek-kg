@@ -1,9 +1,6 @@
-﻿
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
-using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using UnitTests.ShipTests;
 

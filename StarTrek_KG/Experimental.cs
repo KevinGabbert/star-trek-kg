@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Runtime.InteropServices;
-
-namespace StarTrek_KG.Experimental
+﻿namespace StarTrek_KG.Experimental
 {
     // Copyright Alex Shvedov
     // Modified by MercuryP with color specifications
@@ -14,7 +9,7 @@ namespace StarTrek_KG.Experimental
     // Use this code in any way you want
 
     using System;
-    using System.Diagnostics;                // for Debug
+    // for Debug
     using System.Drawing;                    // for Color (add reference to  System.Drawing assembly)
     using System.Runtime.InteropServices;    // for StructLayout
 

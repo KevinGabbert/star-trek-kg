@@ -37,12 +37,6 @@ namespace StarTrek_Console {
     {
         System.Console.Title = "Star Trek KG";
 
-        //System.Console.WriteLine("\u00B2"); 
-        //SetScreenColorsApp.SetScreenColors(Color.Black, Color.Orange);
-        //SetScreenColorsApp.SetScreenColors(Color.Blue, Color.Black);
-
-        //Console.ForegroundColor = ConsoleColor.Black;
-
         ConsoleHelper.SetConsoleIcon(SystemIcons.Shield);
 
         var settingsForWholeGame = (new StarTrekKGSettings());

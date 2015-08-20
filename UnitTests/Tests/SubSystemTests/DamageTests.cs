@@ -1,5 +1,4 @@
-﻿using Moq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using StarTrek_KG.Interfaces;
 
 namespace UnitTests.ShipTests.SubSystemTests

@@ -1,5 +1,4 @@
-﻿using System;
-using StarTrek_KG.Enums;
+﻿using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;

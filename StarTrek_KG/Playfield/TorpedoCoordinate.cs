@@ -1,6 +1,4 @@
-﻿using StarTrek_KG.Interfaces;
-
-namespace StarTrek_KG.Playfield
+﻿namespace StarTrek_KG.Playfield
 {
     //public class VectorCoordinate
     //{

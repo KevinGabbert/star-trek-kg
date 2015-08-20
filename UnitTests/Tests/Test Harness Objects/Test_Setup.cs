@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;

@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;

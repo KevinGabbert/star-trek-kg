@@ -1,7 +1,4 @@
-﻿using System;
-using System;
-//using System.Speech.Synthesis;
-using NUnit.Framework;
+﻿//using System.Speech.Synthesis;
 
 namespace UnitTests.UtilityTests
 {

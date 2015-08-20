@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using StarTrek_KG.Config;
 using StarTrek_KG.Config.Collections;
