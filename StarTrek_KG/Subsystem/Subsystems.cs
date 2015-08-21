@@ -20,17 +20,11 @@ namespace StarTrek_KG.Subsystem
             var write = new Write(config);
             game.Write = write;
 
-
-
-            Game.PromptFunc<string, bool> prompt = (string s, out string output) => game.Write.PromptUser(s, out output);
-
-
-
             this.AddRange(new List<ISubsystem>(){
                                      new Debug(shipConnectedTo, game),
                                      new Shields(shipConnectedTo, game) { Energy = 0 },
                                      new Computer(shipConnectedTo, game),
-                                     new Navigation(shipConnectedTo, game, prompt),
+                                     new Navigation(shipConnectedTo, game),
                                      new ImmediateRangeScan(shipConnectedTo, game),
                                      new ShortRangeScan(shipConnectedTo, game),
                                      new LongRangeScan(shipConnectedTo, game),

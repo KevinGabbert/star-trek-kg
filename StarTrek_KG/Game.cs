@@ -26,6 +26,8 @@ namespace StarTrek_KG
             public Render PrintSector { get; set; }
             public IMap Map { get; set; }
 
+            public Game.PromptFunc<string, bool> Prompt { get; set; }
+
             public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
             public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
             public bool gameOver;
@@ -51,6 +53,7 @@ namespace StarTrek_KG
             if(this.Write == null)
             {
                 this.Write = new Write(config);
+                this.Prompt = (string s, out string output) => this.Write.PromptUser(s, out output);
             }
 
             if (startup)
@@ -75,9 +78,9 @@ namespace StarTrek_KG
                                            SectorDefs = SectorSetup()
                                        });
 
-                this.Write = new Write(this.Config); 
+                this.Write = new W(this.Config); 
                 this.Map = new Map(startConfig, this.Write, this.Config);
-                this.Write = new Write(this.Config);
+                this.Write = new W(this.Config);
 
                 //We don't want to start game without hostiles
                 if (this.HostileCheck(this.Map))

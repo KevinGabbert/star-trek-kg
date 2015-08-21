@@ -23,7 +23,7 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Navigation(Ship shipConnectedTo, Game game, Game.PromptFunc<string, bool> prompt) : base(shipConnectedTo, game)
+        public Navigation(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Navigation;
 
@@ -31,7 +31,8 @@ namespace StarTrek_KG.Subsystem
             this.Impulse = new Impulse(this.Game.Write);
 
             this.Movement = new Movement(shipConnectedTo, game);
-            this._prompt = prompt;
+            this._prompt = game.Prompt;
+
             //todo: refactor this to be a module variable
         }
 
@@ -49,8 +50,7 @@ namespace StarTrek_KG.Subsystem
             switch (command)
             {
                 case "wrp":
-
-                    this.WarpControls(this._prompt);
+                    this.WarpControls();
                     break;
 
                 case "imp":
@@ -125,7 +125,7 @@ namespace StarTrek_KG.Subsystem
         /// <summary>
         /// This is the Warp Workflow
         /// </summary>
-        public void WarpControls(Game.PromptFunc<string, bool> promptUser)
+        public void WarpControls()
         {
             if (this.Damaged())
             {
@@ -135,7 +135,7 @@ namespace StarTrek_KG.Subsystem
             int distance;
             int direction;
 
-            if (this.Movement.PromptAndCheckCourse(promptUser, out direction))
+            if (this.Movement.PromptAndCheckCourse(this._prompt, out direction))
             {
                 return;
             }
