@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -18,9 +19,11 @@ namespace StarTrek_KG.Subsystem
         public Impulse Impulse { get; }
         public Movement Movement { get; }
 
+        private Game.PromptFunc<string, bool> _prompt;
+
         #endregion
 
-        public Navigation(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
+        public Navigation(Ship shipConnectedTo, Game game, Game.PromptFunc<string, bool> prompt) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Navigation;
 
@@ -28,11 +31,14 @@ namespace StarTrek_KG.Subsystem
             this.Impulse = new Impulse(this.Game.Write);
 
             this.Movement = new Movement(shipConnectedTo, game);
+            this._prompt = prompt;
+            //todo: refactor this to be a module variable
         }
 
-        private void SetMaxWarpFactor()
+        private void DivineMaxWarpFactor()
         {
             this.MaxWarpFactor = (int) (0.2 + (Utility.Utility.Random).Next(9));
+
                 //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
             this.Game.Write.Line(string.Format(this.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
                 this.MaxWarpFactor));
@@ -43,7 +49,8 @@ namespace StarTrek_KG.Subsystem
             switch (command)
             {
                 case "wrp":
-                    this.WarpControls();
+
+                    this.WarpControls(this._prompt);
                     break;
 
                 case "imp":
@@ -87,7 +94,7 @@ namespace StarTrek_KG.Subsystem
             int distance;
             int direction;
 
-            if (this.Movement.InvalidCourseCheck(out direction))
+            if (this.Movement.PromptAndCheckCourse(this._prompt, out direction))
             {
                 return;
             }
@@ -115,22 +122,25 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public void WarpControls()
+        /// <summary>
+        /// This is the Warp Workflow
+        /// </summary>
+        public void WarpControls(Game.PromptFunc<string, bool> promptUser)
         {
             if (this.Damaged())
             {
-                this.SetMaxWarpFactor();
+                this.DivineMaxWarpFactor();
             }
 
             int distance;
             int direction;
 
-            if (this.Movement.InvalidCourseCheck(out direction))
+            if (this.Movement.PromptAndCheckCourse(promptUser, out direction))
             {
                 return;
             }
 
-            if (this.Warp.InvalidWarpFactorCheck(this.MaxWarpFactor, out distance)) return;
+            if (this.Warp.PromptAndCheckForInvalidWarpFactor(this.MaxWarpFactor, out distance)) return;
 
             int lastRegionY;
             int lastRegionX;

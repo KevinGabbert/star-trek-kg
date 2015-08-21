@@ -35,11 +35,13 @@ namespace StarTrek_KG
                 set; 
             }
 
+            public delegate TResult PromptFunc<T, out TResult>(T input, out T output);
+
         #endregion
 
         /// <summary>
-            /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
-            /// and some unsorted crap at the moment..
+        /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
+        /// and some unsorted crap at the moment..
         /// </summary>
         public Game(IStarTrekKGSettings config, bool startup = true)
         {

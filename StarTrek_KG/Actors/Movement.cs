@@ -394,23 +394,24 @@ namespace StarTrek_KG.Actors
 
         //    return newActiveRegion; //contains the newly set sector in it
         //}
-        
+
         //This prompt needs to be exposed to the user as an event
-        public bool InvalidCourseCheck(out int direction)
+        public bool PromptAndCheckCourse(Game.PromptFunc<string, bool> promptCourse, out int direction)
         {
-            var course = this.Game.Write.Course() + "Enter Course: ";
-            string userDirection;
+            //var course = this.Game.Write.Course() + "Enter Course: ";
+            string userDirection = "";
 
-            if (this.Game.Write.PromptUser(course, out userDirection))
+            bool userEnteredCourse = promptCourse.Invoke($"{this.Game.Write.Course()} Enter Course: ", out userDirection);
+
+            if (userEnteredCourse)
             {
-
                 //todo: check to see if number is higher than 8
 
                 if (!userDirection.IsNumeric() || userDirection.Contains("."))
                 {
                     this.Game.Write.Line("Invalid course.");
                     direction = 0;
-                     
+
                     return true;
                 }
 
@@ -429,5 +430,39 @@ namespace StarTrek_KG.Actors
 
             return false;
         }
+
+        ////This prompt needs to be exposed to the user as an event
+        //public bool PromptAndCheckCourse(out int direction)
+        //{
+        //    var course = this.Game.Write.Course() + "Enter Course: ";
+        //    string userDirection;
+
+        //    if (this.Game.Write.PromptUser(course, out userDirection))
+        //    {
+        //        //todo: check to see if number is higher than 8
+
+        //        if (!userDirection.IsNumeric() || userDirection.Contains("."))
+        //        {
+        //            this.Game.Write.Line("Invalid course.");
+        //            direction = 0;
+
+        //            return true;
+        //        }
+
+        //        var directionToCheck = Convert.ToInt32(userDirection);
+
+        //        if (directionToCheck > 8 || directionToCheck < 0)
+        //        {
+        //            this.Game.Write.Line("Invalid course..");
+        //            direction = 0;
+
+        //            return true;
+        //        }
+        //    }
+
+        //    direction = Convert.ToInt32(userDirection);
+
+        //    return false;
+        //}
     }
 } 
