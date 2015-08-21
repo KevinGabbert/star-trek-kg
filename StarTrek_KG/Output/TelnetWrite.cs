@@ -78,7 +78,7 @@ namespace StarTrek_KG.Output
         }
         private void TWrite(params string[] messages)
         {
-            foreach (byte[] messageOut in messages.Select(message => Encoding.ASCII.GetBytes(message)))
+            foreach (byte[] messageOut in messages.Select(message => Encoding.UTF8.GetBytes(message)))
             {
                 TelnetWrite.stream.Write(messageOut, 0, messageOut.Length);
             }
@@ -86,7 +86,7 @@ namespace StarTrek_KG.Output
 
         private void TWriteLine(params string[] messages)
         {
-            foreach (byte[] messageOut in messages.Select(message => Encoding.ASCII.GetBytes(message + "\r\n")))
+            foreach (byte[] messageOut in messages.Select(message => Encoding.UTF8.GetBytes(message + "\r\n")))
             {
                 TelnetWrite.stream.Write(messageOut, 0, messageOut.Length);
             }
