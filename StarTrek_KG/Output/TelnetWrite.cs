@@ -16,15 +16,15 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
-    public class TelnetWrite : IConfig, IOutput
+    public class TelnetWrite : IConfig, IOutput, IDisposable
     {
         #region Properties
 
-        public TcpListener server { get; set; }
+        public static TcpListener server { get; set; }
+        public static TcpClient client { get; set; }
+        public static NetworkStream stream { get; set; }
 
-        //todo: make this non-static so we can test this class..
-        public TcpClient client { get; set; }
-        public NetworkStream stream { get; set; }
+        public static bool TelnetServerInstantiated { get; set; }
 
         public List<string> ACTIVITY_PANEL { get; set; }
         public IStarTrekKGSettings Config { get; set; }
@@ -44,15 +44,23 @@ namespace StarTrek_KG.Output
             this.ACTIVITY_PANEL = new List<string>();
             this.Config = config;
 
-            this.server = new TcpListener(IPAddress.Parse("127.0.0.1"), 8081); //todo: resource this
-            this.server.Start();
-            this.client = server.AcceptTcpClient();
+            if (!TelnetWrite.TelnetServerInstantiated)
+            {
+                TelnetWrite.server = new TcpListener(IPAddress.Parse("127.0.0.1"), 8081); //todo: resource both params
+                TelnetWrite.server.Start();
 
-            // Get a stream object for reading and writing
-            this.stream = client.GetStream();
+                TelnetWrite.TelnetServerInstantiated = true;
+
+                TelnetWrite.client = server.AcceptTcpClient();
+
+                //execution stops while waiting for a connection.  This will need to be made into multiple threads.
+
+                // Get a stream object for reading and writing
+                TelnetWrite.stream = client.GetStream();
+            }
         }
 
-        public string ReadLine()
+        private string TReadLine()
         {
             string data = null;
 
@@ -61,25 +69,26 @@ namespace StarTrek_KG.Output
             // Incoming message may be larger than the buffer size. 
             do
             {
-                var numBytes = this.stream.Read(bytes, 0, bytes.Length);
+                var numBytes = TelnetWrite.stream.Read(bytes, 0, bytes.Length);
                 data += Encoding.ASCII.GetString(bytes, 0, numBytes);
-            } while (this.stream.DataAvailable);
+
+            } while (TelnetWrite.stream.DataAvailable);
 
             return data;
         }
-        public void Write(params string[] messages)
+        private void TWrite(params string[] messages)
         {
             foreach (byte[] messageOut in messages.Select(message => Encoding.ASCII.GetBytes(message)))
             {
-                this.stream.Write(messageOut, 0, messageOut.Length);
+                TelnetWrite.stream.Write(messageOut, 0, messageOut.Length);
             }
         }
 
-        public void WriteLine(params string[] messages)
+        private void TWriteLine(params string[] messages)
         {
             foreach (byte[] messageOut in messages.Select(message => Encoding.ASCII.GetBytes(message + "\r\n")))
             {
-                this.stream.Write(messageOut, 0, messageOut.Length);
+                TelnetWrite.stream.Write(messageOut, 0, messageOut.Length);
             }
         }
 
@@ -117,7 +126,7 @@ namespace StarTrek_KG.Output
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            this.Write(this.Config.GetText("MissionStatement"), this.TotalHostiles.ToString(), this.TimeRemaining.ToString(), this.Starbases.ToString());
+            this.TWrite(this.Config.GetText("MissionStatement"), this.TotalHostiles.ToString(), this.TimeRemaining.ToString(), this.Starbases.ToString());
             this.WriteLine(this.Config.GetText("HelpStatement"));
             this.WriteLine();
         }
@@ -133,8 +142,7 @@ namespace StarTrek_KG.Output
 
         public void HighlightTextBW(bool on)
         {
-            throw new NotImplementedException();
-            //this.HighlightTextBW(on);
+           // this.HighlightTextBW(on);
         }
 
         public void Line(string stringToOutput)
@@ -843,40 +851,53 @@ namespace StarTrek_KG.Output
                    Environment.NewLine;
         }
 
+        public void Dispose()
+        {
+            TelnetWrite.TelnetServerInstantiated = false;
+        }
+
+        #region IOutput Members
+
         public void Clear()
         {
-            throw new NotImplementedException();
-            //System.Console.Clear();
+            this.TWrite("'Clear()' Not Implemented Yet");
+        }
+
+        public string ReadLine()
+        {
+           return this.TReadLine();
         }
 
         public void Write(string text)
         {
-            throw new NotImplementedException();
+            this.TWrite(text);
         }
 
         public void WriteLine()
         {
-            throw new NotImplementedException();
+            this.TWriteLine("");
         }
 
         public void WriteLine(string text)
         {
-            throw new NotImplementedException();
+            this.TWriteLine(text);
         }
 
         public void WriteLine(string text, object text2)
         {
-            throw new NotImplementedException();
+            this.TWriteLine(text, text2.ToString());
         }
 
         public void WriteLine(string text, object text2, object text3)
         {
-            throw new NotImplementedException();
+            this.TWriteLine(text, text2.ToString(), text3.ToString());
         }
 
         public void WriteLine(string text, object text2, object text3, object text4)
         {
-            throw new NotImplementedException();
+            this.TWriteLine(text, text2.ToString(), text3.ToString(), text4.ToString());
         }
+
+        #endregion
     }
 }
