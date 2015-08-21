@@ -19,19 +19,14 @@ namespace StarTrek_KG.Subsystem
         public Impulse Impulse { get; }
         public Movement Movement { get; }
 
-        private Game.PromptFunc<string, bool> _prompt;
-
         #endregion
 
         public Navigation(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Navigation;
-
             this.Warp = new Warp(this.Game.Write);
             this.Impulse = new Impulse(this.Game.Write);
-
             this.Movement = new Movement(shipConnectedTo, game);
-            this._prompt = game.Prompt;
 
             //todo: refactor this to be a module variable
         }
@@ -94,7 +89,7 @@ namespace StarTrek_KG.Subsystem
             int distance;
             int direction;
 
-            if (this.Movement.PromptAndCheckCourse(this._prompt, out direction))
+            if (this.Movement.PromptAndCheckCourse(out direction))
             {
                 return;
             }
@@ -135,7 +130,7 @@ namespace StarTrek_KG.Subsystem
             int distance;
             int direction;
 
-            if (this.Movement.PromptAndCheckCourse(this._prompt, out direction))
+            if (this.Movement.PromptAndCheckCourse(out direction))
             {
                 return;
             }

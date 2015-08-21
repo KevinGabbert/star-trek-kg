@@ -396,12 +396,12 @@ namespace StarTrek_KG.Actors
         //}
 
         //This prompt needs to be exposed to the user as an event
-        public bool PromptAndCheckCourse(Game.PromptFunc<string, bool> promptCourse, out int direction)
+        public bool PromptAndCheckCourse(out int direction)
         {
             //var course = this.Game.Write.Course() + "Enter Course: ";
             string userDirection = "";
 
-            bool userEnteredCourse = promptCourse.Invoke($"{this.Game.Write.Course()} Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.Game.Prompt.Invoke($"{this.Game.Write.Course()} Enter Course: ", out userDirection);
 
             if (userEnteredCourse)
             {

@@ -55,6 +55,7 @@ namespace StarTrek_KG.Interfaces
         void Prompt(Ship playerShip, string mapText, Game game);
         void Panel(string panelHead, IEnumerable<string> strings);
         string GetPanelHead(string shipName);
+
         bool PromptUser(string promptMessage, out int value);
         bool PromptUser(string promptMessage, out string value);
 
