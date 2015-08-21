@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -26,6 +27,8 @@ namespace StarTrek_KG.Output
         public int Starbases { get; set; }
         public int Stardate { get; set; }
 
+        public bool IsTelnetApp { get; set; }
+
         //todo: make this non-static so we can test this class..
 
         private Console _console;
@@ -48,10 +51,9 @@ namespace StarTrek_KG.Output
         //all *print* mnemonics will be changed to Output
         //UI needs to read this text and display it how it wants
 
-        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config)
+        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config) : this(config)
         {
             this.ACTIVITY_PANEL = new List<string>();
-            this.Config = config;
             this.TotalHostiles = totalHostiles;
             this.Starbases = starbases;
             this.Stardate = stardate;
@@ -62,6 +64,8 @@ namespace StarTrek_KG.Output
         {
             this.ACTIVITY_PANEL = new List<string>();
             this.Config = config;
+
+            this.IsTelnetApp = this.Config.GetSetting<bool>("IsTelnetApp");
         }
 
         //missionResult needs to be an enum

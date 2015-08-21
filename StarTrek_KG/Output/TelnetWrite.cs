@@ -10,11 +10,9 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Extensions.System;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
-using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Output
 {
