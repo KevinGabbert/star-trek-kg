@@ -16,7 +16,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
-    public class TelnetWrite : IConfig
+    public class TelnetWrite : IConfig, IOutput
     {
         #region Properties
 
@@ -847,6 +847,36 @@ namespace StarTrek_KG.Output
         {
             throw new NotImplementedException();
             //System.Console.Clear();
+        }
+
+        public void Write(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteLine()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteLine(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteLine(string text, object text2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteLine(string text, object text2, object text3)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteLine(string text, object text2, object text3, object text4)
+        {
+            throw new NotImplementedException();
         }
     }
 }

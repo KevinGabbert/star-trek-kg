@@ -1,10 +1,11 @@
 ﻿using System;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Utility
 {
     //This class can't be mocked, as System.Console is a static.
     //todo: move any
-    public class Console
+    public class Console: IOutput
     {
         public void Clear()
         {

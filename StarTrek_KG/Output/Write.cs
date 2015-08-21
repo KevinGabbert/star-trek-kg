@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -18,6 +17,7 @@ namespace StarTrek_KG.Output
 {
     /// <summary>
     /// todo: the goal here is to be able to save all output to a file for later printing..
+    /// The purpose of this class is to encapsulate all text that is to be read or written in the application.
     /// </summary>
     public class Write: IConfig, IOutputWrite
     {
@@ -28,6 +28,7 @@ namespace StarTrek_KG.Output
         public int Stardate { get; set; }
 
         public bool IsTelnetApp { get; set; }
+        public IOutput Output { get; set; }
 
         //todo: make this non-static so we can test this class..
 
@@ -66,6 +67,15 @@ namespace StarTrek_KG.Output
             this.Config = config;
 
             this.IsTelnetApp = this.Config.GetSetting<bool>("IsTelnetApp");
+
+            if (this.IsTelnetApp)
+            {
+                this.Output = new TelnetWrite(config); //todo: config might be droppped
+            }
+            else
+            {
+                this.Output = this.Console;
+            }
         }
 
         //missionResult needs to be an enum
@@ -96,75 +106,75 @@ namespace StarTrek_KG.Output
 
             //else - No status to report.  Game continues
 
-            Line(missionEndResult);
+            this.Line(missionEndResult);
         }
 
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            this.Console.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
-            this.Console.WriteLine(this.Config.GetText("HelpStatement"));
-            this.Console.WriteLine();
+            this.Output.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.Output.WriteLine(this.Config.GetText("HelpStatement"));
+            this.Output.WriteLine();
         }
 
         public void Strings(IEnumerable<string> strings)
         {
             foreach (var str in strings)
             {
-                this.Console.WriteLine(str);
+                this.Output.WriteLine(str);
             }
-            this.Console.WriteLine();
+            this.Output.WriteLine();
         }
 
         public void HighlightTextBW(bool on)
         {
-            this.Console.HighlightTextBW(on);
+            this.Output.HighlightTextBW(on);
         }
 
         public void Line(string stringToOutput)
         {
-            this.Console.WriteLine(stringToOutput);
-            this.Console.WriteLine();
+            this.Output.WriteLine(stringToOutput);
+            this.Output.WriteLine();
         }
 
         public void DebugLine(string stringToOutput)
         {
             if (Constants.DEBUG_MODE)
             {
-                this.Console.WriteLine(stringToOutput);
+                this.Output.WriteLine(stringToOutput);
             }
         }
 
         public void Resource(string text)
         {
-            this.Console.WriteLine(this.Config.GetText(text) + " ");
+            this.Output.WriteLine(this.Config.GetText(text) + " ");
         }
 
         public void ResourceLine(string text)
         {
-            this.Console.WriteLine(this.Config.GetText(text));
-            this.Console.WriteLine();
+            this.Output.WriteLine(this.Config.GetText(text));
+            this.Output.WriteLine();
         }
 
         public void ResourceSingleLine(string text)
         {
-            this.Console.WriteLine(this.Config.GetText(text));
+            this.Output.WriteLine(this.Config.GetText(text));
         }
 
         public void ResourceLine(string prependText, string text)
         {
-            this.Console.WriteLine(prependText + " " + this.Config.GetText(text));
-            this.Console.WriteLine();
+            this.Output.WriteLine(prependText + " " + this.Config.GetText(text));
+            this.Output.WriteLine();
         }
 
         public void SingleLine(string stringToOutput)
         {
-            this.Console.WriteLine(stringToOutput);
+            this.Output.WriteLine(stringToOutput);
         }
 
         public void WithNoEndCR(string stringToOutput)
         {
-            this.Console.Write(stringToOutput);
+            this.Output.Write(stringToOutput);
         }
 
         public void DisplayPropertiesOf(object @object)
@@ -174,7 +184,7 @@ namespace StarTrek_KG.Output
                 var objectPropInfos = @object.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
                 foreach (PropertyInfo prop in objectPropInfos)
                 {
-                    this.Console.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
+                    this.Output.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
                 }
             }
 
@@ -294,9 +304,9 @@ namespace StarTrek_KG.Output
 
         public void Prompt(Ship playerShip, string mapText, Game game)
         {
-            this.Console.Write(mapText);
+            this.Output.Write(mapText);
 
-            var readLine = this.Console.ReadLine();
+            var readLine = this.Output.ReadLine();
             if (readLine == null) return;
 
             string command = readLine.Trim().ToLower();
@@ -350,11 +360,11 @@ namespace StarTrek_KG.Output
             }
             else if (command == Menu.ver.ToString())
             {
-                this.Console.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
+                this.Output.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
             }
             else if (command == Menu.cls.ToString())
             {
-                this.Console.Clear();
+                this.Output.Clear();
             }
             else
             {
@@ -365,16 +375,16 @@ namespace StarTrek_KG.Output
 
         public void Panel(string panelHead, IEnumerable<string> strings)
         {
-            this.Console.WriteLine();
-            this.Console.WriteLine(panelHead);
-            this.Console.WriteLine();
+            this.Output.WriteLine();
+            this.Output.WriteLine(panelHead);
+            this.Output.WriteLine();
 
             foreach (var str in strings)
             {
-                this.Console.WriteLine(str);
+                this.Output.WriteLine(str);
             }
 
-            this.Console.WriteLine();
+            this.Output.WriteLine();
         }
 
         private void DebugMenu(IShip playerShip)
@@ -383,7 +393,7 @@ namespace StarTrek_KG.Output
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
 
             //todo: readline needs to be done using an event
-            var debugCommand = Console.ReadLine().Trim().ToLower();
+            var debugCommand = Output.ReadLine().Trim().ToLower();
 
             Debug.For(playerShip).Controls(debugCommand);
         }
@@ -396,7 +406,7 @@ namespace StarTrek_KG.Output
             this.WithNoEndCR(this.ENTER_COMPUTER_COMMAND);
 
             //todo: readline needs to be done using an event
-            var computerCommand = Console.ReadLine().Trim().ToLower();
+            var computerCommand = Output.ReadLine().Trim().ToLower();
 
             Computer.For(playerShip).Controls(computerCommand);
         }
@@ -407,7 +417,7 @@ namespace StarTrek_KG.Output
             this.WithNoEndCR("Enter Damage Control Command: ");
 
             //todo: readline needs to be done using an event
-            var damageControlCommand = Console.ReadLine().Trim().ToLower();
+            var damageControlCommand = Output.ReadLine().Trim().ToLower();
 
             DamageControl.For(playerShip).Controls(damageControlCommand);
         }
@@ -438,7 +448,7 @@ namespace StarTrek_KG.Output
             this.Strings(Shields.SHIELD_PANEL);
 
             this.WithNoEndCR("Enter shield control command: ");
-            var shieldsCommand = Console.ReadLine().Trim().ToLower();
+            var shieldsCommand = Output.ReadLine().Trim().ToLower();
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
             Shields.For(playerShip).Controls(shieldsCommand);
@@ -455,7 +465,7 @@ namespace StarTrek_KG.Output
             {
                 this.WithNoEndCR(promptMessage);
 
-                value = int.Parse(this.Console.ReadLine());
+                value = int.Parse(this.Output.ReadLine());
 
                 return true;
             }
@@ -473,9 +483,9 @@ namespace StarTrek_KG.Output
 
             try
             {
-                this.Console.Write(promptMessage);
+                this.Output.Write(promptMessage);
 
-                var readLine = this.Console.ReadLine();
+                var readLine = this.Output.ReadLine();
                 if (readLine != null) value = readLine.ToLower();
 
                 return true;
