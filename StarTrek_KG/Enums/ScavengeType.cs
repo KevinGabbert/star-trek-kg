@@ -6,6 +6,6 @@
         FederationShip = 2,
         OtherShip = 3,
         Star = 4,
-        //Asteroid = 6
+        Asteroid = 6
     };
 }

@@ -290,15 +290,14 @@ namespace StarTrek_KG.Output
 
             if (shieldsAutoRaised)
             {
-                map.Write.Line("Shields automatically raised to " + Shields.For(map.Playership).Energy);
+                map.Write.Line($"Shields automatically raised to {Shields.For(map.Playership).Energy}");
             }
         }
 
         //todo: this function needs to be part of SRS
         private void SRSScanHostile(IRegion Region)
         {
-            this.Write.Console.WriteLine(this.Config.GetText("HostileDetected"),
-                              (Region.GetHostiles().Count == 1 ? "" : "s"));
+            this.Write.Line(string.Format(this.Config.GetText("HostileDetected"), (Region.GetHostiles().Count == 1 ? "" : "s")));
 
             bool inNebula = Region.Type == RegionType.Nebulae;
 
@@ -316,10 +315,10 @@ namespace StarTrek_KG.Output
                     hostileName = hostile.Name + " " + Game.GetFederationShipRegistration(hostile);
                 }
 
-                this.Write.Console.WriteLine(this.Config.GetText("IDHostile"), hostileName);
+                this.Write.Line($"{this.Config.GetText("IDHostile")}{hostileName}");
             }
 
-            this.Write.Console.WriteLine("");
+            this.Write.Line("");
         }
     }
 }

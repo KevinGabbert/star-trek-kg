@@ -11,6 +11,11 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Config
 {
+    /// <summary>
+    /// The purpose of this class is to allow adjustment of application strings and settings in a friendly format.  No database required.
+    /// This, however, may change if the game ever scales up to multiplayer, in which case, just add on an IConfiguration interface, and make
+    /// a data class implement it, and either switch to it, or allow switching.
+    /// </summary>
     public class StarTrekKGSettings: ConfigurationSection, IStarTrekKGSettings
     {
         public StarTrekKGSettings Get { get; set; }
@@ -160,20 +165,20 @@ namespace StarTrek_KG.Config
                 {
                     if (element.value == null)
                     {
-                        throw new ConfigurationErrorsException("Unable to retrieve value for: " + name + " because it is null.");
+                        throw new ConfigurationErrorsException($"Unable to retrieve value for: {name} because it is null.");
                     }
                 }
                 else
                 {
                     if (string.IsNullOrWhiteSpace(element.value))
                     {
-                        throw new ConfigurationErrorsException("Unable to retrieve value for: " + name + " because it is null or empty.");
+                        throw new ConfigurationErrorsException($"Unable to retrieve value for: {name} because it is null or empty.");
                     }
                 }
             }
             else
             {
-                throw new ConfigurationErrorsException("Unable to retrieve '" + name + "' config element.  Does it exist? Is it misspelled? (setting name is case sensitive)");
+                throw new ConfigurationErrorsException($"Unable to retrieve '{name}' config element.  Does it exist? Is it misspelled? (setting name is case sensitive)");
             }
 
             try

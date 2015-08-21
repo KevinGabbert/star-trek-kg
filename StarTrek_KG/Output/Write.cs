@@ -137,6 +137,38 @@ namespace StarTrek_KG.Output
             this.Output.WriteLine();
         }
 
+        public string GetFormattedConfigText(string configTextToWrite, object param1)
+        {
+            return string.Format(this.Config.GetText(configTextToWrite), param1);
+        }
+
+        public string GetFormattedConfigText(string configTextToWrite, object param1, object param2)
+        {
+            return string.Format(this.Config.GetText(configTextToWrite), param1, param2);
+        }
+
+        public void FormattedConfigLine(string configTextToWrite, object param1)
+        {
+            this.Output.Write(string.Format(this.Config.GetText(configTextToWrite), param1));
+            this.Output.WriteLine();
+        }
+
+        public void FormattedConfigLine(string configTextToWrite, object param1, object param2)
+        {
+            this.Output.Write(string.Format(this.Config.GetText(configTextToWrite), param1, param2));
+            this.Output.WriteLine();
+        }
+
+        /// <summary>
+        /// Synctactic Sugar for pulling text
+        /// </summary>
+        /// <param name="configTextName"></param>
+        /// <returns></returns>
+        public void ConfigText(string configTextName)
+        {
+            this.Output.WriteLine(this.Config.GetText(configTextName));
+        }
+
         public void DebugLine(string stringToOutput)
         {
             if (Constants.DEBUG_MODE)
@@ -542,7 +574,7 @@ namespace StarTrek_KG.Output
 
         public void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel)
         {
-            var condition = ship.GetConditionAndSetIcon();
+            ship.GetConditionAndSetIcon();
 
             if (ship.AtLowEnergyLevel())
             {
@@ -825,6 +857,8 @@ namespace StarTrek_KG.Output
 
         public string Course()
         {
+            //todo: pull this from app.config
+
             return Environment.NewLine +
                    " 4   5   6 " + Environment.NewLine +
                    @"   \ ↑ /  " + Environment.NewLine +

@@ -23,6 +23,14 @@ namespace StarTrek_KG.Interfaces
         
         void Line(string stringToOutput);
 
+        string GetFormattedConfigText(string configTextToWrite, object param1);
+        string GetFormattedConfigText(string configTextToWrite, object param1, object param2);
+
+        void FormattedConfigLine(string configTextToWrite, object param1);
+        void FormattedConfigLine(string configTextToWrite, object param1, object param2);
+
+        void ConfigText(string configTextName);
+
         void DebugLine(string stringToOutput);
         void Resource(string text);
         void ResourceLine(string text);

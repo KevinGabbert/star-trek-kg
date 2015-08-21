@@ -13,7 +13,6 @@ using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Actors
 {
-
     //TODO: ship.Energy not decrementing after being hit
     public class Ship : ISystem, IShip
     {
@@ -39,7 +38,7 @@ namespace StarTrek_KG.Actors
             public bool Destroyed { get; set; }
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
-            //public Log Log { get; set; } //
+            //public Log ShipLog { get; set; } //
 
             //todo: get current Region of ship so list of baddies can be kept.
         #endregion
@@ -50,26 +49,27 @@ namespace StarTrek_KG.Actors
 
             this.Map = (IMap)CheckParam(map);
 
+            //todo: this could actually be a feature later..
             if (faction == null)
             {
-                throw new GameException("null faction for Ship Creation.  *Everyone* has a Faction!");
+                throw new GameException(this.Config.GetText("NullFaction"));
             }
 
             if (this.Map.Regions == null)
             {
-                throw new GameException("Map not set up with Regions");
+                throw new GameException(this.Config.GetText("MapHasNoRegions"));
             }
 
             if (this.Map.Config == null)
             {
-                throw new GameException("Map not set up with Config");
+                throw new GameException(this.Config.GetText("MapHasNoConfig"));
             }
             
             this.Config = (IStarTrekKGSettings)CheckParam(map.Config);
 
             if (sector.RegionDef == null)
             {
-                throw new GameConfigException("Ship has no sector.RegionDef set up.");
+                throw new GameConfigException(this.Config.GetText("ShipHasNoSector"));
             }
             else
             {
@@ -156,13 +156,13 @@ namespace StarTrek_KG.Actors
                 case ScavengeType.Starbase:
                     photonsScavenged = Utility.Utility.Random.Next(10); //todo: resource out this number
                     energyScavenged = Utility.Utility.Random.Next(2500); //todo: resource out this number
-                    scavengedFrom = "Starbase";
+                    scavengedFrom = this.Map.Config.GetText("StarbaseScavengeType");
                     break;
 
                 case ScavengeType.FederationShip:
                     photonsScavenged = Utility.Utility.Random.Next(5); //todo: resource out this number
                     energyScavenged = Utility.Utility.Random.Next(750); //todo: resource out this number
-                    scavengedFrom = "Federation starship";
+                    scavengedFrom = this.Map.Config.GetText("FederationShipScavengeType");
                     break;
 
                 case ScavengeType.OtherShip:
@@ -175,7 +175,17 @@ namespace StarTrek_KG.Actors
 
                     photonsScavenged = Utility.Utility.TestableRandom(this.Game, 2, 2); //randomPhotonsScavenged; //todo: resource out this number
                     energyScavenged = Utility.Utility.TestableRandom(this.Game, 100, 100); //randomEnergyScavenged; //todo: resource out this number
-                    scavengedFrom = "ship";
+                    scavengedFrom = this.Map.Config.GetText("OtherShipScavengeType"); ;
+                    break;
+
+                case ScavengeType.Star:
+                    //todo: implement this later
+                    scavengedFrom = this.Map.Config.GetText("StarScavengeType");
+                    break;
+
+                case ScavengeType.Asteroid:
+                    //todo: implement this later
+                    scavengedFrom = this.Map.Config.GetText("AsteroidScavengeType");
                     break;
             }
 
@@ -187,7 +197,7 @@ namespace StarTrek_KG.Actors
             if (foundPhotons)
             {
                 Torpedoes.For(this).Count += photonsScavenged;
-                scavengedText = photonsScavenged + " Torpedoes found";
+                scavengedText = this.Map.Write.GetFormattedConfigText("PhotonsScavenged", photonsScavenged);
             }
 
             if (energyScavenged > 0)
@@ -196,23 +206,23 @@ namespace StarTrek_KG.Actors
 
                 if (foundPhotons)
                 {
-                    scavengedText += ", & "; 
+                    scavengedText += ", & ";
                 }
 
-                scavengedText += energyScavenged + " Energy found";
+                scavengedText += this.Map.Write.GetFormattedConfigText("EnergyScavenged", energyScavenged);
             }
 
-            this.Map.Write.Line(scavengedText + " from destroyed " + scavengedFrom + " debris field. ");
+            this.Map.Write.FormattedConfigLine("ScavengedText", scavengedText, scavengedFrom);
 
             //todo: credit scavenged energy to ship energy.
             //note: create ship.autoscavenge, and turn it off for testing.
 
             this.UpdateDivinedSectors();
         }
-          
+
         ///interesting..  one could take a hit from another map.. Wait for the multidimensional version of this game.  (now in 3D!) :D
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
-        public void AbsorbHitFrom(IShip attacker, int attackingEnergy) 
+        public void AbsorbHitFrom(IShip attacker, int attackingEnergy)
         {
             var shields = Shields.For(this);
 
@@ -233,7 +243,7 @@ namespace StarTrek_KG.Actors
 
             if (!shieldsWorking)
             {
-                this.Map.Write.Line("Shields ineffective due to interference from Nebula");
+                this.Map.Write.ConfigText("ShieldsIneffectiveCauseNebula");
             }
 
             if ((shields.Energy < 0) || !shieldsWorking)
@@ -242,7 +252,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                this.Map.Write.Line("No Damage.");
+                this.Map.Write.ConfigText("NoDamage");
             }
         }
 
@@ -251,7 +261,7 @@ namespace StarTrek_KG.Actors
             //reclaim any energy back to the ship.  'cause we are nice like that.
             if (shields.Energy > 0)
             {
-                this.Map.Write.Line("Reclaiming shield energy back to ship.");
+                this.Map.Write.ConfigText("ReclaimingShieldEnergy");
                 this.Energy += shields.Energy;
             }
 
@@ -259,7 +269,7 @@ namespace StarTrek_KG.Actors
 
             bool assignedDamage = this.Subsystems.TakeDamageIfWeCan(attackingEnergy);
 
-            this.Map.Write.Line("Energy is now at: " + this.Energy);
+            this.Map.Write.FormattedConfigLine("CurrentEnergyState", this.Energy);
 
             if (this.Energy <= 0)
             {
@@ -297,33 +307,35 @@ namespace StarTrek_KG.Actors
             //todo: get rid of this.Map ?
             var retVal = this.Map.Regions.Where(s => s.X == this.Coordinate.X && s.Y == this.Coordinate.Y).ToList();
 
+            string regionNotFound = this.Map.Write.GetFormattedConfigText("RegionNotFound", this.Coordinate.X, this.Coordinate.Y);
+
             if (retVal == null)
             {
-                throw new GameConfigException("Region X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
+                throw new GameConfigException(regionNotFound);
             }
 
             if (!retVal.Any())
             {
                 if (this.Coordinate == null)
                 {
-                    throw new GameConfigException("Coordinate not found for ship. Ship has no location set up anywhere..");
+                    throw new GameConfigException(this.Map.Config.GetText("CoordinateNotFound"));
                 }
                 else
                 {
-                    throw new GameConfigException("Region X: " + this.Coordinate.X + " Y: " + this.Coordinate.Y + " not found.");
+                    throw new GameConfigException(regionNotFound);
                 }
             }
 
             return retVal.Single();
         }
 
-
         //todo: refactor these 2 into prop?
         public Location GetLocation()
         {
-            var shipLocation = new Location();
-            shipLocation.Sector = this.Sector;
-            shipLocation.Region = this.GetRegion();
+            var shipLocation = new Location
+            {
+                Sector = this.Sector, Region = this.GetRegion()
+            };
 
             return shipLocation;
         }
@@ -336,17 +348,17 @@ namespace StarTrek_KG.Actors
         public string GetConditionAndSetIcon()
         {
             var currentRegion = this.GetRegion();
-            var condition = "GREEN";
+            var condition = this.Map.Config.GetText("ConditionNormal");
 
             if (currentRegion.GetHostiles().Count > 0)
             {
-                condition = "RED";
+                condition = this.Map.Config.GetText("ConditionAlert");
 
                 ConsoleHelper.SetConsoleIcon(SystemIcons.Error);
             }
             else if (this.AtLowEnergyLevel() || currentRegion.IsNebulae())
             {
-                condition = "YELLOW";
+                condition = this.Map.Config.GetText("ConditionElevated");
                 ConsoleHelper.SetConsoleIcon(SystemIcons.Exclamation);
             }
             else
@@ -375,10 +387,10 @@ namespace StarTrek_KG.Actors
             //036           //036                
             //147           //1X7  <-- X is you 
             //258           //258      
-            
+
             //Immediate Range Scan
 
-                      //Busted
+            //Busted
             //↑|↑|→   //+|-|+
             //E|P|→   //+|+|+
             //E|E|→   //-|-|-
@@ -400,9 +412,7 @@ namespace StarTrek_KG.Actors
 
             int row = 0;
 
-            for (var sectorL = myLocation.Sector.Y - 1; 
-                              sectorL <= myLocation.Sector.Y + 1;
-                              sectorL++)
+            for (var sectorL = myLocation.Sector.Y - 1; sectorL <= myLocation.Sector.Y + 1; sectorL++)
             {
                 if (sectorL >= -1 && sectorL <= 8)
                 {
@@ -410,8 +420,7 @@ namespace StarTrek_KG.Actors
                     {
                         var currentResult = new DivinedSectorItem
                         {
-                            MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL,
-                            Location = new Location()
+                            MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL, Location = new Location()
                         };
 
                         if (sectorT >= -1 && sectorT <= 8)
@@ -419,7 +428,7 @@ namespace StarTrek_KG.Actors
                             Sectors sectorsToQuery = myLocation.Region.Sectors;
 
                             currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL));
-                            
+
                             bool nullSector = currentResult.Location.Sector == null;
 
                             if (nullSector)
