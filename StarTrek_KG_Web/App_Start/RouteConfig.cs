@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Web;
 using System.Web.Routing;
 using Microsoft.AspNet.FriendlyUrls;
 
@@ -10,8 +7,10 @@ namespace StarTrek_KG_Web
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
-            var settings = new FriendlyUrlSettings();
-            settings.AutoRedirectMode = RedirectMode.Permanent;
+            var settings = new FriendlyUrlSettings
+            {
+                AutoRedirectMode = RedirectMode.Off
+            };
             routes.EnableFriendlyUrls(settings);
         }
     }

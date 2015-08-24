@@ -75,11 +75,39 @@ jQuery(document).ready(function($) {
 
         //make an ajax call here..  when it completes, loop to echo stuff back
 
+        var response;
+
         if (command !== '') {
-            terminal.echo(command);
+            $.ajax({
+                type: "POST",
+                url: "Default.aspx/QueryConsole",
+                data: "{ command: '" + command + "'}",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(retVal) {
+                    response = jQuery.parseJSON(retVal.d);
+
+                    //for a complete separation of business logic, we might want to do this in the page data.
+                    $.each(response, function (index, item) {
+                        terminal.echo(item);
+                    });  
+                }
+            }).fail(function (failReason) {
+                //turn the font color rod
+
+                response = jQuery.parseJSON(failReason.d);
+
+                terminal.echo("**Unable to Communicate with Server** ~ ");
+
+                //for a complete separation of business logic, we might want to do this in the page data.
+                $.each(response, function (index, item) {
+                    terminal.echo(item);
+                });
+            });
         }
     });
 });
+
 
 </script>
 </head>
