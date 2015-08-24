@@ -1,11 +1,28 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarTrek", "StarTrek\StarTrek.csproj", "{8BEA5D1A-70DB-4261-BE92-0492E19C19E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{1C98E759-7CA0-4A53-A741-5696E77FF5EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarTrek_KG", "StarTrek_KG\StarTrek_KG.csproj", "{30C526F7-3E84-4EFC-ABCB-EFD4423AB236}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{33244530-E966-4B57-9A12-FC306721E7D3}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureVMPublishModule.psm1 = PublishScripts\AzureVMPublishModule.psm1
+		PublishScripts\Publish-WebApplicationVM.ps1 = PublishScripts\Publish-WebApplicationVM.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{D0362518-09AF-4FB2-9D01-14DDF9E3E102}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\StarTrekKGWeb-WAWS-dev-2.json = PublishScripts\Configurations\StarTrekKGWeb-WAWS-dev-2.json
+		PublishScripts\Configurations\StarTrekKGWeb-WAWS-dev-3.json = PublishScripts\Configurations\StarTrekKGWeb-WAWS-dev-3.json
+		PublishScripts\Configurations\StarTrekKGWeb-WAWS-dev.json = PublishScripts\Configurations\StarTrekKGWeb-WAWS-dev.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarTrek_KG_Web", "StarTrek_KG_Web\StarTrek_KG_Web.csproj", "{0D495B06-D14F-4EAB-B4D5-C4F5670D0EBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,8 +42,15 @@ Global
 		{30C526F7-3E84-4EFC-ABCB-EFD4423AB236}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30C526F7-3E84-4EFC-ABCB-EFD4423AB236}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30C526F7-3E84-4EFC-ABCB-EFD4423AB236}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D495B06-D14F-4EAB-B4D5-C4F5670D0EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D495B06-D14F-4EAB-B4D5-C4F5670D0EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D495B06-D14F-4EAB-B4D5-C4F5670D0EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D495B06-D14F-4EAB-B4D5-C4F5670D0EBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D0362518-09AF-4FB2-9D01-14DDF9E3E102} = {33244530-E966-4B57-9A12-FC306721E7D3}
 	EndGlobalSection
 EndGlobal
