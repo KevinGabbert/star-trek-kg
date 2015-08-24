@@ -7,15 +7,14 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Quake like teminal - JQuery Terminal Emulator Demo</title>
-  <meta name="Description" content="This is demonstration of JQuery Terminal Emulator Plugin. To run terminal type tilda on you keyboard."/>
+  <title>Star Trek KG</title>
+  <meta name="Description" content="Star Trek KG"/>
 
   <script src="Scripts/jquery-1.10.2.min.js"></script>
   <script src="Scripts/jquery.mousewheel-min.js"></script>
 
   <script src="Scripts/jquery.terminal-0.8.8.js"></script>
   <link href="Content/jquery.terminal.css" rel="stylesheet" />
-
 <script>
 
 
@@ -34,25 +33,24 @@ $.extend_if_has = function(desc, source, array) {
     return desc;
 };
 
-
 (function($) {
-    $.fn.tilda = function (eval, options) {
+    $.fn.terminalWindow = function (eval, options) {
 
-        if ($('body').data('tilda')) {
-            return $('body').data('tilda').terminal;
+        if ($('body').data('termWindow')) {
+            return $('body').data('termWindow').terminal;
         }
 
         this.addClass('tilda');
 
         options = options || {};
         eval = eval || function(command, term) {
-            term.echo("you don't set eval for tilda");
+            term.echo("you don't set eval for termWindow");
         };
 
         var settings = {
             prompt: '> ',
-            name: 'tilda',
-            height: 1000,
+            name: 'termWindow',
+            height: 600,
             enabled: true,
             greetings: 'Star Trek KG'
         };
@@ -64,7 +62,7 @@ $.extend_if_has = function(desc, source, array) {
 
         self.terminal = this.find('.td').terminal(eval, settings);
 
-        $('body').data('tilda', this);
+        $('body').data('termWindow', this);
 
         return self;
     };
@@ -73,15 +71,21 @@ $.extend_if_has = function(desc, source, array) {
 
 jQuery(document).ready(function($) {
 
-    $('#tilda').tilda(function(command, terminal) {
-        //terminal.echo('you type command "' + command + '"');
+    $('#termWindow').terminalWindow(function (command, terminal) {
+
+        //make an ajax call here..  when it completes, loop to echo stuff back
+
+        if (command !== '') {
+            terminal.echo(command);
+        }
     });
 });
 
 </script>
 </head>
 <body>
-    <div id="tilda"></div>
+    <div id="termWindow"></div>
+    Star Trek KG
 </body>
 </html>
 
