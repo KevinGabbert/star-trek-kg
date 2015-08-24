@@ -21,6 +21,7 @@ namespace StarTrek_KG
 
             public IStarTrekKGSettings Config { get; set; }
             public IOutputWrite Write { get; set; }
+            public List<string> OutputQueue { get; set; }
 
             public Write Output { get; set; }
             public Render PrintSector { get; set; }
@@ -346,7 +347,6 @@ namespace StarTrek_KG
             }
         }
 
-
         /// <summary>
         /// Game ends when user runs out of power, wins, or is destroyed
         /// </summary>
@@ -383,7 +383,7 @@ namespace StarTrek_KG
         /// <returns></returns>
         private bool NewTurn()
         {
-            this.Write.Prompt(this.Map.Playership, this.Map.Text, this);
+            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
 
             //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
 
@@ -406,6 +406,42 @@ namespace StarTrek_KG
 
             Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
             return gameOver;
+        }
+
+        public List<string> SendAndGetResponse(string command)
+        {
+            //todo: output needs to raise an event so we can subscribe to it here and let the event handler return it
+            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
+
+            //Write.OutputQueue should be filled with everything that just happened.
+
+            this.CheckForEndOfGame(); //add any endgame text that needs to happen
+
+            return this.Write.OutputQueue;
+        }
+
+        private void CheckForEndOfGame()
+        {
+            //var starbasesLeft = this.Map.Regions.GetStarbaseCount();
+
+            //if (this.PlayerNowEnemyToFederation)
+            //{
+            //    this.gameOver = (this.Map.timeRemaining < 1 ||
+            //                     starbasesLeft < 1 ||
+            //                     this.Map.Playership.Destroyed ||
+            //                     this.Map.Playership.Energy < 1);
+            //}
+            //else
+            //{
+            //    this.gameOver = !(this.Map.Playership.Energy > 0 &&
+            //                    !this.Map.Playership.Destroyed &&
+            //                    (this.Map.Regions.GetHostileCount() > 0) &&
+            //                    this.Map.timeRemaining > 0);
+            //}
+
+            //Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
+
+            //todo: add to this.Write.OutputQueue if game is over, otherwise add nothing.
         }
 
         public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)

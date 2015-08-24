@@ -1,8 +1,12 @@
 ﻿
+using System.Collections.Generic;
+
 namespace StarTrek_KG.Interfaces
 {
     public interface IOutput
     {
+        Queue<string> OutputQueue { get; set; }
+
         void Clear();
 
         string ReadLine();

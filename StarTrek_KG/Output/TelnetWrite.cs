@@ -23,6 +23,7 @@ namespace StarTrek_KG.Output
         public static TcpListener server { get; set; }
         public static TcpClient client { get; set; }
         public static NetworkStream stream { get; set; }
+        public Queue<string> OutputQueue { get; set; }
 
         public static bool TelnetServerInstantiated { get; set; }
 

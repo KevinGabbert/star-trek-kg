@@ -17,22 +17,6 @@
   <link href="Content/jquery.terminal.css" rel="stylesheet" />
 <script>
 
-
-String.prototype.strip = function(char) {
-    return this.replace(new RegExp("^" + char + "*"), '').
-        replace(new RegExp(char + "*$"), '');
-}
-
-
-$.extend_if_has = function(desc, source, array) {
-    for (var i=array.length;i--;) {
-        if (typeof source[array[i]] != 'undefined') {
-            desc[array[i]] = source[array[i]];
-        }
-    }
-    return desc;
-};
-
 (function($) {
     $.fn.terminalWindow = function (eval, options) {
 
@@ -48,7 +32,7 @@ $.extend_if_has = function(desc, source, array) {
         };
 
         var settings = {
-            prompt: '> ',
+            prompt: 'Enter Command:> ',
             name: 'termWindow',
             height: 600,
             enabled: true,
@@ -75,34 +59,44 @@ jQuery(document).ready(function($) {
 
         //make an ajax call here..  when it completes, loop to echo stuff back
 
+        var sessionID = "1234";
         var response;
 
         if (command !== '') {
             $.ajax({
                 type: "POST",
                 url: "Default.aspx/QueryConsole",
-                data: "{ command: '" + command + "'}",
+                data: "{ command: '" + command + "'," +
+                      "sessionID: '" + sessionID + "'}",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function(retVal) {
                     response = jQuery.parseJSON(retVal.d);
 
+                    terminal.echo("\r");
+
                     //for a complete separation of business logic, we might want to do this in the page data.
                     $.each(response, function (index, item) {
                         terminal.echo(item);
-                    });  
+                    });
+
+                    terminal.echo("\r");
                 }
             }).fail(function (failReason) {
                 //turn the font color rod
 
                 response = jQuery.parseJSON(failReason.d);
 
-                terminal.echo("**Unable to Communicate with Server** ~ ");
+                terminal.echo("\r");
+
+                terminal.echo("**Problem Communicating with Server** ~ ");
 
                 //for a complete separation of business logic, we might want to do this in the page data.
                 $.each(response, function (index, item) {
                     terminal.echo(item);
                 });
+
+                terminal.echo("\r");
             });
         }
     });

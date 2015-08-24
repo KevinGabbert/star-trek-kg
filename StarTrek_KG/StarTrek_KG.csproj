@@ -163,6 +163,7 @@
     <Compile Include="Utility\ConsoleHelper.cs" />
     <Compile Include="Utility\EnumUtil.cs" />
     <Compile Include="Utility\MelodyPlayer.cs" />
+    <Compile Include="Output\SubscriberWrite.cs" />
     <Compile Include="Utility\Telnet.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Actors\Warp.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Utility
@@ -7,6 +8,8 @@ namespace StarTrek_KG.Utility
     //todo: move any
     public class Console: IOutput
     {
+        public Queue<string> OutputQueue { get; set; }
+
         public void Clear()
         {
             System.Console.Clear();

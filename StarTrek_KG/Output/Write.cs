@@ -11,6 +11,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Utility;
 using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Output
@@ -26,7 +27,9 @@ namespace StarTrek_KG.Output
         public int TimeRemaining { get; set; }
         public int Starbases { get; set; }
         public int Stardate { get; set; }
+        public List<string> OutputQueue { get; set; }
 
+        public bool IsSubscriberApp { get; set; }
         public bool IsTelnetApp { get; set; }
         public IOutput Output { get; set; }
 
@@ -67,10 +70,15 @@ namespace StarTrek_KG.Output
             this.Config = config;
 
             this.IsTelnetApp = this.Config.GetSetting<bool>("IsTelnetApp");
+            this.IsSubscriberApp = this.Config.GetSetting<bool>("IsSubscriberApp");
 
             if (this.IsTelnetApp)
             {
                 this.Output = new TelnetWrite(config); //todo: config might be droppped
+            }
+            else if (this.IsSubscriberApp)
+            {
+                this.Output = new SubscriberWrite(config);
             }
             else
             {
@@ -81,32 +89,32 @@ namespace StarTrek_KG.Output
         //missionResult needs to be an enum
         public void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
         {
-            var missionEndResult = string.Empty;
+            var commandResult = string.Empty;
 
             if (ship.Destroyed)
             {
-                missionEndResult = "MISSION FAILED: " + ship.Name.ToUpper() + " DESTROYED";
+                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " DESTROYED";
             }
             else if (ship.Energy == 0)
             {
-                missionEndResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF ENERGY.";
+                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF ENERGY.";
             }
             else if (starbasesAreHostile && starbasesLeft == 0)
             {
-                missionEndResult = "ALL FEDERATION STARBASES DESTROYED. YOU HAVE DEALT A SEVERE BLOW TO THE FEDERATION!";
+                commandResult = "ALL FEDERATION STARBASES DESTROYED. YOU HAVE DEALT A SEVERE BLOW TO THE FEDERATION!";
             }
             else if (this.TotalHostiles == 0)
             {
-                missionEndResult = "MISSION ACCOMPLISHED: ALL HOSTILE SHIPS DESTROYED. WELL DONE!!!";
+                commandResult = "MISSION ACCOMPLISHED: ALL HOSTILE SHIPS DESTROYED. WELL DONE!!!";
             }
             else if (this.TimeRemaining == 0)
             {
-                missionEndResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF TIME.";
+                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF TIME.";
             }
 
             //else - No status to report.  Game continues
 
-            this.Line(missionEndResult);
+            this.Line(commandResult);
         }
 
         //output as KeyValueCollection, and UI will build the string
@@ -334,14 +342,22 @@ namespace StarTrek_KG.Output
         //This needs to be a command method that the UI passes values into.
         //Readline is done in UI
 
-        public void Prompt(Ship playerShip, string mapText, Game game)
+        /// <summary>
+        /// What happens in here is that each method called generates an output then renders it to the screen
+        /// </summary>
+        /// <param name="playerShip"></param>
+        /// <param name="mapText"></param>
+        /// <param name="game"></param>
+        /// <param name="command"></param>
+        public void ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null)
         {
             this.Output.Write(mapText);
 
             var readLine = this.Output.ReadLine();
             if (readLine == null) return;
 
-            string command = readLine.Trim().ToLower();
+            command = readLine.Trim().ToLower();
+
             if (command == Menu.wrp.ToString() || command == Menu.imp.ToString() || command == Menu.nto.ToString())
             {
                 Navigation.For(playerShip).Controls(command);
@@ -403,6 +419,8 @@ namespace StarTrek_KG.Output
                 this.CreateCommandPanel();
                 this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
             }
+
+
         }
 
         public void Panel(string panelHead, IEnumerable<string> strings)

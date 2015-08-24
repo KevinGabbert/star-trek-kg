@@ -12,10 +12,13 @@ namespace StarTrek_KG.Interfaces
         List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }
         Console Console { get; set; }
+        List<string> OutputQueue { get; set; }
+
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }
         int Starbases { get; set; }
         int Stardate { get; set; }
+
         void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
         void PrintMission();
         void Strings(IEnumerable<string> strings);
@@ -52,7 +55,7 @@ namespace StarTrek_KG.Interfaces
         IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> list, Game game);
 
         void CreateCommandPanel();
-        void Prompt(Ship playerShip, string mapText, Game game);
+        void ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
         void Panel(string panelHead, IEnumerable<string> strings);
         string GetPanelHead(string shipName);
 
