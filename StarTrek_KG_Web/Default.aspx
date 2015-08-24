@@ -2,26 +2,87 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
-    <div class="jumbotron">
-        <h1>Star Trek KG</h1>
-        <p class="lead">Home Page</p>
-<%--        <p><a href="http://www.asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>--%>
-    </div>
+    <!-- -*- mode:javascript -*--->
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Quake like teminal - JQuery Terminal Emulator Demo</title>
+  <meta name="Description" content="This is demonstration of JQuery Terminal Emulator Plugin. To run terminal type tilda on you keyboard."/>
 
-    <div id="testtt"></div>
+  <script src="Scripts/jquery-1.10.2.min.js"></script>
+  <script src="Scripts/jquery.mousewheel-min.js"></script>
 
-    <script type="text/javascript">
+  <script src="Scripts/jquery.terminal-0.8.8.js"></script>
+  <link href="Content/jquery.terminal.css" rel="stylesheet" />
 
-    //.js is structured so that there are separate, testable objects in other files.
-        $(document).ready(function () {
+<script>
 
-            $("#testtt").text("Hello world");
 
-            var _default = new window.defaultPage();
-        });
+String.prototype.strip = function(char) {
+    return this.replace(new RegExp("^" + char + "*"), '').
+        replace(new RegExp(char + "*$"), '');
+}
 
-    </script>
-       <script src="Scripts/jquery-1.10.2.js"></script>   <script src="Scripts/Class.js" type="text/javascript"></script> <!-- a nice little pattern by John Resig to have "private" properties in .js classes -->
-   <script src="Scripts/default/default.js" type="text/javascript"></script>
+
+$.extend_if_has = function(desc, source, array) {
+    for (var i=array.length;i--;) {
+        if (typeof source[array[i]] != 'undefined') {
+            desc[array[i]] = source[array[i]];
+        }
+    }
+    return desc;
+};
+
+
+(function($) {
+    $.fn.tilda = function (eval, options) {
+
+        if ($('body').data('tilda')) {
+            return $('body').data('tilda').terminal;
+        }
+
+        this.addClass('tilda');
+
+        options = options || {};
+        eval = eval || function(command, term) {
+            term.echo("you don't set eval for tilda");
+        };
+
+        var settings = {
+            prompt: '> ',
+            name: 'tilda',
+            height: 1000,
+            enabled: true,
+            greetings: 'Star Trek KG'
+        };
+
+        $.extend(settings, options);
+
+        this.append('<div class="td"></div>');
+        var self = this;
+
+        self.terminal = this.find('.td').terminal(eval, settings);
+
+        $('body').data('tilda', this);
+
+        return self;
+    };
+})(jQuery);
+
+
+jQuery(document).ready(function($) {
+
+    $('#tilda').tilda(function(command, terminal) {
+        //terminal.echo('you type command "' + command + '"');
+    });
+});
+
+</script>
+</head>
+<body>
+    <div id="tilda"></div>
+</body>
+</html>
 
 </asp:Content>
