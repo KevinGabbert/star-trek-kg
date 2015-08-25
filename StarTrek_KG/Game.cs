@@ -205,9 +205,9 @@ namespace StarTrek_KG
         }
 
         /// <summary>
-        /// Starts the game.  Repeats indefinitely (as the original did) if App.config is set to do so.
+        /// Starts the game in Console or Telnet Mode. Repeats indefinitely (as the original did) if App.config is set to do so.
         /// </summary>
-        public void Run()
+        public void RunConsoleOrTelnet()
         {
             bool keepPlaying = true;
 
@@ -221,10 +221,18 @@ namespace StarTrek_KG
         }
 
         /// <summary>
+        /// Starts the game in Web mode
+        /// </summary>
+        public void RunWeb()
+        {
+            
+        }
+
+        /// <summary>
         /// Prints title and sets up the playfield.
         /// This is where the Map is created, and references to it are passed around from here on.
         /// </summary>
-        private void PrintOpeningScreen()
+        public void PrintOpeningScreen()
         {
             this.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
 

@@ -15,6 +15,7 @@
 
   <script src="Scripts/jquery.terminal-0.8.8.js"></script>
   <link href="Content/jquery.terminal.css" rel="stylesheet" />
+  <link href="Content/Site.css" rel="stylesheet" />
 <script>
 
 (function($) {
@@ -36,7 +37,7 @@
             name: 'termWindow',
             height: 600,
             enabled: true,
-            greetings: 'Star Trek KG'
+            greetings: 'Star Trek KG ~ v8.24.15'
         };
 
         $.extend(settings, options);
@@ -57,8 +58,6 @@ jQuery(document).ready(function($) {
 
     $('#termWindow').terminalWindow(function (command, terminal) {
 
-        //make an ajax call here..  when it completes, loop to echo stuff back
-
         var sessionID = "1234";
         var response;
 
@@ -73,21 +72,16 @@ jQuery(document).ready(function($) {
                 success: function(retVal) {
                     response = jQuery.parseJSON(retVal.d);
 
-                    terminal.echo("\r");
-
                     //for a complete separation of business logic, we might want to do this in the page data.
                     $.each(response, function (index, item) {
-                        terminal.echo(item);
+                        terminal.echo(item,
+                        {
+                            raw: true
+                        });
                     });
-
-                    terminal.echo("\r");
                 }
             }).fail(function (failReason) {
-                //turn the font color rod
-
                 response = jQuery.parseJSON(failReason.d);
-
-                terminal.echo("\r");
 
                 terminal.echo("**Problem Communicating with Server** ~ ");
 
@@ -95,11 +89,10 @@ jQuery(document).ready(function($) {
                 $.each(response, function (index, item) {
                     terminal.echo(item);
                 });
-
-                terminal.echo("\r");
             });
         }
     });
+
 });
 
 

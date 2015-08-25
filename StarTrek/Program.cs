@@ -41,7 +41,7 @@ namespace StarTrek_Console {
 
         var settingsForWholeGame = (new StarTrekKGSettings());
 
-        (new Game(settingsForWholeGame)).Run();
+        (new Game(settingsForWholeGame)).RunConsoleOrTelnet();
     }
   }
 }

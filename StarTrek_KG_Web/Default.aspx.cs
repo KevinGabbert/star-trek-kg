@@ -18,12 +18,16 @@ namespace StarTrek_KG_Web
         {
             Page.EnableViewState = false;  //don't need it cause we are not using it..
 
+            //todo: create a turn system for the web app.  Then abstract as much as possible and put it in Star_Trek_KG
+            //todo: it might just be that the web app "turn system" might have to stay in the web app, but I'm thinking 
+            //todo: we could juts rewrite the one for the console app.
+            //todo:  or I could just be safe and not touch the existing system and implement the new one in the web app :D
 
             ////todo: put all this BELOW in a business layer in StarTrek_KG_Web:
 
             //var settingsForWholeGame = (new StarTrekKGSettings());
 
-            //_game = ((Game) Session["game"]);
+            _game = ((Game) Session["game"]);
 
             //if (_game == null)
             //{
@@ -72,12 +76,52 @@ namespace StarTrek_KG_Web
                     };
                     break;
 
-                case "clear session":
-                    
-                    break;
-
                 case "make error":
                     throw new ArgumentException("This is a test error");
+
+                case "stop":
+                    HttpContext.Current.Session["game"] = null;
+                    responseLines = new List<string>{"Session Cleared.."};
+                    break;
+
+                case "restart":
+                    HttpContext.Current.Session["game"] = null;
+
+                    responseLines = new List<string> { "Session Restarted.." };
+                    break;
+
+                case "run":
+
+                    var settingsForWholeGame = (new StarTrekKGSettings());
+                    var game = (new Game(settingsForWholeGame)
+                    {
+                        //todo: delete this property setting
+                        Output =
+                            {
+                                IsSubscriberApp = true //todo: GET should set the app.config setting to true?
+                            }
+                    });
+
+                    HttpContext.Current.Session["game"] = game;
+
+                    _Default.GetGame().RunWeb();
+
+                    responseLines = new List<string> { "Game Started.." };
+
+                    break;
+
+
+                case "openingscreen":
+
+                    var game2 = _Default.GetGame();
+
+                    game2?.PrintOpeningScreen();
+
+
+                    //todo: why is outputqueue being connstructed so many times?
+                    //todo:  why is this null?
+                    responseLines = game2?.Write?.Output?.OutputQueue.ToList();
+                    break;
 
                 default:
 
@@ -89,7 +133,7 @@ namespace StarTrek_KG_Web
                     };
 
                     //todo: Make sure that game.IsSubscriberApp is set by this point.
-                    responseLines = _Default.GetGame(sessionID).SendAndGetResponse(command);
+                    //responseLines = _Default.GetGame(sessionID).SendAndGetResponse(command);
 
                     break;
             }

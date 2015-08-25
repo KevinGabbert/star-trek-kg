@@ -36,3 +36,16 @@ input[type="select"] {
         padding: 0;
     }
 }
+
+
+pre {
+     /*display: block; 
+     padding: 9.5px; 
+     margin: 0 0 10px; 
+     font-size: 13px; 
+     line-height: 1.428571429;*/ 
+     margin: 0;
+     color: #FFF; 
+     word-break: break-all; 
+     word-wrap: break-word; 
+}

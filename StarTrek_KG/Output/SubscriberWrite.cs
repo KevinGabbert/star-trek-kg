@@ -23,40 +23,45 @@ namespace StarTrek_KG.Output
 
         public void Clear()
         {
-            System.Console.Clear();
+           
+        }
+
+        public void Enqueue(string text)
+        {
+            this.OutputQueue.Enqueue($"<pre>{text.Replace("\r\n", "")}</pre>");
         }
 
         public void Write(string text)
         {
-            this.OutputQueue.Enqueue(text);
+            this.Enqueue(text);
         }
 
         public void WriteLine()
         {
-            this.OutputQueue.Enqueue("");
+            this.Enqueue("");
         }
 
         public void WriteLine(string text)
         {
-            this.OutputQueue.Enqueue(text + Environment.NewLine);
+            this.Enqueue(text + Environment.NewLine);
         }
 
         public void WriteLine(string text, object text2)
         {
             //System.Console.WriteLine(text, Convert.ToString(text2));
-            this.OutputQueue.Enqueue(text);
+            this.Enqueue(text);
         }
 
         public void WriteLine(string text, object text2, object text3)
         {
             //System.Console.WriteLine(text, Convert.ToString(text2), Convert.ToString(text3));
-            this.OutputQueue.Enqueue(text);
+            this.Enqueue(text);
         }
 
         public void WriteLine(string text, object text2, object text3, object text4)
         {
             // System.Console.WriteLine(text, Convert.ToString(text2), Convert.ToString(text3), Convert.ToString(text4));
-            this.OutputQueue.Enqueue(text);
+            this.Enqueue(text);
         }
 
         public string ReadLine()
