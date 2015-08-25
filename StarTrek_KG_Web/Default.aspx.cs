@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
+using System.Web.SessionState;
 using System.Web.UI;
 using Newtonsoft.Json;
 using StarTrek_KG;
@@ -164,6 +165,18 @@ namespace StarTrek_KG_Web
             };
             return responseLines;
         }
+
+        //private static CheckSessionTime()
+        //{
+        //    // Get the session in minutes and seconds
+        //    HttpSessionState session = HttpContext.Current.Session;//Return current session
+        //    DateTime? sessionStart = session["SessionStart"] as DateTime?;//Get DateTime object SessionStart
+        //                                                                  //Check if session has not expired
+        //    if (sessionStart.HasValue)
+        //    {
+
+        //    }
+        //}
 
         #endregion
     }
