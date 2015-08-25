@@ -15,51 +15,29 @@
 
   <script src="Scripts/jquery.terminal-0.8.8.js"></script>
   <script src="Scripts/TerminalWindow.js"></script>
+  <script src="Scripts/class.js"></script>
+  <script src="Scripts/Default/Default.js"></script>
 
   <link href="Content/jquery.terminal.css" rel="stylesheet" />
   <link href="Content/Site.css" rel="stylesheet" />
+
 <script>
 
 
 jQuery(document).ready(function ($) {
 
+    var _default = new window.defaultPage();
+
     $('#termWindow').terminalWindow(function (command, terminal) {
 
         var sessionID = "1234";
-        var response;
 
-        if (command !== '') {
-            $.ajax({
-                type: "POST",
-                url: "Default.aspx/QueryConsole",
-                data: "{ command: '" + command + "'," +
-                      "sessionID: '" + sessionID + "'}",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(retVal) {
-                    response = jQuery.parseJSON(retVal.d);
+        //todo: stop user from typing.
+        //todo: start .js animation to show that we are waiting on the server to respond.
+        //todo: this animation could just be text slowly typing.. (this is a jquery terminal feature)
 
-                    //for a complete separation of business logic, we might want to do this in the page data.
-                    $.each(response, function (index, item) {
-                        terminal.echo(item,
-                        {
-                            raw: true
-                        });
-                    });
-                }
-            }).fail(function (failReason) {
-                response = jQuery.parseJSON(failReason.d);
-
-                terminal.echo("**Problem Communicating with Server** ~ ");
-
-                //for a complete separation of business logic, we might want to do this in the page data.
-                $.each(response, function (index, item) {
-                    terminal.echo(item);
-                });
-            });
-        }
+         _default.QueryConsole(command, sessionID, terminal);
     });
-
 });
 
 

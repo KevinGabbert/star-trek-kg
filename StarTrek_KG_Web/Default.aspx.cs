@@ -113,14 +113,21 @@ namespace StarTrek_KG_Web
                 default:
 
                     //pass command and session ID to application
+                    //todo: 
+                    //todo: is the game still running?  check the game session variable
 
-                    responseLines = new List<string>
-                    {
-                        "Under Construction.."
-                    };
+                    //if (_Default.GetGame(sessionID).StillRunning())
+                    //{
 
-                    //todo: Make sure that game.IsSubscriberApp is set by this point.
-                    //responseLines = _Default.GetGame(sessionID).SendAndGetResponse(command);
+                        responseLines = new List<string>
+                        {
+                            "Under Construction.."
+                        };
+
+                        //todo: Make sure that game.IsSubscriberApp is set by this point.
+                        //responseLines = _Default.GetGame(sessionID).SendAndGetResponse(command);
+                    //}
+                    //else output "game over"
 
                     break;
             }
