@@ -92,26 +92,13 @@ namespace StarTrek_KG_Web
 
                 case "run":
 
-                    var settingsForWholeGame = (new StarTrekKGSettings());
-                    var game = (new Game(settingsForWholeGame)
-                    {
-                        //todo: delete this property setting
-                        Output =
-                            {
-                                IsSubscriberApp = true //todo: GET should set the app.config setting to true?
-                            }
-                    });
-
-                    HttpContext.Current.Session["game"] = game;
-
-                    _Default.GetGame().RunWeb();
-
-                    responseLines = new List<string> { "Game Started.." };
+                    responseLines = RunWeb(responseLines);
 
                     break;
 
+                case "test2":
 
-                case "openingscreen":
+                    _Default.RunWeb(responseLines);
 
                     var game2 = _Default.GetGame();
 
@@ -141,6 +128,26 @@ namespace StarTrek_KG_Web
             string json = JsonConvert.SerializeObject(responseLines.ToList());
 
             return json;
+        }
+
+        private static List<string> RunWeb(List<string> responseLines)
+        {
+            var settingsForWholeGame = (new StarTrekKGSettings());
+            var game = (new Game(settingsForWholeGame)
+            {
+                //todo: delete this property setting
+                Output =
+                {
+                    IsSubscriberApp = true //todo: GET should set the app.config setting to true?
+                }
+            });
+
+            HttpContext.Current.Session["game"] = game;
+
+            _Default.GetGame().RunWeb();
+
+            responseLines = new List<string> {"Game Started.."};
+            return responseLines;
         }
 
         private static Game GetGame(string sessionID)

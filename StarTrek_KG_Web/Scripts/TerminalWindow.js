@@ -17,7 +17,7 @@
             name: 'termWindow',
             height: 600,
             enabled: true,
-            greetings: 'Star Trek KG ~ v8.24.15'
+            greetings: 'Star Trek KG ~ v8.24.15a'
         };
 
         $.extend(settings, options);

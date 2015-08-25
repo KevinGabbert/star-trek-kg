@@ -15,19 +15,10 @@ header#main {
     height: 1000px;
     background-color: #000;
 }
-header pre {
+/*header pre {
     color:#aaa;
     font-size: 14px;
-}
-/*pre#sig {
-    position: absolute;
-    width: 600px;
-    display: block;
-    margin-left: -300px;
-    left: 50%;
-    margin-top: 10px;
 }*/
-
 
 /*chrome hack*/
 @media screen and (-webkit-min-device-pixel-ratio:0) {
@@ -223,14 +214,14 @@ section .wrapper .text, section .snippet-wrap ul {
     top: 0;
     left: 0;
 }
-section pre {
+/*section pre {
     padding: 2em;
-}
-section .snippet-wrap pre {
+}*/
+/*section .snippet-wrap pre {
     margin: 0;
     padding: 0;
     display: block;
-}
+}*/
 section .snippet-wrap ul li  {
     padding: 0;
 }

@@ -10,7 +10,7 @@
   <title>Star Trek KG</title>
   <meta name="Description" content="Star Trek KG"/>
 
-  <script src="Scripts/jquery-1.10.2.min.js"></script>
+  <script src="Scripts/jquery-2.1.4.min.js"></script>
   <script src="Scripts/jquery.mousewheel-min.js"></script>
 
   <script src="Scripts/jquery.terminal-0.8.8.js"></script>
@@ -19,8 +19,6 @@
   <link href="Content/jquery.terminal.css" rel="stylesheet" />
   <link href="Content/Site.css" rel="stylesheet" />
 <script>
-
-
 
 
 jQuery(document).ready(function ($) {
