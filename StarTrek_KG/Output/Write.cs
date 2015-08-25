@@ -353,64 +353,73 @@ namespace StarTrek_KG.Output
         {
             this.Output.Write(mapText);
 
-            var readLine = this.Output.ReadLine();
-            if (readLine == null) return;
+            string readCommand;
 
-            command = readLine.Trim().ToLower();
+            if (command != null && this.IsSubscriberApp)
+            {
+                readCommand = command.Trim().ToLower();
+            }
+            else
+            {
+                string readLine = this.Output.ReadLine();
+                if (readLine == null) return;
 
-            if (command == Menu.wrp.ToString() || command == Menu.imp.ToString() || command == Menu.nto.ToString())
+                readCommand = readLine.Trim().ToLower();
+            }
+
+            if (readCommand == Menu.wrp.ToString() || readCommand == Menu.imp.ToString() || readCommand == Menu.nto.ToString())
             {
                 Navigation.For(playerShip).Controls(command);
             }
-            else if (command == Menu.irs.ToString())
+            else if (readCommand == Menu.irs.ToString())
             {
                 ImmediateRangeScan.For(playerShip).Controls();
             }
-            else if (command == Menu.srs.ToString())
+            else if (readCommand == Menu.srs.ToString())
             {
                 ShortRangeScan.For(playerShip).Controls();
             }
-            else if (command == Menu.lrs.ToString())
+            else if (readCommand == Menu.lrs.ToString())
             {
                 LongRangeScan.For(playerShip).Controls();
             }
-            else if (command == Menu.crs.ToString())
+            else if (readCommand == Menu.crs.ToString())
             {
                 CombinedRangeScan.For(playerShip).Controls();
             }
-            else if (command == Menu.pha.ToString())
+            else if (readCommand == Menu.pha.ToString())
             {
                 Phasers.For(playerShip).Controls(playerShip);
             }
-            else if (command == Menu.tor.ToString())
+            else if (readCommand == Menu.tor.ToString())
             {
                 Torpedoes.For(playerShip).Controls();
             }
-            else if (command == Menu.she.ToString())
+            else if (readCommand == Menu.she.ToString())
             {
                 this.ShieldMenu(playerShip);
             }
-            else if (command == Menu.com.ToString())
+            else if (readCommand == Menu.com.ToString())
             {
                 this.ComputerMenu(playerShip);
             }
-            else if (command == Menu.toq.ToString())
+            else if (readCommand == Menu.toq.ToString())
             {
                 Computer.For(playerShip).Controls(command);
             }
-            else if (command == Menu.dmg.ToString())
+            else if (readCommand == Menu.dmg.ToString())
             {
                 this.DamageControlMenu(playerShip);
             }
-            else if (command == Menu.dbg.ToString())
+            else if (readCommand == Menu.dbg.ToString())
             {
                 this.DebugMenu(playerShip);
             }
-            else if (command == Menu.ver.ToString())
+            else if (readCommand == Menu.ver.ToString())
             {
                 this.Output.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
             }
-            else if (command == Menu.cls.ToString())
+            else if (readCommand == Menu.cls.ToString())
             {
                 this.Output.Clear();
             }
@@ -419,8 +428,6 @@ namespace StarTrek_KG.Output
                 this.CreateCommandPanel();
                 this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
             }
-
-
         }
 
         public void Panel(string panelHead, IEnumerable<string> strings)

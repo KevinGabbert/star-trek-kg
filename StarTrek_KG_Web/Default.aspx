@@ -23,7 +23,6 @@
 
 <script>
 
-
 jQuery(document).ready(function ($) {
 
     var _default = new window.defaultPage();

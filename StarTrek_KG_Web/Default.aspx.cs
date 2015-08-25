@@ -68,72 +68,58 @@ namespace StarTrek_KG_Web
             switch (command)
             {
                 case "test":
-                    responseLines = new List<string>
-                    {
-                        "Testing..",
-                        "Testing..",
-                        "1..2..3.."
-                    };
+                    responseLines = _Default.SendTestResponse(responseLines);
                     break;
 
                 case "make error":
                     throw new ArgumentException("This is a test error");
 
                 case "stop":
-                    HttpContext.Current.Session["game"] = null;
+                    HttpContext.Current.Session.Clear();
                     responseLines = new List<string>{"Session Cleared.."};
                     break;
 
-                case "restart":
+                case "start":
                     HttpContext.Current.Session["game"] = null;
-
-                    responseLines = new List<string> { "Session Restarted.." };
+                    responseLines = _Default.RunWeb(responseLines);
                     break;
 
                 case "run":
-
-                    responseLines = RunWeb(responseLines);
-
+                    responseLines = _Default.RunWeb(responseLines);
                     break;
 
                 case "test2":
-
                     _Default.RunWeb(responseLines);
-
-                    var game2 = _Default.GetGame();
+                    Game game2 = _Default.GetGame();
 
                     game2?.PrintOpeningScreen();
 
-
-                    //todo: why is outputqueue being connstructed so many times?
-                    //todo:  why is this null?
                     responseLines = game2?.Write?.Output?.OutputQueue.ToList();
                     break;
 
                 default:
+                    _Default.RunWeb(responseLines);
+
+                    var myGame = _Default.GetGame(sessionID);
 
                     //pass command and session ID to application
-                    //todo: 
-                    //todo: is the game still running?  check the game session variable
-
-                    //if (_Default.GetGame(sessionID).StillRunning())
-                    //{
-
-                        responseLines = new List<string>
-                        {
-                            "Under Construction.."
-                        };
-
+                    if (!myGame.GameOver)
+                    {
                         //todo: Make sure that game.IsSubscriberApp is set by this point.
-                        //responseLines = _Default.GetGame(sessionID).SendAndGetResponse(command);
-                    //}
-                    //else output "game over"
+                        responseLines = myGame.SendAndGetResponse(command);
+                    }
+                    else
+                    {
+                        responseLines.Add("G A M E  O V E R");
+                        HttpContext.Current.Session.Clear();
+
+                        //todo: now what?  auto start over? or just do it anyway?
+                    }
 
                     break;
             }
 
             string json = JsonConvert.SerializeObject(responseLines.ToList());
-
             return json;
         }
 
@@ -166,6 +152,17 @@ namespace StarTrek_KG_Web
         private static Game GetGame()
         {
             return (Game)HttpContext.Current.Session["game"]; //todo:  make this "game" + sessionID
+        }
+
+        private static List<string> SendTestResponse(List<string> responseLines)
+        {
+            responseLines = new List<string>
+            {
+                "Testing..",
+                "Testing..",
+                "1..2..3.."
+            };
+            return responseLines;
         }
 
         #endregion

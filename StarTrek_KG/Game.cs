@@ -31,7 +31,8 @@ namespace StarTrek_KG
 
             public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
             public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
-            public bool gameOver;
+            public bool GameOver { get; set; }
+
             public int RandomFactorForTesting 
             { 
                 get; 
@@ -198,7 +199,7 @@ namespace StarTrek_KG
                 //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
                 //todo: in that case, this function would not be called
 
-                this.gameOver = true;
+                this.GameOver = true;
                 return true;
             }
             return false;
@@ -216,7 +217,7 @@ namespace StarTrek_KG
                 keepPlaying = this.Config.GetSetting<bool>("KeepPlaying");
 
                 this.PlayOnce();
-                this.gameOver = false;
+                this.GameOver = false;
             }
         }
 
@@ -225,7 +226,7 @@ namespace StarTrek_KG
         /// </summary>
         public void RunWeb()
         {
-            
+            this.Initialize();
         }
 
         /// <summary>
@@ -360,7 +361,7 @@ namespace StarTrek_KG
         /// </summary>
         private void PlayOnce()
         {
-            if(this.gameOver)
+            if(this.GameOver)
             {
                 this.Write.DebugLine("Game Over.");
                 return;
@@ -368,20 +369,25 @@ namespace StarTrek_KG
 
             this.PrintOpeningScreen();
 
-            while (!gameOver)
+            while (!this.GameOver)
             {
-                this.gameOver = this.NewTurn(); //Shows Command Prompt
+                this.GameOver = this.NewTurn(); //Shows Command Prompt
 
-                if (gameOver)
+                if (this.GameOver)
                 {
                     this.Write.DebugLine("Game Over.. Restarting.");
 
-                    //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
-                    this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
+                    this.Initialize();
 
                     break;
                 }
             }
+        }
+
+        public void Initialize()
+        {
+            //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
+            this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
         }
 
         /// <summary>
@@ -395,61 +401,42 @@ namespace StarTrek_KG
 
             //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
 
-            var starbasesLeft = this.Map.Regions.GetStarbaseCount();
+            this.ReportGameStatus();
+
+            return this.GameOver;
+        }
+
+        private void ReportGameStatus()
+        {
+            int starbasesLeft = this.Map.Regions.GetStarbaseCount();
 
             if (this.PlayerNowEnemyToFederation)
             {
-                this.gameOver = (this.Map.timeRemaining < 1 ||
+                this.GameOver = (this.Map.timeRemaining < 1 ||
                                  starbasesLeft < 1 ||
                                  this.Map.Playership.Destroyed ||
                                  this.Map.Playership.Energy < 1);
             }
             else
             {
-                this.gameOver = !(this.Map.Playership.Energy > 0 &&
-                                !this.Map.Playership.Destroyed &&
-                                (this.Map.Regions.GetHostileCount() > 0) &&                              
-                                this.Map.timeRemaining > 0);
+                this.GameOver = !(this.Map.Playership.Energy > 0 &&
+                                  !this.Map.Playership.Destroyed &&
+                                  (this.Map.Regions.GetHostileCount() > 0) &&
+                                  this.Map.timeRemaining > 0);
             }
 
-            Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
-            return gameOver;
+            this.Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
         public List<string> SendAndGetResponse(string command)
         {
             //todo: output needs to raise an event so we can subscribe to it here and let the event handler return it
-            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
+            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            this.ReportGameStatus();
 
             //Write.OutputQueue should be filled with everything that just happened.
 
-            this.CheckForEndOfGame(); //add any endgame text that needs to happen
-
-            return this.Write.OutputQueue;
-        }
-
-        private void CheckForEndOfGame()
-        {
-            //var starbasesLeft = this.Map.Regions.GetStarbaseCount();
-
-            //if (this.PlayerNowEnemyToFederation)
-            //{
-            //    this.gameOver = (this.Map.timeRemaining < 1 ||
-            //                     starbasesLeft < 1 ||
-            //                     this.Map.Playership.Destroyed ||
-            //                     this.Map.Playership.Energy < 1);
-            //}
-            //else
-            //{
-            //    this.gameOver = !(this.Map.Playership.Energy > 0 &&
-            //                    !this.Map.Playership.Destroyed &&
-            //                    (this.Map.Regions.GetHostileCount() > 0) &&
-            //                    this.Map.timeRemaining > 0);
-            //}
-
-            //Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
-
-            //todo: add to this.Write.OutputQueue if game is over, otherwise add nothing.
+            return this.Write.Output.OutputQueue.ToList();
         }
 
         public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
