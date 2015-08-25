@@ -10,8 +10,7 @@
 
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <link href="Content/Site.css" rel="stylesheet" />
-
-    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="Content/logo.png" rel="shortcut icon" type="image/x-icon" />
 
 </head>
 <body>
