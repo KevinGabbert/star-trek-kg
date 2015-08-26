@@ -18,7 +18,8 @@
             height: 600,
             enabled: true,
             greetings: 'Star Trek KG ~ v8.25.15 \n' +
-                       'A modern, C# Code rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :) \n'
+                       'A modern, C# Code rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :) \n' +
+                       'Type "start" to start game.'
         };
 
         $.extend(settings, options);

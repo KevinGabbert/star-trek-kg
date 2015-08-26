@@ -31,6 +31,7 @@ namespace StarTrek_KG
 
             public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
             public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
+            public bool Started { get; set; }
             public bool GameOver { get; set; }
 
             public int RandomFactorForTesting 
@@ -227,6 +228,8 @@ namespace StarTrek_KG
         public void RunWeb()
         {
             this.Initialize();
+
+            this.PrintOpeningScreen();
         }
 
         /// <summary>

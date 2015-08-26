@@ -228,6 +228,7 @@
     <Compile Include="ViewSwitcher.ascx.designer.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
+    <Compile Include="WebApp\Workflow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

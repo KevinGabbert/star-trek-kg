@@ -9,8 +9,6 @@
 
 namespace StarTrek_KG_Web
 {
-
-
     public partial class _Default
     {
     }
