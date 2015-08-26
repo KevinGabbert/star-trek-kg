@@ -23,6 +23,7 @@ namespace StarTrek_KG.Output
     /// </summary>
     public class Write: IConfig, IOutputWrite
     {
+        #region Properties and Constants
         public IStarTrekKGSettings Config { get; set; }
         public int TotalHostiles { get; set; }
         public int TimeRemaining { get; set; }
@@ -46,18 +47,13 @@ namespace StarTrek_KG.Output
             set { _console = value; }
         }
 
-        public List<string> ACTIVITY_PANEL  { get; set; }
+        public List<string> ACTIVITY_PANEL { get; set; }
 
+        //todo: resource these out.
         public readonly string ENTER_DEBUG_COMMAND = "Enter Debug command: ";
         public readonly string ENTER_COMPUTER_COMMAND = "Enter computer command: ";
 
-        //TODO:  Have Game expose and raise an output event
-        //Have UI subscribe to it.
-
-        //Output object
-        //goal is to output message that a UI can read
-        //all *print* mnemonics will be changed to Output
-        //UI needs to read this text and display it how it wants
+        #endregion
 
         public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config) : this(config)
         {
@@ -90,67 +86,16 @@ namespace StarTrek_KG.Output
             }
         }
 
-        //missionResult needs to be an enum
-        public void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
+        #region Config
+
+        /// <summary>
+        /// Synctactic Sugar for pulling text
+        /// </summary>
+        /// <param name="configTextName"></param>
+        /// <returns></returns>
+        public void ConfigText(string configTextName)
         {
-            var commandResult = string.Empty;
-
-            if (ship.Destroyed)
-            {
-                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " DESTROYED";
-            }
-            else if (ship.Energy == 0)
-            {
-                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF ENERGY.";
-            }
-            else if (starbasesAreHostile && starbasesLeft == 0)
-            {
-                commandResult = "ALL FEDERATION STARBASES DESTROYED. YOU HAVE DEALT A SEVERE BLOW TO THE FEDERATION!";
-            }
-            else if (this.TotalHostiles == 0)
-            {
-                commandResult = "MISSION ACCOMPLISHED: ALL HOSTILE SHIPS DESTROYED. WELL DONE!!!";
-            }
-            else if (this.TimeRemaining == 0)
-            {
-                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF TIME.";
-            }
-
-            //else - No status to report.  Game continues
-
-            this.Line(commandResult);
-        }
-
-        //output as KeyValueCollection, and UI will build the string
-        public void PrintMission()
-        {
-            this.Output.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
-            this.Output.WriteLine(this.Config.GetText("HelpStatement"));
-            this.Output.WriteLine();
-        }
-
-        public void Strings(IEnumerable<string> strings)
-        {
-            foreach (var str in strings)
-            {
-                this.Output.WriteLine(str);
-            }
-            this.Output.WriteLine();
-        }
-
-        public void HighlightTextBW(bool on)
-        {
-            this.Output.HighlightTextBW(on);
-        }
-
-        public List<string> Line(string stringToOutput)
-        {
-            var linesToOutput = new List<string>();
-
-            linesToOutput.AddRange(this.Output.WriteLine(stringToOutput));
-            linesToOutput.Add(this.Output.WriteLine());
-
-            return linesToOutput;
+            this.Output.WriteLine(this.Config.GetText(configTextName));
         }
 
         public string GetFormattedConfigText(string configTextToWrite, object param1)
@@ -175,24 +120,6 @@ namespace StarTrek_KG.Output
             this.Output.WriteLine();
         }
 
-        /// <summary>
-        /// Synctactic Sugar for pulling text
-        /// </summary>
-        /// <param name="configTextName"></param>
-        /// <returns></returns>
-        public void ConfigText(string configTextName)
-        {
-            this.Output.WriteLine(this.Config.GetText(configTextName));
-        }
-
-        public void DebugLine(string stringToOutput)
-        {
-            if (Constants.DEBUG_MODE)
-            {
-                this.Output.WriteLine(stringToOutput);
-            }
-        }
-
         public void Resource(string text)
         {
             this.Output.WriteLine(this.Config.GetText(text) + " ");
@@ -215,15 +142,9 @@ namespace StarTrek_KG.Output
             this.Output.WriteLine();
         }
 
-        public void SingleLine(string stringToOutput)
-        {
-            this.Output.WriteLine(stringToOutput);
-        }
+        #endregion
 
-        public void WithNoEndCR(string stringToOutput)
-        {
-            this.Output.Write(stringToOutput);
-        }
+        #region Reflection
 
         public void DisplayPropertiesOf(object @object)
         {
@@ -237,6 +158,10 @@ namespace StarTrek_KG.Output
             }
 
         }
+
+        #endregion
+
+        #region Rendering
 
         public void RenderRegionCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
         {
@@ -311,9 +236,294 @@ namespace StarTrek_KG.Output
             }
         }
 
-        private string Display(Menu menuItem)
+        public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
+        {
+            var location = subsystem.ShipConnectedTo.GetLocation();
+            Region Region = Regions.Get(subsystem.Game.Map, location.Region);
+            var shieldsAutoRaised = Shields.For(subsystem.ShipConnectedTo).AutoRaiseShieldsIfNeeded(Region);
+            var printSector = (new Render(this, subsystem.Game.Config));
+
+            int totalHostiles = subsystem.Game.Map.Regions.GetHostileCount();
+            var isNebula = (Region.Type == RegionType.Nebulae);
+            string RegionDisplayName = Region.Name;
+            var sectorScanStringBuilder = new StringBuilder();
+
+            if (isNebula)
+            {
+                RegionDisplayName += " Nebula"; //todo: resource out.
+            }
+
+            this.Line("");
+
+            switch (scanType)
+            {
+                case SectorScanType.CombinedRange:
+                    printSector.CreateCRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);
+                    break;
+
+                case SectorScanType.ShortRange:
+                    printSector.CreateSRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            printSector.OutputScanWarnings(Region, subsystem.Game.Map, shieldsAutoRaised);
+
+            Region.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
+            Region.Scanned = true;
+        }
+
+        public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game)
+        {
+            var renderedResults = new List<string>();
+            int scanColumn = 0;
+
+            renderedResults.Add("┌─────┬─────┬─────┐");
+
+            string currentLRSScanLine = "│";
+
+            foreach (LRSResult dataPoint in lrsData)
+            {
+                string currentRegionResult = null;
+
+                if (dataPoint.Unknown)
+                {
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
+                }
+                else if (dataPoint.GalacticBarrier)
+                {
+                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+                }
+                else
+                {
+                    currentRegionResult += dataPoint;
+                }
+
+                currentLRSScanLine += " " + currentRegionResult + " " + "│";
+
+                if (scanColumn == 2 || scanColumn == 5)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                    renderedResults.Add("├─────┼─────┼─────┤");
+                    currentLRSScanLine = "│";
+                }
+
+                if (scanColumn == 8)
+                {
+                    renderedResults.Add(currentLRSScanLine);
+                }
+
+                scanColumn++;
+            }
+
+            renderedResults.Add("└─────┴─────┴─────┘");
+
+            return renderedResults;
+        }
+
+        //public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
+        //{
+        //    var renderedResults = new List<string>();
+        //    int scanColumn = 0;
+
+        //    renderedResults.Add("╒═════╤═════╤═════╕");
+
+        //    string currentLRSScanLine = "│";
+
+        //    foreach (IRSResult dataPoint in irsData)
+        //    {
+        //        string currentRegionResult = null;
+
+        //        if (dataPoint.Unknown)
+        //        {
+        //            currentRegionResult = Utility.Utility.DamagedScannerUnit();
+        //        }
+        //        else if (dataPoint.GalacticBarrier)
+        //        {
+        //            currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+        //        }
+        //        else
+        //        {
+        //            currentRegionResult += dataPoint;
+        //        }
+
+        //        currentLRSScanLine += " " + currentRegionResult + " " + "│";
+
+        //        if (scanColumn == 2 || scanColumn == 5)
+        //        {
+        //            renderedResults.Add(currentLRSScanLine);
+        //            renderedResults.Add("╞═════╪═════╪═════╡");
+        //            currentLRSScanLine = "│";
+        //        }
+
+        //        if (scanColumn == 8)
+        //        {
+        //            renderedResults.Add(currentLRSScanLine);
+        //        }
+
+        //        scanColumn++;
+        //    }
+
+        //    renderedResults.Add("╘═════╧═════╧═════╛");
+
+        //    return renderedResults;
+        //}
+
+        //todo: refactor with RenderLRSWithNames
+        public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, Game game)
+        {
+            var renderedResults = new List<string>();
+            int scanColumn = 0;  //todo resource this
+            string longestName = Write.GetLongestName(data);
+
+            var galacticBarrierText = this.Config.GetSetting<string>("GalacticBarrierText");
+            var barrierID = galacticBarrierText;
+            var cellPadding = 1; //todo resource this
+
+            int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
+            cellLength += cellPadding;
+
+            var topLeft = this.Config.Setting(scanRenderType + "TopLeft");
+            var topMiddle = this.Config.Setting(scanRenderType + "TopMiddle");
+            var topRight = this.Config.Setting(scanRenderType + "TopRight");
+
+            var bottomLeft = this.Config.Setting(scanRenderType + "BottomLeft");
+            var bottomMiddle = this.Config.Setting(scanRenderType + "BottomMiddle");
+            var bottomRight = this.Config.Setting(scanRenderType + "BottomRight");
+
+            var cellLine = new string(Convert.ToChar(this.Config.Setting(scanRenderType + "CellLine")), cellLength + cellPadding);
+
+            renderedResults.Add("");
+            renderedResults.Add(title.PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.   //todo resource this
+            renderedResults.Add(topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight);
+
+            this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine);
+
+            renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
+
+            return renderedResults;
+        }
+
+        private void RenderMiddle(ScanRenderType scanRenderType,
+                                  IEnumerable<IScanResult> data,
+                                  string barrierID,
+                                  string galacticBarrierText,
+                                  int cellLength,
+                                  int scanColumn,
+                                  ICollection<string> renderedResults,
+                                  string cellLine)
+        {
+            var verticalBoxLine = this.Config.Setting("VerticalBoxLine");
+
+            var middleLeft = this.Config.Setting(scanRenderType + "MiddleLeft");
+            var middle = this.Config.Setting(scanRenderType + "Middle");
+            var middleRight = this.Config.Setting(scanRenderType + "MiddleRight");
+
+            string currentLRSScanLine0 = verticalBoxLine;
+            string currentLRSScanLine1 = verticalBoxLine;
+            string currentLRSScanLine2 = verticalBoxLine;
+
+            foreach (IScanResult scanDataPoint in data)
+            {
+                string currentRegionName = "";
+                string currentRegionResult = null;
+                string regionCoordinate = "";
+
+                if (scanDataPoint.Coordinate != null)
+                {
+                    regionCoordinate = Constants.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." +
+                                       scanDataPoint.Coordinate.Y + "";
+
+                    currentRegionName += scanDataPoint.RegionName;
+                }
+
+                if (scanDataPoint.Unknown)
+                {
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
+                }
+                else if (scanDataPoint.GalacticBarrier)
+                {
+                    currentRegionName += barrierID;
+                    currentRegionResult = galacticBarrierText;
+                }
+                else
+                {
+                    currentRegionResult += scanDataPoint.ToScanString();
+                }
+
+                //breaks because coordinate is not populated when nebula
+
+                currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
+                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + verticalBoxLine;
+                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + verticalBoxLine; //todo resource this
+
+                if (scanColumn == 2 || scanColumn == 5) //todo resource this
+                {
+                    renderedResults.Add(currentLRSScanLine0);
+                    renderedResults.Add(currentLRSScanLine1);
+                    renderedResults.Add(currentLRSScanLine2);
+
+                    renderedResults.Add(middleLeft + cellLine + middle + cellLine + middle + cellLine + middleRight);
+
+                    currentLRSScanLine0 = verticalBoxLine;
+                    currentLRSScanLine1 = verticalBoxLine;
+                    currentLRSScanLine2 = verticalBoxLine;
+                }
+
+                if (scanColumn == 8) //todo resource this
+                {
+                    renderedResults.Add(currentLRSScanLine0);
+                    renderedResults.Add(currentLRSScanLine1);
+                    renderedResults.Add(currentLRSScanLine2);
+                }
+
+                scanColumn++;
+            }
+        }
+
+        public string RenderCourse()
+        {
+            //todo: pull this from app.config
+
+            return Environment.NewLine +
+                   " 4   5   6 " + Environment.NewLine +
+                   @"   \ ↑ /  " + Environment.NewLine +
+                   "3 ← <*> → 7" + Environment.NewLine +
+                   @"   / ↓ \  " + Environment.NewLine +
+                   " 2   1   8" + Environment.NewLine +
+                   Environment.NewLine;
+        }
+
+        #endregion
+
+        #region Menus
+
+        private string DisplayMenuItem(Menu menuItem)
         {
             return $"{menuItem.Name} = {menuItem.Description}";
+        }
+
+        public List<string> Panel(string panelHead, IEnumerable<string> strings)
+        {
+            this.Output.WriteLine();
+            this.Output.WriteLine(panelHead);
+            this.Output.WriteLine();
+
+            foreach (var str in strings)
+            {
+                this.Output.WriteLine(str);
+            }
+
+            this.Output.WriteLine();
+
+            return this.Output.OutputQueue.ToList();
+        }
+
+        public string GetPanelHead(string shipName)
+        {
+            return "─── " + shipName + " ───";
         }
 
         public void CreateCommandPanel()
@@ -338,16 +548,13 @@ namespace StarTrek_KG.Output
                 "dmg = Damage Control"
             };
 
-            if(Constants.DEBUG_MODE)
+            if (Constants.DEBUG_MODE)
             {
                 ACTIVITY_PANEL.Add("");
                 ACTIVITY_PANEL.Add("─────────────────────────────");
-                ACTIVITY_PANEL.Add(this.Display(Menu.dbg));
+                ACTIVITY_PANEL.Add(this.DisplayMenuItem(Menu.dbg));
             }
         }
-
-        //This needs to be a command method that the UI passes values into.
-        //Readline is done in UI
 
         /// <summary>
         /// What happens in here is that each method called generates an output then renders it to the screen
@@ -445,22 +652,6 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        public List<string> Panel(string panelHead, IEnumerable<string> strings)
-        {
-            this.Output.WriteLine();
-            this.Output.WriteLine(panelHead);
-            this.Output.WriteLine();
-
-            foreach (var str in strings)
-            {
-                this.Output.WriteLine(str);
-            }
-
-            this.Output.WriteLine();
-
-            return this.Output.OutputQueue.ToList();
-        }
-
         private List<string> DebugMenu(IShip playerShip)
         {
             this.Strings(Debug.CONTROL_PANEL);
@@ -536,10 +727,9 @@ namespace StarTrek_KG.Output
             return this.Output.OutputQueue.ToList();
         }
 
-        public string GetPanelHead(string shipName)
-        {
-            return "─── " + shipName + " ───";
-        }
+        #endregion
+
+        #region Prompt
 
         public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0)
         {
@@ -611,6 +801,52 @@ namespace StarTrek_KG.Output
             return false;
         }
 
+        #endregion
+
+        #region Misc
+
+        public void HighlightTextBW(bool on)
+        {
+            this.Output.HighlightTextBW(on);
+        }
+
+        public List<string> Line(string stringToOutput)
+        {
+            var linesToOutput = new List<string>();
+
+            linesToOutput.AddRange(this.Output.WriteLine(stringToOutput));
+            linesToOutput.Add(this.Output.WriteLine());
+
+            return linesToOutput;
+        }
+
+        public void Strings(IEnumerable<string> strings)
+        {
+            foreach (var str in strings)
+            {
+                this.Output.WriteLine(str);
+            }
+            this.Output.WriteLine();
+        }
+
+        public void WithNoEndCR(string stringToOutput)
+        {
+            this.Output.Write(stringToOutput);
+        }
+
+        public void DebugLine(string stringToOutput)
+        {
+            if (Constants.DEBUG_MODE)
+            {
+                this.Output.WriteLine(stringToOutput);
+            }
+        }
+
+        public void SingleLine(string stringToOutput)
+        {
+            this.Output.WriteLine(stringToOutput);
+        }
+
         public static string ShipHitMessage(IShip attacker, int attackingEnergy)
         {
             var attackerRegion = attacker.GetRegion();
@@ -674,253 +910,6 @@ namespace StarTrek_KG.Output
             }
         }
 
-        public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
-        {
-            var location = subsystem.ShipConnectedTo.GetLocation();
-            Region Region = Regions.Get(subsystem.Game.Map, location.Region);
-            var shieldsAutoRaised = Shields.For(subsystem.ShipConnectedTo).AutoRaiseShieldsIfNeeded(Region);
-            var printSector = (new Render(this, subsystem.Game.Config));
-
-            int totalHostiles = subsystem.Game.Map.Regions.GetHostileCount();
-            var isNebula = (Region.Type == RegionType.Nebulae);
-            string RegionDisplayName = Region.Name;
-            var sectorScanStringBuilder = new StringBuilder();
-
-            if (isNebula)
-            {
-                RegionDisplayName += " Nebula"; //todo: resource out.
-            }
-
-            this.Line("");
-
-            switch (scanType)
-            {
-                case SectorScanType.CombinedRange:
-                    printSector.CreateCRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);
-                    break;
-
-                case SectorScanType.ShortRange:
-                    printSector.CreateSRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);         
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            printSector.OutputScanWarnings(Region, subsystem.Game.Map, shieldsAutoRaised);
-
-            Region.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
-            Region.Scanned = true;
-        }
-
-        public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game)
-        {
-            var renderedResults = new List<string>();
-            int scanColumn = 0;
-
-            renderedResults.Add("┌─────┬─────┬─────┐");
-
-            string currentLRSScanLine = "│";
-
-            foreach (LRSResult dataPoint in lrsData)
-            {
-                string currentRegionResult = null;
-
-                if (dataPoint.Unknown)
-                {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
-                }
-                else if(dataPoint.GalacticBarrier)
-                {
-                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
-                }
-                else
-                {
-                    currentRegionResult += dataPoint;
-                }
-
-                currentLRSScanLine += " " +  currentRegionResult + " " + "│";
-
-                if (scanColumn == 2 || scanColumn == 5)
-                {
-                    renderedResults.Add(currentLRSScanLine);
-                    renderedResults.Add("├─────┼─────┼─────┤");
-                    currentLRSScanLine = "│";
-                }
-
-                if (scanColumn == 8)
-                {
-                    renderedResults.Add(currentLRSScanLine);
-                }
-
-                scanColumn++;
-            }
-
-            renderedResults.Add("└─────┴─────┴─────┘");
-
-            return renderedResults;
-        }
-
-        //public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
-        //{
-        //    var renderedResults = new List<string>();
-        //    int scanColumn = 0;
-
-        //    renderedResults.Add("╒═════╤═════╤═════╕");
-
-        //    string currentLRSScanLine = "│";
-
-        //    foreach (IRSResult dataPoint in irsData)
-        //    {
-        //        string currentRegionResult = null;
-
-        //        if (dataPoint.Unknown)
-        //        {
-        //            currentRegionResult = Utility.Utility.DamagedScannerUnit();
-        //        }
-        //        else if (dataPoint.GalacticBarrier)
-        //        {
-        //            currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
-        //        }
-        //        else
-        //        {
-        //            currentRegionResult += dataPoint;
-        //        }
-
-        //        currentLRSScanLine += " " + currentRegionResult + " " + "│";
-
-        //        if (scanColumn == 2 || scanColumn == 5)
-        //        {
-        //            renderedResults.Add(currentLRSScanLine);
-        //            renderedResults.Add("╞═════╪═════╪═════╡");
-        //            currentLRSScanLine = "│";
-        //        }
-
-        //        if (scanColumn == 8)
-        //        {
-        //            renderedResults.Add(currentLRSScanLine);
-        //        }
-
-        //        scanColumn++;
-        //    }
-
-        //    renderedResults.Add("╘═════╧═════╧═════╛");
-
-        //    return renderedResults;
-        //}
-
-        //todo: refactor with RenderLRSWithNames
-        public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, Game game)
-        {
-            var renderedResults = new List<string>();
-            int scanColumn = 0;  //todo resource this
-            string longestName = Write.GetLongestName(data);
-
-            var galacticBarrierText = this.Config.GetSetting<string>("GalacticBarrierText");
-            var barrierID = galacticBarrierText; 
-            var cellPadding = 1; //todo resource this
-
-            int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
-            cellLength += cellPadding;
-
-            var topLeft = this.Config.Setting(scanRenderType + "TopLeft");
-            var topMiddle = this.Config.Setting(scanRenderType + "TopMiddle");
-            var topRight = this.Config.Setting(scanRenderType + "TopRight");
-
-            var bottomLeft = this.Config.Setting(scanRenderType + "BottomLeft");
-            var bottomMiddle = this.Config.Setting(scanRenderType + "BottomMiddle");
-            var bottomRight = this.Config.Setting(scanRenderType + "BottomRight");
-
-            var cellLine = new string(Convert.ToChar(this.Config.Setting(scanRenderType + "CellLine")), cellLength + cellPadding);
-
-            renderedResults.Add("");
-            renderedResults.Add(title.PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.   //todo resource this
-            renderedResults.Add(topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight);
-
-            this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine);
-
-            renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
-
-            return renderedResults;
-        }
-
-        private void RenderMiddle(ScanRenderType scanRenderType, 
-                                  IEnumerable<IScanResult> data, 
-                                  string barrierID, 
-                                  string galacticBarrierText,
-                                  int cellLength, 
-                                  int scanColumn, 
-                                  ICollection<string> renderedResults, 
-                                  string cellLine)
-        {
-            var verticalBoxLine = this.Config.Setting("VerticalBoxLine");
-
-            var middleLeft = this.Config.Setting(scanRenderType + "MiddleLeft");
-            var middle = this.Config.Setting(scanRenderType + "Middle");
-            var middleRight = this.Config.Setting(scanRenderType + "MiddleRight");
-
-            string currentLRSScanLine0 = verticalBoxLine;
-            string currentLRSScanLine1 = verticalBoxLine;
-            string currentLRSScanLine2 = verticalBoxLine;
-
-            foreach (IScanResult scanDataPoint in data)
-            {
-                string currentRegionName = "";
-                string currentRegionResult = null;
-                string regionCoordinate = "";
-
-                if (scanDataPoint.Coordinate != null)
-                {
-                    regionCoordinate = Constants.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." +
-                                       scanDataPoint.Coordinate.Y + "";
-
-                    currentRegionName += scanDataPoint.RegionName;
-                }
-
-                if (scanDataPoint.Unknown)
-                {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
-                }
-                else if (scanDataPoint.GalacticBarrier)
-                {
-                    currentRegionName += barrierID;
-                    currentRegionResult = galacticBarrierText;
-                }
-                else
-                {
-                    currentRegionResult += scanDataPoint.ToScanString();
-                }
-
-                //breaks because coordinate is not populated when nebula
-
-                currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
-                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + verticalBoxLine;
-                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + verticalBoxLine; //todo resource this
-
-                if (scanColumn == 2 || scanColumn == 5) //todo resource this
-                {
-                    renderedResults.Add(currentLRSScanLine0);
-                    renderedResults.Add(currentLRSScanLine1);
-                    renderedResults.Add(currentLRSScanLine2);
-
-                    renderedResults.Add(middleLeft + cellLine + middle + cellLine + middle + cellLine + middleRight);
-
-                    currentLRSScanLine0 = verticalBoxLine;
-                    currentLRSScanLine1 = verticalBoxLine;
-                    currentLRSScanLine2 = verticalBoxLine;
-                }
-
-                if (scanColumn == 8) //todo resource this
-                {
-                    renderedResults.Add(currentLRSScanLine0);
-                    renderedResults.Add(currentLRSScanLine1);
-                    renderedResults.Add(currentLRSScanLine2);
-                }
-
-                scanColumn++;
-            }
-        }
-
         private static string GetLongestName(IEnumerable<IScanResult> data)
         {
             string longestName = "";
@@ -936,18 +925,46 @@ namespace StarTrek_KG.Output
             return longestName;
         }
 
-        public string Course()
+        //missionResult needs to be an enum
+        public void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
         {
-            //todo: pull this from app.config
+            var commandResult = string.Empty;
 
-            return Environment.NewLine +
-                   " 4   5   6 " + Environment.NewLine +
-                   @"   \ ↑ /  " + Environment.NewLine +
-                   "3 ← <*> → 7" + Environment.NewLine +
-                   @"   / ↓ \  " + Environment.NewLine +
-                   " 2   1   8" + Environment.NewLine +
-                   Environment.NewLine;
+            if (ship.Destroyed)
+            {
+                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " DESTROYED";
+            }
+            else if (ship.Energy == 0)
+            {
+                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF ENERGY.";
+            }
+            else if (starbasesAreHostile && starbasesLeft == 0)
+            {
+                commandResult = "ALL FEDERATION STARBASES DESTROYED. YOU HAVE DEALT A SEVERE BLOW TO THE FEDERATION!";
+            }
+            else if (this.TotalHostiles == 0)
+            {
+                commandResult = "MISSION ACCOMPLISHED: ALL HOSTILE SHIPS DESTROYED. WELL DONE!!!";
+            }
+            else if (this.TimeRemaining == 0)
+            {
+                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF TIME.";
+            }
+
+            //else - No status to report.  Game continues
+
+            this.Line(commandResult);
         }
+
+        //output as KeyValueCollection, and UI will build the string
+        public void PrintMission()
+        {
+            this.Output.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.Output.WriteLine(this.Config.GetText("HelpStatement"));
+            this.Output.WriteLine();
+        }
+
+        #endregion
     }
 }
 

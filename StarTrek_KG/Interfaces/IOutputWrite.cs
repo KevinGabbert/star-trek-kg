@@ -67,6 +67,6 @@ namespace StarTrek_KG.Interfaces
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
         void RenderSectors(SectorScanType scanType, ISubsystem subsystem);
-        string Course();
+        string RenderCourse();
     }
 }

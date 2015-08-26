@@ -401,7 +401,7 @@ namespace StarTrek_KG.Actors
             //var course = this.Game.Write.Course() + "Enter Course: ";
             string userDirection = "";
 
-            bool userEnteredCourse = this.Game.Prompt.Invoke($"{this.Game.Write.Course()} Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.Game.Prompt.Invoke($"{this.Game.Write.RenderCourse()} Enter Course: ", out userDirection);
 
             if (userEnteredCourse)
             {
