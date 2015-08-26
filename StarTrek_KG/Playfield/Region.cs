@@ -532,8 +532,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") + this.Name +
-                                        ".");
+                throw new GameException($"{this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion")}{this.Name}.");
             }
         }
 
@@ -554,8 +553,7 @@ namespace StarTrek_KG.Playfield
             }
             else
             {
-                throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") + this.Name +
-                                        ".");
+                throw new GameException($"{this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion")}{this.Name}.");
             }
         }
 

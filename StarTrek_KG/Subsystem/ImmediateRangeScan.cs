@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Interfaces;
@@ -15,9 +16,11 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.ImmediateRangeScan;
         }
 
-        public void Controls()
+        public List<string> Controls()
         {
-            if (this.Damaged()) return;
+            this.Game.Write.Output.OutputQueue.Clear();
+
+            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -28,6 +31,8 @@ namespace StarTrek_KG.Subsystem
             {
                 this.Game.Write.SingleLine(line);
             }
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         public IEnumerable<string> RunFullIRSScan(Location shipLocation)

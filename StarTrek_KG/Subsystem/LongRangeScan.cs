@@ -19,14 +19,17 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.LongRangeScan;
         }
 
-        public override void Controls(string command)
+        public override List<string> Controls(string command)
         {
+            this.Game.Write.Output.OutputQueue.Clear();
             throw new NotImplementedException();
         }
 
-        public void Controls()
+        public List<string> Controls()
         {
-            if (this.Damaged()) return;
+            this.Game.Write.Output.OutputQueue.Clear();
+
+            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -37,6 +40,8 @@ namespace StarTrek_KG.Subsystem
             {
                 this.Game.Write.SingleLine(line);
             }
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         //used by CRS

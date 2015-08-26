@@ -51,14 +51,13 @@ namespace StarTrek_KG.Interfaces
         void RenderUnscannedRegion(bool renderingMyLocation);
         List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game);
         //IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsResults, Game game);
-
         //IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, Game game);
         IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> list, Game game);
 
         void CreateCommandPanel();
-        List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
-        void Panel(string panelHead, IEnumerable<string> strings);
+        List<string> Panel(string panelHead, IEnumerable<string> strings);
         string GetPanelHead(string shipName);
+        List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
 
         bool PromptUser(string promptMessage, out int value);
         bool PromptUser(string promptMessage, out string value);

@@ -1,7 +1,8 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Subsystem;
+using UnitTests.ShipTests;
 
-namespace UnitTests.ShipTests.SubSystemTests
+namespace UnitTests.Tests.SubSystemTests
 {
     [TestFixture]
     public class ComputerTests: TestClass_Base

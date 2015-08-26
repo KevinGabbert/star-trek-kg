@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -18,9 +19,11 @@ namespace StarTrek_KG.Subsystem
             this.Energy = 0;
         }
 
-        public override void Controls(string command)
+        public override List<string> Controls(string command)
         {
-            if (this.Damaged()) return;
+            this.Game.Write.Output.OutputQueue.Clear();
+
+            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList(); ;
 
             bool adding = false;
             switch (command)
@@ -44,7 +47,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    return;
+                    return this.Game.Write.Output.OutputQueue.ToList();
             }
 
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
@@ -58,6 +61,8 @@ namespace StarTrek_KG.Subsystem
             }
 
             EndControls:;
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         private void TransferEnergy(int transfer, bool adding)

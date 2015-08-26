@@ -18,8 +18,10 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.DamageControl; //needed for lookup
         }
 
-        public override void Controls(string command)
+        public override List<string> Controls(string command)
         {
+            this.Game.Write.Output.OutputQueue.Clear();
+
             if (command == "fix")
             {
                 string subsystemToFix;
@@ -27,6 +29,8 @@ namespace StarTrek_KG.Subsystem
 
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         public string ShowSubsystemsToFix()

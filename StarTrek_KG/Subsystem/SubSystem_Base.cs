@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -51,9 +52,11 @@ namespace StarTrek_KG.Subsystem
 
         }
 
-        public virtual void Controls(string command)
+        public virtual List<string> Controls(string command)
         {
             //todo: can Prompt be moved out of here?
+            this.Game.Write.Output.OutputQueue.Clear();
+            return new List<string>();
         }
 
         public virtual bool PartialRepair()

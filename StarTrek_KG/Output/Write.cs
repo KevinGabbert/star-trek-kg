@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using StarTrek_KG.Actors;
@@ -362,6 +363,7 @@ namespace StarTrek_KG.Output
             if (command != null && this.IsSubscriberApp)
             {
                 readCommand = command.Trim().ToLower();
+                this.Output.Clear();
             }
             else
             {
@@ -373,11 +375,11 @@ namespace StarTrek_KG.Output
 
             if (readCommand == Menu.wrp.ToString() || readCommand == Menu.imp.ToString() || readCommand == Menu.nto.ToString())
             {
-                Navigation.For(playerShip).Controls(command);
+                retVal = Navigation.For(playerShip).Controls(command);
             }
             else if (readCommand == Menu.irs.ToString())
             {
-                ImmediateRangeScan.For(playerShip).Controls();
+                retVal = ImmediateRangeScan.For(playerShip).Controls();
             }
             else if (readCommand == Menu.srs.ToString())
             {
@@ -385,39 +387,39 @@ namespace StarTrek_KG.Output
             }
             else if (readCommand == Menu.lrs.ToString())
             {
-                LongRangeScan.For(playerShip).Controls();
+                retVal = LongRangeScan.For(playerShip).Controls();
             }
             else if (readCommand == Menu.crs.ToString())
             {
-                CombinedRangeScan.For(playerShip).Controls();
+                retVal = CombinedRangeScan.For(playerShip).Controls();
             }
             else if (readCommand == Menu.pha.ToString())
             {
-                Phasers.For(playerShip).Controls(playerShip);
+                retVal = Phasers.For(playerShip).Controls(playerShip);
             }
             else if (readCommand == Menu.tor.ToString())
             {
-                Torpedoes.For(playerShip).Controls();
+                retVal = Torpedoes.For(playerShip).Controls();
             }
             else if (readCommand == Menu.she.ToString())
             {
-                this.ShieldMenu(playerShip);
+                retVal = this.ShieldMenu(playerShip);
             }
             else if (readCommand == Menu.com.ToString())
             {
-                this.ComputerMenu(playerShip);
+                retVal = this.ComputerMenu(playerShip);
             }
             else if (readCommand == Menu.toq.ToString())
             {
-                Computer.For(playerShip).Controls(command);
+                retVal = Computer.For(playerShip).Controls(command);
             }
             else if (readCommand == Menu.dmg.ToString())
             {
-                this.DamageControlMenu(playerShip);
+                retVal = this.DamageControlMenu(playerShip);
             }
             else if (readCommand == Menu.dbg.ToString())
             {
-                this.DebugMenu(playerShip);
+                retVal = this.DebugMenu(playerShip);
             }
             else if (readCommand == Menu.ver.ToString())
             {
@@ -430,13 +432,13 @@ namespace StarTrek_KG.Output
             else
             {
                 this.CreateCommandPanel();
-                this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
+                retVal = this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
             }
 
             return retVal;
         }
 
-        public void Panel(string panelHead, IEnumerable<string> strings)
+        public List<string> Panel(string panelHead, IEnumerable<string> strings)
         {
             this.Output.WriteLine();
             this.Output.WriteLine(panelHead);
@@ -448,9 +450,11 @@ namespace StarTrek_KG.Output
             }
 
             this.Output.WriteLine();
+
+            return this.Output.OutputQueue.ToList();
         }
 
-        private void DebugMenu(IShip playerShip)
+        private List<string> DebugMenu(IShip playerShip)
         {
             this.Strings(Debug.CONTROL_PANEL);
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
@@ -459,11 +463,13 @@ namespace StarTrek_KG.Output
             var debugCommand = Output.ReadLine().Trim().ToLower();
 
             Debug.For(playerShip).Controls(debugCommand);
+
+            return this.Output.OutputQueue.ToList();
         }
 
-        private void ComputerMenu(IShip playerShip)
+        private List<string> ComputerMenu(IShip playerShip)
         {
-            if (Computer.For(playerShip).Damaged()) return;
+            if (Computer.For(playerShip).Damaged()) return this.Output.OutputQueue.ToList();
 
             this.Strings(Computer.CONTROL_PANEL);
             this.WithNoEndCR(this.ENTER_COMPUTER_COMMAND);
@@ -472,9 +478,11 @@ namespace StarTrek_KG.Output
             var computerCommand = Output.ReadLine().Trim().ToLower();
 
             Computer.For(playerShip).Controls(computerCommand);
+
+            return this.Output.OutputQueue.ToList();
         }
 
-        private void DamageControlMenu(IShip playerShip)
+        private List<string> DamageControlMenu(IShip playerShip)
         {
             this.Strings(DamageControl.CONTROL_PANEL);
             this.WithNoEndCR("Enter Damage Control Command: ");
@@ -483,11 +491,13 @@ namespace StarTrek_KG.Output
             var damageControlCommand = Output.ReadLine().Trim().ToLower();
 
             DamageControl.For(playerShip).Controls(damageControlCommand);
+
+            return this.Output.OutputQueue.ToList();
         }
 
-        private void ShieldMenu(IShip playerShip)
+        private List<string> ShieldMenu(IShip playerShip)
         {
-            if (Shields.For(playerShip).Damaged()) return;
+            if (Shields.For(playerShip).Damaged()) return this.Output.OutputQueue.ToList();
 
             Shields.SHIELD_PANEL = new List<string>
             {
@@ -515,6 +525,8 @@ namespace StarTrek_KG.Output
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
             Shields.For(playerShip).Controls(shieldsCommand);
+
+            return this.Output.OutputQueue.ToList();
         }
 
         public string GetPanelHead(string shipName)

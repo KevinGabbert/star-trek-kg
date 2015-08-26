@@ -1,4 +1,6 @@
-﻿using StarTrek_KG.Actors;
+﻿using System.Collections.Generic;
+using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.TypeSafeEnums;
@@ -12,9 +14,11 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.CombinedRangeScan;
         }
 
-        public void Controls()
+        public List<string> Controls()
         {
-            if (this.Damaged()) return;
+            this.Game.Write.Output.OutputQueue.Clear();
+
+            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList();
 
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
@@ -22,6 +26,8 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.Game.Write.RenderSectors(SectorScanType.CombinedRange, this);
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         public static CombinedRangeScan For(IShip ship)

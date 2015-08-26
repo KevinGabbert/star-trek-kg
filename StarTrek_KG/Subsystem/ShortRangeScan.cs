@@ -17,10 +17,11 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
+            this.Game.Write.Output.OutputQueue.Clear();
+
             if (this.Damaged()) return null;
 
             this.Game.Write.RenderSectors(SectorScanType.ShortRange, this);
-
             return this.Game.Write.Output.OutputQueue?.ToList();
         }
 
@@ -31,12 +32,10 @@ namespace StarTrek_KG.Subsystem
 
         public IEnumerable<Sector> ObjectFinder()
         {
-            var objects = new List<Sector>();
-
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
                 this.Game.Write.Line("Cannot locate Objects for calculations");
-                return objects;
+                return new List<Sector>(); //todo: is this correct?
             }
 
             var thisRegion = this.ShipConnectedTo.GetRegion();

@@ -29,8 +29,10 @@ namespace StarTrek_KG.Subsystem
             this.Damage = 0;
         }
 
-        public override void Controls(string command)
+        public override List<string> Controls(string command)
         {
+            this.Game.Write.Output.OutputQueue.Clear();
+
             var starship = this.ShipConnectedTo;
 
             switch (command.ToLower())
@@ -51,7 +53,7 @@ namespace StarTrek_KG.Subsystem
 
                 case "tor":
                     //todo: calculator code will be refactored to this object
-                    if (this.Damaged()) return;
+                    if (this.Damaged()) return null;
                     Torpedoes.For(this.ShipConnectedTo).Calculator();
                     break;
 
@@ -61,13 +63,13 @@ namespace StarTrek_KG.Subsystem
 
                 case "bas":
                     //todo: calculator code will be refactored to this object
-                    if (this.Damaged()) return;
+                    if (this.Damaged()) return null;
                     Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo); 
                     break;
 
                 case "nav":
                     //todo: calculator code will be refactored to this object
-                    if (this.Damaged()) return;
+                    if (this.Damaged()) return null;
                     Navigation.For(this.ShipConnectedTo).Calculator();
                     break;
 
@@ -88,6 +90,8 @@ namespace StarTrek_KG.Subsystem
                     this.Game.Write.Line("Invalid computer this.Write");
                     break;
             }
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         private void TargetObjectInRegion()

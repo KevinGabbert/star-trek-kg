@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -46,8 +47,10 @@ namespace StarTrek_KG.Subsystem
             this.Damage = 0;
         }
 
-        public override void Controls(string command)
+        public override List<string> Controls(string command)
         {
+            this.Game.Write.Output.OutputQueue.Clear();
+
             switch (command.ToLower())
             {
                 case "dsrec":
@@ -143,6 +146,8 @@ namespace StarTrek_KG.Subsystem
                     this.Game.Write.Line(">> exiting Debug Mode..");
                     break;
             }
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         public static Debug For(IShip ship)
