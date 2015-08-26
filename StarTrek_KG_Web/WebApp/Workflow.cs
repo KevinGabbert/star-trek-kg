@@ -9,6 +9,36 @@ namespace StarTrek_KG_Web.WebApp
 {
     public class Workflow
     {
+        public List<string> ExecuteCommand(string command, string sessionID, List<string> responseLines, Game game)
+        {
+            switch (command)
+            {
+                case "test":
+                    responseLines = this.SendTestResponse(responseLines);
+                    break;
+
+                case "make error":
+                    throw new ArgumentException("This is a test error");
+
+                case "end game":
+                    //todo: gives final stats and stops game
+                    break;
+
+                case "stop":
+                    responseLines = this.StopGame(responseLines);
+                    break;
+
+                case "start":
+                    responseLines = this.StartGame(game, responseLines);
+                    break;
+
+                default:
+                    responseLines = this.NewWebTurn(responseLines, sessionID, command);
+                    break;
+            }
+            return responseLines;
+        }
+
         public List<string> StartGame(Game game, List<string> responseLines)
         {
             if (game == null || (!game.Started))
@@ -24,12 +54,12 @@ namespace StarTrek_KG_Web.WebApp
                 }
                 else
                 {
-                    responseLines.Add("Error starting Game");
+                    responseLines = this.Response($"Error Starting Game. {this.ReportIssueMessage()}"); //todo: resource this out.
                 }
             }
             else
-            {
-                responseLines.Add("Game already running. Type 'stop' then 'start' again to start over.");
+            {  
+                responseLines = this.Response("Game already running. Type 'stop' then 'start' again to start over."); //todo: resource this out.
             }
             return responseLines;
         }
@@ -51,7 +81,7 @@ namespace StarTrek_KG_Web.WebApp
             this.GetGame().RunWeb();
             this.GetGame().Started = true;
 
-            responseLines = new List<string> { "Game Started.." };
+            responseLines = this.Response("Game Started..");
             return responseLines;
         }
 
@@ -63,24 +93,23 @@ namespace StarTrek_KG_Web.WebApp
 
         internal List<string> StopGame(List<string> responseLines)
         {
-            HttpContext.Current.Session.Clear();
-            return new List<string> { "Session Cleared.." };
+            HttpContext.Current.Session.Clear(); 
+            return this.Response("Session Cleared.."); //todo: resource this out
         }
 
         public Game GetGame()
         {
-            return (Game)HttpContext.Current.Session["game"] ?? null; //todo:  make this "game" + sessionID
+            return (Game)HttpContext.Current.Session["game"]; //todo:  make this "game" + sessionID
         }
 
         public List<string> SendTestResponse(List<string> responseLines)
         {
-            responseLines = new List<string>
+            return this.Response(new List<string>
             {
                 "Testing..",
                 "Testing..",
                 "1..2..3.."
-            };
-            return responseLines;
+            });
         }
 
         //private static CheckSessionTime()
@@ -94,7 +123,8 @@ namespace StarTrek_KG_Web.WebApp
 
         //    }
         //}
-        public List<string> NewTurn(List<string> responseLines, string sessionID, string command)
+
+        public List<string> NewWebTurn(List<string> responseLines, string sessionID, string command)
         {
             var myGame = this.GetGame(sessionID);
 
@@ -104,11 +134,11 @@ namespace StarTrek_KG_Web.WebApp
                 if (!myGame.GameOver)
                 {
                     //todo: Make sure that game.IsSubscriberApp is set by this point.
-                    responseLines = myGame.SendAndGetResponse(command);
+                    responseLines = this.Response(myGame.WebSendAndGetResponse(command));
                 }
                 else
                 {
-                    responseLines.Add("G A M E  O V E R");
+                    responseLines = this.Response("G A M E  O V E R");
                     HttpContext.Current.Session.Clear();
 
                     //todo: now what?  auto start over? or just do it anyway?
@@ -116,10 +146,42 @@ namespace StarTrek_KG_Web.WebApp
             }
             else
             {
-                responseLines.Add("No game running.  Type 'start' to start game");
+                this.Response("No game running.  Type 'start' to start game");
             }
 
             return responseLines;
+        }
+
+        private List<string> Response(string text)
+        {
+            var responseLines = new List<string>()
+            {
+                Environment.NewLine,
+                text,
+                Environment.NewLine
+            };
+            return responseLines;
+        }
+        private List<string> Response(IList<string> text)
+        {
+            if (text != null)
+            {
+                text.Insert(0, Environment.NewLine);
+                text.Add(Environment.NewLine);
+            }
+            else
+            {
+                text = new List<string>(new List<string>());
+            }
+
+            var responseLines = new List<string>(text);
+
+            return responseLines;
+        }
+
+        private string ReportIssueMessage()
+        {
+            return "Click <a href=\"https://github.com/KevinGabbert/star-trek-kg/issues\" target=_blank>HERE</a> to report issue (opens in new window)";
         }
     }
 }

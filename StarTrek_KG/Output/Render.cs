@@ -28,7 +28,7 @@ namespace StarTrek_KG.Output
 
         public void CreateSRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            this.Write.Console.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
+            this.Write.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
 
             int srsRows = Convert.ToInt32(this.Config.GetText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
@@ -36,7 +36,7 @@ namespace StarTrek_KG.Output
                 this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Region.Sectors, totalHostiles, isNebula);
             }
 
-            this.Write.Console.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
+            this.Write.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
         public void CreateCRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
@@ -56,7 +56,7 @@ namespace StarTrek_KG.Output
             }
 
             string lrsBottom = null;
-            if (lrsResults.Count() == 7)
+            if (lrsResults.Count == 7)
             {
                 lrsBottom = " " + lrsResults[6];
             }
@@ -155,7 +155,7 @@ namespace StarTrek_KG.Output
 
         private static string addLine(int row, IList<string> lrsResults, string retVal)
         {
-            if (lrsResults.Count() > (row - 1))
+            if (lrsResults.Count > (row - 1))
             {
                 retVal += lrsResults[row - 2];
             }
@@ -251,7 +251,7 @@ namespace StarTrek_KG.Output
 
             if (factionDesignator == "")
             {
-                factionDesignator = "+?+";
+                factionDesignator = "+?+"; //todo: resource this
             }
 
             //bug can be viewed (and even tested here)
@@ -262,12 +262,12 @@ namespace StarTrek_KG.Output
             //todo: resolve if issue
             //if (this.game.Map.Hostiles.Count < 1)
             //{
-            //    Console.WriteLine("bug. hostile not removed from display.");
+            //    this.Write.Output.WriteLine("bug. hostile not removed from display.");
             //}
 
             if (totalHostiles < 1)
             {
-                this.Write.Console.WriteLine("bug. hostile not removed from display.");
+                this.Write.Output.WriteLine("bug. hostile not removed from display.");
             }
 
             //todo: hostile feds look like: ++-

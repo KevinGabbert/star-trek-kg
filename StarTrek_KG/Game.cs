@@ -15,13 +15,15 @@ using StarTrek_KG.Subsystem;
 
 namespace StarTrek_KG
 {
+    /// <summary>
+    /// This class consists of methods that have yet to be refactored.
+    /// </summary>
     public class Game : IDisposable, IWrite, IConfig
     {
         #region Properties
 
             public IStarTrekKGSettings Config { get; set; }
             public IOutputWrite Write { get; set; }
-            public List<string> OutputQueue { get; set; }
 
             public Write Output { get; set; }
             public Render PrintSector { get; set; }
@@ -71,8 +73,7 @@ namespace StarTrek_KG
                 //These constants need to be localized to Game:
                 this.GetConstants();
 
-                this.PrintSector =
-                    (new Render(this.Write, this.Config));
+                this.PrintSector = (new Render(this.Write, this.Config));
 
                 var startConfig = (new SetupOptions
                                        {
@@ -96,6 +97,47 @@ namespace StarTrek_KG
                 this.Output = new Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
                 this.PrintSector = new Render(this.Write, this.Config);
             }
+        }
+
+        /// <summary>
+        /// Starts the game in Console or Telnet Mode. Repeats indefinitely (as the original did) if App.config is set to do so.
+        /// </summary>
+        public void RunConsoleOrTelnet()
+        {
+            bool keepPlaying = true;
+
+            while (keepPlaying)
+            {
+                keepPlaying = this.Config.GetSetting<bool>("KeepPlaying");
+
+                this.PlayOnce();
+                this.GameOver = false;
+            }
+        }
+
+        /// <summary>
+        /// Starts the game in Web mode
+        /// </summary>
+        public void RunWeb()
+        {
+            this.Initialize();
+
+            this.PrintOpeningScreen();
+        }
+
+        /// <summary>
+        /// This method reads the passed command and executes the appropriate  game resources
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public List<string> WebSendAndGetResponse(string command)
+        {
+            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            this.ReportGameStatus();
+
+            //Write.OutputQueue should be filled with everything that just happened.
+
+            return this.Write.Output.OutputQueue.ToList();
         }
 
         private void GetConstants()
@@ -207,32 +249,6 @@ namespace StarTrek_KG
         }
 
         /// <summary>
-        /// Starts the game in Console or Telnet Mode. Repeats indefinitely (as the original did) if App.config is set to do so.
-        /// </summary>
-        public void RunConsoleOrTelnet()
-        {
-            bool keepPlaying = true;
-
-            while (keepPlaying)
-            {
-                keepPlaying = this.Config.GetSetting<bool>("KeepPlaying");
-
-                this.PlayOnce();
-                this.GameOver = false;
-            }
-        }
-
-        /// <summary>
-        /// Starts the game in Web mode
-        /// </summary>
-        public void RunWeb()
-        {
-            this.Initialize();
-
-            this.PrintOpeningScreen();
-        }
-
-        /// <summary>
         /// Prints title and sets up the playfield.
         /// This is where the Map is created, and references to it are passed around from here on.
         /// </summary>
@@ -274,79 +290,79 @@ namespace StarTrek_KG
         private void RandomPicture()
         {
             Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
-            int randomVal = Utility.Utility.Random.Next(150);
+            int randomVal = Utility.Utility.Random.Next(100);
             switch (randomVal)
             {
                 case 1:
-                    AppTitleItem("ExcelsiorMedium", 8);
+                    this.AppTitleItem("ExcelsiorMedium", 8);
                     break;
 
                 case 2:
-                    AppTitleItem("DaedalusSmall", 8);
+                    this.AppTitleItem("DaedalusSmall", 8);
                     break;
 
                 case 3:
-                    AppTitleItem("Reliant", 8);
+                    this.AppTitleItem("Reliant", 8);
                     break;
 
                 case 4:
-                    AppTitleItem("D7Front", 6);
+                    this.AppTitleItem("D7Front", 6);
                     break;
 
                 case 5:
-                    AppTitleItem("D-10-", 6);
+                    this.AppTitleItem("D-10-", 6);
                     break;
 
                 case 6:
-                    AppTitleItem("D-4-", 7);
+                    this.AppTitleItem("D-4-", 7);
                     break;
 
                 case 7:
-                    AppTitleItem("D-11-", 6);
+                    this.AppTitleItem("D-11-", 6);
                     break;
 
                 case 8:
-                    AppTitleItem("D-18-", 6);
+                    this.AppTitleItem("D-18-", 6);
                     break;
 
                 case 9:
-                    AppTitleItem("D-27-", 7);
+                    this.AppTitleItem("D-27-", 7);
                     break;
 
                 case 10:
-                    AppTitleItem("AkulaSmall", 7);
+                    this.AppTitleItem("AkulaSmall", 7);
                     break;
 
                 case 11:
-                    AppTitleItem("BattlecruiserSmall", 6);
+                    this.AppTitleItem("BattlecruiserSmall", 6);
                     break;
 
                 case 12:
-                    AppTitleItem("SaladinSmall", 6);
+                    this.AppTitleItem("SaladinSmall", 6);
                     break;
 
                 case 13:
-                    AppTitleItem("EagleSmall", 6);
+                    this.AppTitleItem("EagleSmall", 6);
                     break;
 
                 case 14:
-                    AppTitleItem("DreadnaughtSide", 9);
+                    this.AppTitleItem("DreadnaughtSide", 9);
                     break;
 
                 case 15:
-                    AppTitleItem("Enterprise-BSmall", 6);
+                    this.AppTitleItem("Enterprise-BSmall", 6);
                     break;
 
                 case 16:
-                    AppTitleItem("ExcelsiorSmall", 6);
+                    this.AppTitleItem("ExcelsiorSmall", 6);
                     break;
 
                 case 17:
-                    AppTitleItem("RomulanBOP", 8);
+                    this.AppTitleItem("RomulanBOP", 8);
                     break;
 
                 default:
-                    AppTitleItem("2ShipsSmall", 7);
+                    this.AppTitleItem("2ShipsSmall", 7);
                     break;
             }
         }
@@ -429,17 +445,6 @@ namespace StarTrek_KG
             }
 
             this.Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
-        }
-
-        public List<string> SendAndGetResponse(string command)
-        {
-            //todo: output needs to raise an event so we can subscribe to it here and let the event handler return it
-            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
-            this.ReportGameStatus();
-
-            //Write.OutputQueue should be filled with everything that just happened.
-
-            return this.Write.Output.OutputQueue.ToList();
         }
 
         public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)

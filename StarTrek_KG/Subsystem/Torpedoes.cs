@@ -343,8 +343,6 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.Write.Line("");
             this.Game.Write.Line("Target Object is not yet supported.");
-
-
         }
     }
 }

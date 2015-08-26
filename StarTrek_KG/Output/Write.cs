@@ -330,7 +330,6 @@ namespace StarTrek_KG.Output
                 "dmg = Damage Control"
             };
 
-
             if(Constants.DEBUG_MODE)
             {
                 ACTIVITY_PANEL.Add("");
@@ -351,7 +350,10 @@ namespace StarTrek_KG.Output
         /// <param name="command"></param>
         public void ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null)
         {
-            this.Output.Write(mapText);
+            if (!this.IsSubscriberApp)
+            {
+                this.Output.Write(mapText);
+            }
 
             string readCommand;
 
