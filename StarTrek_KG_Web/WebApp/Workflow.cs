@@ -133,20 +133,17 @@ namespace StarTrek_KG_Web.WebApp
                 //pass command and session ID to application
                 if (!myGame.GameOver)
                 {
-                    //todo: Make sure that game.IsSubscriberApp is set by this point.
                     responseLines = this.Response(myGame.WebSendAndGetResponse(command));
                 }
                 else
                 {
                     responseLines = this.Response("G A M E  O V E R");
                     HttpContext.Current.Session.Clear();
-
-                    //todo: now what?  auto start over? or just do it anyway?
                 }
             }
             else
             {
-                this.Response("No game running.  Type 'start' to start game");
+                responseLines = this.Response("Unrecognized Command. Game is not running.  Type 'start' to start game");
             }
 
             return responseLines;
