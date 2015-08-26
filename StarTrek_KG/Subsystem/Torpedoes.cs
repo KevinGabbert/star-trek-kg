@@ -22,16 +22,18 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.Torpedoes; //for lookup
         }
 
-        public override void Controls(string command)
+        public override List<string> Controls(string command)
         {
-            this.Controls();
+            return this.Controls();
         }
 
-        public void Controls()
+        public List<string> Controls()
         {
+            this.Game.Write.Output.OutputQueue.Clear();
+
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles())) return;
+                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles())) return this.Game.Write.Output.OutputQueue.ToList();
 
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
@@ -48,10 +50,12 @@ namespace StarTrek_KG.Subsystem
                 || direction > 9.0)
             {
                 this.Game.Write.Line("Invalid direction.");
-                return;
+                return this.Game.Write.Output.OutputQueue.ToList();
             }
 
             this.Shoot(direction);
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         public void Shoot(double direction)
