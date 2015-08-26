@@ -348,8 +348,10 @@ namespace StarTrek_KG.Output
         /// <param name="mapText"></param>
         /// <param name="game"></param>
         /// <param name="command"></param>
-        public void ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null)
+        public List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null)
         {
+            List<string> retVal = null;
+
             if (!this.IsSubscriberApp)
             {
                 this.Output.Write(mapText);
@@ -364,7 +366,7 @@ namespace StarTrek_KG.Output
             else
             {
                 string readLine = this.Output.ReadLine();
-                if (readLine == null) return;
+                if (readLine == null) return null;
 
                 readCommand = readLine.Trim().ToLower();
             }
@@ -379,7 +381,7 @@ namespace StarTrek_KG.Output
             }
             else if (readCommand == Menu.srs.ToString())
             {
-                ShortRangeScan.For(playerShip).Controls();
+                retVal = ShortRangeScan.For(playerShip).Controls();
             }
             else if (readCommand == Menu.lrs.ToString())
             {
@@ -430,6 +432,8 @@ namespace StarTrek_KG.Output
                 this.CreateCommandPanel();
                 this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
             }
+
+            return retVal;
         }
 
         public void Panel(string panelHead, IEnumerable<string> strings)

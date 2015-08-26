@@ -56,7 +56,7 @@ namespace StarTrek_KG.Interfaces
         IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> list, Game game);
 
         void CreateCommandPanel();
-        void ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
+        List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
         void Panel(string panelHead, IEnumerable<string> strings);
         string GetPanelHead(string shipName);
 

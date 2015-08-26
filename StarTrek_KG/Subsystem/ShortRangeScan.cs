@@ -15,11 +15,13 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.ShortRangeScan;
         }
 
-        public void Controls()
+        public List<string> Controls()
         {
-            if (this.Damaged()) return;
+            if (this.Damaged()) return null;
 
             this.Game.Write.RenderSectors(SectorScanType.ShortRange, this);
+
+            return this.Game.Write.Output.OutputQueue.ToList();
         }
 
         public static ShortRangeScan For(IShip ship)

@@ -16,7 +16,7 @@ using StarTrek_KG.Subsystem;
 namespace StarTrek_KG
 {
     /// <summary>
-    /// This class consists of methods that have yet to be refactored.
+    /// This class consists of methods that have yet to be refactored into separate objects
     /// </summary>
     public class Game : IDisposable, IWrite, IConfig
     {
@@ -99,6 +99,54 @@ namespace StarTrek_KG
             }
         }
 
+        #region Turn System
+
+        #region Console/Telnet
+
+        /// <summary>
+        /// Game ends when user runs out of power, wins, or is destroyed
+        /// </summary>
+        private void PlayOnce()
+        {
+            if (this.GameOver)
+            {
+                this.Write.DebugLine("Game Over.");
+                return;
+            }
+
+            this.PrintOpeningScreen();
+
+            while (!this.GameOver)
+            {
+                this.GameOver = this.NewConsoleTurn(); //Shows Command Prompt
+
+                if (this.GameOver)
+                {
+                    this.Write.DebugLine("Game Over.. Restarting.");
+
+                    this.Initialize();
+
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// A turn is represented as each time the Console requires a new command from the user
+        /// This does not include sub-commands, such as adding power to the shields, etc.
+        /// </summary>
+        /// <returns></returns>
+        private bool NewConsoleTurn()
+        {
+            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
+
+            //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
+
+            this.ReportGameStatus();
+
+            return this.GameOver;
+        }
+
         /// <summary>
         /// Starts the game in Console or Telnet Mode. Repeats indefinitely (as the original did) if App.config is set to do so.
         /// </summary>
@@ -115,13 +163,16 @@ namespace StarTrek_KG
             }
         }
 
+        #endregion
+
+        #region Web
+
         /// <summary>
-        /// Starts the game in Web mode
+        /// Starts the game in Web mode.  Shows start screen
         /// </summary>
         public void RunWeb()
         {
             this.Initialize();
-
             this.PrintOpeningScreen();
         }
 
@@ -132,12 +183,32 @@ namespace StarTrek_KG
         /// <returns></returns>
         public List<string> WebSendAndGetResponse(string command)
         {
-            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            List<string> retVal = null;
+
+            this.Write.Output.Clear();
+
+            //need to get info from render.Write
+
+            //this.Write.Output.OutputQueue = this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            retVal = this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+
+            //todo: this may need to be added to Queue;
             this.ReportGameStatus();
 
             //Write.OutputQueue should be filled with everything that just happened.
+            return retVal; //this.Write.Output.OutputQueue.ToList()
+        }
 
-            return this.Write.Output.OutputQueue.ToList();
+        #endregion  
+
+        #endregion
+
+        #region Setup
+
+        public void Initialize()
+        {
+            //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
+            this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
         }
 
         private void GetConstants()
@@ -156,7 +227,7 @@ namespace StarTrek_KG
             Constants.Region_MAX = this.Config.GetSetting<int>("RegionMax");
 
             Constants.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
-            Constants.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");  
+            Constants.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");
         }
 
         private SectorDefs SectorSetup()
@@ -218,35 +289,9 @@ namespace StarTrek_KG
                        };
         }
 
-        //private bool HostileCheck(GameConfig startConfig)
-        //{
-        //    if (startConfig.SectorDefs.GetHostiles().Count() < 1)
-        //    {
-        //        Output.WriteLine("ERROR: --- No Hostiles have been set up.");
-                
-        //        //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
-        //        //todo: in that case, this function would not be called
+        #endregion
 
-        //        this.gameOver = true;
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        private bool HostileCheck(IMap map)
-        {
-            if (!map.Regions.GetHostiles().Any())
-            {
-                this.Write.Line("ERROR: --- No Hostiles have been set up.");
-
-                //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
-                //todo: in that case, this function would not be called
-
-                this.GameOver = true;
-                return true;
-            }
-            return false;
-        }
+        #region Title
 
         /// <summary>
         /// Prints title and sets up the playfield.
@@ -375,95 +420,9 @@ namespace StarTrek_KG
             }
         }
 
-        /// <summary>
-        /// Game ends when user runs out of power, wins, or is destroyed
-        /// </summary>
-        private void PlayOnce()
-        {
-            if(this.GameOver)
-            {
-                this.Write.DebugLine("Game Over.");
-                return;
-            }
+        #endregion
 
-            this.PrintOpeningScreen();
-
-            while (!this.GameOver)
-            {
-                this.GameOver = this.NewTurn(); //Shows Command Prompt
-
-                if (this.GameOver)
-                {
-                    this.Write.DebugLine("Game Over.. Restarting.");
-
-                    this.Initialize();
-
-                    break;
-                }
-            }
-        }
-
-        public void Initialize()
-        {
-            //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
-            this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
-        }
-
-        /// <summary>
-        /// A turn is represented as each time the Console requires a new command from the user
-        /// This does not include sub-commands, such as adding power to the shields, etc.
-        /// </summary>
-        /// <returns></returns>
-        private bool NewTurn()
-        {
-            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
-
-            //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
-
-            this.ReportGameStatus();
-
-            return this.GameOver;
-        }
-
-        private void ReportGameStatus()
-        {
-            int starbasesLeft = this.Map.Regions.GetStarbaseCount();
-
-            if (this.PlayerNowEnemyToFederation)
-            {
-                this.GameOver = (this.Map.timeRemaining < 1 ||
-                                 starbasesLeft < 1 ||
-                                 this.Map.Playership.Destroyed ||
-                                 this.Map.Playership.Energy < 1);
-            }
-            else
-            {
-                this.GameOver = !(this.Map.Playership.Energy > 0 &&
-                                  !this.Map.Playership.Destroyed &&
-                                  (this.Map.Regions.GetHostileCount() > 0) &&
-                                  this.Map.timeRemaining > 0);
-            }
-
-            this.Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
-        }
-
-        public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
-        {
-            if (lastRegion.X != Region.X || lastRegion.Y != Region.Y)
-            {
-                map.timeRemaining--;
-                map.Stardate++;
-            }
-        }
-
-        public void Dispose()
-        {
-            Constants.SECTOR_MIN = 0;
-            Constants.SECTOR_MAX = 0;
-
-            Constants.Region_MIN = 0;
-            Constants.Region_MAX = 0;
-        }
+        #region Attacks
 
         /// <summary>
         /// At the end of each turn, if a hostile is in the same sector with Playership, it will attack.  If there are 37, then all 37 will..
@@ -580,23 +539,9 @@ namespace StarTrek_KG
             this.Write.Line(hitMessage + " No damage due to starbase shields.");
         }
 
-        //todo: move this to a report object?
-        public void ReportShieldsStatus(IMap map, int shieldsValueBeforeHit)
-        {
-            var shieldsValueAfterHit = Shields.For(map.Playership).Energy;
+        #endregion
 
-            if (shieldsValueAfterHit <= shieldsValueBeforeHit)
-            {
-                if (shieldsValueAfterHit == 0)
-                {
-                    this.Write.SingleLine("** Shields are Down **");
-                }
-                else
-                {
-                    this.Write.SingleLine($"Shields dropped to {Shields.For(map.Playership).Energy}.");
-                }
-            }
-        }
+        #region Taunts
 
         /// <summary>
         /// All enemies in PlayerShip's Region shall now commence to unclog their noses in the general direction of the player.
@@ -669,6 +614,123 @@ namespace StarTrek_KG
             return currentThreat;
         }
 
+        #endregion
+
+        #region Shields
+
+        public static bool Auto_Raise_Shields(IMap map, IRegion Region)
+        {
+            bool shieldsRaised = false;
+
+            if (Region.Type != RegionType.Nebulae)
+            {
+                var thisShip = map.Playership;
+                var thisShipEnergy = thisShip.Energy;
+                var thisShipShields = Shields.For(thisShip);
+
+                if (thisShipShields.Energy == 0) //todo: resource this out
+                {
+                    if (thisShipEnergy > 500) //todo: resource this out
+                    {
+                        thisShipShields.Energy = 500; //todo: resource this out
+                        thisShip.Energy -= 500;
+
+                        shieldsRaised = true;
+                    }
+                    else if (thisShipEnergy > 1)
+                    {
+                        var energyLeft = thisShipEnergy/2; //todo: resource this out
+
+                        thisShipShields.Energy = Convert.ToInt32(energyLeft);
+                        thisShip.Energy = energyLeft;
+                        shieldsRaised = true;
+                    }
+                }
+            }
+
+            return shieldsRaised;
+        }
+
+        //todo: move this to a report object?
+        public void ReportShieldsStatus(IMap map, int shieldsValueBeforeHit)
+        {
+            var shieldsValueAfterHit = Shields.For(map.Playership).Energy;
+
+            if (shieldsValueAfterHit <= shieldsValueBeforeHit)
+            {
+                if (shieldsValueAfterHit == 0)
+                {
+                    this.Write.SingleLine("** Shields are Down **");
+                }
+                else
+                {
+                    this.Write.SingleLine($"Shields dropped to {Shields.For(map.Playership).Energy}.");
+                }
+            }
+        }
+
+        #endregion
+
+        #region Starbase
+
+        public void DestroyStarbase(IMap map, int newY, int newX, Sector qLocation)
+        {
+            //todo: technically, the script below should leave the Torpedoes class and move to a script class..
+            //todo: raise an event that a script can use.
+
+            //At present, a starbase can be destroyed by a single hit
+            bool emergencyMessageSuccess = this.StarbaseEmergencyMessageAttempt();
+
+            this.DestroyStarbase(map, newY, newX, (ISector)qLocation);
+
+            if (emergencyMessageSuccess)
+            {
+                this.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
+                this.Write.Line("Federation Ships and starbases will now shoot you on sight!");
+
+                this.PlayerNowEnemyToFederation = true;
+
+                //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
+                map.AddHostileFederationShipsToExistingMap();
+            }
+            else
+            {
+                this.Write.Line("Starbase was destroyed before getting out a distress call.");
+
+                if (!this.PlayerNowEnemyToFederation)
+                {
+                    this.Write.Line("For now, no one will know of this..");
+                }
+            }
+        }
+
+        private void DestroyStarbase(IMap map, int newY, int newX, ISector qLocation)
+        {
+            Navigation.For(map.Playership).Docked = false;  //in case you shot it point-blank range..
+
+            map.starbases--;
+
+            qLocation.Object = null;
+            qLocation.Item = SectorItem.Empty;
+
+            //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
+            this.Write.Line($"You have destroyed A Federation starbase! (at sector [{newX},{newY}])");
+
+            this.Map.Playership.Scavenge(ScavengeType.Starbase);
+
+            //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
+            //todo: a concerted effort of 4? torpedoes will destroy an unshielded starbase.
+            //todo: however, you'd better hit the comms subsystem to prevent an emergency message, then shoot the log bouy
+            //todo: it sends out or other starbases will know of your crime.
+        }
+
+        private bool StarbaseEmergencyMessageAttempt()
+        {
+            return (Utility.Utility.Random.Next(2) == 1);
+        }
+
+        #endregion
+
         //public static string GetFederationShipName(IShip ship)
         //{
         //    string currentShipName = ship.Name;
@@ -729,93 +791,74 @@ namespace StarTrek_KG
             return currentShipName;
         }
 
-        public static bool Auto_Raise_Shields(IMap map, IRegion Region)
+        //private bool HostileCheck(GameConfig startConfig)
+        //{
+        //    if (startConfig.SectorDefs.GetHostiles().Count() < 1)
+        //    {
+        //        Output.WriteLine("ERROR: --- No Hostiles have been set up.");
+
+        //        //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
+        //        //todo: in that case, this function would not be called
+
+        //        this.gameOver = true;
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+        private bool HostileCheck(IMap map)
         {
-            bool shieldsRaised = false;
-
-            if (Region.Type != RegionType.Nebulae)
+            if (!map.Regions.GetHostiles().Any())
             {
-                var thisShip = map.Playership;
-                var thisShipEnergy = thisShip.Energy;
-                var thisShipShields = Shields.For(thisShip);
+                this.Write.Line("ERROR: --- No Hostiles have been set up.");
 
-                if (thisShipShields.Energy == 0) //todo: resource this out
-                {
-                    if (thisShipEnergy > 500) //todo: resource this out
-                    {
-                        thisShipShields.Energy = 500; //todo: resource this out
-                        thisShip.Energy -= 500;
+                //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
+                //todo: in that case, this function would not be called
 
-                        shieldsRaised = true;
-                    }
-                    else if (thisShipEnergy > 1)
-                    {
-                        var energyLeft = thisShipEnergy/2; //todo: resource this out
-
-                        thisShipShields.Energy = Convert.ToInt32(energyLeft);
-                        thisShip.Energy = energyLeft;
-                        shieldsRaised = true;
-                    }
-                }
+                this.GameOver = true;
+                return true;
             }
-
-            return shieldsRaised;
+            return false;
         }
 
-        public void DestroyStarbase(IMap map, int newY, int newX, Sector qLocation)
+        private void ReportGameStatus()
         {
-            //todo: technically, the script below should leave the Torpedoes class and move to a script class..
-            //todo: raise an event that a script can use.
+            int starbasesLeft = this.Map.Regions.GetStarbaseCount();
 
-            //At present, a starbase can be destroyed by a single hit
-            bool emergencyMessageSuccess = this.StarbaseEmergencyMessageAttempt();
-
-            this.DestroyStarbase(map, newY, newX, (ISector)qLocation);
-
-            if (emergencyMessageSuccess)
+            if (this.PlayerNowEnemyToFederation)
             {
-                this.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
-                this.Write.Line("Federation Ships and starbases will now shoot you on sight!");
-
-                this.PlayerNowEnemyToFederation = true;
-
-                //todo: later, the map will be populated with fed ships at startup.. but this should be applicable in both situations :)
-                map.AddHostileFederationShipsToExistingMap();
+                this.GameOver = (this.Map.timeRemaining < 1 ||
+                                 starbasesLeft < 1 ||
+                                 this.Map.Playership.Destroyed ||
+                                 this.Map.Playership.Energy < 1);
             }
             else
             {
-                this.Write.Line("Starbase was destroyed before getting out a distress call.");
+                this.GameOver = !(this.Map.Playership.Energy > 0 &&
+                                  !this.Map.Playership.Destroyed &&
+                                  (this.Map.Regions.GetHostileCount() > 0) &&
+                                  this.Map.timeRemaining > 0);
+            }
 
-                if (!this.PlayerNowEnemyToFederation)
-                {
-                    this.Write.Line("For now, no one will know of this..");
-                }
+            this.Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
+        }
+
+        public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
+        {
+            if (lastRegion.X != Region.X || lastRegion.Y != Region.Y)
+            {
+                map.timeRemaining--;
+                map.Stardate++;
             }
         }
 
-        private void DestroyStarbase(IMap map, int newY, int newX, ISector qLocation)
+        public void Dispose()
         {
-            Navigation.For(map.Playership).Docked = false;  //in case you shot it point-blank range..
+            Constants.SECTOR_MIN = 0;
+            Constants.SECTOR_MAX = 0;
 
-            map.starbases--;
-
-            qLocation.Object = null;
-            qLocation.Item = SectorItem.Empty;
-
-            //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
-            this.Write.Line($"You have destroyed A Federation starbase! (at sector [{newX},{newY}])");
-
-            this.Map.Playership.Scavenge(ScavengeType.Starbase);
-
-            //todo: When the Starbase is a full object, then allow the torpedoes to either lower its shields, or take out subsystems.
-            //todo: a concerted effort of 4? torpedoes will destroy an unshielded starbase.
-            //todo: however, you'd better hit the comms subsystem to prevent an emergency message, then shoot the log bouy
-            //todo: it sends out or other starbases will know of your crime.
-        }
-
-        private bool StarbaseEmergencyMessageAttempt()
-        {
-            return (Utility.Utility.Random.Next(2) == 1);
+            Constants.Region_MIN = 0;
+            Constants.Region_MAX = 0;
         }
     }
 }

@@ -13,12 +13,12 @@ namespace StarTrek_KG.Output
         public SubscriberWrite(IStarTrekKGSettings config)
         {
             this.Config = config;
-            this.OutputQueue = new Queue<string>();
+            this.Clear();
         }
 
         public void Clear()
         {
-           
+            this.OutputQueue = new Queue<string>();
         }
 
         public void Enqueue(string text)
