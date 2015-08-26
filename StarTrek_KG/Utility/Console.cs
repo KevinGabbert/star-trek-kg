@@ -20,14 +20,23 @@ namespace StarTrek_KG.Utility
             System.Console.Write(text);
         }
 
-        public void WriteLine()
+        public List<string> Write(List<string> textLines)
         {
-            System.Console.WriteLine("");
+            throw new NotImplementedException();
         }
 
-        public void WriteLine(string text)
+        public string WriteLine()
+        {
+            System.Console.WriteLine("");
+
+            return null;
+        }
+
+        public List<string> WriteLine(string text)
         {
             System.Console.WriteLine(text);
+
+            return null;
         }
 
         public void WriteLine(string text, object text2)

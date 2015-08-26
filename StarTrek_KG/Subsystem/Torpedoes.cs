@@ -31,9 +31,13 @@ namespace StarTrek_KG.Subsystem
         {
             this.Game.Write.Output.OutputQueue.Clear();
 
+            List<string> hostileCheckOutput;
+
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles())) return this.Game.Write.Output.OutputQueue.ToList();
+                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return this.Game.Write.Output.OutputQueue.ToList();
+
+            this.Game.Write.Output.Write(hostileCheckOutput);
 
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
@@ -45,7 +49,7 @@ namespace StarTrek_KG.Subsystem
                                   "Enter firing direction (1.0--9.0) ";
 
             int direction;
-            if (!this.Game.Write.PromptUser(firingDirection, out direction)
+            if (!this.Game.Write.PromptUser(SubsystemType.Phasers, firingDirection, out direction)
                 || direction < 1.0 
                 || direction > 9.0)
             {
@@ -343,7 +347,7 @@ namespace StarTrek_KG.Subsystem
 
             string userReply = null;
             this.Game.Write.Line("");
-            this.Game.Write.PromptUser("Enter number to target: ", out userReply);
+            this.Game.Write.PromptUserConsole("Enter number to target: ", out userReply);
 
             this.Game.Write.Line("");
             this.Game.Write.Line("Target Object is not yet supported.");

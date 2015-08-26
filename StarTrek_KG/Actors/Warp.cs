@@ -2,6 +2,7 @@
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Actors
 {
@@ -53,7 +54,7 @@ namespace StarTrek_KG.Actors
         }
         public bool PromptAndCheckForInvalidWarpFactor(int maxWarpFactor, out int distance)
         {
-            if (!this.Write.PromptUser($"Enter warp factor (1-{maxWarpFactor}): ", out distance)
+            if (!this.Write.PromptUser(SubsystemType.None, $"Enter warp factor (1-{maxWarpFactor}): ", out distance)
                 || distance < 0 
                 || distance > maxWarpFactor)
             {

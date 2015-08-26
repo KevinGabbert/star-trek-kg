@@ -112,11 +112,13 @@ namespace StarTrek_KG.Playfield
             return activeRegions.Single();
         }
 
-        public bool NoHostiles(List<IShip> hostiles)
+        public bool NoHostiles(List<IShip> hostiles, out List<string> outputLines)
         {
+            outputLines = new List<string>();
+
             if (hostiles.Count == 0)
             {
-                (new Write(this.Map.Config)).Line("There are no Hostile ships in this Region.");
+                outputLines = (new Write(this.Map.Config)).Line("There are no Hostile ships in this Region.");
                 return true;
             }
             return false;

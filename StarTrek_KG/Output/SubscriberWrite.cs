@@ -31,14 +31,36 @@ namespace StarTrek_KG.Output
             this.Enqueue(text);
         }
 
-        public void WriteLine()
+        public List<string> Write(List<string> textLines)
         {
-            this.Enqueue("");
+            List<string> linesToEnqueue = new List<string> { textLines + Environment.NewLine };
+
+            foreach (var line in linesToEnqueue)
+            {
+                this.Enqueue(line);
+            }
+
+            return linesToEnqueue;
         }
 
-        public void WriteLine(string text)
+        public string WriteLine()
         {
-            this.Enqueue(text + Environment.NewLine);
+            string emptyLine = "";
+            this.Enqueue(emptyLine);
+
+            return emptyLine;
+        }
+
+        public List<string> WriteLine(string text)
+        {
+            List<string> lineToEnqueue = new List<string> {text + Environment.NewLine};
+
+            foreach (var line in lineToEnqueue)
+            {
+                this.Enqueue(line);
+            }
+
+            return lineToEnqueue;
         }
 
         public void WriteLine(string text, object text2)

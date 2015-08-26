@@ -19,7 +19,7 @@
             enabled: true,
             greetings: 'Star Trek KG ~ v8.26.15 \n' +
                        'A modern, C# Code rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :) \n\n' +
-                       'Type "start" to start game.\n'
+                       'Type "start" to begin, or "term menu" for terminal commands\n'
         };
 
         $.extend(settings, options);

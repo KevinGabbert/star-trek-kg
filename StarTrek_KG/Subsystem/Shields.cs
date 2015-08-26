@@ -108,7 +108,7 @@ namespace StarTrek_KG.Subsystem
         public new int TransferredFromUser()
         {
             int transfer;
-            bool readSuccess = this.Game.Write.PromptUser($"Enter amount of energy (1--{this.MaxTransfer}): ",
+            bool readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields, $"Enter amount of energy (1--{this.MaxTransfer}): ",
                                                  out transfer);
 
             return EnergyValidation(transfer, readSuccess);

@@ -98,7 +98,7 @@ namespace StarTrek_KG.Subsystem
         {
             string replyFromUser;
 
-            this.Game.Write.PromptUser("Target with (T)orpedoes or (P)hasers? ", out replyFromUser);
+            this.Game.Write.PromptUserConsole("Target with (T)orpedoes or (P)hasers? ", out replyFromUser);
 
             switch (replyFromUser.ToUpper())
             {

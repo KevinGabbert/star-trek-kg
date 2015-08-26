@@ -11,8 +11,18 @@ namespace StarTrek_KG_Web.WebApp
     {
         public List<string> ExecuteCommand(string command, string sessionID, List<string> responseLines, Game game)
         {
-            switch (command)
+            switch (command.ToLower())
             {
+                case "term menu":
+                    responseLines = this.Response(new List<string>()
+                    {
+                        " --- Terminal Menu ---",
+                        "start - starts a game",
+                        "end game - ends the currently running game",
+                        "release notes - see the latest release notes"
+                    });
+                    break;
+
                 case "test":
                     responseLines = this.SendTestResponse(responseLines);
                     break;
@@ -22,14 +32,24 @@ namespace StarTrek_KG_Web.WebApp
 
                 case "end game":
                     //todo: gives final stats and stops game
+                    responseLines = this.Response(new List<string>()
+                    {
+                        "G A M E  O V E R",
+                    });
                     break;
 
-                case "stop":
-                    responseLines = this.StopGame(responseLines);
+                case "clear session":
+                    responseLines = this.ClearSession(responseLines);
                     break;
 
                 case "start":
                     responseLines = this.StartGame(game, responseLines);
+                    break;
+
+
+                case "release notes":
+                    //todo: pull release notes from a file
+                    responseLines = this.Response("Under Construction");
                     break;
 
                 default:
@@ -91,7 +111,7 @@ namespace StarTrek_KG_Web.WebApp
             return (Game)HttpContext.Current.Session["game"]; //todo:  make this "game" + sessionID
         }
 
-        internal List<string> StopGame(List<string> responseLines)
+        internal List<string> ClearSession(List<string> responseLines)
         {
             HttpContext.Current.Session.Clear(); 
             return this.Response("Session Cleared.."); //todo: resource this out

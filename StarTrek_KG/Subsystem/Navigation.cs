@@ -83,7 +83,7 @@ namespace StarTrek_KG.Subsystem
             Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
-            this.Game.Write.PromptUser("Enter number of Object to travel to: ", out userReply);
+            this.Game.Write.PromptUserConsole("Enter number of Object to travel to: ", out userReply);
 
             this.Game.Write.Line("");
             this.Game.Write.Line("Navigate to Object is not yet supported.");
@@ -252,7 +252,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInRegion"),
                 (thisShip.Region.X), (thisShip.Region.Y)));
 
-            if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX)
+            if (!this.Game.Write.PromptUser(SubsystemType.Navigation, this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX, 1)
                 || RegionX < (Constants.Region_MIN + 1)
                 || RegionX > Constants.Region_MAX)
             {
@@ -260,7 +260,7 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            if (!this.Game.Write.PromptUser(this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY)
+            if (!this.Game.Write.PromptUser(SubsystemType.Navigation, this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY, 2)
                 || RegionY < (Constants.Region_MIN + 1)
                 || RegionY > Constants.Region_MAX)
             {

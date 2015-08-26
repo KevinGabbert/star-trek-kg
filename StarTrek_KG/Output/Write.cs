@@ -28,7 +28,10 @@ namespace StarTrek_KG.Output
         public int TimeRemaining { get; set; }
         public int Starbases { get; set; }
         public int Stardate { get; set; }
+
         public List<string> OutputQueue { get; set; }
+
+        public SubsystemType SubscriberPrompt { get; set; }
 
         public bool IsSubscriberApp { get; set; }
         public bool IsTelnetApp { get; set; }
@@ -140,10 +143,14 @@ namespace StarTrek_KG.Output
             this.Output.HighlightTextBW(on);
         }
 
-        public void Line(string stringToOutput)
+        public List<string> Line(string stringToOutput)
         {
-            this.Output.WriteLine(stringToOutput);
-            this.Output.WriteLine();
+            var linesToOutput = new List<string>();
+
+            linesToOutput.AddRange(this.Output.WriteLine(stringToOutput));
+            linesToOutput.Add(this.Output.WriteLine());
+
+            return linesToOutput;
         }
 
         public string GetFormattedConfigText(string configTextToWrite, object param1)
@@ -534,13 +541,28 @@ namespace StarTrek_KG.Output
             return "─── " + shipName + " ───";
         }
 
-        public bool PromptUser(string promptMessage, out int value)
+        public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0)
         {
             try
             {
                 this.WithNoEndCR(promptMessage);
 
-                value = int.Parse(this.Output.ReadLine());
+                if (this.IsSubscriberApp)
+                {
+                    //todo: this appears to want to suspend everything until it gets its value from the user
+                    this.SubscriberPrompt = promptSubsystem;
+
+                    //todo: this means that we new must 
+
+                    //ttodo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. 
+                    //they need to be broken out to a separate class.
+
+                    value = -1;
+                }
+                else
+                {
+                     value = int.Parse(this.Output.ReadLine());
+                }
 
                 return true;
             }
@@ -552,7 +574,7 @@ namespace StarTrek_KG.Output
             return false;
         }
 
-        public bool PromptUser(string promptMessage, out string value)
+        public bool PromptUserConsole(string promptMessage, out string value)
         {
             value = null;
 
@@ -569,6 +591,22 @@ namespace StarTrek_KG.Output
             {
                 value = "";
             }
+
+            return false;
+        }
+
+        public bool PromptUserWeb(string promptMessage, out string value)
+        {
+            value = null;
+
+            this.Output.Write(promptMessage);
+
+            //todo: change Write, or Game.Mode to submenu?
+            //that mode will persist across ajax calls, so user will have to either type in a submenu entry, or 
+            //exit it.
+
+            //var readLine = this.Output.ReadLine();
+            //if (readLine != null) value = readLine.ToLower();
 
             return false;
         }

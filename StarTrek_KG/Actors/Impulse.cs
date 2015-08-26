@@ -2,6 +2,7 @@
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Actors
 {
@@ -47,7 +48,7 @@ namespace StarTrek_KG.Actors
         }
         public bool InvalidSublightFactorCheck(int maxSublightDistance, out int distance)
         {
-            if (!this.Write.PromptUser($"Enter Sublight distance (1-{maxSublightDistance}): ", out distance)
+            if (!this.Write.PromptUser(SubsystemType.None, $"Enter Sublight distance (1-{maxSublightDistance}): ", out distance)
                 || distance < 0
                 || distance > maxSublightDistance)
             {

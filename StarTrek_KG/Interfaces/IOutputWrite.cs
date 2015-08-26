@@ -9,6 +9,8 @@ namespace StarTrek_KG.Interfaces
 {
     public interface IOutputWrite
     {
+        bool IsSubscriberApp { get; set; }
+
         List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }
         Console Console { get; set; }
@@ -25,7 +27,7 @@ namespace StarTrek_KG.Interfaces
         void Strings(IEnumerable<string> strings);
         void HighlightTextBW(bool on);
         
-        void Line(string stringToOutput);
+        List<string> Line(string stringToOutput);
 
         string GetFormattedConfigText(string configTextToWrite, object param1);
         string GetFormattedConfigText(string configTextToWrite, object param1, object param2);
@@ -59,8 +61,9 @@ namespace StarTrek_KG.Interfaces
         string GetPanelHead(string shipName);
         List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
 
-        bool PromptUser(string promptMessage, out int value);
-        bool PromptUser(string promptMessage, out string value);
+        bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0);
+        bool PromptUserConsole(string promptMessage, out string value);
+        bool PromptUserWeb(string promptMessage, out string value);
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
         void RenderSectors(SectorScanType scanType, ISubsystem subsystem);

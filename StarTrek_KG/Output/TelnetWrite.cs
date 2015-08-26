@@ -146,10 +146,12 @@ namespace StarTrek_KG.Output
            // this.HighlightTextBW(on);
         }
 
-        public void Line(string stringToOutput)
+        public List<string> Line(string stringToOutput)
         {
             this.WriteLine(stringToOutput);
             this.WriteLine();
+
+            return null;
         }
 
         public void DebugLine(string stringToOutput)
@@ -874,14 +876,23 @@ namespace StarTrek_KG.Output
             this.TWrite(text);
         }
 
-        public void WriteLine()
+        public List<string> Write(List<string> textLines)
         {
-            this.TWriteLine("");
+            throw new NotImplementedException();
         }
 
-        public void WriteLine(string text)
+        public string WriteLine()
+        {
+            this.TWriteLine("");
+
+            return null;
+        }
+
+        public List<string> WriteLine(string text)
         {
             this.TWriteLine(text);
+
+            return null;
         }
 
         public void WriteLine(string text, object text2)

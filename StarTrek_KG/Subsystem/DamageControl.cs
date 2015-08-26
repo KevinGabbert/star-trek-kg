@@ -25,7 +25,7 @@ namespace StarTrek_KG.Subsystem
             if (command == "fix")
             {
                 string subsystemToFix;
-                this.Game.Write.PromptUser(this.ShowSubsystemsToFix(), out subsystemToFix);
+                this.Game.Write.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);
 
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }

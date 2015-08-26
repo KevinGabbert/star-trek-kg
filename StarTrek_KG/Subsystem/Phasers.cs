@@ -46,9 +46,16 @@ namespace StarTrek_KG.Subsystem
             if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList();
 
             //todo:  this doesn't *work* too well as a feature of *Regions*, but rather, of Ship?
-            if ((new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.ShipConnectedTo.Map.Regions.GetActive().GetHostiles()))
+
+            var regions = new Regions(this.Game.Map, this.Game.Write);
+
+            //todo: this may need a different refactor
+            List<string> hostilesOutputLines;
+            bool gotHostiles = regions.NoHostiles(this.ShipConnectedTo.Map.Regions.GetActive().GetHostiles(), out hostilesOutputLines);
+
+            if (gotHostiles)
             {
-                return this.Game.Write.Output.OutputQueue.ToList();
+                return hostilesOutputLines;
             }
 
             int phaserEnergy;
@@ -121,7 +128,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool PromptUserForPhaserEnergy(out int phaserEnergy)
         {
-            return this.Game.Write.PromptUser($"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy);
+            return this.Game.Write.PromptUser(SubsystemType.Phasers, $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy);
         }
 
         //todo: move to Utility() object
@@ -198,7 +205,7 @@ namespace StarTrek_KG.Subsystem
 
             string userReply;
             this.Game.Write.Line("");
-            this.Game.Write.PromptUser("Enter number to lock Phasers: ", out userReply);
+            this.Game.Write.PromptUserConsole("Enter number to lock Phasers: ", out userReply);
 
             int number = Convert.ToInt32(userReply);
             var objectToFireOn = sectorsWithObjects.Single(i => i.Key == number).Value;

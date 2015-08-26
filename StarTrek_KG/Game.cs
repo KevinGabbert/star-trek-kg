@@ -58,7 +58,15 @@ namespace StarTrek_KG
             if(this.Write == null)
             {
                 this.Write = new Write(config);
-                this.Prompt = (string s, out string output) => this.Write.PromptUser(s, out output);
+
+                if (this.Write.IsSubscriberApp)
+                {
+                    this.Prompt = (string s, out string output) => this.Write.PromptUserWeb(s, out output);
+                }
+                else
+                {
+                    this.Prompt = (string s, out string output) => this.Write.PromptUserConsole(s, out output);
+                }
             }
 
             if (startup)
