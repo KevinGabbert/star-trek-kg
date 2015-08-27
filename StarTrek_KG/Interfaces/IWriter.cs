@@ -51,12 +51,12 @@ namespace StarTrek_KG.Interfaces
 
         void CreateCommandPanel();
         List<string> Panel(string panelHead, IEnumerable<string> strings);
-        string GetPanelHead(string shipName);
+        //string GetPanelHead(string shipName);
         List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
 
         bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0);
         bool PromptUserConsole(string promptMessage, out string value);
-        bool PromptUserWeb(string promptMessage, out string value);
+        bool PromptUserSubscriber(string promptMessage, out string value);
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
         void RenderSectors(SectorScanType scanType, ISubsystem subsystem);
@@ -65,11 +65,11 @@ namespace StarTrek_KG.Interfaces
 
         //todo: these don't belong here.  move them
 
-        int TotalHostiles { get; set; }
-        int TimeRemaining { get; set; }
+        //int TotalHostiles { get; set; }
+        //int TimeRemaining { get; set; }
 
-        int Starbases { get; set; }
-        int Stardate { get; set; }
+        //int Starbases { get; set; }
+        //int Stardate { get; set; }
 
         void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
         void PrintMission();

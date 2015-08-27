@@ -25,30 +25,36 @@ namespace StarTrek_KG.Output
         #region Properties and Constants
         public IStarTrekKGSettings Config { get; set; }
         public IOutputMethod Output { get; set; }
-        public SubsystemType SubscriberPrompt { get; set; }
 
-        public int TotalHostiles { get; set; }
-        public int TimeRemaining { get; set; }
-        public int Starbases { get; set; }
-        public int Stardate { get; set; }
+        #region Subscriber
+
+        //todo: this needs to be broken out into a Subscriber object (and make it into a prop)
 
         public bool IsSubscriberApp { get; set; }
-        public bool IsTelnetApp { get; set; }
+        private SubsystemType SubscriberPromptSubSystem { get; set; }
+        private int SubscriberPromptLevel { get; set; }
 
-        //todo: make this non-static so we can test this class..
+        #endregion
 
         private Console _console;
-        public Console Console
+        private Console Console
         {
             get { return _console ?? (_console = new Console()); }
             set { _console = value; }
         }
 
+        private int TotalHostiles { get; set; }
+        private int TimeRemaining { get; set; }
+        private int Starbases { get; set; }
+        private int Stardate { get; set; }
+
+        private bool IsTelnetApp { get; set; }
+
         public List<string> ACTIVITY_PANEL { get; set; }
 
         //todo: resource these out.
-        public readonly string ENTER_DEBUG_COMMAND = "Enter Debug command: ";
-        public readonly string ENTER_COMPUTER_COMMAND = "Enter computer command: ";
+        private readonly string ENTER_DEBUG_COMMAND = "Enter Debug command: ";
+        private readonly string ENTER_COMPUTER_COMMAND = "Enter computer command: ";
 
         #endregion
 
@@ -584,6 +590,30 @@ namespace StarTrek_KG.Output
                 readCommand = readLine.Trim().ToLower();
             }
 
+            if (this.SubscriberPromptLevel > 0)
+            {
+                //todo: we need to ignore this menu and limit evaluate this.SubscriberPromptSubSystem options instead
+                retVal = this.EvalSubLevelMenuCommands(playerShip, command, readCommand, this.SubscriberPromptLevel);
+            }
+            else
+            {
+                retVal = this.EvalTopLevelMenuCommands(playerShip, command, readCommand);
+            }
+
+            return retVal;
+        }
+
+        private List<string> EvalSubLevelMenuCommands(Ship playerShip, string command, string readCommand, int promptLevel)
+        {
+            //todo: look up menu commands from this.SubscriberPromptSubSystem & this.SubscriberPromptLevel
+
+            return new List<string>();
+        }
+
+        private List<string> EvalTopLevelMenuCommands(IShip playerShip, string command, string readCommand)
+        {
+            List<string> retVal = null;
+
             if (readCommand == Menu.wrp.ToString() || readCommand == Menu.imp.ToString() || readCommand == Menu.nto.ToString())
             {
                 retVal = Navigation.For(playerShip).Controls(command);
@@ -736,8 +766,11 @@ namespace StarTrek_KG.Output
 
                 if (this.IsSubscriberApp)
                 {
-                    //todo: this appears to want to suspend everything until it gets its value from the user
-                    this.SubscriberPrompt = promptSubsystem;
+                    //todo: 
+                    this.SubscriberPromptSubSystem = promptSubsystem;
+                    this.SubscriberPromptLevel = subPromptLevel;
+
+                    //todo: if subPromptLevel > 0 then we need to limit to the subPrompt menu (or exit the hierarchy)
 
                     //todo: this means that we new must 
 
@@ -761,6 +794,23 @@ namespace StarTrek_KG.Output
             return false;
         }
 
+        //tod: combine this with PromptUser
+        public bool PromptUserSubscriber(string promptMessage, out string value)
+        {
+            value = null;
+
+            this.Output.Write(promptMessage);
+
+            //todo: Game.Mode to submenu?
+            //that mode will persist across ajax calls, so user will have to either type in a submenu entry, or 
+            //exit it.
+
+            //var readLine = this.Output.ReadLine();
+            //if (readLine != null) value = readLine.ToLower();
+
+            return false;
+        }
+
         public bool PromptUserConsole(string promptMessage, out string value)
         {
             value = null;
@@ -778,22 +828,6 @@ namespace StarTrek_KG.Output
             {
                 value = "";
             }
-
-            return false;
-        }
-
-        public bool PromptUserWeb(string promptMessage, out string value)
-        {
-            value = null;
-
-            this.Output.Write(promptMessage);
-
-            //todo: Game.Mode to submenu?
-            //that mode will persist across ajax calls, so user will have to either type in a submenu entry, or 
-            //exit it.
-
-            //var readLine = this.Output.ReadLine();
-            //if (readLine != null) value = readLine.ToLower();
 
             return false;
         }

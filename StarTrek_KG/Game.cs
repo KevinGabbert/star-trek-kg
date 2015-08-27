@@ -61,7 +61,7 @@ namespace StarTrek_KG
 
                 if (this.Write.IsSubscriberApp)
                 {
-                    this.Prompt = (string s, out string output) => this.Write.PromptUserWeb(s, out output);
+                    this.Prompt = (string s, out string output) => this.Write.PromptUserSubscriber(s, out output);
                 }
                 else
                 {
@@ -197,7 +197,6 @@ namespace StarTrek_KG
 
             //need to get info from render.Write
 
-            //this.Write.Output.OutputQueue = this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
             retVal = this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
 
             //todo: this may need to be added to Queue;

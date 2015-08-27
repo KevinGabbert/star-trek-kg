@@ -17,7 +17,7 @@
             name: 'termWindow',
             height: 600,
             enabled: true,
-            greetings: 'Star Trek KG ~ v8.26.15 \n' +
+            greetings: 'Star Trek KG \n' +
                        'A modern, C# Code rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :) \n\n' +
                        'Type "start" to begin, or "term menu" for terminal commands\n'
         };
