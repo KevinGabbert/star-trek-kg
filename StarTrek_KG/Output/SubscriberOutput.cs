@@ -4,13 +4,12 @@ using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Output
 {
-    public class SubscriberWrite : IWriteMethod
+    public class SubscriberOutput : IOutputMethod
     {
         public IStarTrekKGSettings Config { get; set; }
+        public Queue<string> Queue { get; set; }
 
-        public Queue<string> OutputQueue { get; set; }
-
-        public SubscriberWrite(IStarTrekKGSettings config)
+        public SubscriberOutput(IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Clear();
@@ -18,12 +17,12 @@ namespace StarTrek_KG.Output
 
         public void Clear()
         {
-            this.OutputQueue = new Queue<string>();
+            this.Queue = new Queue<string>();
         }
 
         public void Enqueue(string text)
         {
-            this.OutputQueue.Enqueue($"<pre>{text.Replace("\r\n", "")}</pre>");
+            this.Queue.Enqueue($"<pre>{text.Replace("\r\n", "")}</pre>");
         }
 
         public void Write(string text)
@@ -78,16 +77,9 @@ namespace StarTrek_KG.Output
             this.Enqueue(string.Format(text, text2, text3, text4));
         }
 
-        public string ReadLine()
-        {
-            //return System.Console.ReadLine();
-            //throw new NotImplementedException();
-
-            return "";
-        }
-
         public void HighlightTextBW(bool on)
         {
+            //todo: implement this. (using ANSI codes?)
             if (on)
             {
                 //System.Console.ForegroundColor = ConsoleColor.Black;
@@ -98,6 +90,15 @@ namespace StarTrek_KG.Output
                 //System.Console.ForegroundColor = ConsoleColor.White;
                 //System.Console.BackgroundColor = ConsoleColor.Black;
             }
+        }
+
+        /// <summary>
+        /// Not used by this object
+        /// </summary>
+        /// <returns></returns>
+        public string ReadLine()
+        {
+            throw new NotImplementedException();
         }
     }
 }

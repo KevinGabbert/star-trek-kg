@@ -9,11 +9,12 @@ namespace StarTrek_KG.Interfaces
     {
         Game Game { get; set; }
         FactionName Faction { get; set; }
-        int Energy { get; set; }
-        Allegiance Allegiance { get; set; }
-        bool Destroyed { get; set; }
         Subsystems Subsystems { get; set; }
         Coordinate Coordinate { get; set; }
+        Allegiance Allegiance { get; set; }
+
+        int Energy { get; set; }
+        bool Destroyed { get; set; }
 
         Region GetRegion();
     }

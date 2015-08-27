@@ -9,10 +9,10 @@ namespace StarTrek_KG.Types
         public Coordinate Coordinate { get; set; }
         public ISectorObject Object { get; set; }
         public SectorItem Item { get; set; }
+
         public bool MyLocation { get; set; }
         public bool GalacticBarrier { get; set; }
         public bool Unknown { get; set; }
-        //public string Name { get; set; }
         public string RegionName { get; set; }
 
         public string ToScanString()

@@ -20,7 +20,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
             if (command == "fix")
             {
@@ -30,10 +30,10 @@ namespace StarTrek_KG.Subsystem
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
-        public string ShowSubsystemsToFix()
+        private string ShowSubsystemsToFix()
         {
             this.Game.Write.CreateCommandPanel();
             this.Game.Write.Panel("─── Subsystem to Fix", this.Game.Write.ACTIVITY_PANEL);
@@ -41,7 +41,7 @@ namespace StarTrek_KG.Subsystem
             return "";
         }
 
-        public void EmergencyFix(SubsystemType subsystem)
+        private void EmergencyFix(SubsystemType subsystem)
         {
             List<ISubsystem> subsystemsFound = this.ShipConnectedTo.Subsystems.Where(s => s.Type == subsystem).ToList();
 

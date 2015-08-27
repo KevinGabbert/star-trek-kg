@@ -49,7 +49,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
             switch (command.ToLower())
             {
@@ -147,7 +147,7 @@ namespace StarTrek_KG.Subsystem
                     break;
             }
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         public static Debug For(IShip ship)

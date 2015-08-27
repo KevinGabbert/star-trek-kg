@@ -41,9 +41,9 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls(IShip shipFiringPhasers)
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            if (this.Damaged()) return this.Game.Write.Output.Queue.ToList();
 
             //todo:  this doesn't *work* too well as a feature of *Regions*, but rather, of Ship?
 
@@ -63,7 +63,7 @@ namespace StarTrek_KG.Subsystem
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
                 this.Game.Write.Line("Invalid energy level.");
-                return this.Game.Write.WriteMethod.OutputQueue.ToList();
+                return this.Game.Write.Output.Queue.ToList();
             }
 
             this.Game.Write.Line("");
@@ -71,7 +71,7 @@ namespace StarTrek_KG.Subsystem
             this.Fire(phaserEnergy); //, shipFiringPhasers
             this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         private void Execute(double phaserEnergy)

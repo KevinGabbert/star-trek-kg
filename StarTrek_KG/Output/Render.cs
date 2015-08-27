@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -14,12 +13,12 @@ namespace StarTrek_KG.Output
     {
         #region Properties
 
-        public IOutputWrite Write { get; set; }
+        public IWriter Write { get; set; }
         public IStarTrekKGSettings Config { get; set; }
 
         #endregion
 
-        public Render(IOutputWrite write, IStarTrekKGSettings config)
+        public Render(IWriter write, IStarTrekKGSettings config)
         {
             this.Config = config;
             this.Write = write;
@@ -28,7 +27,7 @@ namespace StarTrek_KG.Output
 
         public void CreateSRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            this.Write.WriteMethod.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
+            this.Write.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
 
             int srsRows = Convert.ToInt32(this.Config.GetText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
@@ -36,7 +35,7 @@ namespace StarTrek_KG.Output
                 this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Region.Sectors, totalHostiles, isNebula);
             }
 
-            this.Write.WriteMethod.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
+            this.Write.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
         public void CreateCRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
@@ -71,28 +70,28 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    retVal += String.Format(this.Config.GetText("SRSRegionIndicator"), Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y));
+                    retVal += string.Format(this.Config.GetText("SRSRegionIndicator"), Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y));
                     break;
                 case 1:
-                    retVal += String.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
+                    retVal += string.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
                     break;
                 case 2:
-                    retVal += String.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
+                    retVal += string.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
                     break;
                 case 3:
-                    retVal += String.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
+                    retVal += string.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
                     break;
                 case 4:
-                    retVal += String.Format(this.Config.GetText("SRSConditionIndicator"), map.Playership.GetConditionAndSetIcon());
+                    retVal += string.Format(this.Config.GetText("SRSConditionIndicator"), map.Playership.GetConditionAndSetIcon());
                     break;
                 case 5:
-                    retVal += String.Format(this.Config.GetText("SRSEnergyIndicator"), map.Playership.Energy);
+                    retVal += string.Format(this.Config.GetText("SRSEnergyIndicator"), map.Playership.Energy);
                     break;
                 case 6:
-                    retVal += String.Format(this.Config.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
+                    retVal += string.Format(this.Config.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
                     break;
                 case 7:
-                    retVal += String.Format(this.Config.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
+                    retVal += string.Format(this.Config.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
                     break;
             }
 
@@ -267,7 +266,7 @@ namespace StarTrek_KG.Output
 
             if (totalHostiles < 1)
             {
-                this.Write.WriteMethod.WriteLine("bug. hostile not removed from display.");
+                this.Write.Output.WriteLine("bug. hostile not removed from display.");
             }
 
             //todo: hostile feds look like: ++-

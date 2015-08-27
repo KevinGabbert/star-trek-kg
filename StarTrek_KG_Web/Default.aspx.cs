@@ -29,7 +29,7 @@ namespace StarTrek_KG_Web
         {
             List<string> responseLines = new List<string>();
 
-            Game game = _WebAppWorkflow.GetGame();
+            Game game = Workflow.GetGame();
             responseLines = _WebAppWorkflow.ExecuteCommand(command, sessionID, responseLines, game);
 
             string json = JsonConvert.SerializeObject(responseLines.ToList());

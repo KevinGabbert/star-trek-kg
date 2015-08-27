@@ -50,7 +50,6 @@ namespace StarTrek_KG.Interfaces
         /// <returns></returns>
         List<string> GetStarSystems();
 
-
         /// <summary>
         /// Text looks like this in the app.Config: <Text name="PhaserDamage" value="Long range scanner is damaged."/>
         /// </summary>
@@ -58,7 +57,6 @@ namespace StarTrek_KG.Interfaces
         /// <returns></returns>
         string GetText(string name);
         string GetText(string textToGet, string textToGet2);
-
 
         /// <summary>
         /// Settings look like this in the app.config: <add name="DebugNoSetUpSectorsInRegion" value="No Sectors Set up in Region: "/>
@@ -69,7 +67,9 @@ namespace StarTrek_KG.Interfaces
         T GetSetting<T>(string name);
 
         string Setting(string name);
+
         T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false);
+
         void Reset();
     }
 }

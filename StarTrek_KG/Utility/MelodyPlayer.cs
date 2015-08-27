@@ -10,7 +10,7 @@
         private class Note
         {
             [DllImport("Kernel32.dll")]
-            public static extern bool Beep(UInt32 frequency, UInt32 duration);
+            public static extern bool Beep(uint frequency, uint duration);
 
             public const int C = -888;
             public const int CSharp = -798;

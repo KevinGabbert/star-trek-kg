@@ -59,7 +59,7 @@ namespace StarTrek_KG_Web.WebApp
             return responseLines;
         }
 
-        public List<string> StartGame(Game game, List<string> responseLines)
+        private List<string> StartGame(Game game, List<string> responseLines)
         {
             if (game == null || (!game.Started))
             {
@@ -70,7 +70,7 @@ namespace StarTrek_KG_Web.WebApp
                 if (game != null)
                 {
                     game.Started = true;
-                    responseLines = game.Write?.WriteMethod?.OutputQueue.ToList();
+                    responseLines = game.Write?.Output?.Queue.ToList();
                 }
                 else
                 {
@@ -84,13 +84,13 @@ namespace StarTrek_KG_Web.WebApp
             return responseLines;
         }
 
-        public List<string> RunWeb(List<string> responseLines, out Game game)
+        private List<string> RunWeb(List<string> responseLines, out Game game)
         {
             var settingsForWholeGame = (new StarTrekKGSettings());
             game = (new Game(settingsForWholeGame)
             {
                 //todo: delete this property setting
-                Output =
+                Write =
                 {
                     IsSubscriberApp = true //todo: GET should set the app.config setting to true?
                 }
@@ -98,31 +98,31 @@ namespace StarTrek_KG_Web.WebApp
 
             HttpContext.Current.Session["game"] = game;
 
-            this.GetGame().RunWeb();
-            this.GetGame().Started = true;
+            GetGame().RunWeb();
+            GetGame().Started = true;
 
             responseLines = this.Response("Game Started..");
             return responseLines;
         }
 
-        public Game GetGame(string sessionID)
+        private Game GetGame(string sessionID)
         {
             //todo: implement sessionID;
             return (Game)HttpContext.Current.Session["game"]; //todo:  make this "game" + sessionID
         }
 
-        internal List<string> ClearSession(List<string> responseLines)
+        private List<string> ClearSession(List<string> responseLines)
         {
             HttpContext.Current.Session.Clear(); 
             return this.Response("Session Cleared.."); //todo: resource this out
         }
 
-        public Game GetGame()
+        public static Game GetGame()
         {
             return (Game)HttpContext.Current.Session["game"]; //todo:  make this "game" + sessionID
         }
 
-        public List<string> SendTestResponse(List<string> responseLines)
+        private List<string> SendTestResponse(List<string> responseLines)
         {
             return this.Response(new List<string>
             {
@@ -144,7 +144,7 @@ namespace StarTrek_KG_Web.WebApp
         //    }
         //}
 
-        public List<string> NewWebTurn(List<string> responseLines, string sessionID, string command)
+        private List<string> NewWebTurn(List<string> responseLines, string sessionID, string command)
         {
             var myGame = this.GetGame(sessionID);
 

@@ -52,7 +52,7 @@ namespace UnitTests.Tests.SubSystemTests
         {
             for (int i = 0; i < 100; i++)
             {
-                this.Game.Write.Console.Write("-");
+                this.Game.Write.Output.Write("-");
                 this.CheckStarsInRegion();
             }
         }

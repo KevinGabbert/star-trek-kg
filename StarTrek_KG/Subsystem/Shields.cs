@@ -21,9 +21,9 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.WriteMethod.OutputQueue.ToList(); ;
+            if (this.Damaged()) return this.Game.Write.Output.Queue.ToList(); ;
 
             bool adding = false;
             switch (command)
@@ -47,7 +47,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    return this.Game.Write.WriteMethod.OutputQueue.ToList();
+                    return this.Game.Write.Output.Queue.ToList();
             }
 
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
@@ -62,7 +62,7 @@ namespace StarTrek_KG.Subsystem
 
             EndControls:;
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         private void TransferEnergy(int transfer, bool adding)
@@ -114,7 +114,7 @@ namespace StarTrek_KG.Subsystem
             return EnergyValidation(transfer, readSuccess);
         }
 
-        public int EnergyValidation(double transfer, bool readSuccess)
+        private int EnergyValidation(double transfer, bool readSuccess)
         {
             var tooLittle = transfer < 1;
             var tooMuch = transfer > this.MaxTransfer;

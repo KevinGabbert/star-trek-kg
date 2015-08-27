@@ -2,6 +2,6 @@
 {
     public interface IWrite
     {
-        IOutputWrite Write { get; set; }
+        IWriter Write { get; set; }
     }
 }

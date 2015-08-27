@@ -8,11 +8,11 @@ namespace StarTrek_KG.Actors
 {
     public class Impulse : IWrite
     {
-        public IOutputWrite Write { get; set; }
+        public IWriter Write { get; set; }
 
-        public Impulse(IOutputWrite output)
+        public Impulse(IWriter writer)
         {
-            this.Write = output;
+            this.Write = writer;
 
             if (this.Write == null)
             {

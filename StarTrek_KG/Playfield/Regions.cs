@@ -13,8 +13,8 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-            public IMap Map { get; set; }
-            public IOutputWrite Write { get; set; }
+            private IMap Map { get; set; }
+            private IWriter Write { get; set; }
 
             /// <summary>
             /// Movement.Execute and Map.SetupPlayership are the only places this is set
@@ -22,7 +22,7 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-        public Regions(IMap map, IOutputWrite write)
+        public Regions(IMap map, IWriter write)
         {
             this.Write = write;
             this.Map = map;

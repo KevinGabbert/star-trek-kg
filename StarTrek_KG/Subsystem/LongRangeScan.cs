@@ -21,15 +21,15 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
             throw new NotImplementedException();
         }
 
         public List<string> Controls()
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            if (this.Damaged()) return this.Game.Write.Output.Queue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -41,7 +41,7 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.SingleLine(line);
             }
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         //used by CRS
@@ -53,7 +53,7 @@ namespace StarTrek_KG.Subsystem
             return renderedData;
         }
 
-        public IEnumerable<string> RunFullLRSScan(Location shipLocation)
+        private IEnumerable<string> RunFullLRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<IScanResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);

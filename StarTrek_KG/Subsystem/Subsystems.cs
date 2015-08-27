@@ -97,7 +97,7 @@ namespace StarTrek_KG.Subsystem
         }
 
         //todo: move to Game() object????
-        public bool DamageRandomSubsystem()
+        private bool DamageRandomSubsystem()
         {
             bool wasDamaged = false;
             List<ISubsystem> remainingSubsystems = this.FindAll(s => !s.Damaged() && s.Type != SubsystemType.Debug); //at present.. Damaged() is true if subsystem has any damage value
@@ -130,7 +130,7 @@ namespace StarTrek_KG.Subsystem
             string returnVal = "";
             foreach (ISubsystem subSystem in this)
             {
-                returnVal += " " + subSystem.GetType().Name;
+                returnVal += $" {subSystem.GetType().Name}";
             }
 
             return returnVal;

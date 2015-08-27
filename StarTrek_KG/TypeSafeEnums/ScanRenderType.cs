@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace StarTrek_KG.TypeSafeEnums
 {
     public sealed class ScanRenderType
     {
-        private readonly String name;
+        private readonly string name;
         private readonly int value;
 
         public static readonly ScanRenderType SingleLine = new ScanRenderType(1, "SingleLine");
@@ -14,7 +13,7 @@ namespace StarTrek_KG.TypeSafeEnums
 
         private static Dictionary<string, ScanRenderType> instance = new Dictionary<string, ScanRenderType>();
 
-        private ScanRenderType(int value, String name)
+        private ScanRenderType(int value, string name)
         {
             this.name = name;
             this.value = value;
@@ -27,7 +26,7 @@ namespace StarTrek_KG.TypeSafeEnums
             instance[name] = this;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return name;
         }

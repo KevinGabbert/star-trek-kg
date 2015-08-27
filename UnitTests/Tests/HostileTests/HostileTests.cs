@@ -351,7 +351,7 @@ namespace UnitTests.Tests.HostileTests
         {
             for(int i = 0; i < 1000; i++)
             {
-                this.Game.Write.Console.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% i: " + i);
+                this.Game.Write.Output.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% i: " + i);
                 TestMap3Scenario();
             }
         }

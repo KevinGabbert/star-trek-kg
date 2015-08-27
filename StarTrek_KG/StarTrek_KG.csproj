@@ -64,8 +64,10 @@
     <Compile Include="Config\Collections\FactionThreats.cs" />
     <Compile Include="Config\Elements\Name.cs" />
     <Compile Include="Config\Elements\SeverityValueTranslation.cs" />
-    <Compile Include="Interfaces\IWriteMethod.cs" />
-    <Compile Include="Output\TelnetWrite.cs" />
+    <Compile Include="Experimental\Experimental.cs" />
+    <Compile Include="Interfaces\IOutputMethod.cs" />
+    <Compile Include="Interfaces\IQueue.cs" />
+    <Compile Include="Output\TelnetOutput.cs" />
     <Compile Include="TypeSafeEnums\Menu.cs" />
     <Compile Include="Enums\MovementType.cs" />
     <Compile Include="Enums\SectorScanType.cs" />
@@ -85,12 +87,10 @@
     <Compile Include="Enums\ScavengeType.cs" />
     <Compile Include="Enums\QuadrantType.cs" />
     <Compile Include="Enums\SectorType.cs" />
-    <Compile Include="Experimental.cs" />
     <Compile Include="Extensions\QuadrantExtensions.cs" />
     <Compile Include="Interfaces\ICoordinate.cs" />
-    <Compile Include="Interfaces\IOutputWrite.cs" />
+    <Compile Include="Interfaces\IWriter.cs" />
     <Compile Include="Interfaces\IRegion.cs" />
-    <Compile Include="Interfaces\IRegions.cs" />
     <Compile Include="Interfaces\ISector.cs" />
     <Compile Include="Interfaces\IStarTrekKGSettings.cs" />
     <Compile Include="Interfaces\IWrite.cs" />
@@ -136,7 +136,6 @@
     <Compile Include="Subsystem\Computer.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Interfaces\IDestructionCheck.cs" />
     <Compile Include="Interfaces\IMap.cs" />
     <Compile Include="Interfaces\IShip.cs" />
     <Compile Include="Interfaces\ISubsystem.cs" />
@@ -163,7 +162,7 @@
     <Compile Include="Utility\ConsoleHelper.cs" />
     <Compile Include="Utility\EnumUtil.cs" />
     <Compile Include="Utility\MelodyPlayer.cs" />
-    <Compile Include="Output\SubscriberWrite.cs" />
+    <Compile Include="Output\SubscriberOutput.cs" />
     <Compile Include="Utility\Telnet.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Actors\Warp.cs" />

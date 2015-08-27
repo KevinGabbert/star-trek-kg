@@ -9,22 +9,37 @@ namespace StarTrek_KG.Interfaces
     /// </summary>
     public interface ISubsystem
     {
-        int Damage { get; set; }
-        int MaxTransfer { get; set; }
-        int Energy { get; set; }
         Game Game { get; set; }
         SubsystemType Type { get; set; }
         Ship ShipConnectedTo { get; set; }
 
+        int Damage { get; set; }
+        int MaxTransfer { get; set; }
+        int Energy { get; set; }
+
         ISubsystem For(Ship ship, Game game);
 
-        List<string> Controls(string command); //A common feature of this method is this is where you recieve damage
-        
-        bool Damaged();  //This is where you find out if you are damaged
-        bool PartialRepair();   //This is where you solve that damage problem you've been having.  (an automatic process)
-        void FullRepair();
+        /// <summary>
+        /// A common feature of this method is this is where you recieve damage
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        List<string> Controls(string command);
 
+        /// <summary>
+        /// This is where you find out if you are damaged
+        /// </summary>
+        /// <returns></returns>
+        bool Damaged();
         void TakeDamage();
+
+        /// <summary>
+        /// This is where you solve that damage problem you've been having.  (an automatic process)
+        /// </summary>
+        /// <returns></returns>
+        bool PartialRepair();
+
+        void FullRepair();
         int GetNext(int seed);
         int TransferredFromUser();
     }

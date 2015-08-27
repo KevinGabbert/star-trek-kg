@@ -1,6 +1,6 @@
 ﻿/*
  * Star Trek KG
- * Copyright (C) 2014, Kevin Gabbert
+ * Copyright (C) 2015, Kevin Gabbert
  * 
  * This file is part of Star Trek KG.
  *

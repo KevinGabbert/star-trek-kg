@@ -12,16 +12,17 @@ namespace StarTrek_KG.Subsystem
     //todo: make feature where opposing ships can hack into your computer (and you, theirs) if shields are down
     public class Computer : SubSystem_Base
     {
+        //todo: resource this out
         public static readonly string[] CONTROL_PANEL = {
-                                                    "",
-                                                    "─── Main Computer ──────────────",
-                                                    "rec = Cumulative Galactic Record",
-                                                    "sta = Status Report",
-                                                    "tor = Photon Torpedo Calculator",
-                                                    "bas = Starbase Calculator",
-                                                    "nav = Navigation Calculator",
-                                                    "tlm = Translate Last Message"
-                                                };
+                                                            "",
+                                                            "─── Main Computer ──────────────",
+                                                            "rec = Cumulative Galactic Record",
+                                                            "sta = Status Report",
+                                                            "tor = Photon Torpedo Calculator",
+                                                            "bas = Starbase Calculator",
+                                                            "nav = Navigation Calculator",
+                                                            "tlm = Translate Last Message"
+                                                        };
 
         public Computer(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
@@ -31,7 +32,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
             var starship = this.ShipConnectedTo;
 
@@ -91,7 +92,7 @@ namespace StarTrek_KG.Subsystem
                     break;
             }
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         private void TargetObjectInRegion()
@@ -161,44 +162,44 @@ namespace StarTrek_KG.Subsystem
 
         //output this as KeyValueCollection that the UI can display as it likes.
 
-        public void PrintCurrentStatus(IMap map, int computerDamage, Ship ship, Region currentRegion)
+        private void PrintCurrentStatus(IMap map, int computerDamage, Ship ship, Region currentRegion)
         {
             if (this.Damaged()) return;
 
             //todo: completely redo this
 
-            this.Game.Write.Console.WriteLine("");
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSTimeRemaining"), map.timeRemaining);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSHostilesRemaining"), map.Regions.GetHostileCount());
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSHostilesInRegion"), currentRegion.GetHostiles().Count);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSStarbases"), map.starbases);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSCRSDamage"), CombinedRangeScan.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSComputerDamage"), computerDamage);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
-            this.Game.Write.Console.WriteLine(this.Game.Config.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
-            this.Game.Write.Console.WriteLine();
+            this.Game.Write.Output.WriteLine("");
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSTimeRemaining"), map.timeRemaining);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSHostilesRemaining"), map.Regions.GetHostileCount());
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSHostilesInRegion"), currentRegion.GetHostiles().Count);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSStarbases"), map.starbases);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSCRSDamage"), CombinedRangeScan.For(ship).Damage);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSComputerDamage"), computerDamage);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
+            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
+            this.Game.Write.Output.WriteLine();
 
             //foreach (var badGuy in currentRegion.Hostiles)
             //{
             //    
             //}
 
-            this.Game.Write.Console.WriteLine();
+            this.Game.Write.Output.WriteLine();
 
             //todo: Display all baddie names in Region when encountered.
         }
 
         //This needs to be output as an array, List<List>, or KeyValueCollection, and the grid needs to be generated by the UI app
 
-        public void PrintGalacticRecord(List<Region> Regions)
+        private void PrintGalacticRecord(List<Region> Regions)
         {
             if (this.Damaged()) return;
 
-            this.Game.Write.Console.WriteLine();
+            this.Game.Write.Output.WriteLine();
             this.Game.Write.ResourceSingleLine("GalacticRecordLine");
 
             var myLocation = this.ShipConnectedTo.GetLocation();
@@ -227,7 +228,7 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.ResourceSingleLine("GalacticRecordLine");
             }
 
-            this.Game.Write.Console.WriteLine();
+            this.Game.Write.Output.WriteLine();
         }
 
         private void RenderScannedRegion(IRegion Region, Location myLocation, int RegionUB, int RegionLB)

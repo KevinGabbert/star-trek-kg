@@ -79,7 +79,7 @@ namespace UnitTests.ShipTests.RegionTests
             const bool setupNebula = true;
             this.SetupRegion(setupNebula);
 
-            var mockedWrite = new Mock<IOutputWrite>();
+            var mockedWrite = new Mock<IWriter>();
             _setup.Game.Write = mockedWrite.Object;
 
             _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);

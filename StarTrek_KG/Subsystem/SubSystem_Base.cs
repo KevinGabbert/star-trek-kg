@@ -55,7 +55,7 @@ namespace StarTrek_KG.Subsystem
         public virtual List<string> Controls(string command)
         {
             //todo: can Prompt be moved out of here?
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
             return new List<string>();
         }
 

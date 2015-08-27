@@ -2,6 +2,7 @@
 
 namespace StarTrek_KG
 {
+    //todo: resource all this out
     public static class Constants
     {
         public const string EMPTY = "   ";

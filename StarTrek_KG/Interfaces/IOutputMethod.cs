@@ -3,10 +3,11 @@ using System.Collections.Generic;
 
 namespace StarTrek_KG.Interfaces
 {
-    public interface IWriteMethod
+    /// <summary>
+    /// Classes that implement this will be called upon to write text to the screen in some fashion
+    /// </summary>
+    public interface IOutputMethod: IQueue
     {
-        Queue<string> OutputQueue { get; set; }
-
         void Clear();
 
         string ReadLine();

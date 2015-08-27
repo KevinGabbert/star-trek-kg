@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
@@ -8,17 +7,21 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Interfaces
 {
+    /// <summary>
+    /// Implementers of this will be a map of some type
+    /// </summary>
     public interface IMap : IConfig
     {
         Game Game { get; set; }
-        Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
+        Ship Playership { get; set; } // todo: eventually make this an IEnumerable<StarShip>().
         Regions Regions { get; set; }
         SetupOptions GameConfig { get; set; }
+        IWriter Write { get; set; }
+
         int Stardate { get; set; }
         int timeRemaining { get; set; }
         int starbases { get; set; }
         string Text { get; set; }
-        IOutputWrite Write { get; set; }
 
         int HostilesToSetUp { get; set; }
 

@@ -41,7 +41,7 @@ namespace StarTrek_KG.Playfield
         }
 
         //todo: refactor this against Region.NotFound()
-        public bool NotFound(Coordinate coordinate)
+        private bool NotFound(ICoordinate coordinate)
         {
             var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
             return notFound;

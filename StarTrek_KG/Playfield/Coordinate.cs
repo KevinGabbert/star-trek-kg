@@ -7,7 +7,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-        public bool OutOfBounds { get; set; }
+        private bool OutOfBounds { get; set; }
 
         private int _x;
         public int X

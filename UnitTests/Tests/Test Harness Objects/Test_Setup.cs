@@ -23,7 +23,7 @@ namespace UnitTests.ShipTests
         public Shields TestShields { get; set; }
         public LongRangeScan TestLongRangeScan { get; set; }
 
-        public IOutputWrite Write
+        public IWriter Write
         {
             get { return this.Game.Write; }
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -16,8 +15,8 @@ namespace StarTrek_KG.Subsystem
         public bool Docked { get; set; } //todo: move this to ship
         public int MaxWarpFactor { get; set; }
 
-        public Warp Warp { get;}
-        public Impulse Impulse { get; }
+        private Warp Warp { get;}
+        private Impulse Impulse { get; }
         public Movement Movement { get; }
 
         #endregion
@@ -43,7 +42,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
             switch (command)
             {
@@ -65,16 +64,16 @@ namespace StarTrek_KG.Subsystem
 
             ShipConnectedTo.UpdateDivinedSectors();
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         private List<string> NavigateToObject()
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
             if (this.Damaged()) //todo: change this to Impulse.For(  when navigation object is removed
             {
-                return this.Game.Write.WriteMethod.OutputQueue.ToList();
+                return this.Game.Write.Output.Queue.ToList();
             }
 
             this.Game.Write.Line("");
@@ -89,29 +88,29 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line("Navigate to Object is not yet supported.");
 
             //this.NavigateToObject();
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
-        public List<string> SublightControls()
+        private List<string> SublightControls()
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
             int distance;
             int direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
             {
-                return this.Game.Write.WriteMethod.OutputQueue.ToList();
+                return this.Game.Write.Output.Queue.ToList();
             }
 
-            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.Game.Write.Output.Queue.ToList();
 
             int lastRegionY;
             int lastRegionX;
 
             if (!Impulse.Engage(direction, distance, out lastRegionY, out lastRegionX, this.Game.Map))
             {
-                return this.Game.Write.WriteMethod.OutputQueue.ToList();
+                return this.Game.Write.Output.Queue.ToList();
             }
 
             this.RepairOrTakeDamage(lastRegionX, lastRegionY);
@@ -126,15 +125,15 @@ namespace StarTrek_KG.Subsystem
                 crs.Controls();
             }
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         /// <summary>
         /// This is the Warp Workflow
         /// </summary>
-        public List<string> WarpControls()
+        private List<string> WarpControls()
         {
-            this.Game.Write.WriteMethod.OutputQueue.Clear();
+            this.Game.Write.Output.Queue.Clear();
 
             if (this.Damaged())
             {
@@ -174,7 +173,7 @@ namespace StarTrek_KG.Subsystem
             //todo: upon arriving in Region, all damaged controls need to be enumerated
             //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            return this.Game.Write.WriteMethod.OutputQueue.ToList();
+            return this.Game.Write.Output.Queue.ToList();
         }
 
         private void RepairOrTakeDamage(int lastRegionX, int lastRegionY)

@@ -57,14 +57,7 @@ namespace StarTrek_KG.Playfield
         {
             this.Type = regionType;
 
-            if (regionType == RegionType.GalacticBarrier)
-            {
-                this.Name = "Galactic Barrier"; //todo: resource this.
-            }
-            else
-            {
-                this.Name = "";
-            }
+            this.Name = regionType == RegionType.GalacticBarrier ? "Galactic Barrier" : "";
 
             this.X = x;
             this.Y = y;
@@ -76,7 +69,7 @@ namespace StarTrek_KG.Playfield
         {
             this.Empty = true;
             this.Map = map;
-            this.Name = String.Empty;
+            this.Name = string.Empty;
 
             this.Create(baddieNames, stockBaddieFaction, isNebulae);
         }
@@ -123,7 +116,7 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public void Create(Stack<string> RegionNames, Stack<String> baddieNames, FactionName stockBaddieFaction,
+        public void Create(Stack<string> RegionNames, Stack<string> baddieNames, FactionName stockBaddieFaction,
             Coordinate RegionXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true,
             bool isNebulae = false)
         {
@@ -478,7 +471,6 @@ namespace StarTrek_KG.Playfield
                                 {
                                     //todo: what if we find a ship that has no energy?
 
-
                                     if (possibleShipToGet.Allegiance == Allegiance.BadGuy)
                                     {
                                         badGuys.Add(possibleShipToGet);
@@ -598,10 +590,10 @@ namespace StarTrek_KG.Playfield
                 {
                     var outOfBounds = Region.OutOfBounds(shipLocation.Sector);
 
-                    var currentResult = new IRSResult();
-
-                    //todo: breaks here when regionX or regionY is 8
-                    currentResult.Coordinate = new Coordinate(sectorX, sectorY);
+                    var currentResult = new IRSResult
+                    {
+                        Coordinate = new Coordinate(sectorX, sectorY)//todo: breaks here when regionX or regionY is 8
+                    };
 
                     currentResult = this.GetSectorInfo(shipLocation.Region, new Coordinate(sectorX, sectorY), outOfBounds, game);
                     currentResult.MyLocation = shipLocation.Region.X == sectorX &&

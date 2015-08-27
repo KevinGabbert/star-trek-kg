@@ -21,28 +21,28 @@ namespace StarTrek_KG
     public class Game : IDisposable, IWrite, IConfig
     {
         #region Properties
+        public delegate TResult _promptFunc<T, out TResult>(T input, out T output);
 
-            public IStarTrekKGSettings Config { get; set; }
-            public IOutputWrite Write { get; set; }
+        public IStarTrekKGSettings Config { get; set; }
+        public IWriter Write { get; set; }
+        public IMap Map { get; set; }
+        public Render PrintSector { get; set; }
 
-            public Write Output { get; set; }
-            public Render PrintSector { get; set; }
-            public IMap Map { get; set; }
+        public Game._promptFunc<string, bool> Prompt { get; private set; }
+        //public PromptType PromptType { get; set; }
 
-            public Game.PromptFunc<string, bool> Prompt { get; set; }
 
-            public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
-            public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
-            public bool Started { get; set; }
-            public bool GameOver { get; set; }
+        public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
+        public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
 
-            public int RandomFactorForTesting 
-            { 
-                get; 
-                set; 
-            }
+        public bool Started { get; set; }
+        public bool GameOver { get; set; }
 
-            public delegate TResult PromptFunc<T, out TResult>(T input, out T output);
+        public int RandomFactorForTesting
+        {
+            get;
+            set;
+        }
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace StarTrek_KG
             this.RandomFactorForTesting = 0;
             this.PlayerNowEnemyToFederation = false;  //todo: resource this out.
             this.Config = config;
-            if(this.Write == null)
+            if (this.Write == null)
             {
                 this.Write = new Write(config);
 
@@ -84,13 +84,13 @@ namespace StarTrek_KG
                 this.PrintSector = (new Render(this.Write, this.Config));
 
                 var startConfig = (new SetupOptions
-                                       {
-                                           Initialize = true,
-                                           AddNebulae = true,
-                                           SectorDefs = SectorSetup()
-                                       });
+                {
+                    Initialize = true,
+                    AddNebulae = true,
+                    SectorDefs = SectorSetup()
+                });
 
-                this.Write = new W(this.Config); 
+                this.Write = new W(this.Config);
                 this.Map = new Map(startConfig, this.Write, this.Config);
                 this.Write = new W(this.Config);
 
@@ -102,7 +102,7 @@ namespace StarTrek_KG
                 this.Write.HighlightTextBW(false);
 
                 //todo: why are we creating this PrintSector() class a second time??
-                this.Output = new Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);   
+                this.Write = new Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
                 this.PrintSector = new Render(this.Write, this.Config);
             }
         }
@@ -193,7 +193,7 @@ namespace StarTrek_KG
         {
             List<string> retVal = null;
 
-            this.Write.WriteMethod.Clear();
+            this.Write.Output.Clear();
 
             //need to get info from render.Write
 
@@ -243,7 +243,7 @@ namespace StarTrek_KG
 
             //todo: these SectorDefs can be computed somewhere
             //todo: this make a GetSectorDefsFromAppConfig()
-                //todo: Output a message if GetSectorDefsFromAppConfig() fails, then use hardcoded setup and start game anyway
+            //todo: Output a message if GetSectorDefsFromAppConfig() fails, then use hardcoded setup and start game anyway
 
             return DefaultHardcodedSetup();
         }
@@ -311,7 +311,7 @@ namespace StarTrek_KG
 
             this.Write.ResourceLine(this.Config.GetText("AppVersion").TrimStart(' '), "UnderConstructionMessage");
 
-            Output.PrintMission();
+            this.Write.PrintMission();
         }
 
         public void RandomAppTitle()
@@ -437,7 +437,7 @@ namespace StarTrek_KG
         /// TODO: this needs to be changed.  after destruction, it appears to take several method returns to realize that we are dead.
         /// </summary>
         /// <returns></returns>
-        public bool ALLHostilesAttack(IMap map)
+        public void ALLHostilesAttack(IMap map)
         {
             //todo: centralize this.
             //this is called from torpedo control/phaser control, and navigation control
@@ -449,8 +449,6 @@ namespace StarTrek_KG
             this.HostileStarbasesAttack(map, activeRegion);
 
             returnValue = this.HostileShipsAttack(map, hostilesAttacking, returnValue);
-
-            return returnValue;
         }
 
         private bool HostileShipsAttack(IMap map, ICollection<IShip> hostilesAttacking, bool returnValue)
@@ -482,7 +480,7 @@ namespace StarTrek_KG
                     for (int i = 0; i < starbasesAttacking; i++)
                     {
                         int hostileStarbaseAttacksRandom = Utility.Utility.TestableRandom(this);  //this.RandomFactorForTesting == 0 ? Utility.Utility.Random.Next() : this.RandomFactorForTesting;
-                        
+
                         //todo: modify starbase to be its own ship object on the map
                         //HACK: this is a little bit of a cheat, saying that the playership is attacking itself, but until the starbase is its own object, this should be fine
                         this.HostileAttacks(map, map.Playership, hostileStarbaseAttacksRandom);
@@ -531,7 +529,7 @@ namespace StarTrek_KG
 
             //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()
             //todo: the -1 should be the ship energy you want to allocate
-            var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula); 
+            var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula);
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
@@ -614,7 +612,7 @@ namespace StarTrek_KG
 
             FactionThreat randomThreat = this.Config.GetThreats(currentFaction).Shuffle().First();
 
-            currentThreat += String.Format(randomThreat.Threat, currentShipName);
+            currentThreat += string.Format(randomThreat.Threat, currentShipName);
 
             this.LatestTaunts.Add(randomThreat);
 
@@ -647,7 +645,7 @@ namespace StarTrek_KG
                     }
                     else if (thisShipEnergy > 1)
                     {
-                        var energyLeft = thisShipEnergy/2; //todo: resource this out
+                        var energyLeft = thisShipEnergy / 2; //todo: resource this out
 
                         thisShipShields.Energy = Convert.ToInt32(energyLeft);
                         thisShip.Energy = energyLeft;
@@ -793,7 +791,7 @@ namespace StarTrek_KG
 
         public static string GetFederationShipRegistration(IShip ship)
         {
-            int USS = ship.Name.IndexOf("U.S.S.");
+            int USS = ship.Name.IndexOf("U.S.S."); //todo: resource this out.
 
             string currentShipName = ship.Name.Substring(0, USS).Trim();
             return currentShipName;
@@ -848,7 +846,7 @@ namespace StarTrek_KG
                                   this.Map.timeRemaining > 0);
             }
 
-            this.Output.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
+            this.Write.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
         public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)

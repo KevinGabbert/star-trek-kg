@@ -11,6 +11,7 @@ namespace StarTrek_KG.Interfaces
         Coordinate RegionDef { get; set; }
         SectorType Type { get; set; }
         List<DivinedSectorItem> Neighbors { get; set; }
+
         bool Scanned { get; set; }
 
         Coordinate GetCoordinate();

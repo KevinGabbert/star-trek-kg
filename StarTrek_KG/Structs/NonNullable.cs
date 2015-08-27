@@ -6,7 +6,7 @@ namespace StarTrek_KG.Structs
     {
         private readonly T value;
 
-        public NonNullable(T value)
+        private NonNullable(T value)
         {
             if (value == null)
             {
@@ -15,7 +15,7 @@ namespace StarTrek_KG.Structs
             this.value = value;
         }
 
-        public T Value
+        private T Value
         {
             get
             {
