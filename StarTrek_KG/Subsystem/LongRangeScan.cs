@@ -21,15 +21,15 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
             throw new NotImplementedException();
         }
 
         public List<string> Controls()
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList();
+            if (this.Damaged()) return this.Game.Write.WriteMethod.OutputQueue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -41,7 +41,7 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.SingleLine(line);
             }
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         //used by CRS

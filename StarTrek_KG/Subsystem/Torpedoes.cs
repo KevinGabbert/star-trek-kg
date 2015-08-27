@@ -29,15 +29,15 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
             List<string> hostileCheckOutput;
 
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return this.Game.Write.Output.OutputQueue.ToList();
+                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return this.Game.Write.WriteMethod.OutputQueue.ToList();
 
-            this.Game.Write.Output.Write(hostileCheckOutput);
+            this.Game.Write.WriteMethod.Write(hostileCheckOutput);
 
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
@@ -54,12 +54,12 @@ namespace StarTrek_KG.Subsystem
                 || direction > 9.0)
             {
                 this.Game.Write.Line("Invalid direction.");
-                return this.Game.Write.Output.OutputQueue.ToList();
+                return this.Game.Write.WriteMethod.OutputQueue.ToList();
             }
 
             this.Shoot(direction);
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         public void Shoot(double direction)

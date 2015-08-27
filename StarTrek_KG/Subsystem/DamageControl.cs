@@ -20,7 +20,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
             if (command == "fix")
             {
@@ -30,7 +30,7 @@ namespace StarTrek_KG.Subsystem
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         public string ShowSubsystemsToFix()

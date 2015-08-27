@@ -43,7 +43,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
             switch (command)
             {
@@ -65,16 +65,16 @@ namespace StarTrek_KG.Subsystem
 
             ShipConnectedTo.UpdateDivinedSectors();
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         private List<string> NavigateToObject()
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
             if (this.Damaged()) //todo: change this to Impulse.For(  when navigation object is removed
             {
-                return this.Game.Write.Output.OutputQueue.ToList();
+                return this.Game.Write.WriteMethod.OutputQueue.ToList();
             }
 
             this.Game.Write.Line("");
@@ -89,29 +89,29 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line("Navigate to Object is not yet supported.");
 
             //this.NavigateToObject();
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         public List<string> SublightControls()
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
             int distance;
             int direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
             {
-                return this.Game.Write.Output.OutputQueue.ToList();
+                return this.Game.Write.WriteMethod.OutputQueue.ToList();
             }
 
-            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.Game.Write.Output.OutputQueue.ToList();
+            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.Game.Write.WriteMethod.OutputQueue.ToList();
 
             int lastRegionY;
             int lastRegionX;
 
             if (!Impulse.Engage(direction, distance, out lastRegionY, out lastRegionX, this.Game.Map))
             {
-                return this.Game.Write.Output.OutputQueue.ToList();
+                return this.Game.Write.WriteMethod.OutputQueue.ToList();
             }
 
             this.RepairOrTakeDamage(lastRegionX, lastRegionY);
@@ -126,7 +126,7 @@ namespace StarTrek_KG.Subsystem
                 crs.Controls();
             }
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public List<string> WarpControls()
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
             if (this.Damaged())
             {
@@ -174,7 +174,7 @@ namespace StarTrek_KG.Subsystem
             //todo: upon arriving in Region, all damaged controls need to be enumerated
             //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         private void RepairOrTakeDamage(int lastRegionX, int lastRegionY)

@@ -15,7 +15,7 @@ namespace StarTrek_KG.Interfaces
         IStarTrekKGSettings Config { get; set; }
         Console Console { get; set; }
         List<string> OutputQueue { get; set; }
-        IOutput Output { get; set; }
+        IWriteMethod WriteMethod { get; set; }
 
         int TotalHostiles { get; set; }
         int TimeRemaining { get; set; }

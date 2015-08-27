@@ -193,7 +193,7 @@ namespace StarTrek_KG
         {
             List<string> retVal = null;
 
-            this.Write.Output.Clear();
+            this.Write.WriteMethod.Clear();
 
             //need to get info from render.Write
 

@@ -4,7 +4,7 @@ using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Output
 {
-    public class SubscriberWrite : IOutput
+    public class SubscriberWrite : IWriteMethod
     {
         public IStarTrekKGSettings Config { get; set; }
 

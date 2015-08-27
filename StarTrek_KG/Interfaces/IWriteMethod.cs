@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StarTrek_KG.Interfaces
 {
-    public interface IOutput
+    public interface IWriteMethod
     {
         Queue<string> OutputQueue { get; set; }
 

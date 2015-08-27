@@ -16,9 +16,9 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList();
+            if (this.Damaged()) return this.Game.Write.WriteMethod.OutputQueue.ToList();
 
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
@@ -27,7 +27,7 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.Write.RenderSectors(SectorScanType.CombinedRange, this);
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         public static CombinedRangeScan For(IShip ship)

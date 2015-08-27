@@ -70,7 +70,7 @@ namespace StarTrek_KG_Web.WebApp
                 if (game != null)
                 {
                     game.Started = true;
-                    responseLines = game.Write?.Output?.OutputQueue.ToList();
+                    responseLines = game.Write?.WriteMethod?.OutputQueue.ToList();
                 }
                 else
                 {

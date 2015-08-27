@@ -28,7 +28,7 @@ namespace StarTrek_KG.Output
 
         public void CreateSRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            this.Write.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
+            this.Write.WriteMethod.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
 
             int srsRows = Convert.ToInt32(this.Config.GetText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
@@ -36,7 +36,7 @@ namespace StarTrek_KG.Output
                 this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Region.Sectors, totalHostiles, isNebula);
             }
 
-            this.Write.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
+            this.Write.WriteMethod.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
         public void CreateCRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
@@ -267,7 +267,7 @@ namespace StarTrek_KG.Output
 
             if (totalHostiles < 1)
             {
-                this.Write.Output.WriteLine("bug. hostile not removed from display.");
+                this.Write.WriteMethod.WriteLine("bug. hostile not removed from display.");
             }
 
             //todo: hostile feds look like: ++-

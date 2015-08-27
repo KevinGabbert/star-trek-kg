@@ -21,9 +21,9 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList(); ;
+            if (this.Damaged()) return this.Game.Write.WriteMethod.OutputQueue.ToList(); ;
 
             bool adding = false;
             switch (command)
@@ -47,7 +47,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 default:
-                    return this.Game.Write.Output.OutputQueue.ToList();
+                    return this.Game.Write.WriteMethod.OutputQueue.ToList();
             }
 
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
@@ -62,7 +62,7 @@ namespace StarTrek_KG.Subsystem
 
             EndControls:;
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         private void TransferEnergy(int transfer, bool adding)

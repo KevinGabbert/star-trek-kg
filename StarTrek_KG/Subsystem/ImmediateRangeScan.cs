@@ -18,9 +18,9 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Game.Write.Output.OutputQueue.Clear();
+            this.Game.Write.WriteMethod.OutputQueue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.Output.OutputQueue.ToList();
+            if (this.Damaged()) return this.Game.Write.WriteMethod.OutputQueue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -32,7 +32,7 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Write.SingleLine(line);
             }
 
-            return this.Game.Write.Output.OutputQueue.ToList();
+            return this.Game.Write.WriteMethod.OutputQueue.ToList();
         }
 
         public IEnumerable<string> RunFullIRSScan(Location shipLocation)

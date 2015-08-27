@@ -12,7 +12,6 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
-using StarTrek_KG.Utility;
 using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Output
@@ -36,7 +35,7 @@ namespace StarTrek_KG.Output
 
         public bool IsSubscriberApp { get; set; }
         public bool IsTelnetApp { get; set; }
-        public IOutput Output { get; set; }
+        public IWriteMethod WriteMethod { get; set; }
 
         //todo: make this non-static so we can test this class..
 
@@ -55,15 +54,6 @@ namespace StarTrek_KG.Output
 
         #endregion
 
-        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config) : this(config)
-        {
-            this.ACTIVITY_PANEL = new List<string>();
-            this.TotalHostiles = totalHostiles;
-            this.Starbases = starbases;
-            this.Stardate = stardate;
-            this.TimeRemaining = timeRemaining;
-        }
-
         public Write(IStarTrekKGSettings config)
         {
             this.ACTIVITY_PANEL = new List<string>();
@@ -74,16 +64,25 @@ namespace StarTrek_KG.Output
 
             if (this.IsTelnetApp)
             {
-                this.Output = new TelnetWrite(config); //todo: config might be droppped
+                this.WriteMethod = new TelnetWrite(config); //todo: config might be droppped
             }
             else if (this.IsSubscriberApp)
             {
-                this.Output = new SubscriberWrite(config);
+                this.WriteMethod = new SubscriberWrite(config);
             }
             else
             {
-                this.Output = this.Console;
+                this.WriteMethod = this.Console;
             }
+        }
+
+        public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config) : this(config)
+        {
+            this.ACTIVITY_PANEL = new List<string>();
+            this.TotalHostiles = totalHostiles;
+            this.Starbases = starbases;
+            this.Stardate = stardate;
+            this.TimeRemaining = timeRemaining;
         }
 
         #region Config
@@ -95,7 +94,7 @@ namespace StarTrek_KG.Output
         /// <returns></returns>
         public void ConfigText(string configTextName)
         {
-            this.Output.WriteLine(this.Config.GetText(configTextName));
+            this.WriteMethod.WriteLine(this.Config.GetText(configTextName));
         }
 
         public string GetFormattedConfigText(string configTextToWrite, object param1)
@@ -110,36 +109,36 @@ namespace StarTrek_KG.Output
 
         public void FormattedConfigLine(string configTextToWrite, object param1)
         {
-            this.Output.Write(string.Format(this.Config.GetText(configTextToWrite), param1));
-            this.Output.WriteLine();
+            this.WriteMethod.Write(string.Format(this.Config.GetText(configTextToWrite), param1));
+            this.WriteMethod.WriteLine();
         }
 
         public void FormattedConfigLine(string configTextToWrite, object param1, object param2)
         {
-            this.Output.Write(string.Format(this.Config.GetText(configTextToWrite), param1, param2));
-            this.Output.WriteLine();
+            this.WriteMethod.Write(string.Format(this.Config.GetText(configTextToWrite), param1, param2));
+            this.WriteMethod.WriteLine();
         }
 
         public void Resource(string text)
         {
-            this.Output.WriteLine(this.Config.GetText(text) + " ");
+            this.WriteMethod.WriteLine(this.Config.GetText(text) + " ");
         }
 
         public void ResourceLine(string text)
         {
-            this.Output.WriteLine(this.Config.GetText(text));
-            this.Output.WriteLine();
+            this.WriteMethod.WriteLine(this.Config.GetText(text));
+            this.WriteMethod.WriteLine();
         }
 
         public void ResourceSingleLine(string text)
         {
-            this.Output.WriteLine(this.Config.GetText(text));
+            this.WriteMethod.WriteLine(this.Config.GetText(text));
         }
 
         public void ResourceLine(string prependText, string text)
         {
-            this.Output.WriteLine(prependText + " " + this.Config.GetText(text));
-            this.Output.WriteLine();
+            this.WriteMethod.WriteLine(prependText + " " + this.Config.GetText(text));
+            this.WriteMethod.WriteLine();
         }
 
         #endregion
@@ -153,7 +152,7 @@ namespace StarTrek_KG.Output
                 var objectPropInfos = @object.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
                 foreach (PropertyInfo prop in objectPropInfos)
                 {
-                    this.Output.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
+                    this.WriteMethod.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
                 }
             }
 
@@ -507,18 +506,18 @@ namespace StarTrek_KG.Output
 
         public List<string> Panel(string panelHead, IEnumerable<string> strings)
         {
-            this.Output.WriteLine();
-            this.Output.WriteLine(panelHead);
-            this.Output.WriteLine();
+            this.WriteMethod.WriteLine();
+            this.WriteMethod.WriteLine(panelHead);
+            this.WriteMethod.WriteLine();
 
             foreach (var str in strings)
             {
-                this.Output.WriteLine(str);
+                this.WriteMethod.WriteLine(str);
             }
 
-            this.Output.WriteLine();
+            this.WriteMethod.WriteLine();
 
-            return this.Output.OutputQueue.ToList();
+            return this.WriteMethod.OutputQueue.ToList();
         }
 
         public string GetPanelHead(string shipName)
@@ -569,7 +568,7 @@ namespace StarTrek_KG.Output
 
             if (!this.IsSubscriberApp)
             {
-                this.Output.Write(mapText);
+                this.WriteMethod.Write(mapText);
             }
 
             string readCommand;
@@ -577,11 +576,11 @@ namespace StarTrek_KG.Output
             if (command != null && this.IsSubscriberApp)
             {
                 readCommand = command.Trim().ToLower();
-                this.Output.Clear();
+                this.WriteMethod.Clear();
             }
             else
             {
-                string readLine = this.Output.ReadLine();
+                string readLine = this.WriteMethod.ReadLine();
                 if (readLine == null) return null;
 
                 readCommand = readLine.Trim().ToLower();
@@ -637,11 +636,11 @@ namespace StarTrek_KG.Output
             }
             else if (readCommand == Menu.ver.ToString())
             {
-                this.Output.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
+                this.WriteMethod.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
             }
             else if (readCommand == Menu.cls.ToString())
             {
-                this.Output.Clear();
+                this.WriteMethod.Clear();
             }
             else
             {
@@ -658,26 +657,26 @@ namespace StarTrek_KG.Output
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
 
             //todo: readline needs to be done using an event
-            var debugCommand = Output.ReadLine().Trim().ToLower();
+            var debugCommand = WriteMethod.ReadLine().Trim().ToLower();
 
             Debug.For(playerShip).Controls(debugCommand);
 
-            return this.Output.OutputQueue.ToList();
+            return this.WriteMethod.OutputQueue.ToList();
         }
 
         private List<string> ComputerMenu(IShip playerShip)
         {
-            if (Computer.For(playerShip).Damaged()) return this.Output.OutputQueue.ToList();
+            if (Computer.For(playerShip).Damaged()) return this.WriteMethod.OutputQueue.ToList();
 
             this.Strings(Computer.CONTROL_PANEL);
             this.WithNoEndCR(this.ENTER_COMPUTER_COMMAND);
 
             //todo: readline needs to be done using an event
-            var computerCommand = Output.ReadLine().Trim().ToLower();
+            var computerCommand = WriteMethod.ReadLine().Trim().ToLower();
 
             Computer.For(playerShip).Controls(computerCommand);
 
-            return this.Output.OutputQueue.ToList();
+            return this.WriteMethod.OutputQueue.ToList();
         }
 
         private List<string> DamageControlMenu(IShip playerShip)
@@ -686,16 +685,16 @@ namespace StarTrek_KG.Output
             this.WithNoEndCR("Enter Damage Control Command: ");
 
             //todo: readline needs to be done using an event
-            var damageControlCommand = Output.ReadLine().Trim().ToLower();
+            var damageControlCommand = WriteMethod.ReadLine().Trim().ToLower();
 
             DamageControl.For(playerShip).Controls(damageControlCommand);
 
-            return this.Output.OutputQueue.ToList();
+            return this.WriteMethod.OutputQueue.ToList();
         }
 
         private List<string> ShieldMenu(IShip playerShip)
         {
-            if (Shields.For(playerShip).Damaged()) return this.Output.OutputQueue.ToList();
+            if (Shields.For(playerShip).Damaged()) return this.WriteMethod.OutputQueue.ToList();
 
             Shields.SHIELD_PANEL = new List<string>
             {
@@ -719,12 +718,12 @@ namespace StarTrek_KG.Output
             this.Strings(Shields.SHIELD_PANEL);
 
             this.WithNoEndCR("Enter shield control command: ");
-            var shieldsCommand = Output.ReadLine().Trim().ToLower();
+            var shieldsCommand = WriteMethod.ReadLine().Trim().ToLower();
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
             Shields.For(playerShip).Controls(shieldsCommand);
 
-            return this.Output.OutputQueue.ToList();
+            return this.WriteMethod.OutputQueue.ToList();
         }
 
         #endregion
@@ -751,7 +750,7 @@ namespace StarTrek_KG.Output
                 }
                 else
                 {
-                     value = int.Parse(this.Output.ReadLine());
+                     value = int.Parse(this.WriteMethod.ReadLine());
                 }
 
                 return true;
@@ -770,9 +769,9 @@ namespace StarTrek_KG.Output
 
             try
             {
-                this.Output.Write(promptMessage);
+                this.WriteMethod.Write(promptMessage);
 
-                var readLine = this.Output.ReadLine();
+                var readLine = this.WriteMethod.ReadLine();
                 if (readLine != null) value = readLine.ToLower();
 
                 return true;
@@ -789,7 +788,7 @@ namespace StarTrek_KG.Output
         {
             value = null;
 
-            this.Output.Write(promptMessage);
+            this.WriteMethod.Write(promptMessage);
 
             //todo: change Write, or Game.Mode to submenu?
             //that mode will persist across ajax calls, so user will have to either type in a submenu entry, or 
@@ -807,15 +806,15 @@ namespace StarTrek_KG.Output
 
         public void HighlightTextBW(bool on)
         {
-            this.Output.HighlightTextBW(on);
+            this.WriteMethod.HighlightTextBW(on);
         }
 
         public List<string> Line(string stringToOutput)
         {
             var linesToOutput = new List<string>();
 
-            linesToOutput.AddRange(this.Output.WriteLine(stringToOutput));
-            linesToOutput.Add(this.Output.WriteLine());
+            linesToOutput.AddRange(this.WriteMethod.WriteLine(stringToOutput));
+            linesToOutput.Add(this.WriteMethod.WriteLine());
 
             return linesToOutput;
         }
@@ -824,27 +823,27 @@ namespace StarTrek_KG.Output
         {
             foreach (var str in strings)
             {
-                this.Output.WriteLine(str);
+                this.WriteMethod.WriteLine(str);
             }
-            this.Output.WriteLine();
+            this.WriteMethod.WriteLine();
         }
 
         public void WithNoEndCR(string stringToOutput)
         {
-            this.Output.Write(stringToOutput);
+            this.WriteMethod.Write(stringToOutput);
         }
 
         public void DebugLine(string stringToOutput)
         {
             if (Constants.DEBUG_MODE)
             {
-                this.Output.WriteLine(stringToOutput);
+                this.WriteMethod.WriteLine(stringToOutput);
             }
         }
 
         public void SingleLine(string stringToOutput)
         {
-            this.Output.WriteLine(stringToOutput);
+            this.WriteMethod.WriteLine(stringToOutput);
         }
 
         public static string ShipHitMessage(IShip attacker, int attackingEnergy)
@@ -959,9 +958,9 @@ namespace StarTrek_KG.Output
         //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
-            this.Output.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
-            this.Output.WriteLine(this.Config.GetText("HelpStatement"));
-            this.Output.WriteLine();
+            this.WriteMethod.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.WriteMethod.WriteLine(this.Config.GetText("HelpStatement"));
+            this.WriteMethod.WriteLine();
         }
 
         #endregion

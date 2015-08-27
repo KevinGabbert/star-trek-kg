@@ -6,7 +6,7 @@ namespace StarTrek_KG.Utility
 {
     //This class can't be mocked, as System.Console is a static.
     //todo: move any
-    public class Console: IOutput
+    public class Console: IWriteMethod
     {
         public Queue<string> OutputQueue { get; set; }
 

@@ -16,7 +16,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
-    public class TelnetWrite : IConfig, IOutput, IDisposable
+    public class TelnetWrite : IConfig, IWriteMethod, IDisposable
     {
         #region Properties
 
