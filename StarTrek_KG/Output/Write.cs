@@ -31,8 +31,8 @@ namespace StarTrek_KG.Output
         //todo: this needs to be broken out into a Subscriber object (and make it into a prop)
 
         public bool IsSubscriberApp { get; set; }
-        private SubsystemType SubscriberPromptSubSystem { get; set; }
-        private int SubscriberPromptLevel { get; set; }
+        public SubsystemType SubscriberPromptSubSystem { get; set; }
+        public int SubscriberPromptLevel { get; set; }
 
         #endregion
 
@@ -565,8 +565,8 @@ namespace StarTrek_KG.Output
         /// <param name="playerShip"></param>
         /// <param name="mapText"></param>
         /// <param name="game"></param>
-        /// <param name="command"></param>
-        public List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null)
+        /// <param name="userInput"></param>
+        public List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null)
         {
             List<string> retVal = null;
 
@@ -575,11 +575,11 @@ namespace StarTrek_KG.Output
                 this.Output.Write(mapText);
             }
 
-            string readCommand;
+            string userCommand;
 
-            if (command != null && this.IsSubscriberApp)
+            if (userInput != null && this.IsSubscriberApp)
             {
-                readCommand = command.Trim().ToLower();
+                userCommand = userInput.Trim().ToLower();
                 this.Output.Clear();
             }
             else
@@ -587,86 +587,137 @@ namespace StarTrek_KG.Output
                 string readLine = this.Output.ReadLine();
                 if (readLine == null) return null;
 
-                readCommand = readLine.Trim().ToLower();
+                userCommand = readLine.Trim().ToLower();
             }
 
-            if (this.SubscriberPromptLevel > 0)
+            if (this.SubscriberPromptLevel == 0)
             {
-                //todo: we need to ignore this menu and limit evaluate this.SubscriberPromptSubSystem options instead
-                retVal = this.EvalSubLevelMenuCommands(playerShip, command, readCommand, this.SubscriberPromptLevel);
+                retVal = this.EvalTopLevelMenuCommand(playerShip, userCommand);
             }
-            else
-            {
-                retVal = this.EvalTopLevelMenuCommands(playerShip, command, readCommand);
+            else 
+            { 
+                retVal = this.EvalSubLevelCommand(playerShip, userCommand, this.SubscriberPromptLevel);
             }
 
             return retVal;
         }
 
-        private List<string> EvalSubLevelMenuCommands(Ship playerShip, string command, string readCommand, int promptLevel)
+        public List<string> EvalSubLevelCommand(IShip playerShip, string playerEnteredText, int promptLevel)
         {
-            //todo: look up menu commands from this.SubscriberPromptSubSystem & this.SubscriberPromptLevel
+            IEnumerable<string> retVal = new List<string>();
 
-            return new List<string>();
+            //if we got this far, then we know what menu we are in.
+            string menuName = this.SubscriberPromptSubSystem.Name;
+
+            //todo: Finish this. *************
+            if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem))
+            {
+                ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.SubscriberPromptSubSystem);
+                this.Output.Write(subsystem.Controls(playerEnteredText));
+            }
+            else
+            {
+                this.Output.Write($"Unrecognized Command. Exiting {menuName} Menu");
+                this.SubscriberPromptLevel = 0; //resets our menu level
+
+                return null;
+            }
+
+            return retVal.ToList();
         }
 
-        private List<string> EvalTopLevelMenuCommands(IShip playerShip, string command, string readCommand)
+        /// <summary>
+        /// Returns a list of menu command for the menuOption passed.
+        /// </summary>
+        /// <param name="stringToCheck"></param>
+        /// <param name="menuName"></param>
+        /// <returns></returns>
+        private bool IsAcceptable(string stringToCheck, SubsystemType subsystem)
         {
-            List<string> retVal = null;
+            //todo: each menu needs to be abstracted out so we can look up commands from each one here.
 
-            if (readCommand == Menu.wrp.ToString() || readCommand == Menu.imp.ToString() || readCommand == Menu.nto.ToString())
+            //todo: look up menu commands from this.SubscriberPromptSubSystem & this.SubscriberPromptLevel
+
+            //todo: validation of some sort
+
+            bool acceptable = false;
+
+            return acceptable;
+        }
+
+        private List<string> EvalTopLevelMenuCommand(IShip playerShip, string menuCommand)
+        {
+            IEnumerable<string> retVal = new List<string>();
+
+            if (menuCommand == Menu.wrp.ToString() || menuCommand == Menu.imp.ToString() || menuCommand == Menu.nto.ToString())
             {
-                retVal = Navigation.For(playerShip).Controls(command);
+                this.SubscriberPromptSubSystem = SubsystemType.Navigation;
+
+                //todo: we may need to break out warp and imp, or change the process here because we can't tell which of the 3 we need for prompt.
+
+                retVal = Navigation.For(playerShip).Controls(menuCommand);
             }
-            else if (readCommand == Menu.irs.ToString())
+            else if (menuCommand == Menu.irs.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.ImmediateRangeScan;
                 retVal = ImmediateRangeScan.For(playerShip).Controls();
             }
-            else if (readCommand == Menu.srs.ToString())
+            else if (menuCommand == Menu.srs.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.ShortRangeScan;
                 retVal = ShortRangeScan.For(playerShip).Controls();
             }
-            else if (readCommand == Menu.lrs.ToString())
+            else if (menuCommand == Menu.lrs.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.LongRangeScan;
                 retVal = LongRangeScan.For(playerShip).Controls();
             }
-            else if (readCommand == Menu.crs.ToString())
+            else if (menuCommand == Menu.crs.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.CombinedRangeScan;
                 retVal = CombinedRangeScan.For(playerShip).Controls();
             }
-            else if (readCommand == Menu.pha.ToString())
+            else if (menuCommand == Menu.pha.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.Phasers;
                 retVal = Phasers.For(playerShip).Controls(playerShip);
             }
-            else if (readCommand == Menu.tor.ToString())
+            else if (menuCommand == Menu.tor.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.Torpedoes;
                 retVal = Torpedoes.For(playerShip).Controls();
             }
-            else if (readCommand == Menu.she.ToString())
+            else if (menuCommand == Menu.she.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.Shields;
+
                 retVal = this.ShieldMenu(playerShip);
             }
-            else if (readCommand == Menu.com.ToString())
+            else if (menuCommand == Menu.com.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.Computer;
                 retVal = this.ComputerMenu(playerShip);
             }
-            else if (readCommand == Menu.toq.ToString())
+            else if (menuCommand == Menu.toq.ToString())
             {
-                retVal = Computer.For(playerShip).Controls(command);
+                this.SubscriberPromptSubSystem = SubsystemType.Computer;
+                retVal = Computer.For(playerShip).Controls(menuCommand); //todo: promptlevel should be able to tell us anything else we need.
             }
-            else if (readCommand == Menu.dmg.ToString())
+            else if (menuCommand == Menu.dmg.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.DamageControl;
                 retVal = this.DamageControlMenu(playerShip);
             }
-            else if (readCommand == Menu.dbg.ToString())
+            else if (menuCommand == Menu.dbg.ToString())
             {
+                this.SubscriberPromptSubSystem = SubsystemType.Debug;
                 retVal = this.DebugMenu(playerShip);
             }
-            else if (readCommand == Menu.ver.ToString())
+            else if (menuCommand == Menu.ver.ToString())
             {
                 this.Output.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
             }
-            else if (readCommand == Menu.cls.ToString())
+            else if (menuCommand == Menu.cls.ToString())
             {
                 this.Output.Clear();
             }
@@ -676,10 +727,10 @@ namespace StarTrek_KG.Output
                 retVal = this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
             }
 
-            return retVal;
+            return retVal.ToList();
         }
 
-        private List<string> DebugMenu(IShip playerShip)
+        private IEnumerable<string> DebugMenu(IShip playerShip)
         {
             this.Strings(Debug.CONTROL_PANEL);
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
@@ -692,7 +743,7 @@ namespace StarTrek_KG.Output
             return this.Output.Queue.ToList();
         }
 
-        private List<string> ComputerMenu(IShip playerShip)
+        private IEnumerable<string> ComputerMenu(IShip playerShip)
         {
             if (Computer.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
@@ -707,7 +758,7 @@ namespace StarTrek_KG.Output
             return this.Output.Queue.ToList();
         }
 
-        private List<string> DamageControlMenu(IShip playerShip)
+        private IEnumerable<string> DamageControlMenu(IShip playerShip)
         {
             this.Strings(DamageControl.CONTROL_PANEL);
             this.WithNoEndCR("Enter Damage Control Command: ");
@@ -720,7 +771,7 @@ namespace StarTrek_KG.Output
             return this.Output.Queue.ToList();
         }
 
-        private List<string> ShieldMenu(IShip playerShip)
+        private IEnumerable<string> ShieldMenu(IShip playerShip, string shieldsCommand = "")
         {
             if (Shields.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
@@ -745,19 +796,33 @@ namespace StarTrek_KG.Output
 
             this.Strings(Shields.SHIELD_PANEL);
 
-            this.WithNoEndCR("Enter shield control command: ");
-            var shieldsCommand = Output.ReadLine().Trim().ToLower();
+            this.WithNoEndCR("Enter shield control command: "); //todo: this may need to be done differently for web app, because this is supposed to be a prompt
+
+            if (!this.IsSubscriberApp)
+            {
+                shieldsCommand = Output.ReadLine().Trim().ToLower();
+            }
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
             Shields.For(playerShip).Controls(shieldsCommand);
 
-            return this.Output.Queue.ToList();
+            return this.Output.Queue;
         }
 
         #endregion
 
         #region Prompt
 
+        /// <summary>
+        /// The point of this method is to get information from the user.  
+        /// In the case of the console, readline will display cursor, and wait for the user to reply.
+        /// In the case of Sebscriber (ex. Web), then we must end the call that got us here so we can get the information back from the user.
+        /// </summary>
+        /// <param name="promptSubsystem"></param>
+        /// <param name="promptMessage"></param>
+        /// <param name="value"></param>
+        /// <param name="subPromptLevel"></param>
+        /// <returns></returns>
         public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0)
         {
             try
@@ -766,16 +831,11 @@ namespace StarTrek_KG.Output
 
                 if (this.IsSubscriberApp)
                 {
-                    //todo: 
+                    //todo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. they need to be broken out to a separate class.
                     this.SubscriberPromptSubSystem = promptSubsystem;
                     this.SubscriberPromptLevel = subPromptLevel;
 
-                    //todo: if subPromptLevel > 0 then we need to limit to the subPrompt menu (or exit the hierarchy)
-
-                    //todo: this means that we new must 
-
-                    //ttodo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. 
-                    //they need to be broken out to a separate class.
+                    //todo: an endCR might need to be added here
 
                     value = -1;
                 }

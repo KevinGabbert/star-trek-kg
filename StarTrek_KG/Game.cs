@@ -178,7 +178,7 @@ namespace StarTrek_KG
         /// <summary>
         /// Starts the game in Web mode.  Shows start screen
         /// </summary>
-        public void RunWeb()
+        public void RunSubscriber()
         {
             this.Initialize();
             this.PrintOpeningScreen();
@@ -189,21 +189,27 @@ namespace StarTrek_KG
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public List<string> WebSendAndGetResponse(string command)
+        public List<string> SubscriberSendAndGetResponse(string command)
         {
             List<string> retVal = null;
 
             this.Write.Output.Clear();
 
-            //need to get info from render.Write
-
             retVal = this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
 
-            //todo: this may need to be added to Queue;
-            this.ReportGameStatus();
+            if (retVal == null)
+            {
+                //do nothing.  exit out
+                retVal = new List<string>();
+            }
+            else
+            {
+                //todo: this may need to be added to Queue;
+                this.ReportGameStatus();
+            }
 
             //Write.OutputQueue should be filled with everything that just happened.
-            return retVal; //this.Write.Output.OutputQueue.ToList()
+            return retVal; 
         }
 
         #endregion  
@@ -212,7 +218,7 @@ namespace StarTrek_KG
 
         #region Setup
 
-        public void Initialize()
+        private void Initialize()
         {
             //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
             this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
@@ -253,8 +259,8 @@ namespace StarTrek_KG
         /// <returns></returns>
         private SectorDefs DefaultHardcodedSetup()
         {
-
             //todo: get rid of this.  generate on the fly!
+            //todo: this needs to be  in a config file
 
             return new SectorDefs
                        {
@@ -304,7 +310,7 @@ namespace StarTrek_KG
         /// Prints title and sets up the playfield.
         /// This is where the Map is created, and references to it are passed around from here on.
         /// </summary>
-        public void PrintOpeningScreen()
+        private void PrintOpeningScreen()
         {
             this.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
 
@@ -313,7 +319,7 @@ namespace StarTrek_KG
             this.Write.PrintMission();
         }
 
-        public void RandomAppTitle()
+        private void RandomAppTitle()
         {
             int randomVal = Utility.Utility.Random.Next(3);
 
@@ -848,7 +854,7 @@ namespace StarTrek_KG
             this.Write.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
-        public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
+        public static void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
         {
             if (lastRegion.X != Region.X || lastRegion.Y != Region.Y)
             {

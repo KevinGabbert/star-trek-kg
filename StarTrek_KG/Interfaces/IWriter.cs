@@ -52,11 +52,14 @@ namespace StarTrek_KG.Interfaces
         void CreateCommandPanel();
         List<string> Panel(string panelHead, IEnumerable<string> strings);
         //string GetPanelHead(string shipName);
-        List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string command = null);
+        List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null);
 
         bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0);
         bool PromptUserConsole(string promptMessage, out string value);
         bool PromptUserSubscriber(string promptMessage, out string value);
+        int SubscriberPromptLevel { get; set; }
+        SubsystemType SubscriberPromptSubSystem { get; set; }
+        List<string> EvalSubLevelCommand(IShip playerShip, string playerEnteredText, int promptLevel);
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
         void RenderSectors(SectorScanType scanType, ISubsystem subsystem);

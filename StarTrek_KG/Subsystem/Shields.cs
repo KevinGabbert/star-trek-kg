@@ -19,48 +19,75 @@ namespace StarTrek_KG.Subsystem
             this.Energy = 0;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public override List<string> Controls(string command)
         {
             this.Game.Write.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.Output.Queue.ToList(); ;
-
-            bool adding = false;
-            switch (command)
+            if (this.Game.Write.IsSubscriberApp)
             {
-                case "add":
-                    adding = true;
-                    break;
+                if (this.Game.Write.SubscriberPromptLevel == 1)
+                {
+                    //now we know that the shield Panel command has been retrieved.
+                    if (this.Damaged()) return this.Game.Write.Output.Queue.ToList();
 
-                case "sub":
-
-                    if (this.Energy > 0)
+                    bool adding = false;
+                    switch (command)
                     {
-                        this.MaxTransfer = this.Energy;
+                        //todo: divine these from type
+
+                        case "add":
+                            adding = true;
+                            break;
+
+                        case "sub":
+
+                            if (this.Energy > 0)
+                            {
+                                this.MaxTransfer = this.Energy;
+                            }
+                            else
+                            {
+                                this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
+                                goto EndControls;
+                            }
+
+                            break;
+
+                        default:
+                            return this.Game.Write.Output.Queue.ToList();
+                    }
+
+                    if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
+                    {
+                        this.Game.Write.Line("Energy cannot be added to shields while in a nebula.");
                     }
                     else
                     {
-                        this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
-                        goto EndControls;
+                        var transfer = this.TransferredFromUser();
+                        this.TransferEnergy(transfer, adding);
                     }
+                }
+                else
+                {
+                    //todo:***
 
-                    break;
-
-                default:
-                    return this.Game.Write.Output.Queue.ToList();
+                    //todo: lay marker, exit out 
+                    return null;
+                }
             }
 
-            if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
-            {
-                this.Game.Write.Line("Energy cannot be added to shields while in a nebula.");
-            }
-            else
-            {
-                var transfer = this.TransferredFromUser();
-                this.TransferEnergy(transfer, adding);
-            }
+            //playerShip.Game.Write.SubscriberPromptLevel = 1;
 
-            EndControls:;
+
+
+
+
+            EndControls:
 
             return this.Game.Write.Output.Queue.ToList();
         }
@@ -108,8 +135,17 @@ namespace StarTrek_KG.Subsystem
         public new int TransferredFromUser()
         {
             int transfer;
+
             bool readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields, $"Enter amount of energy (1--{this.MaxTransfer}): ",
                                                  out transfer);
+
+            if (this.ShipConnectedTo.Game.Write.SubscriberPromptLevel == 2)
+            {
+                //now we know an amount has been entered.
+
+
+                return 0;
+            }
 
             return EnergyValidation(transfer, readSuccess);
         }

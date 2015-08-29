@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -32,12 +34,12 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo = shipConnectedTo;
         }
 
-        public virtual void OutputDamagedMessage()
+        protected virtual void OutputDamagedMessage()
         {
             this.Game.Write.Line(this.Type + " Damaged.");
         }
 
-        public virtual void OutputRepairedMessage()
+        protected virtual void OutputRepairedMessage()
         {
             this.Game.Write.Line(this.Type + " Repaired.");
         }
@@ -47,14 +49,13 @@ namespace StarTrek_KG.Subsystem
         //    this.Game.Write.Line(this.Type + " Malfunctioning.");
         //}
 
-        protected void Initialize()
+        private void Initialize()
         {   
 
         }
 
         public virtual List<string> Controls(string command)
         {
-            //todo: can Prompt be moved out of here?
             this.Game.Write.Output.Queue.Clear();
             return new List<string>();
         }
@@ -176,6 +177,23 @@ namespace StarTrek_KG.Subsystem
             }
 
             var subSystemToReturn = ship.Subsystems.Single(s => s.Type == subsystemType);
+
+            return subSystemToReturn;
+        }
+
+        internal static ISubsystem GetSubsystemFor(IShip ship, SubsystemType subscriberPromptSubSystem)
+        {
+            if (ship == null)
+            {
+                throw new GameConfigException("Ship not passed.");
+            }
+
+            if (subscriberPromptSubSystem == null)
+            {
+                throw new GameConfigException("subsystem not passed");
+            }
+
+            var subSystemToReturn = ship.Subsystems.Single(s => s.Type == subscriberPromptSubSystem);
 
             return subSystemToReturn;
         }

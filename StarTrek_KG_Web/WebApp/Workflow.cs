@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using StarTrek_KG;
 using StarTrek_KG.Config;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG_Web.WebApp
 {
@@ -53,7 +54,7 @@ namespace StarTrek_KG_Web.WebApp
                     break;
 
                 default:
-                    responseLines = this.NewWebTurn(responseLines, sessionID, command);
+                    responseLines = this.NewSubscriberTurn(responseLines, sessionID, command);
                     break;
             }
             return responseLines;
@@ -98,7 +99,7 @@ namespace StarTrek_KG_Web.WebApp
 
             HttpContext.Current.Session["game"] = game;
 
-            GetGame().RunWeb();
+            GetGame().RunSubscriber();
             GetGame().Started = true;
 
             responseLines = this.Response("Game Started..");
@@ -144,7 +145,7 @@ namespace StarTrek_KG_Web.WebApp
         //    }
         //}
 
-        private List<string> NewWebTurn(List<string> responseLines, string sessionID, string command)
+        private List<string> NewSubscriberTurn(List<string> responseLines, string sessionID, string command)
         {
             var myGame = this.GetGame(sessionID);
 
@@ -153,7 +154,7 @@ namespace StarTrek_KG_Web.WebApp
                 //pass command and session ID to application
                 if (!myGame.GameOver)
                 {
-                    responseLines = this.Response(myGame.WebSendAndGetResponse(command));
+                    responseLines = this.Response(myGame.SubscriberSendAndGetResponse(command));
                 }
                 else
                 {

@@ -50,7 +50,7 @@ namespace StarTrek_KG.Actors
                     {
                         newLocation.SetActive();
                         this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Region 
-                        this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
+                        Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
                     }
 
                     break;
@@ -295,7 +295,7 @@ namespace StarTrek_KG.Actors
 
             this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Region  
 
-            this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
+            Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
         }
 
         /// <summary>
