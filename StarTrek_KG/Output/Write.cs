@@ -615,7 +615,9 @@ namespace StarTrek_KG.Output
             //if we got this far, then we know what menu we are in.
             string menuName = this.SubscriberPromptSubSystem.Name;
 
-            //todo: Finish this. *************
+            //todo: Finish this. 
+            //**(we need to pull up the menu for validation and display)***
+            //**verify dynamically loading shield menu**
             if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem, this.SubscriberPromptLevel))
             {
                 ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.SubscriberPromptSubSystem);
@@ -640,18 +642,9 @@ namespace StarTrek_KG.Output
         /// <returns></returns>
         private bool IsAcceptable(string stringToCheck, SubsystemType subsystem, int promptLevel)
         {
-            //todo: each menu needs to be abstracted out so we can look up commands from each one here.
-
-            //todo: look up menu commands from subsystem from config file.
-
-            //linq in menuCommands for subsystem
-
-            
-
-            //todo: validation of some sort
-
-            bool acceptable = true;
-
+            //todo: verify that this config entry exists
+            MenuItems menuItems = this.Config.GetMenuItems($"{subsystem}Panel");
+            bool acceptable = menuItems.Cast<MenuItemDef>().Any(m => m.name == stringToCheck && m.promptLevel == promptLevel) != null;
             return acceptable;
         }
 

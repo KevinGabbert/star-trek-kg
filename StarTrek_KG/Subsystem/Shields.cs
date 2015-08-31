@@ -38,6 +38,8 @@ namespace StarTrek_KG.Subsystem
                     bool adding = false;
                     switch (command)
                     {
+                        //todo: get these from web.config?
+
                         //todo: divine these from type
 
                         case "add":
