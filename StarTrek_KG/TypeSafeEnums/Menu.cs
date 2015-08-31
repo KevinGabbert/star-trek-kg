@@ -10,6 +10,8 @@ namespace StarTrek_KG.TypeSafeEnums
 
         private readonly int value;
 
+        //todo: resource out menu - Delete this construct
+        //todo: pull these values from Config file
         public static readonly Menu nav = new Menu(1, "nav", "");
         public static readonly Menu wrp = new Menu(2, "wrp", "Warp Navigation");
         public static readonly Menu irs = new Menu(3, "irs", "Immediate Range Scan");
@@ -25,6 +27,8 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly Menu toq = new Menu(13, "toq", "Target Object in this Region");
         public static readonly Menu dmg = new Menu(14, "dmg", "Damage Control");              
         public static readonly Menu dbg = new Menu(15, "dbg", "Debug Test Mode");
+
+        //todo: support these commands
         public static readonly Menu ver = new Menu(16, "ver", "");
         public static readonly Menu cls = new Menu(17, "cls", "");
 

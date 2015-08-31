@@ -12,7 +12,7 @@ namespace StarTrek_KG.Subsystem
     //todo: make feature where opposing ships can hack into your computer (and you, theirs) if shields are down
     public class Computer : SubSystem_Base
     {
-        //todo: resource this out
+        //todo: resource this out menu
         public static readonly string[] CONTROL_PANEL = {
                                                             "",
                                                             "─── Main Computer ──────────────",
@@ -21,7 +21,7 @@ namespace StarTrek_KG.Subsystem
                                                             "tor = Photon Torpedo Calculator",
                                                             "bas = Starbase Calculator",
                                                             "nav = Navigation Calculator",
-                                                            "tlm = Translate Last Message"
+                                                            "tlm = Translate Last Message" //todo: new feature, auto translate upgrade
                                                         };
 
         public Computer(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
@@ -36,6 +36,7 @@ namespace StarTrek_KG.Subsystem
 
             var starship = this.ShipConnectedTo;
 
+            //todo: thise commands should be pulled from web.config entries
             switch (command.ToLower())
             {
                 case "rec":

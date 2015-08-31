@@ -18,7 +18,9 @@ namespace StarTrek_KG.Subsystem
         //todo: Getting tired of seeing that Torp. track show up as an array  For now these visuals are accessed here..
 
         //todo: change to List<string>
-        public static readonly string[] CONTROL_PANEL = {
+
+        //todo: resource out this menu
+        public static readonly string[] DEBUG_PANEL = {
                                                     " ",
                                                     "--- > Debug/New Feature Test Mode ------------------------------------",
                                                     "  ",

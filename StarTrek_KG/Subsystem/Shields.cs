@@ -83,10 +83,6 @@ namespace StarTrek_KG.Subsystem
 
             //playerShip.Game.Write.SubscriberPromptLevel = 1;
 
-
-
-
-
             EndControls:
 
             return this.Game.Write.Output.Queue.ToList();

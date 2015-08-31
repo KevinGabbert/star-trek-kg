@@ -15,7 +15,7 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.ImmediateRangeScan;
         }
 
-        public List<string> Controls()
+        public IEnumerable<string> Controls()
         {
             this.Game.Write.Output.Queue.Clear();
 

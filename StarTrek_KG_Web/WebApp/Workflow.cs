@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using StarTrek_KG;
 using StarTrek_KG.Config;
-using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG_Web.WebApp
 {
@@ -14,6 +13,7 @@ namespace StarTrek_KG_Web.WebApp
         {
             switch (command.ToLower())
             {
+                //todo: resource out menu
                 case "term menu":
                     responseLines = this.Response(new List<string>()
                     {

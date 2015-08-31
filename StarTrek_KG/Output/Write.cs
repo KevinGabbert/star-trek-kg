@@ -486,6 +486,7 @@ namespace StarTrek_KG.Output
             }
         }
 
+        //todo: resource out
         public string RenderCourse()
         {
             //todo: pull this from app.config
@@ -508,6 +509,7 @@ namespace StarTrek_KG.Output
             return $"{menuItem.Name} = {menuItem.Description}";
         }
 
+        //todo: resource out
         public List<string> Panel(string panelHead, IEnumerable<string> strings)
         {
             this.Output.WriteLine();
@@ -524,13 +526,15 @@ namespace StarTrek_KG.Output
             return this.Output.Queue.ToList();
         }
 
-        public string GetPanelHead(string shipName)
+        //todo: resource out
+        private string GetPanelHead(string shipName)
         {
             return "─── " + shipName + " ───";
         }
 
         public void CreateCommandPanel()
         {
+            //todo: resource out menu
             ACTIVITY_PANEL = new List<string>
             {
                 "imp = Impulse Navigation",
@@ -610,7 +614,7 @@ namespace StarTrek_KG.Output
             string menuName = this.SubscriberPromptSubSystem.Name;
 
             //todo: Finish this. *************
-            if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem))
+            if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem, this.SubscriberPromptLevel))
             {
                 ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.SubscriberPromptSubSystem);
                 this.Output.Write(subsystem.Controls(playerEnteredText));
@@ -627,20 +631,24 @@ namespace StarTrek_KG.Output
         }
 
         /// <summary>
-        /// Returns a list of menu command for the menuOption passed.
+        /// Checks against menu commands for matching subsystem
         /// </summary>
         /// <param name="stringToCheck"></param>
         /// <param name="menuName"></param>
         /// <returns></returns>
-        private bool IsAcceptable(string stringToCheck, SubsystemType subsystem)
+        private bool IsAcceptable(string stringToCheck, SubsystemType subsystem, int promptLevel)
         {
             //todo: each menu needs to be abstracted out so we can look up commands from each one here.
 
-            //todo: look up menu commands from this.SubscriberPromptSubSystem & this.SubscriberPromptLevel
+            //todo: look up menu commands from subsystem from config file.
+
+            //linq in menuCommands for subsystem
+
+            
 
             //todo: validation of some sort
 
-            bool acceptable = false;
+            bool acceptable = true;
 
             return acceptable;
         }
@@ -732,7 +740,7 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> DebugMenu(IShip playerShip)
         {
-            this.Strings(Debug.CONTROL_PANEL);
+            this.Strings(Debug.DEBUG_PANEL);
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
 
             //todo: readline needs to be done using an event
@@ -760,7 +768,7 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> DamageControlMenu(IShip playerShip)
         {
-            this.Strings(DamageControl.CONTROL_PANEL);
+            this.Strings(DamageControl.DAMAGE_PANEL);
             this.WithNoEndCR("Enter Damage Control Command: ");
 
             //todo: readline needs to be done using an event
@@ -782,20 +790,27 @@ namespace StarTrek_KG.Output
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
+            //todo: resource out this menu
+            //todo: *DOWN* feature should be a upgrade functionality
             if (currentShieldEnergy > 0)
             {
-                Shields.SHIELD_PANEL.Add("─── Shield Control: ── <CURRENTLY AT: " + currentShieldEnergy + "> ──");
-                Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
-                Shields.SHIELD_PANEL.Add("sub = Subtract energy from shields.");
+                //todo:
+                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Control: ── {0} ──", $"< CURRENTLY AT: {currentShieldEnergy}>"));
+                Shields.SHIELD_PANEL.Add("add = Add energy to shields");
+                Shields.SHIELD_PANEL.Add("sub = Subtract energy from shields");
             }
             else
             {
-                Shields.SHIELD_PANEL.Add("─── Shield Control: ── <DOWN> ──");
+                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Control: ── {0} ──", "DOWN"));
+
+                //todo: use linq to only pull out Add()
+
                 Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
             }
 
             this.Strings(Shields.SHIELD_PANEL);
 
+            //todo: resource this out
             this.WithNoEndCR("Enter shield control command: "); //todo: this may need to be done differently for web app, because this is supposed to be a prompt
 
             if (!this.IsSubscriberApp)

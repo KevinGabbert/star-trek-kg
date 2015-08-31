@@ -39,7 +39,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public List<string> Controls(IShip shipFiringPhasers)
+        public IEnumerable<string> Controls(IShip shipFiringPhasers)
         {
             this.Game.Write.Output.Queue.Clear();
 
@@ -259,7 +259,7 @@ namespace StarTrek_KG.Subsystem
         private void FireOnStar(IStar iStar)
         {
             this.Game.Write.Line("");
-            this.Game.Write.Line("Direct hit on " + iStar.Name + ". No apparent damage to Stellar Body.");
+            this.Game.Write.Line($"Direct hit on {iStar.Name}. No apparent damage to stellar body.");
         }
     }
 }

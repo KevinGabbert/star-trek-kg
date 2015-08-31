@@ -39,6 +39,7 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.Write.Output.Write(hostileCheckOutput);
 
+            //todo: resource this out.
             var firingDirection = Environment.NewLine +
                                   " 4   5   6 " + Environment.NewLine +
                                  @"   \ ↑ /  " + Environment.NewLine +
@@ -319,8 +320,7 @@ namespace StarTrek_KG.Subsystem
             {
                 string shipSectorX = (ship.Sector.X).ToString();
                 string shipSectorY = (ship.Sector.Y).ToString();
-                string direction =
-                    $"{Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y):#.##}";
+                string direction = $"{Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y):#.##}";
 
                 direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);
 

@@ -8,7 +8,8 @@ namespace StarTrek_KG.Subsystem
 {
     public class DamageControl : SubSystem_Base
     {
-        public static readonly string[] CONTROL_PANEL = {
+        //todo: resource out this menu
+        public static readonly string[] DAMAGE_PANEL = {
                                                     "--- > Damage Control --------------",
                                                     "fix = Emergency Fix subsystem"
                                                 };
