@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Config.Collections;
+using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Extensions.System;
@@ -790,7 +792,12 @@ namespace StarTrek_KG.Output
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
-            IEnumerable<string> menuItems = this.Config.GetMenuItems("ShieldPanel");
+            MenuItems menuItems = this.Config.GetMenuItems("ShieldPanel");
+
+            foreach (MenuItemDef menuItem in menuItems)
+            {
+                var xxx = menuItem.name;
+            }
 
             //todo: replace the below with menuItems grabbed here.
 

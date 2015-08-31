@@ -60,12 +60,14 @@
   <ItemGroup>
     <Compile Include="Actors\Impulse.cs" />
     <Compile Include="Config\Collections\MenuElement.cs" />
+    <Compile Include="Config\Collections\MenuItemDefs.cs" />
     <Compile Include="Config\Collections\MenuItems.cs" />
     <Compile Include="Config\Collections\Menus.cs" />
     <Compile Include="Config\Collections\NameHeaders.cs" />
     <Compile Include="Config\Collections\ResgistryNameTypeClasses.cs" />
     <Compile Include="Config\Collections\SeverityValues.cs" />
     <Compile Include="Config\Collections\FactionThreats.cs" />
+    <Compile Include="Config\Elements\MenuItemDef.cs" />
     <Compile Include="Config\Elements\Name.cs" />
     <Compile Include="Config\Elements\NameHeader.cs" />
     <Compile Include="Config\Elements\SeverityValueTranslation.cs" />

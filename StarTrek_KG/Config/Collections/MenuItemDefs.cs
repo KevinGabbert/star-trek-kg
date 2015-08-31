@@ -3,9 +3,9 @@ using StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config.Collections
 {
-    public class MenuItems : MenuItemDefs
+    public class MenuItemDefs : ConfigurationElementCollection
     {
-        public new MenuItemDef this[int index]
+        public MenuItemDef this[int index]
         {
             get
             {

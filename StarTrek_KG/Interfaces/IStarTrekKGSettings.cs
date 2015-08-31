@@ -57,7 +57,7 @@ namespace StarTrek_KG.Interfaces
         /// </summary>
         /// <param name="menuName"></param>
         /// <returns></returns>
-        IEnumerable<string> GetMenuItems(string menuName);
+        MenuItems GetMenuItems(string menuName);
 
         /// <summary>
         /// StarSystems look like this in the app.config: <StarSystem name="Bellerophon"/>

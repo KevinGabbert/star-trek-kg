@@ -121,17 +121,14 @@ namespace StarTrek_KG.Config
 
         #region Menus
 
-        public IEnumerable<string> GetMenuItems(string menuName) //todo: this is called multiple times, do we need to reload file?
+        public MenuItems GetMenuItems(string menuName) //todo: this is called multiple times, do we need to reload file?
         {
             this.Reset();
 
+            //todo: throw a try..catch here in case it breaks.
             MenuElement menuElement = this.Get.Menus[menuName];
 
-            MenuItems menuItems = menuElement.MenuItems;
-
-            //todo: this needs to return a list of MenuItems
-            List<string> menuNames = (from RegistryNameTypeClass menuItemElement in menuItems select menuItemElement.name.Trim()).ToList();
-            return menuNames;
+            return menuElement.MenuItems;
         }
 
 
