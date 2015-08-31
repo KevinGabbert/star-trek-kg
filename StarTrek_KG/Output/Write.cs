@@ -504,7 +504,7 @@ namespace StarTrek_KG.Output
 
         #endregion
 
-        #region Menus
+        #region MenusAndPrompts
 
         private string DisplayMenuItem(Menu menuItem)
         {
@@ -534,37 +534,6 @@ namespace StarTrek_KG.Output
             return "─── " + shipName + " ───";
         }
 
-        public void CreateCommandPanel()
-        {
-            //todo: resource out menu
-            ACTIVITY_PANEL = new List<string>
-            {
-                "imp = Impulse Navigation",
-                "wrp = Warp Navigation",
-                "nto = Navigate To Object",
-                "─────────────────────────────",
-                "irs = Immediate Range Scan",
-                "srs = Short Range Scan",
-                "lrs = Long Range Scan",
-                "crs = Combined Range Scan",
-                "─────────────────────────────",
-                "pha = Phaser Control",
-                "tor = Photon Torpedo Control",
-                "toq = Target Object in this Region",
-                "─────────────────────────────",
-                "she = Shield Control",
-                "com = Access Computer",
-                "dmg = Damage Control"
-            };
-
-            if (Constants.DEBUG_MODE)
-            {
-                ACTIVITY_PANEL.Add("");
-                ACTIVITY_PANEL.Add("─────────────────────────────");
-                ACTIVITY_PANEL.Add(this.DisplayMenuItem(Menu.dbg));
-            }
-        }
-
         /// <summary>
         /// What happens in here is that each method called generates an output then renders it to the screen
         /// </summary>
@@ -574,8 +543,6 @@ namespace StarTrek_KG.Output
         /// <param name="userInput"></param>
         public List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null)
         {
-            List<string> retVal = null;
-
             if (!this.IsSubscriberApp)
             {
                 this.Output.Write(mapText);
@@ -596,56 +563,23 @@ namespace StarTrek_KG.Output
                 userCommand = readLine.Trim().ToLower();
             }
 
+            return this.OutputMenu(playerShip, userCommand);
+        }
+    
+        private List<string> OutputMenu(IShip playerShip, string userCommand)
+        {
+            List<string> retVal;
+
             if (this.SubscriberPromptLevel == 0)
             {
                 retVal = this.EvalTopLevelMenuCommand(playerShip, userCommand);
             }
-            else 
-            { 
+            else
+            {
                 retVal = this.EvalSubLevelCommand(playerShip, userCommand, this.SubscriberPromptLevel);
             }
 
             return retVal;
-        }
-
-        public List<string> EvalSubLevelCommand(IShip playerShip, string playerEnteredText, int promptLevel)
-        {
-            IEnumerable<string> retVal = new List<string>();
-
-            //if we got this far, then we know what menu we are in.
-            string menuName = this.SubscriberPromptSubSystem.Name;
-
-            //todo: Finish this. 
-            //**(we need to pull up the menu for validation and display)***
-            //**verify dynamically loading shield menu**
-            if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem, this.SubscriberPromptLevel))
-            {
-                ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.SubscriberPromptSubSystem);
-                this.Output.Write(subsystem.Controls(playerEnteredText));
-            }
-            else
-            {
-                this.Output.Write($"Unrecognized Command. Exiting {menuName} Menu");
-                this.SubscriberPromptLevel = 0; //resets our menu level
-
-                return null;
-            }
-
-            return retVal.ToList();
-        }
-
-        /// <summary>
-        /// Checks against menu commands for matching subsystem
-        /// </summary>
-        /// <param name="stringToCheck"></param>
-        /// <param name="menuName"></param>
-        /// <returns></returns>
-        private bool IsAcceptable(string stringToCheck, SubsystemType subsystem, int promptLevel)
-        {
-            //todo: verify that this config entry exists
-            MenuItems menuItems = this.Config.GetMenuItems($"{subsystem}Panel");
-            bool acceptable = menuItems.Cast<MenuItemDef>().Any(m => m.name == stringToCheck && m.promptLevel == promptLevel) != null;
-            return acceptable;
         }
 
         private List<string> EvalTopLevelMenuCommand(IShip playerShip, string menuCommand)
@@ -733,9 +667,83 @@ namespace StarTrek_KG.Output
             return retVal.ToList();
         }
 
+        /// <summary>
+        /// Checks against menu commands for matching subsystem
+        /// </summary>
+        /// <param name="stringToCheck"></param>
+        /// <param name="subsystem"></param>
+        /// <param name="promptLevel"></param>
+        /// <returns></returns>
+        private bool IsAcceptable(string stringToCheck, SubsystemType subsystem, int promptLevel)
+        {
+            //todo: verify that this config entry exists
+            MenuItems menuItems = this.Config.GetMenuItems($"{subsystem}Panel");
+            bool acceptable = menuItems.Cast<MenuItemDef>().Any(m => m.name == stringToCheck && m.promptLevel == promptLevel) != null;
+            return acceptable;
+        }
+
+
+        public void CreateCommandPanel()
+        {
+            //todo: resource out menu
+            ACTIVITY_PANEL = new List<string>
+            {
+                "imp = Impulse Navigation",
+                "wrp = Warp Navigation",
+                "nto = Navigate To Object",
+                "─────────────────────────────",
+                "irs = Immediate Range Scan",
+                "srs = Short Range Scan",
+                "lrs = Long Range Scan",
+                "crs = Combined Range Scan",
+                "─────────────────────────────",
+                "pha = Phaser Control",
+                "tor = Photon Torpedo Control",
+                "toq = Target Object in this Region",
+                "─────────────────────────────",
+                "she = Shield Control",
+                "com = Access Computer",
+                "dmg = Damage Control"
+            };
+
+            if (Constants.DEBUG_MODE)
+            {
+                ACTIVITY_PANEL.Add("");
+                ACTIVITY_PANEL.Add("─────────────────────────────");
+                ACTIVITY_PANEL.Add(this.DisplayMenuItem(Menu.dbg));
+            }
+        }
+
+        #region Sub-Level Menus
+
+        public List<string> EvalSubLevelCommand(IShip playerShip, string playerEnteredText, int promptLevel)
+        {
+            IEnumerable<string> retVal = new List<string>();
+
+            string menuName = this.SubscriberPromptSubSystem.Name;
+
+            //todo: Finish other menus.  refactor their common menu creation steps
+            if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem, this.SubscriberPromptLevel))
+            {
+                ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.SubscriberPromptSubSystem);
+                this.Output.Write(subsystem.Controls(playerEnteredText));
+            }
+            else
+            {
+                this.Output.Write($"Unrecognized Command. Exiting {menuName} Menu");
+                this.SubscriberPromptLevel = 0; //resets our menu level
+
+                return null;
+            }
+
+            return retVal.ToList();
+        }
+
         private IEnumerable<string> DebugMenu(IShip playerShip)
         {
-            this.Strings(Debug.DEBUG_PANEL);
+           IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
+
+            this.OutputStrings(Debug.DEBUG_PANEL);
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
 
             //todo: readline needs to be done using an event
@@ -750,7 +758,9 @@ namespace StarTrek_KG.Output
         {
             if (Computer.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
-            this.Strings(Computer.CONTROL_PANEL);
+            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
+
+            this.OutputStrings(Computer.CONTROL_PANEL);
             this.WithNoEndCR(this.ENTER_COMPUTER_COMMAND);
 
             //todo: readline needs to be done using an event
@@ -763,7 +773,10 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> DamageControlMenu(IShip playerShip)
         {
-            this.Strings(DamageControl.DAMAGE_PANEL);
+            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
+
+            this.OutputStrings(DamageControl.DAMAGE_PANEL);
+
             this.WithNoEndCR("Enter Damage Control Command: ");
 
             //todo: readline needs to be done using an event
@@ -785,11 +798,11 @@ namespace StarTrek_KG.Output
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
-            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems("ShieldPanel").Cast<MenuItemDef>();
+            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
 
             //todo: replace the below with menuItems grabbed here.
 
-            //todo: resource out this menu
+            //todo: resource out header
             //todo: *DOWN* feature should be a upgrade functionality
             if (currentShieldEnergy > 0)
             {
@@ -803,16 +816,16 @@ namespace StarTrek_KG.Output
             }
             else
             {
-                //todo:add header from config file.
+                //todo: resource out header
                 Shields.SHIELD_PANEL.Add(string.Format("─── Shield Control: ── {0} ──", "DOWN"));
 
                 var itemToAdd = menuItems.First(m => m.name == "add");
                 Shields.SHIELD_PANEL.Add($"{itemToAdd.name} {itemToAdd.divider} {itemToAdd.description}");
             }
 
-            this.Strings(Shields.SHIELD_PANEL);
+            this.OutputStrings(Shields.SHIELD_PANEL);
 
-            //todo: resource this out
+            //todo: resource out header
             this.WithNoEndCR("Enter shield control command: "); //todo: this may need to be done differently for web app, because this is supposed to be a prompt
 
             if (!this.IsSubscriberApp)
@@ -911,6 +924,8 @@ namespace StarTrek_KG.Output
 
         #endregion
 
+        #endregion  
+
         #region Misc
 
         public void HighlightTextBW(bool on)
@@ -928,7 +943,7 @@ namespace StarTrek_KG.Output
             return linesToOutput;
         }
 
-        public void Strings(IEnumerable<string> strings)
+        public void OutputStrings(IEnumerable<string> strings)
         {
             foreach (var str in strings)
             {

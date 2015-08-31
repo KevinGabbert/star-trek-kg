@@ -17,7 +17,7 @@ namespace StarTrek_KG.Interfaces
         IStarTrekKGSettings Config { get; set; }
         IOutputMethod Output { get; set; }
 
-        void Strings(IEnumerable<string> strings);
+        void OutputStrings(IEnumerable<string> strings);
         void HighlightTextBW(bool on);
         
         List<string> Line(string stringToOutput);

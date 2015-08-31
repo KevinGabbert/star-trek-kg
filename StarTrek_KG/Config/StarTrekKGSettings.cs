@@ -126,11 +126,10 @@ namespace StarTrek_KG.Config
             this.Reset();
 
             //todo: throw a try..catch here in case it breaks.
-            MenuElement menuElement = this.Get.Menus[menuName];
+            MenuElement menuElement = this.Get?.Menus[menuName];
 
-            return menuElement.MenuItems;
+            return menuElement?.MenuItems;
         }
-
 
         #endregion
 
