@@ -12,6 +12,8 @@ namespace StarTrek_KG.Interfaces
     {
         StarTrekKGSettings Get { get; set; }
 
+        #region Configuration Properties
+
         [ConfigurationProperty("StarSystems")]
         [ConfigurationCollection(typeof(Names), AddItemName = "StarSystem")]
         Names StarSystems { get; }
@@ -28,6 +30,12 @@ namespace StarTrek_KG.Interfaces
         [ConfigurationCollection(typeof(NameValues), AddItemName = "add")]
         NameValues GameSettings { get; }
 
+        [ConfigurationProperty("Menus")]
+        [ConfigurationCollection(typeof (Menus), AddItemName = "MenuElement")]
+        Menus Menus { get; }
+
+        #endregion
+
         StarTrekKGSettings GetConfig();
 
         /// <summary>
@@ -43,6 +51,13 @@ namespace StarTrek_KG.Interfaces
         /// <param name="faction"></param>
         /// <returns></returns>
         List<FactionThreat> GetThreats(FactionName faction);
+
+        /// <summary>
+        /// MenuItems look like this in the app.config: <MenuItem promptLevel="1" name="add" description="Add energy to shields" ordinalPosition ="1" divider=" = "></MenuItem>
+        /// </summary>
+        /// <param name="menuName"></param>
+        /// <returns></returns>
+        IEnumerable<string> GetMenuItems(string menuName);
 
         /// <summary>
         /// StarSystems look like this in the app.config: <StarSystem name="Bellerophon"/>

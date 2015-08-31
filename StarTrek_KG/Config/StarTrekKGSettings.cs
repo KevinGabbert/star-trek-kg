@@ -70,15 +70,20 @@ namespace StarTrek_KG.Config
         [ConfigurationCollection(typeof(NameValues), AddItemName = "add")]
         public NameValues GameSettings => (NameValues)this["GameSettings"];
 
+        [ConfigurationProperty("Menus")]
+        [ConfigurationCollection(typeof(Menus), AddItemName = "MenuElement")]
+        public Menus Menus => (Menus)this["Menus"];
+
         #endregion
 
         #region Helper Methods
 
+        #region Factions
         public List<string> FactionShips(FactionName faction) //todo: this is called multiple times, do we need to reload file?
         {
             this.Reset();
 
-            var factionElement = this.Get.Factions[faction.ToString()];
+            Faction factionElement = this.Get.Factions[faction.ToString()];
 
             FactionShips factionShips = factionElement.FactionShips;
             var shipNames = (from RegistryNameTypeClass shipElement in factionShips select shipElement.name.Trim()).ToList();
@@ -111,6 +116,26 @@ namespace StarTrek_KG.Config
 
             return threats;
         }
+
+        #endregion
+
+        #region Menus
+
+        public IEnumerable<string> GetMenuItems(string menuName) //todo: this is called multiple times, do we need to reload file?
+        {
+            this.Reset();
+
+            MenuElement menuElement = this.Get.Menus[menuName];
+
+            MenuItems menuItems = menuElement.MenuItems;
+
+            //todo: this needs to return a list of MenuItems
+            List<string> menuNames = (from RegistryNameTypeClass menuItemElement in menuItems select menuItemElement.name.Trim()).ToList();
+            return menuNames;
+        }
+
+
+        #endregion
 
         public List<string> GetStarSystems()
         {

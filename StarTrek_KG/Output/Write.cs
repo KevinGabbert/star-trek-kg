@@ -790,6 +790,10 @@ namespace StarTrek_KG.Output
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
+            IEnumerable<string> menuItems = this.Config.GetMenuItems("ShieldPanel");
+
+            //todo: replace the below with menuItems grabbed here.
+
             //todo: resource out this menu
             //todo: *DOWN* feature should be a upgrade functionality
             if (currentShieldEnergy > 0)
