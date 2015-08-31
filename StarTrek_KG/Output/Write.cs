@@ -785,12 +785,7 @@ namespace StarTrek_KG.Output
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
-            MenuItems menuItems = this.Config.GetMenuItems("ShieldPanel");
-
-            foreach (MenuItemDef menuItem in menuItems)
-            {
-                var xxx = menuItem.name;
-            }
+            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems("ShieldPanel").Cast<MenuItemDef>();
 
             //todo: replace the below with menuItems grabbed here.
 
@@ -798,18 +793,21 @@ namespace StarTrek_KG.Output
             //todo: *DOWN* feature should be a upgrade functionality
             if (currentShieldEnergy > 0)
             {
-                //todo:
+                //todo:add header from config file.
                 Shields.SHIELD_PANEL.Add(string.Format("─── Shield Control: ── {0} ──", $"< CURRENTLY AT: {currentShieldEnergy}>"));
-                Shields.SHIELD_PANEL.Add("add = Add energy to shields");
-                Shields.SHIELD_PANEL.Add("sub = Subtract energy from shields");
+
+                foreach (MenuItemDef menuItem in menuItems)
+                {
+                    Shields.SHIELD_PANEL.Add($"{menuItem.name} {menuItem.divider} {menuItem.description}");
+                }
             }
             else
             {
+                //todo:add header from config file.
                 Shields.SHIELD_PANEL.Add(string.Format("─── Shield Control: ── {0} ──", "DOWN"));
 
-                //todo: use linq to only pull out Add()
-
-                Shields.SHIELD_PANEL.Add("add = Add energy to shields.");
+                var itemToAdd = menuItems.First(m => m.name == "add");
+                Shields.SHIELD_PANEL.Add($"{itemToAdd.name} {itemToAdd.divider} {itemToAdd.description}");
             }
 
             this.Strings(Shields.SHIELD_PANEL);
