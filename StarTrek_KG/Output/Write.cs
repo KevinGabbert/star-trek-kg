@@ -161,7 +161,6 @@ namespace StarTrek_KG.Output
                     this.Output.WriteLine("{0} : {1}", prop.Name, prop.GetValue(@object, null));
                 }
             }
-
         }
 
         #endregion

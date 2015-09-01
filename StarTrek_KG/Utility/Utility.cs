@@ -241,5 +241,6 @@ namespace StarTrek_KG.Utility
 
             return new OutputCoordinate(x, y);
         }
+
     }
 }

@@ -8,15 +8,30 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Shields : SubSystem_Base
     {
+        /// <summary>
+        /// This is the shield "menu" that the user will be using
+        /// </summary>
         public static List<string> SHIELD_PANEL = new List<string>();
 
         public Shields(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Shields;
-            this.Damage = 0;
-            this.Energy = 0;
+
+            int defaultDamageValue = 0; //todo: resource this (get from config)
+            int defaultEnergyValue = 0;  //todo: resource this (get from config)
+
+            this.Damage = defaultDamageValue;
+            this.Energy = defaultEnergyValue;
+        }
+
+        public static Shields For(IShip ship)
+        {
+            return (Shields)SubSystem_Base.For(ship, SubsystemType.Shields);
         }
 
         /// <summary>
@@ -28,66 +43,57 @@ namespace StarTrek_KG.Subsystem
         {
             this.Game.Write.Output.Queue.Clear();
 
-            if (this.Game.Write.IsSubscriberApp)
+            //now we know that the shield Panel command has been retrieved.
+            if (this.Damaged()) goto EndControls;
+
+            bool adding = false;
+            switch (command)
             {
-                if (this.Game.Write.SubscriberPromptLevel == 1)
-                {
-                    //now we know that the shield Panel command has been retrieved.
-                    if (this.Damaged()) return this.Game.Write.Output.Queue.ToList();
+                //todo: get these from web.config?
 
-                    bool adding = false;
-                    switch (command)
+                //todo: divine these from type
+
+                case "add":
+                    adding = true;
+                    break;
+
+                case "sub":
+
+                    if (this.Energy > 0)
                     {
-                        //todo: get these from web.config?
-
-                        //todo: divine these from type
-
-                        case "add":
-                            adding = true;
-                            break;
-
-                        case "sub":
-
-                            if (this.Energy > 0)
-                            {
-                                this.MaxTransfer = this.Energy;
-                            }
-                            else
-                            {
-                                this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
-                                goto EndControls;
-                            }
-
-                            break;
-
-                        default:
-                            return this.Game.Write.Output.Queue.ToList();
-                    }
-
-                    if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
-                    {
-                        this.Game.Write.Line("Energy cannot be added to shields while in a nebula.");
+                        this.MaxTransfer = this.Energy;
                     }
                     else
                     {
-                        var transfer = this.TransferredFromUser();
-                        this.TransferEnergy(transfer, adding);
+                        this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this out
+                        goto EndControls;
                     }
-                }
-                else
-                {
-                    //todo:***
 
-                    //todo: lay marker, exit out 
-                    return null;
-                }
+                    break;
+
+                default:
+                    goto EndControls;
             }
 
-            //playerShip.Game.Write.SubscriberPromptLevel = 1;
+            this.TransferEnergy(adding);
 
             EndControls:
-
             return this.Game.Write.Output.Queue.ToList();
+        }
+
+        #region Transferring energy
+
+        private void TransferEnergy(bool adding)
+        {
+            if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
+            {
+                this.Game.Write.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this out
+            }
+            else
+            {
+                var transfer = this.TransferredFromUser();
+                this.TransferEnergy(transfer, adding);
+            }
         }
 
         private void TransferEnergy(int transfer, bool adding)
@@ -175,20 +181,30 @@ namespace StarTrek_KG.Subsystem
             return (int)transfer;
         }
 
-        public static Shields For(IShip ship)
-        {
-            return (Shields)SubSystem_Base.For(ship, SubsystemType.Shields);
-        }
+        #endregion
 
-        public bool AutoRaiseShieldsIfNeeded(IRegion Region)
+        #region Automation
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="region"></param>
+        /// <returns></returns>
+        public bool AutoRaiseShieldsIfNeeded(IRegion region)
         {
+            //todo: resource this out as a feature that is turned on by default
+
+            //todo: later this feature will be an earnable upgrade. (there will need to be some upgrade configs for that)
+
             bool shieldsAutoRaised = false;
-            if (Region.GetHostiles().Count > 0)
+            if (region.GetHostiles().Count > 0)
             {
-                shieldsAutoRaised = Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, Region);
+                shieldsAutoRaised = Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, region);
             }
 
             return shieldsAutoRaised;
         }
+
+        #endregion
     }
 }
