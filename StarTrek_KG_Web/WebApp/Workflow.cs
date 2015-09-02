@@ -32,11 +32,14 @@ namespace StarTrek_KG_Web.WebApp
                     throw new ArgumentException("This is a test error");
 
                 case "end game":
+                case "stop":
                     //todo: gives final stats and stops game
                     responseLines = this.Response(new List<string>()
                     {
                         "G A M E  O V E R",
                     });
+
+                    responseLines = this.ClearSession(responseLines);
                     break;
 
                 case "clear session":
