@@ -39,7 +39,7 @@ namespace StarTrek_KG_Web.WebApp
                         "G A M E  O V E R",
                     });
 
-                    responseLines = this.ClearSession(responseLines);
+                    this.ClearSession(responseLines);
                     break;
 
                 case "clear session":
