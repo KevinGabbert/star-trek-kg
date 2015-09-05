@@ -49,16 +49,16 @@ namespace StarTrek_KG.Subsystem
                                   Environment.NewLine +
                                   "Enter firing direction (1.0--9.0) ";
 
-            int direction;
+            string direction;
             if (!this.Game.Write.PromptUser(SubsystemType.Phasers, firingDirection, out direction)
-                || direction < 1.0 
-                || direction > 9.0)
+                || int.Parse(direction) < 1.0 
+                || int.Parse(direction) > 9.0)
             {
                 this.Game.Write.Line("Invalid direction.");
                 return this.Game.Write.Output.Queue.ToList();
             }
 
-            this.Shoot(direction);
+            this.Shoot(int.Parse(direction));
 
             return this.Game.Write.Output.Queue.ToList();
         }

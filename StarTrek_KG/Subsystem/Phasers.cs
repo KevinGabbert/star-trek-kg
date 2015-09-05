@@ -58,7 +58,7 @@ namespace StarTrek_KG.Subsystem
                 return hostilesOutputLines;
             }
 
-            int phaserEnergy;
+            string phaserEnergy;
 
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
@@ -68,7 +68,7 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.Write.Line("");
 
-            this.Fire(phaserEnergy); //, shipFiringPhasers
+            this.Fire(int.Parse(phaserEnergy)); //, shipFiringPhasers
             this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
             return this.Game.Write.Output.Queue.ToList();
@@ -126,7 +126,7 @@ namespace StarTrek_KG.Subsystem
             this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
         }
 
-        private bool PromptUserForPhaserEnergy(out int phaserEnergy)
+        private bool PromptUserForPhaserEnergy(out string phaserEnergy)
         {
             return this.Game.Write.PromptUser(SubsystemType.Phasers, $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy);
         }
@@ -210,7 +210,7 @@ namespace StarTrek_KG.Subsystem
             int number = Convert.ToInt32(userReply);
             var objectToFireOn = sectorsWithObjects.Single(i => i.Key == number).Value;
 
-            int phaserEnergy;
+            string phaserEnergy;
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
                 this.Game.Write.Line("Invalid phaser energy level.");
@@ -218,7 +218,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             var hostilesHaveAttacked = false;
-            if (!this.EnergyCheckFail(phaserEnergy, this.ShipConnectedTo))
+            if (!this.EnergyCheckFail(int.Parse(phaserEnergy), this.ShipConnectedTo))
             {
                 int randomBadGuyShoots = Utility.Utility.TestableRandom(this.Game, 2, 2);
                 if (randomBadGuyShoots == 1)
@@ -227,14 +227,14 @@ namespace StarTrek_KG.Subsystem
                     hostilesHaveAttacked = true;
                 }
 
-                this.ShipConnectedTo.Energy -= phaserEnergy;
+                this.ShipConnectedTo.Energy -= int.Parse(phaserEnergy);
 
                 var destroyedShips = new List<IShip>();
                 switch (objectToFireOn.Item)
                 {
                      case SectorItem.HostileShip:
                      case SectorItem.FriendlyShip:
-                         this.FireOnShip(phaserEnergy, (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
+                         this.FireOnShip(int.Parse(phaserEnergy), (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
                         break;
 
                      case SectorItem.Starbase:

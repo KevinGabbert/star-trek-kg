@@ -46,11 +46,12 @@ namespace StarTrek_KG.Actors
 
             return returnVal;
         }
-        public bool InvalidSublightFactorCheck(int maxSublightDistance, out int distance)
+        public bool InvalidSublightFactorCheck(int maxSublightDistance, out string distance)
         {
+
             if (!this.Write.PromptUser(SubsystemType.None, $"Enter Sublight distance (1-{maxSublightDistance}): ", out distance)
-                || distance < 0
-                || distance > maxSublightDistance)
+                || int.Parse(distance) < 0
+                || int.Parse(distance) > maxSublightDistance)
             {
                 this.Write.Line("Invalid sublight distance. Maximum distance is " + maxSublightDistance + " at this time.");
                 return true;

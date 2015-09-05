@@ -138,7 +138,7 @@ namespace StarTrek_KG.Subsystem
 
         public new int TransferredFromUser()
         {
-            int transfer;
+            string transfer;
 
             bool readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields, $"Enter amount of energy (1--{this.MaxTransfer}): ",
                                                  out transfer);
@@ -151,7 +151,7 @@ namespace StarTrek_KG.Subsystem
                 return 0;
             }
 
-            return EnergyValidation(transfer, readSuccess);
+            return EnergyValidation(Convert.ToInt32(transfer), readSuccess);
         }
 
         private int EnergyValidation(double transfer, bool readSuccess)

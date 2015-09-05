@@ -825,16 +825,15 @@ namespace StarTrek_KG.Output
             this.OutputStrings(Shields.SHIELD_PANEL);
 
             //todo: resource out header
-            this.WithNoEndCR("Enter shield control command: "); //todo: this may need to be done differently for web app, because this is supposed to be a prompt
-
-            if (!this.IsSubscriberApp)
-            {
-                shieldsCommand = Output.ReadLine().Trim().ToLower();
-            }
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
-            Shields.For(playerShip).Controls(shieldsCommand);
 
+            string shieldPromptReply;
+
+            this.PromptUser(SubsystemType.Shields, "Shield Panel Command:> ", out shieldPromptReply, 1);
+
+            Shields.For(playerShip).Controls(shieldsCommand);         
+            
             return this.Output.Queue;
         }
 
@@ -852,7 +851,7 @@ namespace StarTrek_KG.Output
         /// <param name="value"></param>
         /// <param name="subPromptLevel"></param>
         /// <returns></returns>
-        public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0)
+        public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out string value, int subPromptLevel = 0)
         {
             try
             {
@@ -866,18 +865,18 @@ namespace StarTrek_KG.Output
 
                     //todo: an endCR might need to be added here
 
-                    value = -1;
+                    value = "-1";
                 }
                 else
                 {
-                     value = int.Parse(this.Output.ReadLine());
+                     value = this.Output.ReadLine().Trim().ToLower();
                 }
 
                 return true;
             }
             catch
             {
-                value = 0;
+                value = "0";
             }
 
             return false;

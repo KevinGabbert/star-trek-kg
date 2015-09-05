@@ -20,7 +20,8 @@ namespace StarTrek_KG_Web.WebApp
                         " --- Terminal Menu ---",
                         "start - starts a game",
                         "end game - ends the currently running game",
-                        "release notes - see the latest release notes"
+                        "release notes - see the latest release notes",
+                        "clear - clear the screen"
                     });
                     break;
 

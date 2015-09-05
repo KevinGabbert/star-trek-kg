@@ -95,7 +95,7 @@ namespace StarTrek_KG.Subsystem
         {
             this.Game.Write.Output.Queue.Clear();
 
-            int distance;
+            string distance;
             int direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
@@ -108,7 +108,7 @@ namespace StarTrek_KG.Subsystem
             int lastRegionY;
             int lastRegionX;
 
-            if (!Impulse.Engage(direction, distance, out lastRegionY, out lastRegionX, this.Game.Map))
+            if (!Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.Game.Map))
             {
                 return this.Game.Write.Output.Queue.ToList();
             }
@@ -140,7 +140,7 @@ namespace StarTrek_KG.Subsystem
                 this.DivineMaxWarpFactor();
             }
 
-            int distance;
+            string distance;
             int direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
@@ -153,7 +153,7 @@ namespace StarTrek_KG.Subsystem
             int lastRegionY;
             int lastRegionX;
 
-            if (!Warp.Engage(direction, distance, out lastRegionY, out lastRegionX, this.Game.Map))
+            if (!Warp.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.Game.Map))
             {
                 return null;
             }
@@ -245,31 +245,31 @@ namespace StarTrek_KG.Subsystem
 
             var thisShip = this.ShipConnectedTo.GetLocation();
 
-            int RegionX;
-            int RegionY;
+            string RegionX;
+            string RegionY;
 
             this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInRegion"),
                 (thisShip.Region.X), (thisShip.Region.Y)));
 
             if (!this.Game.Write.PromptUser(SubsystemType.Navigation, this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX, 1)
-                || RegionX < (Constants.Region_MIN + 1)
-                || RegionX > Constants.Region_MAX)
+                || int.Parse(RegionX) < (Constants.Region_MIN + 1)
+                || int.Parse(RegionX) > Constants.Region_MAX)
             {
                 this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidXCoordinate"));
                 return;
             }
 
             if (!this.Game.Write.PromptUser(SubsystemType.Navigation, this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY, 2)
-                || RegionY < (Constants.Region_MIN + 1)
-                || RegionY > Constants.Region_MAX)
+                || int.Parse(RegionY) < (Constants.Region_MIN + 1)
+                || int.Parse(RegionY) > Constants.Region_MAX)
             {
                 this.Game.Write.Line(this.Game.Config.GetSetting<string>("InvalidYCoordinate"));
                 return;
             }
 
             this.Game.Write.Line("");
-            var qx = ((int) (RegionX)) - 1;
-            var qy = ((int) (RegionY)) - 1;
+            var qx = int.Parse(RegionX) - 1;
+            var qy = int.Parse(RegionY) - 1;
             if (qx == thisShip.Region.X && qy == thisShip.Region.Y)
             {
                 this.Game.Write.Line(this.Game.Config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
