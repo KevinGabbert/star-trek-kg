@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -44,40 +45,35 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Output.Queue.Clear();
 
             //now we know that the shield Panel command has been retrieved.
-            if (this.Damaged()) goto EndControls;
-
-            bool adding = false;
-            switch (command)
+            if (!this.Damaged())
             {
-                //todo: get these from web.config?
+                this.Game.Write.SubscriberPromptLevel = 1;
 
-                //todo: divine these from type
-
-                case "add":
-                    adding = true;
-                    break;
-
-                case "sub":
-
+                //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
+                if ((command == "add") || (this.Game.Write.SubscriberPromptSubCommand == "add"))
+                {
+                    this.TransferEnergy(true);
+                    this.Game.Write.SubscriberPromptSubCommand = "add";
+                }
+                else if (command == "sub")
+                {
                     if (this.Energy > 0)
                     {
                         this.MaxTransfer = this.Energy;
+                        this.TransferEnergy(false);
                     }
                     else
                     {
-                        this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this out
-                        goto EndControls;
+                        this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
+                        //todo: resource this out
                     }
-
-                    break;
-
-                default:
-                    goto EndControls;
+                }
+            }
+            else
+            {
+                //todo: do we output something if damaged?
             }
 
-            this.TransferEnergy(adding);
-
-            EndControls:
             return this.Game.Write.Output.Queue.ToList();
         }
 
@@ -138,20 +134,30 @@ namespace StarTrek_KG.Subsystem
 
         public new int TransferredFromUser()
         {
-            string transfer;
+            bool readSuccess = false;
+            int transferred = -1;
+            string transfer = "0";
 
-            bool readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields, $"Enter amount of energy (1--{this.MaxTransfer}): ",
-                                                 out transfer);
-
-            if (this.ShipConnectedTo.Game.Write.SubscriberPromptLevel == 2)
+            if (this.Game.Write.SubscriberPromptLevel == 1)
             {
-                //now we know an amount has been entered.
 
+                //todo: why is this 1. not outputting to screen  2. not saving the prompt response
 
-                return 0;
+                readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields,
+                    $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
+                    out transfer, this.Game.Write.SubscriberPromptLevel);
+
+                this.Game.Write.SubscriberPromptLevel = 2;
+
+                transferred = -1;
+            }
+            else if (this.Game.Write.SubscriberPromptLevel == 2 && this.Game.Write.SubscriberPromptSubCommand == "add")
+            {
+                readSuccess = true; //now we know an amount has been entered.
+                transferred = this.EnergyValidation(Convert.ToInt32(transfer), readSuccess);
             }
 
-            return EnergyValidation(Convert.ToInt32(transfer), readSuccess);
+            return transferred;
         }
 
         private int EnergyValidation(double transfer, bool readSuccess)

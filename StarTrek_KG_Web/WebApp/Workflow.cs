@@ -11,7 +11,7 @@ namespace StarTrek_KG_Web.WebApp
     {
         public List<string> ExecuteCommand(string command, string sessionID, List<string> responseLines, Game game)
         {
-            switch (command.ToLower())
+            switch (command.Trim().ToLower())
             {
                 //todo: resource out menu
                 case "term menu":

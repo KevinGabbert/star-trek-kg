@@ -30,10 +30,10 @@ namespace StarTrek_KG.Output
 
         #region Subscriber
 
-        //todo: this needs to be broken out into a Subscriber object (and make it into a prop)
-
+        //todo: refacto into a Subscriber object (and make it into a prop)
         public bool IsSubscriberApp { get; set; }
         public SubsystemType SubscriberPromptSubSystem { get; set; }
+        public string SubscriberPromptSubCommand { get; set; }
         public int SubscriberPromptLevel { get; set; }
 
         #endregion
@@ -786,7 +786,7 @@ namespace StarTrek_KG.Output
             return this.Output.Queue.ToList();
         }
 
-        private IEnumerable<string> ShieldMenu(IShip playerShip, string shieldsCommand = "")
+        private IEnumerable<string> ShieldMenu(IShip playerShip, string shieldPanelCommand = "")
         {
             if (Shields.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
@@ -832,7 +832,7 @@ namespace StarTrek_KG.Output
 
             this.PromptUser(SubsystemType.Shields, "Shield Panel Command:> ", out shieldPromptReply, 1);
 
-            Shields.For(playerShip).Controls(shieldsCommand);         
+            Shields.For(playerShip).Controls(shieldPanelCommand);         
             
             return this.Output.Queue;
         }
@@ -880,6 +880,11 @@ namespace StarTrek_KG.Output
             }
 
             return false;
+        }
+
+        public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0)
+        {
+            throw new NotImplementedException();
         }
 
         //tod: combine this with PromptUser
