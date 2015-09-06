@@ -9,7 +9,7 @@
 
         options = options || {};
         eval = eval || function (command, term) {
-            term.echo("you don't set eval for term Window");
+            term.echo('you don\'t set eval for term Window');
         };
 
         var settings = {
@@ -19,7 +19,25 @@
             enabled: true,
             greetings: 'Star Trek KG \n' +
                        'A modern, C# Code rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :) \n\n' +
-                       'Type "start" to begin, or "term menu" for terminal commands\n'
+                       'Type "start" to begin, or "term menu" for terminal commands\n',
+            completion: function (terminal, command) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'Default.aspx/AutoComplete',
+                    data: '{ input: \'' + command + '\'}',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    async: false, //verify that this works
+                    success: function (retVal) {
+                        var response = jQuery.parseJSON(retVal.d);
+
+                        var previousText = $('.cmd span:nth-child(2)').text();
+                        terminal.set_command(previousText + response);
+                    }
+                }).fail(function () {      
+                });
+            }
         };
 
         $.extend(settings, options);
