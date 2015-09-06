@@ -25,6 +25,20 @@ namespace StarTrek_KG_Web
         #region PageMethods
 
         [WebMethod]
+        public static string Ping()
+        {
+            //checks the session to see if it is not null.
+
+            //checks the timer to report time left.
+
+            //_Default will have a static system.timers.timer that when it hits a configured number, will clear the session
+            //at a certain time.
+
+            string json = JsonConvert.SerializeObject("Time left: ");
+            return json;
+        }
+
+        [WebMethod]
         public static string Prompt()
         {
             string currentPrompt = Workflow.GetGame()?.Write?.CurrentPrompt ?? "Terminal: ";

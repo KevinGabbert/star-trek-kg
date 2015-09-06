@@ -811,7 +811,7 @@ namespace StarTrek_KG.Output
             if (currentShieldEnergy > 0)
             {
                 //todo:add header from config file.
-                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Control: ── {0} ──", $"< CURRENTLY AT: {currentShieldEnergy}>"));
+                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", $"< CURRENTLY AT: {currentShieldEnergy}>"));
 
                 foreach (MenuItemDef menuItem in menuItems)
                 {
@@ -821,7 +821,7 @@ namespace StarTrek_KG.Output
             else
             {
                 //todo: resource out header
-                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Control: ── {0} ──", "DOWN"));
+                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", "DOWN"));
 
                 var itemToAdd = menuItems.First(m => m.name == "add");
                 Shields.SHIELD_PANEL.Add($"{itemToAdd.name} {itemToAdd.divider} {itemToAdd.description}");
@@ -835,7 +835,7 @@ namespace StarTrek_KG.Output
 
             string shieldPromptReply;
 
-            this.PromptUser(SubsystemType.Shields, "NCC 1701 -> Shields -> ", "", out shieldPromptReply, 1);
+            this.PromptUser(SubsystemType.Shields, "NCC 1701 -> Shield Control -> ", "", out shieldPromptReply, 1);
 
             Shields.For(playerShip).Controls(shieldPanelCommand);         
             

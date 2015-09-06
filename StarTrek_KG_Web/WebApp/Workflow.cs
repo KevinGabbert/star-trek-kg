@@ -80,7 +80,8 @@ namespace StarTrek_KG_Web.WebApp
                 {
                     game.Started = true;
 
-                    responseLines.Add("Connecting to U.S.S. Enterprise - NCC 1701.."); //todo: do an animation that makes the periods type out.  JQuery Terminal can do this.
+                    //todo: this should animate so that periods type out slowly..  JQuery Terminal can do this.
+                    responseLines.Add("Connecting to U.S.S. Enterprise - NCC 1701.."); 
 
                     if (game.Write?.Output?.Queue != null)
                     {

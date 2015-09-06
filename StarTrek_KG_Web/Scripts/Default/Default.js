@@ -23,7 +23,7 @@ var defaultPage = Class.extend({
 
                     if (command.match(/y|yes/i))
                     {
-                        terminal.echo(command + '  type "stop" again if your really mean it');
+                        terminal.echo(command + '  type "stop" again if you really mean it');
                         terminal.pop();
                         terminal = this.QueryConsoleAJAX(command, sessionID, terminal);
                     }
