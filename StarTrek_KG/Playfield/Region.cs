@@ -314,7 +314,7 @@ namespace StarTrek_KG.Playfield
                     //todo: add to hostiles? 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //throw new GameException(ex.Message);
             }
@@ -489,7 +489,7 @@ namespace StarTrek_KG.Playfield
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -753,7 +753,7 @@ namespace StarTrek_KG.Playfield
 
             if (divinedLocationOnMap.Region.Type != RegionType.GalacticBarrier)
             {
-                int i;
+                //int i;
             }
             else
             {

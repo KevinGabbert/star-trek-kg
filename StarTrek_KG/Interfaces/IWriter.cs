@@ -16,6 +16,7 @@ namespace StarTrek_KG.Interfaces
         List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }
         IOutputMethod Output { get; set; }
+        string CurrentPrompt { get; set; }
 
         void OutputStrings(IEnumerable<string> strings);
         void HighlightTextBW(bool on);
@@ -54,7 +55,8 @@ namespace StarTrek_KG.Interfaces
         //string GetPanelHead(string shipName);
         List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null);
 
-        bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out string value, int subPromptLevel = 0);
+
+        bool PromptUser(SubsystemType promptSubsystem, string promptDisplay, string promptMessage, out string value, int subPromptLevel = 0);
         bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0);
         bool PromptUserConsole(string promptMessage, out string value);
         bool PromptUserSubscriber(string promptMessage, out string value);

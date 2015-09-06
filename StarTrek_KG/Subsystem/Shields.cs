@@ -65,7 +65,7 @@ namespace StarTrek_KG.Subsystem
                     else
                     {
                         this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
-                        //todo: resource this out
+                        //todo: resource this
                     }
                 }
             }
@@ -83,7 +83,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
             {
-                this.Game.Write.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this out
+                this.Game.Write.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this
             }
             else
             {
@@ -140,9 +140,10 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Game.Write.SubscriberPromptLevel == 1)
             {
-                //todo: why is this 1. not outputting to screen  2. not saving the prompt response or level?
+                //todo: why is this not saving the prompt level?
 
                 readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields,
+                                                        "Shields-> Transfer Energy->",
                                                         $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
                                                         out transfer, this.Game.Write.SubscriberPromptLevel);
 

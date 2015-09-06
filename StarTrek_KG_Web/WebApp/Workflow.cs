@@ -13,13 +13,18 @@ namespace StarTrek_KG_Web.WebApp
         {
             switch (command.Trim().ToLower())
             {
+                case "connect to ncc1701":
+                    //todo: connects to ncc1701
+                    //todo: flesh this out to connect to any ship needed.
+                    break;
+
                 //todo: resource out menu
                 case "term menu":
                     responseLines = this.Response(new List<string>()
                     {
                         " --- Terminal Menu ---",
-                        "start - starts a game",
-                        "end game - ends the currently running game",
+                        "start - starts a session",
+                        "end session - ends the currently running game",
                         "release notes - see the latest release notes",
                         "clear - clear the screen"
                     });
@@ -32,12 +37,12 @@ namespace StarTrek_KG_Web.WebApp
                 case "make error":
                     throw new ArgumentException("This is a test error");
 
-                case "end game":
+                case "end session":
                 case "stop":
                     //todo: gives final stats and stops game
                     responseLines = this.Response(new List<string>()
                     {
-                        "G A M E  O V E R",
+                        "-- Session Terminated --"
                     });
 
                     this.ClearSession(responseLines);
@@ -50,7 +55,6 @@ namespace StarTrek_KG_Web.WebApp
                 case "start":
                     responseLines = this.StartGame(game, responseLines);
                     break;
-
 
                 case "release notes":
                     //todo: pull release notes from a file
@@ -75,7 +79,13 @@ namespace StarTrek_KG_Web.WebApp
                 if (game != null)
                 {
                     game.Started = true;
-                    responseLines = game.Write?.Output?.Queue.ToList();
+
+                    responseLines.Add("Connecting to U.S.S. Enterprise - NCC 1701.."); //todo: do an animation that makes the periods type out.  JQuery Terminal can do this.
+
+                    if (game.Write?.Output?.Queue != null)
+                    {
+                        responseLines.AddRange(game.Write?.Output?.Queue.ToList());
+                    }
                 }
                 else
                 {
@@ -97,6 +107,7 @@ namespace StarTrek_KG_Web.WebApp
                 //todo: delete this property setting
                 Write =
                 {
+                    CurrentPrompt = "NCC 1701 -> ", //todo: resource this
                     IsSubscriberApp = true //todo: GET should set the app.config setting to true?
                 }
             });
@@ -106,7 +117,7 @@ namespace StarTrek_KG_Web.WebApp
             GetGame().RunSubscriber();
             GetGame().Started = true;
 
-            responseLines = this.Response("Game Started..");
+            responseLines = this.Response("Game Started.."); //todo: resource this
             return responseLines;
         }
 

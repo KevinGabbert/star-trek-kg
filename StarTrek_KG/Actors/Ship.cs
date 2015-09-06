@@ -440,7 +440,7 @@ namespace StarTrek_KG.Actors
                                 {
                                     //todo: error here when game starts out.  is ship spawning in negative sector space?
                                     //todo: if so, a solution could be to run GetDivinedSector() on currentLocation to fix.
-                                    int i;
+                                    //int i;
                                 }
 
                                 var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL)));

@@ -50,7 +50,7 @@ namespace StarTrek_KG.Subsystem
                                   "Enter firing direction (1.0--9.0) ";
 
             string direction;
-            if (!this.Game.Write.PromptUser(SubsystemType.Phasers, firingDirection, out direction)
+            if (!this.Game.Write.PromptUser(SubsystemType.Phasers, "Phasers->", firingDirection, out direction)
                 || int.Parse(direction) < 1.0 
                 || int.Parse(direction) > 9.0)
             {

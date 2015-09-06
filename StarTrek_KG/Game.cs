@@ -29,8 +29,6 @@ namespace StarTrek_KG
         public Render PrintSector { get; set; }
 
         public Game._promptFunc<string, bool> Prompt { get; private set; }
-        //public PromptType PromptType { get; set; }
-
 
         public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
         public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
@@ -61,6 +59,8 @@ namespace StarTrek_KG
 
                 if (this.Write.IsSubscriberApp)
                 {
+                    this.Write.CurrentPrompt = "Enter Command:>"; //todo: resource this (default prompt)
+
                     this.Prompt = (string s, out string output) => this.Write.PromptUserSubscriber(s, out output);
                 }
                 else

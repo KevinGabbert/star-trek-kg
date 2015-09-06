@@ -9,11 +9,11 @@
 
         options = options || {};
         eval = eval || function (command, term) {
-            term.echo("you don't set eval for termWindow");
+            term.echo("you don't set eval for term Window");
         };
 
         var settings = {
-            prompt: 'Enter Command:> ',
+            prompt: 'Terminal: ',
             name: 'termWindow',
             height: 600,
             enabled: true,

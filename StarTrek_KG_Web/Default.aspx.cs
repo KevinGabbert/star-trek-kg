@@ -25,6 +25,15 @@ namespace StarTrek_KG_Web
         #region PageMethods
 
         [WebMethod]
+        public static string Prompt()
+        {
+            string currentPrompt = Workflow.GetGame()?.Write?.CurrentPrompt ?? "Terminal: ";
+
+            string json = JsonConvert.SerializeObject(currentPrompt);
+            return json;
+        }
+
+        [WebMethod]
         public static string QueryConsole(string command, string sessionID)
         {
             List<string> responseLines = new List<string>();

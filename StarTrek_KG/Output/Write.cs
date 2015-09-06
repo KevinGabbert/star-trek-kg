@@ -38,6 +38,8 @@ namespace StarTrek_KG.Output
 
         #endregion
 
+        public string CurrentPrompt { get; set; }
+
         private Console _console;
         private Console Console
         {
@@ -833,7 +835,7 @@ namespace StarTrek_KG.Output
 
             string shieldPromptReply;
 
-            this.PromptUser(SubsystemType.Shields, "Shield Panel Command:> ", out shieldPromptReply, 1);
+            this.PromptUser(SubsystemType.Shields, "NCC 1701 -> Shields -> ", "", out shieldPromptReply, 1);
 
             Shields.For(playerShip).Controls(shieldPanelCommand);         
             
@@ -850,18 +852,24 @@ namespace StarTrek_KG.Output
         /// In the case of Sebscriber (ex. Web), then we must end the call that got us here so we can get the information back from the user.
         /// </summary>
         /// <param name="promptSubsystem"></param>
+        /// <param name="promptDisplay"></param>
         /// <param name="promptMessage"></param>
         /// <param name="value"></param>
         /// <param name="subPromptLevel"></param>
         /// <returns></returns>
-        public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out string value, int subPromptLevel = 0)
+        public bool PromptUser(SubsystemType promptSubsystem, string promptDisplay, string promptMessage, out string value, int subPromptLevel = 0)
         {
             try
             {
-                this.WithNoEndCR(promptMessage);
+                if(!string.IsNullOrWhiteSpace(promptMessage))
+                {
+                    this.WithNoEndCR(promptMessage);
+                }
 
                 if (this.IsSubscriberApp)
                 {
+                    this.CurrentPrompt = promptDisplay;
+
                     //todo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. they need to be broken out to a separate class.
                     this.SubscriberPromptSubSystem = promptSubsystem;
                     this.SubscriberPromptLevel = subPromptLevel;

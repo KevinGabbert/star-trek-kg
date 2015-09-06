@@ -24,7 +24,7 @@ namespace StarTrek_KG.Subsystem
                                                     thisShip.Sector.X,
                                                     thisShip.Sector.Y);
 
-            Ship target; //= Object in sector with targetLocation.sectorX, targetLocation.sectorY
+            //Ship target; //= Object in sector with targetLocation.sectorX, targetLocation.sectorY
 
             //subtract attacking energy from this ship. 
             //--If this ship is a baddie and energy is at zero, then it can no longer fire.
