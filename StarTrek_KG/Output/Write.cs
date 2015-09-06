@@ -681,7 +681,6 @@ namespace StarTrek_KG.Output
             return acceptable;
         }
 
-
         public void CreateCommandPanel()
         {
             //todo: resource out menu
@@ -725,11 +724,15 @@ namespace StarTrek_KG.Output
             if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem, this.SubscriberPromptLevel))
             {
                 ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.SubscriberPromptSubSystem);
-                this.Output.Write(subsystem.Controls(playerEnteredText));
+                retVal = subsystem.Controls(playerEnteredText);
             }
             else
             {
-                this.Output.Write($"Unrecognized Command. Exiting {menuName} Menu");
+                retVal = new List<string>()
+                {
+                    $"Unrecognized Command. Exiting {menuName} Menu"      //todo: resource this
+                }; 
+
                 this.SubscriberPromptLevel = 0; //resets our menu level
 
                 return null;

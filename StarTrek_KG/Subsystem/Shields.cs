@@ -140,12 +140,11 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Game.Write.SubscriberPromptLevel == 1)
             {
-
-                //todo: why is this 1. not outputting to screen  2. not saving the prompt response
+                //todo: why is this 1. not outputting to screen  2. not saving the prompt response or level?
 
                 readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields,
-                    $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
-                    out transfer, this.Game.Write.SubscriberPromptLevel);
+                                                        $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
+                                                        out transfer, this.Game.Write.SubscriberPromptLevel);
 
                 this.Game.Write.SubscriberPromptLevel = 2;
 
