@@ -993,7 +993,7 @@ namespace StarTrek_KG.Output
             this.Output.WriteLine(stringToOutput);
         }
 
-        public static string ShipHitMessage(IShip attacker, int attackingEnergy)
+        public string ShipHitMessage(IShip attacker, int attackingEnergy)
         {
             var attackerRegion = attacker.GetRegion();
             var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
@@ -1011,10 +1011,13 @@ namespace StarTrek_KG.Output
                 attackerName = "Hostile Starbase";
             }
 
-            return $"Your ship has been hit by {attackerName} at sector [{attackerSector.X},{attackerSector.Y}], {attackingEnergy} megawatts of energy.";
+            string shipHitBy = this.Config.GetText("shipHitBy");
+            string message = string.Format(shipHitBy, attackerName, attackerSector.X, attackerSector.Y, attackingEnergy);
+
+            return message;
         }
 
-        public static string MisfireMessage(IShip attacker)
+        public string MisfireMessage(IShip attacker)
         {
             var attackerRegion = attacker.GetRegion();
             var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
@@ -1026,13 +1029,17 @@ namespace StarTrek_KG.Output
                 attackerName = attacker.Name;
             }
 
+            //todo: fix this
             //HACK: until starbases become real objects.. getting tired of this.
             if (attackerName == "Enterprise")
             {
                 attackerName = "Hostile Starbase";
             }
 
-            return string.Format("Misfire by " + attackerName + " at sector [{0},{1}].", attackerSector.X, attackerSector.Y);
+            string misfireBy = this.Config.GetText("misfireBy");
+            string misfireAtSector = this.Config.GetText("misfireAtSector");
+
+            return string.Format(misfireBy + attackerName + misfireAtSector, attackerSector.X, attackerSector.Y);
         }
 
         public void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel)
@@ -1108,7 +1115,6 @@ namespace StarTrek_KG.Output
             this.Line(commandResult);
         }
 
-        //output as KeyValueCollection, and UI will build the string
         public void PrintMission()
         {
             this.Output.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);

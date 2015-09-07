@@ -26,15 +26,15 @@ namespace StarTrek_KG
         public IStarTrekKGSettings Config { get; set; }
         public IWriter Write { get; set; }
         public IMap Map { get; set; }
-        public Render PrintSector { get; set; }
+        private Render PrintSector { get; set; }
 
         public Game._promptFunc<string, bool> Prompt { get; private set; }
 
-        public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
-        public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
+        public List<FactionThreat> LatestTaunts { get; private set; } //todo: temporary until proper object is created
+        public bool PlayerNowEnemyToFederation { get; private set; } //todo: temporary until Starbase object is created
 
         public bool Started { get; set; }
-        public bool GameOver { get; set; }
+        public bool GameOver { get; private set; }
 
         public int RandomFactorForTesting
         {
@@ -547,7 +547,7 @@ namespace StarTrek_KG
 
         private void AttackDockedPlayership(IShip attacker, int attackingEnergy)
         {
-            string hitMessage = W.ShipHitMessage(attacker, attackingEnergy);
+            string hitMessage = this.Write.ShipHitMessage(attacker, attackingEnergy);
 
             this.Write.Line(hitMessage + " No damage due to starbase shields.");
         }

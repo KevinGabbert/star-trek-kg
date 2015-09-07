@@ -81,6 +81,9 @@ namespace StarTrek_KG.Interfaces
         //int Starbases { get; set; }
         //int Stardate { get; set; }
 
+        string ShipHitMessage(IShip attacker, int attackingEnergy);
+        string MisfireMessage(IShip attacker);
+
         void PrintMissionResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
         void PrintMission();
     }
