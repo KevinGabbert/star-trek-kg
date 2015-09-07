@@ -193,6 +193,8 @@ namespace StarTrek_KG
         {
             List<string> retVal = null;
 
+            this.Map.Playership.Game = this;
+
             this.Write.Output.Clear();
 
             retVal = this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);

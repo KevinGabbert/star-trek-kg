@@ -846,6 +846,14 @@ namespace StarTrek_KG.Output
 
         #region Prompt
 
+        public void ResetPrompt()
+        {
+            this.CurrentPrompt = "NCC 1701 -> "; //todo: set this to config file default prompt 
+            this.SubscriberPromptSubCommand = "";
+            this.SubscriberPromptSubSystem = SubsystemType.None;
+            this.SubscriberPromptLevel = 0;
+        }
+
         /// <summary>
         /// The point of this method is to get information from the user.  
         /// In the case of the console, readline will display cursor, and wait for the user to reply.

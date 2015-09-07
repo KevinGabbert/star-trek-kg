@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Lifetime;
 using System.Security.Policy;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -42,30 +43,44 @@ namespace StarTrek_KG.Subsystem
         /// <returns></returns>
         public override List<string> Controls(string command)
         {
+            var promptWriter = this.ShipConnectedTo.Game.Write;
+
             this.Game.Write.Output.Queue.Clear();
 
             //now we know that the shield Panel command has been retrieved.
             if (!this.Damaged())
             {
-                this.Game.Write.SubscriberPromptLevel = 1;
-
                 //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
-                if ((command == "add") || (this.Game.Write.SubscriberPromptSubCommand == "add"))
+                if ((command == "add") || (promptWriter.SubscriberPromptSubCommand == "add"))
                 {
-                    this.TransferEnergy(true);
-                    this.Game.Write.SubscriberPromptSubCommand = "add";
-                }
-                else if (command == "sub")
-                {
-                    if (this.Energy > 0)
+                    if (command != "add")
                     {
-                        this.MaxTransfer = this.Energy;
-                        this.TransferEnergy(false);
+                        this.DoTheTransfer(command);
+
+                        promptWriter.ResetPrompt();
                     }
                     else
                     {
-                        this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
-                        //todo: resource this
+                        this.GetValueFromUser();
+                        promptWriter.SubscriberPromptSubCommand = "add";
+                    }   
+                }
+                else if ((command == "sub") || (promptWriter.SubscriberPromptSubCommand == "sub"))
+                {
+                    if (command != "sub")
+                    {
+                        if (this.Energy > 0)
+                        {
+                            this.MaxTransfer = this.Energy;
+                            this.DoTheTransfer(command);
+
+                            promptWriter.ResetPrompt();
+                        }
+                        else
+                        {
+                            this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
+                            //todo: resource this
+                        }
                     }
                 }
             }
@@ -77,9 +92,15 @@ namespace StarTrek_KG.Subsystem
             return this.Game.Write.Output.Queue.ToList();
         }
 
+        private void DoTheTransfer(string command)
+        {
+            int transferAmount = Convert.ToInt32(command);
+            this.TransferEnergy(transferAmount, true);
+        }
+
         #region Transferring energy
 
-        private void TransferEnergy(bool adding)
+        private void TransferEnergy(int transfer, bool adding)
         {
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
             {
@@ -87,74 +108,70 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                var transfer = this.TransferredFromUser();
-                this.TransferEnergy(transfer, adding);
-            }
-        }
-
-        private void TransferEnergy(int transfer, bool adding)
-        {
-            if (transfer > 0)
-            {
-                if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
+                if (transfer > 0)
                 {
-                    this.Game.Write.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
-                    return;
-                }
-
-                var maxEnergy = (Convert.ToInt32(this.Game.Config.GetSetting<string>("SHIELDS_MAX")));
-                var totalEnergy = (this.Energy + transfer);
-
-                if (adding && (totalEnergy > maxEnergy))
-                {
-                    if (adding && (totalEnergy > maxEnergy))
+                    if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
                     {
-                        //todo: write code to add the difference if they exceed. There is no reason to make people type twice
-
-                        this.Game.Write.Line("Energy to transfer exceeds Shield Max capability.. No Change");
+                        this.Game.Write.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
                         return;
                     }
 
-                    if (totalEnergy <= maxEnergy || !adding)
+                    var maxEnergy = (Convert.ToInt32(this.Game.Config.GetSetting<string>("SHIELDS_MAX")));
+                    var totalEnergy = (this.Energy + transfer);
+
+                    if (adding && (totalEnergy > maxEnergy))
                     {
-                        this.AddEnergy(totalEnergy, adding); //todo: add limit on ship energy level 
+                        if (adding && (totalEnergy > maxEnergy))
+                        {
+                            //todo: write code to add the difference if they exceed. There is no reason to make people type twice
+
+                            this.Game.Write.Line("Energy to transfer exceeds Shield Max capability.. No Change");
+                            return;
+                        }
+
+                        if (totalEnergy <= maxEnergy || !adding)
+                        {
+                            this.AddEnergy(totalEnergy, adding); //todo: add limit on ship energy level 
+                        }
                     }
-                }
-                else
-                {
-                    this.AddEnergy(transfer, adding);
-                }
+                    else
+                    {
+                        this.AddEnergy(transfer, adding);
+                    }
 
-                this.Game.Write.Line(
-                    $"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
+                    this.Game.Write.Line(
+                        $"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
 
-                this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+                    this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+                }
             }
         }
 
-        public new int TransferredFromUser()
+        public int GetValueFromUser()
         {
             bool readSuccess = false;
             int transferred = -1;
             string transfer = "0";
 
-            if (this.Game.Write.SubscriberPromptLevel == 1)
+            var promptWriter = this.ShipConnectedTo.Game.Write;
+
+            if (promptWriter.SubscriberPromptLevel == 1)
             {
-                //todo: why is this not saving the prompt level?
+                //sets to prompt level 2
 
-                readSuccess = this.Game.Write.PromptUser(SubsystemType.Shields,
-                                                        "Shields-> Transfer Energy->",
+                readSuccess = promptWriter.PromptUser(SubsystemType.Shields,
+                                                        "Shields-> Transfer Energy-> ",
                                                         $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
-                                                        out transfer, this.Game.Write.SubscriberPromptLevel);
-
-                this.Game.Write.SubscriberPromptLevel = 2;
+                                                        out transfer, 2);
 
                 transferred = -1;
             }
-            else if (this.Game.Write.SubscriberPromptLevel == 2 && this.Game.Write.SubscriberPromptSubCommand == "add")
+            else if (promptWriter.SubscriberPromptLevel == 2 && promptWriter.SubscriberPromptSubCommand == "add")
             {
                 readSuccess = true; //now we know an amount has been entered.
                 transferred = this.EnergyValidation(Convert.ToInt32(transfer), readSuccess);
+
+                promptWriter.SubscriberPromptSubCommand = "";
             }
 
             return transferred;

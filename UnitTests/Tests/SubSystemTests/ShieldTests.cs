@@ -48,7 +48,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             Assert.AreEqual(0, mockedShields.Object.Energy);
 
-            mockedShields.Setup(s => s.TransferredFromUser()).Returns(1001);
+            mockedShields.Setup(s => s.GetValueFromUser()).Returns(1001);
 
             mockedShields.Object.Controls("sub");
 

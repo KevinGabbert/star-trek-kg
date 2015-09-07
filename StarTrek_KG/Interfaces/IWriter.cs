@@ -55,7 +55,7 @@ namespace StarTrek_KG.Interfaces
         //string GetPanelHead(string shipName);
         List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null);
 
-
+        void ResetPrompt();
         bool PromptUser(SubsystemType promptSubsystem, string promptDisplay, string promptMessage, out string value, int subPromptLevel = 0);
         bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0);
         bool PromptUserConsole(string promptMessage, out string value);
