@@ -1071,30 +1071,36 @@ namespace StarTrek_KG.Output
             return longestName;
         }
 
-        //missionResult needs to be an enum
-        public void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
+        public void PrintMissionResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
         {
             var commandResult = string.Empty;
 
+            string missionFailed = this.Config.GetText("MissionFailed");
+            string shipDestroyed = this.Config.GetText("ShipDestroyed");
+            string energyExhausted = this.Config.GetText("EnergyExhausted");
+            string allFedShipsDestroyed = this.Config.GetText("AllFedShipsDestroyed");
+            string missionAccomplished = this.Config.GetText("MissionAccomplished");
+            string timeOver = this.Config.GetText("TimeOver");
+
             if (ship.Destroyed)
             {
-                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " DESTROYED";
+                commandResult = $"{missionFailed}: {ship.Name.ToUpper()} {shipDestroyed}";
             }
             else if (ship.Energy == 0)
             {
-                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF ENERGY.";
+                commandResult = $"{missionFailed}: {ship.Name.ToUpper()} {energyExhausted}.";
             }
             else if (starbasesAreHostile && starbasesLeft == 0)
             {
-                commandResult = "ALL FEDERATION STARBASES DESTROYED. YOU HAVE DEALT A SEVERE BLOW TO THE FEDERATION!";
+                commandResult = $"{allFedShipsDestroyed}";
             }
             else if (this.TotalHostiles == 0)
             {
-                commandResult = "MISSION ACCOMPLISHED: ALL HOSTILE SHIPS DESTROYED. WELL DONE!!!";
+                commandResult = $"{missionAccomplished}";
             }
             else if (this.TimeRemaining == 0)
             {
-                commandResult = "MISSION FAILED: " + ship.Name.ToUpper() + " RAN OUT OF TIME.";
+                commandResult = $"{missionFailed} {ship.Name.ToUpper()} {timeOver}";
             }
 
             //else - No status to report.  Game continues

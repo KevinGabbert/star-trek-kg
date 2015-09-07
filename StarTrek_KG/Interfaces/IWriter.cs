@@ -81,7 +81,7 @@ namespace StarTrek_KG.Interfaces
         //int Starbases { get; set; }
         //int Stardate { get; set; }
 
-        void PrintCommandResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
+        void PrintMissionResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
         void PrintMission();
     }
 }

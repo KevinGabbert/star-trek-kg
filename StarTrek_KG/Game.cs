@@ -853,7 +853,7 @@ namespace StarTrek_KG
                                   this.Map.timeRemaining > 0);
             }
 
-            this.Write.PrintCommandResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
+            this.Write.PrintMissionResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
         public static void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
