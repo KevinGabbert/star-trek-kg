@@ -40,7 +40,7 @@ var defaultPage = Class.extend({
 
         return terminal;
     },
-    QueryConsoleAJAX(command, sessionID, terminal) {
+    QueryConsoleAJAX: function(command, sessionID, terminal) {
 
         var response;
 
@@ -99,7 +99,7 @@ var defaultPage = Class.extend({
             });
         });
     },
-    GetPrompt(terminal) {
+    GetPrompt: function(terminal) {
             $.ajax({
                 type: 'POST',
                 url: 'Default.aspx/Prompt',

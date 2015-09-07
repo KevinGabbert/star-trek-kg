@@ -38,22 +38,22 @@ namespace UnitTests.ShipTests.SubSystemTests
             _setup.TestShields.Controls("add"); 
         }
 
-        [Ignore]
-        [Test]
-        public void ControlsSUB()
-        {
-            _setup.SetupMapWith1Hostile();
+        //[Ignore]
+        //[Test]
+        //public void ControlsSUB()
+        //{
+        //    _setup.SetupMapWith1Hostile();
 
-            var mockedShields = new Mock<Shields>(_setup.TestMap); 
+        //    var mockedShields = new Mock<Shields>(_setup.TestMap); 
 
-            Assert.AreEqual(0, mockedShields.Object.Energy);
+        //    Assert.AreEqual(0, mockedShields.Object.Energy);
 
-            mockedShields.Setup(s => s.GetValueFromUser()).Returns(1001);
+        //    mockedShields.Setup(s => s.GetValueFromUser()).Returns(1001);
 
-            mockedShields.Object.Controls("sub");
+        //    mockedShields.Object.Controls("sub");
 
-            Assert.AreEqual(1, mockedShields.Object.Energy);
-        }
+        //    Assert.AreEqual(1, mockedShields.Object.Energy);
+        //}
 
         [Ignore]
         [Test]
