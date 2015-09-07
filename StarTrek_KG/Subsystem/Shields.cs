@@ -95,6 +95,9 @@ namespace StarTrek_KG.Subsystem
         private void DoTheTransfer(string command)
         {
             int transferAmount = Convert.ToInt32(command);
+
+            this.EnergyValidation(Convert.ToInt32(transferAmount));
+
             this.TransferEnergy(transferAmount, true);
         }
 
@@ -147,37 +150,21 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public int GetValueFromUser()
+        public void GetValueFromUser()
         {
-            bool readSuccess = false;
-            int transferred = -1;
-            string transfer = "0";
-
             var promptWriter = this.ShipConnectedTo.Game.Write;
 
             if (promptWriter.SubscriberPromptLevel == 1)
             {
-                //sets to prompt level 2
-
-                readSuccess = promptWriter.PromptUser(SubsystemType.Shields,
-                                                        "Shields-> Transfer Energy-> ",
-                                                        $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
-                                                        out transfer, 2);
-
-                transferred = -1;
+                string transfer;
+                promptWriter.PromptUser(SubsystemType.Shields,
+                    "Shields-> Transfer Energy-> ",
+                    $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
+                    out transfer, 2);
             }
-            else if (promptWriter.SubscriberPromptLevel == 2 && promptWriter.SubscriberPromptSubCommand == "add")
-            {
-                readSuccess = true; //now we know an amount has been entered.
-                transferred = this.EnergyValidation(Convert.ToInt32(transfer), readSuccess);
-
-                promptWriter.SubscriberPromptSubCommand = "";
-            }
-
-            return transferred;
         }
 
-        private int EnergyValidation(double transfer, bool readSuccess)
+        private int EnergyValidation(double transfer)
         {
             var tooLittle = transfer < 1;
             var tooMuch = transfer > this.MaxTransfer;
@@ -194,12 +181,12 @@ namespace StarTrek_KG.Subsystem
                 return 0;
             }
 
-            if (!readSuccess)
-            {
-                //todo: tell the user if they are adding too much or too little energy
-                this.Game.Write.Line("Invalid amount of energy.");
-                return 0;
-            }
+            //if (!readSuccess)
+            //{
+            //    //todo: tell the user if they are adding too much or too little energy
+            //    this.Game.Write.Line("Invalid amount of energy.");
+            //    return 0;
+            //}
 
             return (int)transfer;
         }
