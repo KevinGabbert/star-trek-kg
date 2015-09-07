@@ -55,17 +55,31 @@ namespace StarTrek_KG
             this.Config = config;
             if (this.Write == null)
             {
-                this.Write = new Write(config);
-
-                if (this.Write.IsSubscriberApp)
+                try
                 {
-                    this.Write.CurrentPrompt = "Enter Command:>"; //todo: resource this (default prompt)
+                    this.Write = new Write(config);
 
-                    this.Prompt = (string s, out string output) => this.Write.PromptUserSubscriber(s, out output);
+                    if (this.Write.IsSubscriberApp)
+                    {
+                        this.Write.CurrentPrompt = "Enter Command:>"; //todo: resource this (default prompt)
+
+                        this.Prompt = (string s, out string output) => this.Write.PromptUserSubscriber(s, out output);
+                    }
+                    else
+                    {
+                        this.Prompt = (string s, out string output) => this.Write.PromptUserConsole(s, out output);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    this.Prompt = (string s, out string output) => this.Write.PromptUserConsole(s, out output);
+                    this.Write = new Write
+                    {
+                        Output = new SubscriberOutput(config),
+                        OutputError = true,
+                        CurrentPrompt = "Terminal: " //todo: resource this.
+                    };
+
+                    return;
                 }
             }
 

@@ -25,6 +25,7 @@ namespace StarTrek_KG_Web.WebApp
                         " --- Terminal Menu ---",
                         "start - starts a session",
                         "end session - ends the currently running game",
+                        "reset config - reloads config",
                         "release notes - see the latest release notes",
                         "clear - clear the screen"
                     });
@@ -50,6 +51,14 @@ namespace StarTrek_KG_Web.WebApp
 
                 case "clear session":
                     responseLines = this.ClearSession(responseLines);
+                    break;
+
+                case "reset config":
+                    responseLines = new List<string>()
+                    {
+                        "Not Implemented Yet."
+                    };
+
                     break;
 
                 case "start":
@@ -78,14 +87,21 @@ namespace StarTrek_KG_Web.WebApp
 
                 if (game != null)
                 {
-                    game.Started = true;
-
-                    //todo: this should animate so that periods type out slowly..  JQuery Terminal can do this.
-                    responseLines.Add("Connecting to U.S.S. Enterprise - NCC 1701.."); 
-
-                    if (game.Write?.Output?.Queue != null)
+                    if (!game.Write.OutputError)
                     {
-                        responseLines.AddRange(game.Write?.Output?.Queue.ToList());
+                        game.Started = true;
+
+                        //todo: this should animate so that periods type out slowly..  JQuery Terminal can do this.
+                        responseLines.Add("Connecting to U.S.S. Enterprise - NCC 1701..");
+
+                        if (game.Write?.Output?.Queue != null)
+                        {
+                            responseLines.AddRange(game.Write?.Output?.Queue.ToList());
+                        }
+                    }
+                    else
+                    {
+                        responseLines.Insert(0, "Err:"); //todo: resource this
                     }
                 }
                 else
@@ -108,17 +124,26 @@ namespace StarTrek_KG_Web.WebApp
                 //todo: delete this property setting
                 Write =
                 {
-                    CurrentPrompt = "NCC 1701 -> ", //todo: resource this
                     IsSubscriberApp = true //todo: GET should set the app.config setting to true?
                 }
             });
 
             HttpContext.Current.Session["game"] = game;
 
-            GetGame().RunSubscriber();
-            GetGame().Started = true;
+            if (!game.Write.OutputError)
+            {
+                var sessionGame = Workflow.GetGame();
+                sessionGame.RunSubscriber();
+                sessionGame.Started = true;
+                sessionGame.Write.CurrentPrompt = "NCC 1701 -> "; //todo: resource this
 
-            responseLines = this.Response("Game Started.."); //todo: resource this
+                responseLines = this.Response("Game Started.."); //todo: resource this
+            }
+            else
+            {
+                responseLines.Add("Game Initialization failed.  Possible Configuration Error.");
+            }
+
             return responseLines;
         }
 

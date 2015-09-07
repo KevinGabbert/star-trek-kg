@@ -63,6 +63,11 @@ namespace StarTrek_KG.Output
 
         #endregion
 
+        public Write()
+        {
+            
+        }
+
         public Write(IStarTrekKGSettings config)
         {
             this.ACTIVITY_PANEL = new List<string>();
@@ -836,6 +841,7 @@ namespace StarTrek_KG.Output
 
             string shieldPromptReply;
 
+            //todo: this needs to be divined?
             this.PromptUser(SubsystemType.Shields, "NCC 1701 -> Shield Control -> ", "", out shieldPromptReply, 1);
 
             Shields.For(playerShip).Controls(shieldPanelCommand);         
