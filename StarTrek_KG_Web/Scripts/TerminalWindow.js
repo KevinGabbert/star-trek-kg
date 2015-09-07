@@ -16,10 +16,10 @@
             prompt: 'Terminal: ',
             name: 'termWindow',
             height: 600,
-            enabled: true,
             greetings: 'Star Trek KG \n' +
                        'A modern, C# Code rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :) \n\n' +
-                       'Type "start" to begin, or "term menu" for terminal commands\n',
+                       'Type "start" to begin, or "term menu" for terminal commands\n' +
+                       'This application is currently under construction, and only works in Chrome and Firefox\n',
             completion: function (terminal, command) {
 
                 $.ajax({

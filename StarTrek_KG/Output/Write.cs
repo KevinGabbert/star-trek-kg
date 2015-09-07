@@ -39,6 +39,7 @@ namespace StarTrek_KG.Output
         #endregion
 
         public string CurrentPrompt { get; set; }
+        public bool OutputError { get; set; }
 
         private Console _console;
         private Console Console

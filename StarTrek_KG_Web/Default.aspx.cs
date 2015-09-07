@@ -6,6 +6,7 @@ using System.Web.UI;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using StarTrek_KG;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG_Web.WebApp;
 
 namespace StarTrek_KG_Web
@@ -83,10 +84,49 @@ namespace StarTrek_KG_Web
             List<string> responseLines = new List<string>();
 
             Game game = Workflow.GetGame();
+
+            if (game?.Write != null)
+            {
+                game.Write.OutputError = false;
+            }
+
             responseLines = _WebAppWorkflow.ExecuteCommand(command, sessionID, responseLines, game);
 
-            string json = JsonConvert.SerializeObject(responseLines.ToList());
+            if (responseLines?.First() != "Err:")
+            {
+                responseLines?.Insert(0, _Default.AddHeader(game));
+            }
+
+            string json = JsonConvert.SerializeObject(responseLines?.ToList());
             return json;
+        }
+
+        private static string AddHeader(IWrite game)
+        {
+            if (game != null)
+            {
+                bool? error = game?.Write?.OutputError;
+
+                if (error != null)
+                {
+                    if ((bool) !error)
+                    {
+                        return "OK:"; //todo: resource this out
+                    }
+                    else
+                    {
+                        return "Err:"; //todo: resource this out
+                    }
+                }
+                else
+                {
+                    return "NotStarted:";
+                }
+            }
+            else
+            {
+                return "GameNotStarted:";
+            }
         }
 
         //WebMethod - GetSessionTimeout

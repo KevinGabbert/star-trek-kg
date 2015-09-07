@@ -16,7 +16,10 @@ namespace StarTrek_KG.Interfaces
         List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }
         IOutputMethod Output { get; set; }
+
         string CurrentPrompt { get; set; }
+
+        bool OutputError { get; set; }
 
         void OutputStrings(IEnumerable<string> strings);
         void HighlightTextBW(bool on);

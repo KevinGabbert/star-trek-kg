@@ -20,7 +20,7 @@ namespace StarTrek_KG_Web.WebApp
 
                 //todo: resource out menu
                 case "term menu":
-                    responseLines = this.Response(new List<string>()
+                    responseLines = this.Response(new List<string>() //todo: resource this
                     {
                         " --- Terminal Menu ---",
                         "start - starts a session",
@@ -31,7 +31,7 @@ namespace StarTrek_KG_Web.WebApp
                     break;
 
                 case "test":
-                    responseLines = this.SendTestResponse(responseLines);
+                    responseLines = this.SendTestResponse();
                     break;
 
                 case "make error":
@@ -139,7 +139,7 @@ namespace StarTrek_KG_Web.WebApp
             return (Game)HttpContext.Current.Session["game"]; //todo:  make this "game" + sessionID
         }
 
-        private List<string> SendTestResponse(List<string> responseLines)
+        private List<string> SendTestResponse()
         {
             return this.Response(new List<string>
             {
@@ -174,13 +174,16 @@ namespace StarTrek_KG_Web.WebApp
                 }
                 else
                 {
-                    responseLines = this.Response("G A M E  O V E R");
+                    responseLines = this.Response("G A M E  O V E R"); //todo: resource this
+                    responseLines.Insert(0, "Err:"); //todo: resource this
+
                     HttpContext.Current.Session.Clear();
                 }
             }
             else
             {
                 responseLines = this.Response("Unrecognized Command. Game is not running.  Type 'start' to start game");
+                responseLines.Insert(0, "Err:"); //todo: resource this
             }
 
             return responseLines;
