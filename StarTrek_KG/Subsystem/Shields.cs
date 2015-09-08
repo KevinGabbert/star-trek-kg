@@ -55,14 +55,12 @@ namespace StarTrek_KG.Subsystem
                 {
                     if (command != "add")
                     {
-                        this.DoTheTransfer(command);
-
-                        promptWriter.ResetPrompt();
+                        int energyToTransfer = Convert.ToInt32(command);
+                        this.TransferAndReset(energyToTransfer, promptWriter, true);
                     }
                     else
                     {
-                        this.GetValueFromUser();
-                        promptWriter.Subscriber.PromptInfo.SubCommand = "add";
+                        this.GetValueFromUser("add");
                     }   
                 }
                 else if ((command == "sub") || (promptWriter.Subscriber.PromptInfo.SubCommand == "sub"))
@@ -72,15 +70,18 @@ namespace StarTrek_KG.Subsystem
                         if (this.Energy > 0)
                         {
                             this.MaxTransfer = this.Energy;
-                            this.DoTheTransfer(command);
 
-                            promptWriter.ResetPrompt();
+                            int energyToTransfer = Convert.ToInt32(command);
+                            this.TransferAndReset(energyToTransfer, promptWriter, false);
                         }
                         else
                         {
-                            this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy");
-                            //todo: resource this
+                            this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
                         }
+                    }
+                    else
+                    {
+                        this.GetValueFromUser("sub");
                     }
                 }
             }
@@ -92,16 +93,20 @@ namespace StarTrek_KG.Subsystem
             return this.Game.Write.Output.Queue.ToList();
         }
 
-        private void DoTheTransfer(string command)
+        #region Transferring energy
+
+        private void TransferAndReset(int transferAmount, IWriter promptWriter, bool adding)
         {
-            int transferAmount = Convert.ToInt32(command);
-
-            this.EnergyValidation(Convert.ToInt32(transferAmount));
-
-            this.TransferEnergy(transferAmount, true);
+            this.DoTheTransfer(transferAmount, adding);
+            promptWriter.ResetPrompt();
         }
 
-        #region Transferring energy
+        private void DoTheTransfer(int transferAmount, bool adding)
+        {
+            this.EnergyValidation(transferAmount);
+
+            this.TransferEnergy(transferAmount, adding);
+        }
 
         private void TransferEnergy(int transfer, bool adding)
         {
@@ -150,7 +155,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public void GetValueFromUser()
+        private void GetValueFromUser(string subCommand)
         {
             var promptWriter = this.ShipConnectedTo.Game.Write;
 
@@ -162,6 +167,8 @@ namespace StarTrek_KG.Subsystem
                     $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
                     out transfer, 2);
             }
+
+            promptWriter.Subscriber.PromptInfo.SubCommand = subCommand;
         }
 
         private int EnergyValidation(double transfer)
