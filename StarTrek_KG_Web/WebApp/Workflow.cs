@@ -127,10 +127,7 @@ namespace StarTrek_KG_Web.WebApp
 
             if (!game.Write.OutputError)
             {
-                var sessionGame = Workflow.GetGame();
-                sessionGame.RunSubscriber();
-                sessionGame.Started = true;
-                sessionGame.Write.CurrentPrompt = "NCC 1701 -> "; //todo: resource this
+                Workflow.GetGame().RunSubscriber();
 
                 responseLines = this.Response("Game Started.."); //todo: resource this
             }

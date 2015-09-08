@@ -14,7 +14,8 @@ namespace UnitTests.ShipTests
 {
     public class Test_Setup: IConfig
     {
-        public IStarTrekKGSettings Config { get; set; } 
+        public IStarTrekKGSettings Config { get; set; }
+
         public Game Game { get; set; }
         public Navigation TestNavigation { get; set; }
         public Torpedoes TestPhotons { get; set; }
@@ -255,6 +256,11 @@ namespace UnitTests.ShipTests
             TestRunner.GetTestConstants();
 
             Assert.AreEqual(8, Constants.Region_MAX);
+        }
+
+        public string GetConfigText(string textToGet)
+        {
+            return this.Config.GetText(textToGet);
         }
     }
 }

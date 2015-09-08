@@ -6,5 +6,6 @@
     public interface IConfig
     {
         IStarTrekKGSettings Config { get; set; }
+        string GetConfigText(string textToGet);
     }
 }

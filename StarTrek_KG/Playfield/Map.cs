@@ -619,6 +619,11 @@ namespace StarTrek_KG.Playfield
 
             return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }
+
+        public string GetConfigText(string textToGet)
+        {
+            return this.Config.GetText(textToGet);
+        }
     }
 }
 

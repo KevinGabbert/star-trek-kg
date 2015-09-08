@@ -236,6 +236,9 @@ namespace StarTrek_KG
 
         private void Initialize()
         {
+            this.Started = true;
+            this.Write.ResetPrompt();
+
             //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
             this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
         }
@@ -886,6 +889,11 @@ namespace StarTrek_KG
 
             Constants.Region_MIN = 0;
             Constants.Region_MAX = 0;
+        }
+
+        public string GetConfigText(string textToGet)
+        {
+            return this.Config.GetText(textToGet);
         }
     }
 }

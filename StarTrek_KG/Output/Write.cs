@@ -57,7 +57,7 @@ namespace StarTrek_KG.Output
 
         public Write(bool subscriberAppEnabled)
         {
-            this.Subscriber = new Subscriber(subscriberAppEnabled);
+            this.Subscriber = new Subscriber(this.Config);
         }
 
         public Write(IStarTrekKGSettings config)
@@ -78,7 +78,11 @@ namespace StarTrek_KG.Output
             this.IsTelnetApp = this.Config.GetSetting<bool>("IsTelnetApp");
             var isSubscriberApp = this.Config.GetSetting<bool>("IsSubscriberApp");
 
-            this.Subscriber = new Subscriber(isSubscriberApp);
+            if (isSubscriberApp)
+            {
+                this.Subscriber = new Subscriber(this.Config);
+            }
+
             if (this.IsTelnetApp)
             {
                 this.Output = new TelnetOutput(config); //todo: config might be droppped
@@ -95,7 +99,7 @@ namespace StarTrek_KG.Output
 
         public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config) : this(config)
         {
-            this.Subscriber = new Subscriber();
+            this.Subscriber = new Subscriber(this.Config);
 
             this.ACTIVITY_PANEL = new List<string>();
             this.TotalHostiles = totalHostiles;
@@ -113,50 +117,50 @@ namespace StarTrek_KG.Output
         /// <returns></returns>
         public void ConfigText(string configTextName)
         {
-            this.Output.WriteLine(this.Config.GetText(configTextName));
+            this.Output.WriteLine(this.GetConfigText(configTextName));
         }
 
         public string GetFormattedConfigText(string configTextToWrite, object param1)
         {
-            return string.Format(this.Config.GetText(configTextToWrite), param1);
+            return string.Format(this.GetConfigText(configTextToWrite), param1);
         }
 
         public string GetFormattedConfigText(string configTextToWrite, object param1, object param2)
         {
-            return string.Format(this.Config.GetText(configTextToWrite), param1, param2);
+            return string.Format(this.GetConfigText(configTextToWrite), param1, param2);
         }
 
         public void FormattedConfigLine(string configTextToWrite, object param1)
         {
-            this.Output.Write(string.Format(this.Config.GetText(configTextToWrite), param1));
+            this.Output.Write(string.Format(this.GetConfigText(configTextToWrite), param1));
             this.Output.WriteLine();
         }
 
         public void FormattedConfigLine(string configTextToWrite, object param1, object param2)
         {
-            this.Output.Write(string.Format(this.Config.GetText(configTextToWrite), param1, param2));
+            this.Output.Write(string.Format(this.GetConfigText(configTextToWrite), param1, param2));
             this.Output.WriteLine();
         }
 
         public void Resource(string text)
         {
-            this.Output.WriteLine(this.Config.GetText(text) + " ");
+            this.Output.WriteLine(this.GetConfigText(text) + " ");
         }
 
         public void ResourceLine(string text)
         {
-            this.Output.WriteLine(this.Config.GetText(text));
+            this.Output.WriteLine(this.GetConfigText(text));
             this.Output.WriteLine();
         }
 
         public void ResourceSingleLine(string text)
         {
-            this.Output.WriteLine(this.Config.GetText(text));
+            this.Output.WriteLine(this.GetConfigText(text));
         }
 
         public void ResourceLine(string prependText, string text)
         {
-            this.Output.WriteLine(prependText + " " + this.Config.GetText(text));
+            this.Output.WriteLine(prependText + " " + this.GetConfigText(text));
             this.Output.WriteLine();
         }
 
@@ -664,7 +668,7 @@ namespace StarTrek_KG.Output
             }
             else if (menuCommand == Menu.ver.ToString())
             {
-                this.Output.WriteLine(this.Config.GetText("AppVersion").TrimStart(' '));
+                this.Output.WriteLine(this.GetConfigText("AppVersion").TrimStart(' '));
             }
             else if (menuCommand == Menu.cls.ToString())
             {
@@ -847,7 +851,7 @@ namespace StarTrek_KG.Output
             string shieldPromptReply;
 
             //todo: this needs to be divined?
-            this.PromptUser(SubsystemType.Shields, "NCC 1701 -> Shield Control -> ", "", out shieldPromptReply, 1);
+            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ", "", out shieldPromptReply, 1);
 
             Shields.For(playerShip).Controls(shieldPanelCommand);         
             
@@ -860,7 +864,7 @@ namespace StarTrek_KG.Output
 
         public void ResetPrompt()
         {
-            this.CurrentPrompt = "NCC 1701 -> "; //todo: set this to config file default prompt 
+            this.CurrentPrompt = this.Subscriber.PromptInfo.DefaultPrompt; //todo: set this to config file default prompt 
             this.Subscriber.PromptInfo.SubCommand = "";
             this.Subscriber.PromptInfo.SubSystem = SubsystemType.None;
             this.Subscriber.PromptInfo.Level = 0;
@@ -1022,7 +1026,7 @@ namespace StarTrek_KG.Output
                 attackerName = "Hostile Starbase";
             }
 
-            string shipHitBy = this.Config.GetText("shipHitBy");
+            string shipHitBy = this.GetConfigText("shipHitBy");
             string message = string.Format(shipHitBy, attackerName, attackerSector.X, attackerSector.Y, attackingEnergy);
 
             return message;
@@ -1047,8 +1051,8 @@ namespace StarTrek_KG.Output
                 attackerName = "Hostile Starbase";
             }
 
-            string misfireBy = this.Config.GetText("misfireBy");
-            string misfireAtSector = this.Config.GetText("misfireAtSector");
+            string misfireBy = this.GetConfigText("misfireBy");
+            string misfireAtSector = this.GetConfigText("misfireAtSector");
 
             return string.Format(misfireBy + attackerName + misfireAtSector, attackerSector.X, attackerSector.Y);
         }
@@ -1093,12 +1097,12 @@ namespace StarTrek_KG.Output
         {
             var commandResult = string.Empty;
 
-            string missionFailed = this.Config.GetText("MissionFailed");
-            string shipDestroyed = this.Config.GetText("ShipDestroyed");
-            string energyExhausted = this.Config.GetText("EnergyExhausted");
-            string allFedShipsDestroyed = this.Config.GetText("AllFedShipsDestroyed");
-            string missionAccomplished = this.Config.GetText("MissionAccomplished");
-            string timeOver = this.Config.GetText("TimeOver");
+            string missionFailed = this.GetConfigText("MissionFailed");
+            string shipDestroyed = this.GetConfigText("ShipDestroyed");
+            string energyExhausted = this.GetConfigText("EnergyExhausted");
+            string allFedShipsDestroyed = this.GetConfigText("AllFedShipsDestroyed");
+            string missionAccomplished = this.GetConfigText("MissionAccomplished");
+            string timeOver = this.GetConfigText("TimeOver");
 
             if (ship.Destroyed)
             {
@@ -1128,9 +1132,14 @@ namespace StarTrek_KG.Output
 
         public void PrintMission()
         {
-            this.Output.WriteLine(this.Config.GetText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
-            this.Output.WriteLine(this.Config.GetText("HelpStatement"));
+            this.Output.WriteLine(this.GetConfigText("MissionStatement"), this.TotalHostiles, this.TimeRemaining, this.Starbases);
+            this.Output.WriteLine(this.GetConfigText("HelpStatement"));
             this.Output.WriteLine();
+        }
+
+        public string GetConfigText(string textToGet)
+        {
+            return this.Config.GetText(textToGet);
         }
 
         #endregion

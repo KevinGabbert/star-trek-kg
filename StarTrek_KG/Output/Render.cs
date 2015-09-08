@@ -29,7 +29,7 @@ namespace StarTrek_KG.Output
         {
             this.Write.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
 
-            int srsRows = Convert.ToInt32(this.Config.GetText("SRSRows"));
+            int srsRows = Convert.ToInt32(this.GetConfigText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
             {
                 this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Region.Sectors, totalHostiles, isNebula);
@@ -318,6 +318,11 @@ namespace StarTrek_KG.Output
             }
 
             this.Write.Line("");
+        }
+
+        public string GetConfigText(string textToGet)
+        {
+            return this.Config.GetText(textToGet);
         }
     }
 }
