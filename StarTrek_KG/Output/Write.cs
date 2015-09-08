@@ -28,15 +28,7 @@ namespace StarTrek_KG.Output
         public IStarTrekKGSettings Config { get; set; }
         public IOutputMethod Output { get; set; }
 
-        #region Subscriber
-
-        //todo: refacto into a Subscriber object (and make it into a prop)
-        public bool IsSubscriberApp { get; set; }
-        public SubsystemType SubscriberPromptSubSystem { get; set; }
-        public string SubscriberPromptSubCommand { get; set; }
-        public int SubscriberPromptLevel { get; set; }
-
-        #endregion
+        public Subscriber Subscriber { get; set; }
 
         public string CurrentPrompt { get; set; }
         public bool OutputError { get; set; }
@@ -63,9 +55,9 @@ namespace StarTrek_KG.Output
 
         #endregion
 
-        public Write()
+        public Write(bool subscriberAppEnabled)
         {
-            
+            this.Subscriber = new Subscriber(subscriberAppEnabled);
         }
 
         public Write(IStarTrekKGSettings config)
@@ -74,13 +66,14 @@ namespace StarTrek_KG.Output
             this.Config = config;
 
             this.IsTelnetApp = this.Config.GetSetting<bool>("IsTelnetApp");
-            this.IsSubscriberApp = this.Config.GetSetting<bool>("IsSubscriberApp");
+            var isSubscriberApp = this.Config.GetSetting<bool>("IsSubscriberApp");
 
+            this.Subscriber = new Subscriber(isSubscriberApp);
             if (this.IsTelnetApp)
             {
                 this.Output = new TelnetOutput(config); //todo: config might be droppped
             }
-            else if (this.IsSubscriberApp)
+            else if (this.Subscriber.Enabled)
             {
                 this.Output = new SubscriberOutput(config);
             }
@@ -92,6 +85,8 @@ namespace StarTrek_KG.Output
 
         public Write(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config) : this(config)
         {
+            this.Subscriber = new Subscriber();
+
             this.ACTIVITY_PANEL = new List<string>();
             this.TotalHostiles = totalHostiles;
             this.Starbases = starbases;
@@ -550,14 +545,14 @@ namespace StarTrek_KG.Output
         /// <param name="userInput"></param>
         public List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null)
         {
-            if (!this.IsSubscriberApp)
+            if (!this.Subscriber.Enabled)
             {
                 this.Output.Write(mapText);
             }
 
             string userCommand;
 
-            if (userInput != null && this.IsSubscriberApp)
+            if (userInput != null && this.Subscriber.Enabled)
             {
                 userCommand = userInput.Trim().ToLower();
                 this.Output.Clear();
@@ -577,13 +572,13 @@ namespace StarTrek_KG.Output
         {
             List<string> retVal;
 
-            if (this.SubscriberPromptLevel == 0)
+            if (this.Subscriber.PromptLevel == 0)
             {
                 retVal = this.EvalTopLevelMenuCommand(playerShip, userCommand);
             }
             else
             {
-                retVal = this.EvalSubLevelCommand(playerShip, userCommand, this.SubscriberPromptLevel);
+                retVal = this.EvalSubLevelCommand(playerShip, userCommand, this.Subscriber.PromptLevel);
             }
 
             return retVal;
@@ -595,7 +590,7 @@ namespace StarTrek_KG.Output
 
             if (menuCommand == Menu.wrp.ToString() || menuCommand == Menu.imp.ToString() || menuCommand == Menu.nto.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.Navigation;
+                this.Subscriber.PromptSubSystem = SubsystemType.Navigation;
 
                 //todo: we may need to break out warp and imp, or change the process here because we can't tell which of the 3 we need for prompt.
 
@@ -603,58 +598,58 @@ namespace StarTrek_KG.Output
             }
             else if (menuCommand == Menu.irs.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.ImmediateRangeScan;
+                this.Subscriber.PromptSubSystem = SubsystemType.ImmediateRangeScan;
                 retVal = ImmediateRangeScan.For(playerShip).Controls();
             }
             else if (menuCommand == Menu.srs.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.ShortRangeScan;
+                this.Subscriber.PromptSubSystem = SubsystemType.ShortRangeScan;
                 retVal = ShortRangeScan.For(playerShip).Controls();
             }
             else if (menuCommand == Menu.lrs.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.LongRangeScan;
+                this.Subscriber.PromptSubSystem = SubsystemType.LongRangeScan;
                 retVal = LongRangeScan.For(playerShip).Controls();
             }
             else if (menuCommand == Menu.crs.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.CombinedRangeScan;
+                this.Subscriber.PromptSubSystem = SubsystemType.CombinedRangeScan;
                 retVal = CombinedRangeScan.For(playerShip).Controls();
             }
             else if (menuCommand == Menu.pha.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.Phasers;
+                this.Subscriber.PromptSubSystem = SubsystemType.Phasers;
                 retVal = Phasers.For(playerShip).Controls(playerShip);
             }
             else if (menuCommand == Menu.tor.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.Torpedoes;
+                this.Subscriber.PromptSubSystem = SubsystemType.Torpedoes;
                 retVal = Torpedoes.For(playerShip).Controls();
             }
             else if (menuCommand == Menu.she.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.Shields;
+                this.Subscriber.PromptSubSystem = SubsystemType.Shields;
 
                 retVal = this.ShieldMenu(playerShip);
             }
             else if (menuCommand == Menu.com.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.Computer;
+                this.Subscriber.PromptSubSystem = SubsystemType.Computer;
                 retVal = this.ComputerMenu(playerShip);
             }
             else if (menuCommand == Menu.toq.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.Computer;
+                this.Subscriber.PromptSubSystem = SubsystemType.Computer;
                 retVal = Computer.For(playerShip).Controls(menuCommand); //todo: promptlevel should be able to tell us anything else we need.
             }
             else if (menuCommand == Menu.dmg.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.DamageControl;
+                this.Subscriber.PromptSubSystem = SubsystemType.DamageControl;
                 retVal = this.DamageControlMenu(playerShip);
             }
             else if (menuCommand == Menu.dbg.ToString())
             {
-                this.SubscriberPromptSubSystem = SubsystemType.Debug;
+                this.Subscriber.PromptSubSystem = SubsystemType.Debug;
                 retVal = this.DebugMenu(playerShip);
             }
             else if (menuCommand == Menu.ver.ToString())
@@ -726,12 +721,12 @@ namespace StarTrek_KG.Output
         {
             IEnumerable<string> retVal = new List<string>();
 
-            string menuName = this.SubscriberPromptSubSystem.Name;
+            string menuName = this.Subscriber.PromptSubSystem.Name;
 
             //todo: Finish other menus.  refactor their common menu creation steps
-            if (this.IsAcceptable(playerEnteredText, this.SubscriberPromptSubSystem, this.SubscriberPromptLevel))
+            if (this.IsAcceptable(playerEnteredText, this.Subscriber.PromptSubSystem, this.Subscriber.PromptLevel))
             {
-                ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.SubscriberPromptSubSystem);
+                ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptSubSystem);
                 retVal = subsystem.Controls(playerEnteredText);
             }
             else
@@ -741,7 +736,7 @@ namespace StarTrek_KG.Output
                     $"Unrecognized Command. Exiting {menuName} Menu"      //todo: resource this
                 }; 
 
-                this.SubscriberPromptLevel = 0; //resets our menu level
+                this.Subscriber.PromptLevel = 0; //resets our menu level
 
                 return null;
             }
@@ -751,7 +746,7 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> DebugMenu(IShip playerShip)
         {
-           IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
+           IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptSubSystem}Panel").Cast<MenuItemDef>();
 
             this.OutputStrings(Debug.DEBUG_PANEL);
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
@@ -768,7 +763,7 @@ namespace StarTrek_KG.Output
         {
             if (Computer.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
-            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
+            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptSubSystem}Panel").Cast<MenuItemDef>();
 
             this.OutputStrings(Computer.CONTROL_PANEL);
             this.WithNoEndCR(this.ENTER_COMPUTER_COMMAND);
@@ -783,7 +778,7 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> DamageControlMenu(IShip playerShip)
         {
-            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
+            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptSubSystem}Panel").Cast<MenuItemDef>();
 
             this.OutputStrings(DamageControl.DAMAGE_PANEL);
 
@@ -808,7 +803,7 @@ namespace StarTrek_KG.Output
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
-            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.SubscriberPromptSubSystem}Panel").Cast<MenuItemDef>();
+            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptSubSystem}Panel").Cast<MenuItemDef>();
 
             //todo: replace the below with menuItems grabbed here.
 
@@ -856,9 +851,9 @@ namespace StarTrek_KG.Output
         public void ResetPrompt()
         {
             this.CurrentPrompt = "NCC 1701 -> "; //todo: set this to config file default prompt 
-            this.SubscriberPromptSubCommand = "";
-            this.SubscriberPromptSubSystem = SubsystemType.None;
-            this.SubscriberPromptLevel = 0;
+            this.Subscriber.PromptSubCommand = "";
+            this.Subscriber.PromptSubSystem = SubsystemType.None;
+            this.Subscriber.PromptLevel = 0;
         }
 
         /// <summary>
@@ -881,13 +876,13 @@ namespace StarTrek_KG.Output
                     this.WithNoEndCR(promptMessage);
                 }
 
-                if (this.IsSubscriberApp)
+                if (this.Subscriber.Enabled)
                 {
                     this.CurrentPrompt = promptDisplay;
 
                     //todo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. they need to be broken out to a separate class.
-                    this.SubscriberPromptSubSystem = promptSubsystem;
-                    this.SubscriberPromptLevel = subPromptLevel;
+                    this.Subscriber.PromptSubSystem = promptSubsystem;
+                    this.Subscriber.PromptLevel = subPromptLevel;
 
                     //todo: an endCR might need to be added here
 

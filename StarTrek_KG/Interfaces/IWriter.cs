@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Output;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -11,11 +12,10 @@ namespace StarTrek_KG.Interfaces
     /// </summary>
     public interface IWriter
     {
-        bool IsSubscriberApp { get; set; }
-
         List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }
         IOutputMethod Output { get; set; }
+        Subscriber Subscriber { get; set; }
 
         string CurrentPrompt { get; set; }
 
@@ -63,15 +63,12 @@ namespace StarTrek_KG.Interfaces
         bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0);
         bool PromptUserConsole(string promptMessage, out string value);
         bool PromptUserSubscriber(string promptMessage, out string value);
-        int SubscriberPromptLevel { get; set; }
-        SubsystemType SubscriberPromptSubSystem { get; set; }
-        string SubscriberPromptSubCommand { get; set; }
+
         List<string> EvalSubLevelCommand(IShip playerShip, string playerEnteredText, int promptLevel);
 
         void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
         void RenderSectors(SectorScanType scanType, ISubsystem subsystem);
         string RenderCourse();
-
 
         //todo: these don't belong here.  move them
 

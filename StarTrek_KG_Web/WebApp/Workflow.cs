@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using StarTrek_KG;
 using StarTrek_KG.Config;
+using StarTrek_KG.Output;
 
 namespace StarTrek_KG_Web.WebApp
 {
@@ -119,14 +120,8 @@ namespace StarTrek_KG_Web.WebApp
         private List<string> RunWeb(List<string> responseLines, out Game game)
         {
             var settingsForWholeGame = (new StarTrekKGSettings());
-            game = (new Game(settingsForWholeGame)
-            {
-                //todo: delete this property setting
-                Write =
-                {
-                    IsSubscriberApp = true //todo: GET should set the app.config setting to true?
-                }
-            });
+            game = new Game(settingsForWholeGame); //todo: GET should set the app.config setting to true?
+            game.Write.Subscriber.Enabled = true;
 
             HttpContext.Current.Session["game"] = game;
 

@@ -121,7 +121,7 @@ namespace StarTrek_KG.Actors
             this.Subsystems.FullRepair();
         }
 
-        public Allegiance GetAllegiance()
+        private Allegiance GetAllegiance()
         {
             var setting = this.Config.GetSetting<string>("Hostile");
 

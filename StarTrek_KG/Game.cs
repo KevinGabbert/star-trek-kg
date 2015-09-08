@@ -59,7 +59,7 @@ namespace StarTrek_KG
                 {
                     this.Write = new Write(config);
 
-                    if (this.Write.IsSubscriberApp)
+                    if (this.Write.Subscriber.Enabled)
                     {
                         this.Write.CurrentPrompt = "Enter Command:>"; //todo: resource this (default prompt)
 
@@ -70,9 +70,9 @@ namespace StarTrek_KG
                         this.Prompt = (string s, out string output) => this.Write.PromptUserConsole(s, out output);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    this.Write = new Write
+                    this.Write = new Write(true)
                     {
                         Output = new SubscriberOutput(config),
                         OutputError = true,
