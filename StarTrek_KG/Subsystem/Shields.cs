@@ -51,38 +51,18 @@ namespace StarTrek_KG.Subsystem
             if (!this.Damaged())
             {
                 //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
-                if ((command == "add") || (promptWriter.Subscriber.PromptInfo.SubCommand == "add"))
+                if (Shields.AddingTo(command, promptWriter))
                 {
-                    if (command != "add")
-                    {
-                        int energyToTransfer = Convert.ToInt32(command);
-                        this.TransferAndReset(energyToTransfer, promptWriter, true);
-                    }
-                    else
-                    {
-                        this.GetValueFromUser("add");
-                    }   
+                    this.AddOrGetValue(command, promptWriter);   
                 }
-                else if ((command == "sub") || (promptWriter.Subscriber.PromptInfo.SubCommand == "sub"))
+                else if (Shields.SubtractingFrom(command, promptWriter))
                 {
-                    if (command != "sub")
-                    {
-                        if (this.Energy > 0)
-                        {
-                            this.MaxTransfer = this.Energy;
-
-                            int energyToTransfer = Convert.ToInt32(command);
-                            this.TransferAndReset(energyToTransfer, promptWriter, false);
-                        }
-                        else
-                        {
-                            this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
-                        }
-                    }
-                    else
-                    {
-                        this.GetValueFromUser("sub");
-                    }
+                    this.SubtractOrGetValue(command, promptWriter);
+                }
+                else if(Shields.NotRecognized(command, promptWriter))
+                {
+                    this.Game.Write.Line("Not recognized.  Exiting panel"); //todo: resource this
+                    promptWriter.ResetPrompt();
                 }
             }
             else
@@ -93,19 +73,74 @@ namespace StarTrek_KG.Subsystem
             return this.Game.Write.Output.Queue.ToList();
         }
 
+        private static bool NotRecognized(string command, IWriter promptWriter)
+        {
+            var recognized = (Shields.AddingTo(command, promptWriter) ||
+                              Shields.SubtractingFrom(command, promptWriter) ||
+                              promptWriter.Subscriber.PromptInfo.Level > 0);
+
+            return !recognized;
+        }
+
+        private static bool SubtractingFrom(string command, IWriter promptWriter)
+        {
+            return (command == "sub") || (promptWriter.Subscriber.PromptInfo.SubCommand == "sub");
+        }
+
+        private static bool AddingTo(string command, IWriter promptWriter)
+        {
+            return (command == "add") || (promptWriter.Subscriber.PromptInfo.SubCommand == "add");
+        }
+
+        private void AddOrGetValue(string command, IWriter promptWriter)
+        {
+            string add = "add"; //todo: resource this
+
+            if (command != add)
+            {
+                this.TransferAndReset(command, promptWriter, true);
+            }
+            else
+            {
+                this.GetValueFromUser(add);
+            }
+        }
+        private void SubtractOrGetValue(string command, IWriter promptWriter)
+        {
+            string subtract = "sub"; //todo: resource this
+
+            if (command != subtract)
+            {
+                if (this.Energy > 0)
+                {
+                    this.MaxTransfer = this.Energy;
+                    this.TransferAndReset(command, promptWriter, false);
+                }
+                else
+                {
+                    this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
+                }
+            }
+            else
+            {
+                this.GetValueFromUser(subtract);
+            }
+        }
+
         #region Transferring energy
 
-        private void TransferAndReset(int transferAmount, IWriter promptWriter, bool adding)
+        private void TransferAndReset(string command, IWriter promptWriter, bool adding)
         {
-            this.DoTheTransfer(transferAmount, adding);
+            int energyToTransfer = Convert.ToInt32(command);
+
+            this.DoTheTransfer(energyToTransfer, adding);
             promptWriter.ResetPrompt();
         }
 
         private void DoTheTransfer(int transferAmount, bool adding)
         {
-            this.EnergyValidation(transferAmount);
-
-            this.TransferEnergy(transferAmount, adding);
+            int validatedAmountToTransfer = this.EnergyValidation(transferAmount);
+            this.TransferEnergy(validatedAmountToTransfer, adding);
         }
 
         private void TransferEnergy(int transfer, bool adding)
@@ -163,9 +198,15 @@ namespace StarTrek_KG.Subsystem
             {
                 string transfer;
                 promptWriter.PromptUser(SubsystemType.Shields,
-                    "Shields-> Transfer Energy-> ",
-                    $"Enter amount of energy (1--{this.MaxTransfer}):> ", //todo: resource this
-                    out transfer, 2);
+                                        "Shields-> Transfer Energy-> ",
+                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
+                                        out transfer, 
+                                        this.Game.Write.Output.Queue,
+                                        2);
+
+                //todo: this is a little difficult.  why do we need to glue these 2 guys together?
+                //(grabs everything that .PromptUser output)
+                //this.Game.Write.Output.Queue.Enqueue(promptWriter.Output.Queue.Dequeue());
             }
 
             promptWriter.Subscriber.PromptInfo.SubCommand = subCommand;

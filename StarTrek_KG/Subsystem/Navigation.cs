@@ -251,7 +251,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Write.Line(string.Format("Your Ship" + this.Game.Config.GetSetting<string>("LocatedInRegion"),
                 (thisShip.Region.X), (thisShip.Region.Y)));
 
-            if (!this.Game.Write.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX, 1)
+            if (!this.Game.Write.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX, this.Game.Write.Output.Queue, 1)
                 || int.Parse(RegionX) < (Constants.Region_MIN + 1)
                 || int.Parse(RegionX) > Constants.Region_MAX)
             {
@@ -259,7 +259,7 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            if (!this.Game.Write.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY, 2)
+            if (!this.Game.Write.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY, this.Game.Write.Output.Queue, 2)
                 || int.Parse(RegionY) < (Constants.Region_MIN + 1)
                 || int.Parse(RegionY) > Constants.Region_MAX)
             {

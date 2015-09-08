@@ -54,7 +54,7 @@ namespace StarTrek_KG.Actors
         }
         public bool PromptAndCheckForInvalidWarpFactor(int maxWarpFactor, out string distance)
         {
-            if (!this.Write.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance)
+            if (!this.Write.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance, this.Write.Output.Queue)
                 || int.Parse(distance) < 0 
                 || int.Parse(distance) > maxWarpFactor)
             {

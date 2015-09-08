@@ -851,7 +851,7 @@ namespace StarTrek_KG.Output
             string shieldPromptReply;
 
             //todo: this needs to be divined?
-            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ", "", out shieldPromptReply, 1);
+            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ", null, out shieldPromptReply, this.Output.Queue, 1);
 
             Shields.For(playerShip).Controls(shieldPanelCommand);         
             
@@ -879,13 +879,21 @@ namespace StarTrek_KG.Output
         /// <param name="promptDisplay"></param>
         /// <param name="promptMessage"></param>
         /// <param name="value"></param>
+        /// <param name="queueToWriteTo"></param>
         /// <param name="subPromptLevel"></param>
         /// <returns></returns>
-        public bool PromptUser(SubsystemType promptSubsystem, string promptDisplay, string promptMessage, out string value, int subPromptLevel = 0)
+        public bool PromptUser(SubsystemType promptSubsystem, 
+                                string promptDisplay, 
+                                string promptMessage, 
+                                out string value, 
+                                Queue<string> queueToWriteTo, 
+                                int subPromptLevel = 0)
         {
+            bool retVal = false;
+
             try
             {
-                if(!string.IsNullOrWhiteSpace(promptMessage))
+                if (!string.IsNullOrWhiteSpace(promptMessage))
                 {
                     this.WithNoEndCR(promptMessage);
                 }
@@ -904,17 +912,19 @@ namespace StarTrek_KG.Output
                 }
                 else
                 {
-                     value = this.Output.ReadLine().Trim().ToLower();
+                    value = this.Output.ReadLine().Trim().ToLower();
                 }
 
-                return true;
+                retVal = true;
             }
             catch
             {
                 value = "0";
             }
 
-            return false;
+            queueToWriteTo.Enqueue(this.Output.Queue.Dequeue());
+
+            return retVal;
         }
 
         public bool PromptUser(SubsystemType promptSubsystem, string promptMessage, out int value, int subPromptLevel = 0)
