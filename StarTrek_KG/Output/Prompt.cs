@@ -2,9 +2,9 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
-    public class Prompt
+    public class PromptInfo
     {
-        public Prompt()
+        public PromptInfo()
         {
         }
 

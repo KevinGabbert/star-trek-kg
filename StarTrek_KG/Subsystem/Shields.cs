@@ -51,7 +51,7 @@ namespace StarTrek_KG.Subsystem
             if (!this.Damaged())
             {
                 //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
-                if ((command == "add") || (promptWriter.Subscriber.Prompt.SubCommand == "add"))
+                if ((command == "add") || (promptWriter.Subscriber.PromptInfo.SubCommand == "add"))
                 {
                     if (command != "add")
                     {
@@ -62,10 +62,10 @@ namespace StarTrek_KG.Subsystem
                     else
                     {
                         this.GetValueFromUser();
-                        promptWriter.Subscriber.Prompt.SubCommand = "add";
+                        promptWriter.Subscriber.PromptInfo.SubCommand = "add";
                     }   
                 }
-                else if ((command == "sub") || (promptWriter.Subscriber.Prompt.SubCommand == "sub"))
+                else if ((command == "sub") || (promptWriter.Subscriber.PromptInfo.SubCommand == "sub"))
                 {
                     if (command != "sub")
                     {
@@ -154,7 +154,7 @@ namespace StarTrek_KG.Subsystem
         {
             var promptWriter = this.ShipConnectedTo.Game.Write;
 
-            if (promptWriter.Subscriber.Prompt.Level == 1)
+            if (promptWriter.Subscriber.PromptInfo.Level == 1)
             {
                 string transfer;
                 promptWriter.PromptUser(SubsystemType.Shields,

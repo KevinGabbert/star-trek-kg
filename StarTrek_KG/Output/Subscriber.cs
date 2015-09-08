@@ -2,16 +2,16 @@ namespace StarTrek_KG.Output
 {
     public class Subscriber
     {
-        public Prompt Prompt { get; }
+        public PromptInfo PromptInfo { get; }
 
         public Subscriber()
         {
-            Prompt = new Prompt();
+            PromptInfo = new PromptInfo();
         }
 
         public Subscriber(bool enabled)
         {
-            Prompt = new Prompt();
+            PromptInfo = new PromptInfo();
             this.Enabled = enabled;
         }
 
