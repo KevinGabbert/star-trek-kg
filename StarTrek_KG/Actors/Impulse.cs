@@ -26,7 +26,7 @@ namespace StarTrek_KG.Actors
         /// <param name="ship"> </param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public bool EnergySubtracted(Ship ship, ref int distance)
+        private bool EnergySubtracted(Ship ship, ref int distance)
         {
             bool returnVal;
 
@@ -48,7 +48,6 @@ namespace StarTrek_KG.Actors
         }
         public bool InvalidSublightFactorCheck(int maxSublightDistance, out string distance)
         {
-
             if (!this.Write.PromptUser(SubsystemType.None, "Impulse:>", $"Enter Sublight distance (1-{maxSublightDistance}): ", out distance, this.Write.Output.Queue)
                 || int.Parse(distance) < 0
                 || int.Parse(distance) > maxSublightDistance)
