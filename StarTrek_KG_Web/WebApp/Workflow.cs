@@ -71,7 +71,7 @@ namespace StarTrek_KG_Web.WebApp
                     break;
 
                 default:
-                    responseLines = this.NewSubscriberTurn(responseLines, sessionID, command);
+                    responseLines = this.NewTurn(responseLines, sessionID, command);
                     break;
             }
             return responseLines;
@@ -177,7 +177,7 @@ namespace StarTrek_KG_Web.WebApp
         //    }
         //}
 
-        private List<string> NewSubscriberTurn(List<string> responseLines, string sessionID, string command)
+        private List<string> NewTurn(List<string> responseLines, string sessionID, string command)
         {
             var myGame = this.GetGame(sessionID);
 
@@ -186,11 +186,12 @@ namespace StarTrek_KG_Web.WebApp
                 //pass command and session ID to application
                 if (!myGame.GameOver)
                 {
-                    responseLines = this.Response(myGame.SubscriberSendAndGetResponse(command));
+                    var turnResponse = myGame.SubscriberSendAndGetResponse(command);
+                    responseLines = this.Response(turnResponse);
                 }
                 else
                 {
-                    responseLines = this.Response("G A M E  O V E R"); //todo: resource this
+                    responseLines = this.Response("** G A M E  O V E R **"); //todo: resource this
                     responseLines.Insert(0, "Err:"); //todo: resource this
 
                     HttpContext.Current.Session.Clear();

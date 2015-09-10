@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -564,8 +565,29 @@ namespace StarTrek_KG.Output
                 this.Output.Write(mapText);
             }
 
-            string userCommand;
+            return this.ProcessInputString(playerShip, userInput);
+        }
 
+        private List<string> ProcessInputString(IShip playerShip, string userInput)
+        {
+            string userCommand;
+            if (this.GetUserCommand(userInput, out userCommand))
+            {
+                return null;
+            }
+
+            if (userCommand.Contains(" "))
+            {
+                return ProcessMultiStepCommand(playerShip, userCommand);
+            }
+            else
+            {
+                return this.OutputMenu(playerShip, userCommand);
+            }
+        }
+
+        private bool GetUserCommand(string userInput, out string userCommand)
+        {
             if (userInput != null && this.Subscriber.Enabled)
             {
                 userCommand = userInput.Trim().ToLower();
@@ -574,14 +596,39 @@ namespace StarTrek_KG.Output
             else
             {
                 string readLine = this.Output.ReadLine();
-                if (readLine == null) return null;
+                if (readLine == null)
+                {
+                    userCommand = null;
+                    return true;
+                }
 
                 userCommand = readLine.Trim().ToLower();
             }
-
-            return this.OutputMenu(playerShip, userCommand);
+            return false;
         }
-    
+        /// <summary>
+        /// Basically, since we know what the user wants at this point, for each level, then we simply turn right around and call the next parsed command.
+        /// </summary>
+        /// <param name="playerShip"></param>
+        /// <param name="userCommand"></param>
+        /// <returns></returns>
+        private List<string> ProcessMultiStepCommand(IShip playerShip, string userCommand)
+        {
+            var commands = new Queue<string>(userCommand.Split(' '));
+
+            this.EvalTopLevelMenuCommand(playerShip, commands.Dequeue());
+
+            List<string> returnVal = null;
+
+            while (commands.Count > 0)
+            {
+                //we only care about the last returnVal
+                returnVal = this.OutputMenu(playerShip, commands.Dequeue());
+            }
+
+            return returnVal;
+        }
+
         private List<string> OutputMenu(IShip playerShip, string userCommand)
         {
             List<string> retVal;
