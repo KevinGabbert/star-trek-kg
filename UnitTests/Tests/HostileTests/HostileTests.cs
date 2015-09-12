@@ -214,7 +214,7 @@ namespace UnitTests.Tests.HostileTests
                 Initialize = true,
                 SectorDefs = new SectorDefs(),
                 AddStars = false
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -242,7 +242,7 @@ namespace UnitTests.Tests.HostileTests
                                             {
                                                 new SectorDef(SectorItem.PlayerShip)
                                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -271,7 +271,7 @@ namespace UnitTests.Tests.HostileTests
                 
                 
                 SectorDefs = new SectorDefs()
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
 
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
@@ -303,7 +303,7 @@ namespace UnitTests.Tests.HostileTests
                                             {
                                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip)
                                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             var hostiles = _setup.TestMap.Regions.GetHostiles();
             Assert.AreEqual(1, hostiles.Count);
@@ -324,7 +324,7 @@ namespace UnitTests.Tests.HostileTests
                 AddNebulae = false,
                 Initialize = true,
                 SectorDefs = new SectorDefs()
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
@@ -351,7 +351,7 @@ namespace UnitTests.Tests.HostileTests
         {
             for(int i = 0; i < 1000; i++)
             {
-                this.Game.Write.Output.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% i: " + i);
+                this.Game.Interact.Output.WriteLine("%%%%%%%%%%%%%%%%%%%%%%%%%%%%% i: " + i);
                 TestMap3Scenario();
             }
         }
@@ -380,7 +380,7 @@ namespace UnitTests.Tests.HostileTests
                                                 SectorItem.HostileShip)
                                         },
                     AddStars = false
-                }, this.Game.Write, this.Game.Config));
+                }, this.Game.Interact, this.Game.Config));
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -431,7 +431,7 @@ namespace UnitTests.Tests.HostileTests
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
                 },
                 AddStars = false
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -518,7 +518,7 @@ namespace UnitTests.Tests.HostileTests
                                                          new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
                                                      },
                                     AddStars = false
-                                }, this.Game.Write, this.Game.Config));
+                                }, this.Game.Interact, this.Game.Config));
         }
 
         /// <summary>
@@ -576,7 +576,7 @@ namespace UnitTests.Tests.HostileTests
                                             {
                                                 new SectorDef(SectorItem.PlayerShip)
                                             }
-                                   }, this.Game.Write, this.Game.Config));
+                                   }, this.Game.Interact, this.Game.Config));
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
             //var activeRegion = activeRegion;
@@ -616,7 +616,7 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -633,7 +633,7 @@ namespace UnitTests.Tests.HostileTests
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 7)), SectorItem.HostileShip)
                                         }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -650,7 +650,7 @@ namespace UnitTests.Tests.HostileTests
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.PlayerShip),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 7)), SectorItem.HostileShip)
                                         }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -667,7 +667,7 @@ namespace UnitTests.Tests.HostileTests
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)), SectorItem.HostileShip)
                                         }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -684,7 +684,7 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -701,7 +701,7 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -718,7 +718,7 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -735,7 +735,7 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         [ExpectedException(typeof(GameConfigException))]
@@ -752,7 +752,7 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
                                 new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
         }
 
         #endregion

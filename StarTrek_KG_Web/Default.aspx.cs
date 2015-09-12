@@ -71,7 +71,7 @@ namespace StarTrek_KG_Web
         [WebMethod]
         public static string Prompt()
         {
-            string currentPrompt = Workflow.GetGame()?.Write?.CurrentPrompt ?? "Terminal: ";
+            string currentPrompt = Workflow.GetGame()?.Interact?.CurrentPrompt ?? "Terminal: ";
 
             string json = JsonConvert.SerializeObject(currentPrompt);
             return json;
@@ -84,9 +84,9 @@ namespace StarTrek_KG_Web
 
             Game game = Workflow.GetGame();
 
-            if (game?.Write != null)
+            if (game?.Interact != null)
             {
-                game.Write.OutputError = false;
+                game.Interact.OutputError = false;
             }
 
             responseLines = _WebAppWorkflow.ExecuteCommand(command, sessionID, responseLines, game);
@@ -100,11 +100,11 @@ namespace StarTrek_KG_Web
             return json;
         }
 
-        private static string AddHeader(IWrite game)
+        private static string AddHeader(IInteract game)
         {
             if (game != null)
             {
-                bool? error = game?.Write?.OutputError;
+                bool? error = game?.Interact?.OutputError;
 
                 if (error != null)
                 {

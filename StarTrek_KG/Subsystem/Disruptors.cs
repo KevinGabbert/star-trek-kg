@@ -105,8 +105,8 @@ namespace StarTrek_KG.Subsystem
 
         private void FireOnStar(IStar iStar)
         {
-            this.Game.Write.Line("");
-            this.Game.Write.Line("Direct hit on " + iStar.Name + ". No apparent damage to Stellar Body.");
+            this.Game.Interact.Line("");
+            this.Game.Interact.Line("Direct hit on " + iStar.Name + ". No apparent damage to Stellar Body.");
         }
     }
 }

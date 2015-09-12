@@ -10,7 +10,7 @@ namespace StarTrek_KG.Interfaces
     /// <summary>
     /// Objects that implement this are intended to output various types of information.
     /// </summary>
-    public interface IWriter
+    public interface IInteraction
     {
         List<string> ACTIVITY_PANEL { get; set; }
         IStarTrekKGSettings Config { get; set; }

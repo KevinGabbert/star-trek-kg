@@ -12,10 +12,10 @@ namespace UnitTests.ShipTests
 
         public TestClass_Base()
         {
-            _setup.Game.Write = new Write(null);
-            _setup.TestMap = new Map(null, _setup.Game.Write, _setup.Config);
-            _setup.TestMap.Write = new Write(_setup.TestMap.Config);
-            _setup.Game.Write = new Write(_setup.TestMap.Config);
+            _setup.Game.Interact = new Interaction(null);
+            _setup.TestMap = new Map(null, _setup.Game.Interact, _setup.Config);
+            _setup.TestMap.Write = new Interaction(_setup.TestMap.Config);
+            _setup.Game.Interact = new Interaction(_setup.TestMap.Config);
 
             this.Game = _setup.Game;
         }

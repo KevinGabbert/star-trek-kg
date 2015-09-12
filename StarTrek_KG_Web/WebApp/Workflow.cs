@@ -87,16 +87,16 @@ namespace StarTrek_KG_Web.WebApp
 
                 if (game != null)
                 {
-                    if (!game.Write.OutputError)
+                    if (!game.Interact.OutputError)
                     {
                         game.Started = true;
 
                         //todo: this should animate so that periods type out slowly..  JQuery Terminal can do this.
                         responseLines.Add("Connecting to U.S.S. Enterprise - NCC 1701..");
 
-                        if (game.Write?.Output?.Queue != null)
+                        if (game.Interact?.Output?.Queue != null)
                         {
-                            responseLines.AddRange(game.Write?.Output?.Queue.ToList());
+                            responseLines.AddRange(game.Interact?.Output?.Queue.ToList());
                         }
                     }
                     else
@@ -120,11 +120,11 @@ namespace StarTrek_KG_Web.WebApp
         {
             var settingsForWholeGame = (new StarTrekKGSettings());
             game = new Game(settingsForWholeGame); //todo: GET should set the app.config setting to true?
-            game.Write.Subscriber.Enabled = true;
+            game.Interact.Subscriber.Enabled = true;
 
             HttpContext.Current.Session["game"] = game;
 
-            if (!game.Write.OutputError)
+            if (!game.Interact.OutputError)
             {
                 Workflow.GetGame().RunSubscriber();
 

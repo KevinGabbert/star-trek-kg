@@ -26,7 +26,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
         }
 
@@ -87,7 +87,7 @@ namespace UnitTests.ShipTests.MapTests
                             {
                                 new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.PlayerShip)
                             }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             Assert.IsFalse(IsDockingLocation(map, 4, 4, 4, 4));
         }

@@ -18,7 +18,7 @@ namespace UnitTests.ShipTests.RegionTests
         {
             _testRegion = new Region(this.Game.Map);
 
-            _testRegion.Map = new Map(null, this.Game.Write, this.Game.Config);
+            _testRegion.Map = new Map(null, this.Game.Interact, this.Game.Config);
             _testRegion.Name = "Setup";
             _testRegion.Scanned = false;
             _testRegion.Type = RegionType.Nebulae;
@@ -79,8 +79,8 @@ namespace UnitTests.ShipTests.RegionTests
             const bool setupNebula = true;
             this.SetupRegion(setupNebula);
 
-            var mockedWrite = new Mock<IWriter>();
-            _setup.Game.Write = mockedWrite.Object;
+            var mockedWrite = new Mock<IInteraction>();
+            _setup.Game.Interact = mockedWrite.Object;
 
             _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
 

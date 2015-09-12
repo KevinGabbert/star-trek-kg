@@ -58,7 +58,7 @@ namespace StarTrek_KG.Actors
                     //case MovementType.X:
                     //    newLocation = this.TravelThroughGalaxies()
                 default:
-                    this.Game.Write.Line("Unsupported Movement Type");
+                    this.Game.Interact.Line("Unsupported Movement Type");
                     break;
             }
         }
@@ -124,7 +124,7 @@ namespace StarTrek_KG.Actors
 
                 if (scanResult.GalacticBarrier)
                 {
-                    this.Game.Write.Line("All Stop. Cannot cross Galactic Barrier.");
+                    this.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
                     return;
                 }
                 else
@@ -136,7 +136,7 @@ namespace StarTrek_KG.Actors
                     bool obstacleEncountered = this.SublightObstacleCheck((Coordinate) travellingShip.Sector, newSectorCandidate, currentRegion.Sectors);
                     if (obstacleEncountered)
                     {
-                        this.Game.Write.Line("All Stop.");
+                        this.Game.Interact.Line("All Stop.");
                         return;
                     }
 
@@ -261,7 +261,7 @@ namespace StarTrek_KG.Actors
                     bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
                     if (nebulaEncountered)
                     {
-                        base.Game.Write.Line(this.NEBULA_ENCOUNTERED);
+                        base.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
                         break;
                     }
                 }
@@ -346,23 +346,23 @@ namespace StarTrek_KG.Actors
             {
                 case SectorItem.Star:
                     var star = currentObject;
-                    this.Game.Write.Line("Stellar body " + star.Name.ToUpper() + " encountered while navigating at sector: [" + sector.X + "," +
+                    this.Game.Interact.Line("Stellar body " + star.Name.ToUpper() + " encountered while navigating at sector: [" + sector.X + "," +
                                       sector.Y + "]");
                     break;
 
                 case SectorItem.HostileShip:
                     var hostile = currentObject;
-                    this.Game.Write.Line("Ship " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
+                    this.Game.Interact.Line("Ship " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
                                       sector.Y + "]");
                     break;
 
                     
                 case SectorItem.Starbase:
-                    this.Game.Write.Line("Starbase encountered while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    this.Game.Interact.Line("Starbase encountered while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
 
                 default:
-                    this.Game.Write.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    this.Game.Interact.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
             }
         }
@@ -401,7 +401,7 @@ namespace StarTrek_KG.Actors
             //var course = this.Game.Write.Course() + "Enter Course: ";
             string userDirection = "";
 
-            bool userEnteredCourse = this.Game.Prompt.Invoke($"{this.Game.Write.RenderCourse()} Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.Game.Prompt.Invoke($"{this.Game.Interact.RenderCourse()} Enter Course: ", out userDirection);
 
             if (userEnteredCourse)
             {
@@ -409,7 +409,7 @@ namespace StarTrek_KG.Actors
 
                 if (!userDirection.IsNumeric() || userDirection.Contains("."))
                 {
-                    this.Game.Write.Line("Invalid course.");
+                    this.Game.Interact.Line("Invalid course.");
                     direction = 0;
 
                     return true;
@@ -419,7 +419,7 @@ namespace StarTrek_KG.Actors
 
                 if (directionToCheck > 8 || directionToCheck < 0)
                 {
-                    this.Game.Write.Line("Invalid course..");
+                    this.Game.Interact.Line("Invalid course..");
                     direction = 0;
 
                     return true;

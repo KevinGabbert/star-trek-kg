@@ -51,35 +51,35 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
             switch (command.ToLower())
             {
                 case "dsrec":
                     //this.PrintGalacticRecord(this.Map.Regions); 
-                    this.Game.Write.Line("full galactic record with ship position as colored text, baddies as red");
-                    this.Game.Write.Line("Not Implemented Yet");
+                    this.Game.Interact.Line("full galactic record with ship position as colored text, baddies as red");
+                    this.Game.Interact.Line("Not Implemented Yet");
                     break;
 
                 case "dsnav":
                     //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
                     //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
-                    this.Game.Write.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
-                    this.Game.Write.Line("Not Implemented Yet");
+                    this.Game.Interact.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
+                    this.Game.Interact.Line("Not Implemented Yet");
                     break;
 
                 case "dstor":
                     //Torpedoes.For(this.ShipConnectedTo).Controls(this.Map);
                     //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
-                    this.Game.Write.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
-                    this.Game.Write.Line("Not Implemented Yet");
+                    this.Game.Interact.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
+                    this.Game.Interact.Line("Not Implemented Yet");
                     break;
 
                 case "dqnav":
                     //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
                     //this.PrintGalacticRecord(WithNavTrack); 
-                    this.Game.Write.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
-                    this.Game.Write.Line("Not Implemented Yet");
+                    this.Game.Interact.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
+                    this.Game.Interact.Line("Not Implemented Yet");
                     break;
 
                 case "dibd":
@@ -101,8 +101,8 @@ namespace StarTrek_KG.Subsystem
                     this.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
                     //todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
-                    this.Game.Write.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
-                    this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
+                    this.Game.Interact.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
+                    this.Game.Interact.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
                     break;
                 case "disb":
  
@@ -130,26 +130,26 @@ namespace StarTrek_KG.Subsystem
                     break;
                 case "dist":
                     var sectorWithNewStar = this.Game.Map.Regions.GetActive().AddStar(this.Game.Map.Regions.GetActive());
-                    this.Game.Write.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
-                    this.Game.Write.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
+                    this.Game.Interact.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
+                    this.Game.Interact.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
                     break;
 
                 case "dbgm":
                     Constants.DEBUG_MODE = !Constants.DEBUG_MODE;
-                    this.Game.Write.Line("Debug Mode set to: " + Constants.DEBUG_MODE + ".  This will clear on app restart.");
+                    this.Game.Interact.Line("Debug Mode set to: " + Constants.DEBUG_MODE + ".  This will clear on app restart.");
                     break;
 
                 case "dlrs":
                     LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Regions(Constants.DEBUG_MODE);
-                    this.Game.Write.Line("All Regions set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
+                    this.Game.Interact.Line("All Regions set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
                     break;
 
                 default:
-                    this.Game.Write.Line(">> exiting Debug Mode..");
+                    this.Game.Interact.Line(">> exiting Debug Mode..");
                     break;
             }
 
-            return this.Game.Write.Output.Queue.ToList();
+            return this.Game.Interact.Output.Queue.ToList();
         }
 
         public static Debug For(IShip ship)

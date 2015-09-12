@@ -14,7 +14,7 @@ namespace StarTrek_KG.Playfield
         #region Properties
 
             private IMap Map { get; set; }
-            private IWriter Write { get; set; }
+            private IInteraction Write { get; set; }
 
             /// <summary>
             /// Movement.Execute and Map.SetupPlayership are the only places this is set
@@ -22,7 +22,7 @@ namespace StarTrek_KG.Playfield
 
         #endregion
 
-        public Regions(IMap map, IWriter write)
+        public Regions(IMap map, IInteraction write)
         {
             this.Write = write;
             this.Map = map;
@@ -118,7 +118,7 @@ namespace StarTrek_KG.Playfield
 
             if (hostiles.Count == 0)
             {
-                outputLines = (new Write(this.Map.Config)).Line("There are no Hostile ships in this Region.");
+                outputLines = (new Interaction(this.Map.Config)).Line("There are no Hostile ships in this Region.");
                 return true;
             }
             return false;

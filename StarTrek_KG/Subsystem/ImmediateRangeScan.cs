@@ -17,9 +17,9 @@ namespace StarTrek_KG.Subsystem
 
         public IEnumerable<string> Controls()
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.Output.Queue.ToList();
+            if (this.Damaged()) return this.Game.Interact.Output.Queue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -28,17 +28,17 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var line in renderedResults)
             {
-                this.Game.Write.SingleLine(line);
+                this.Game.Interact.SingleLine(line);
             }
 
-            return this.Game.Write.Output.Queue.ToList();
+            return this.Game.Interact.Output.Queue.ToList();
         }
 
         private IEnumerable<string> RunFullIRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<IScanResult> irsData = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
-            IEnumerable<string> renderedData = this.Game.Write.RenderScanWithNames(ScanRenderType.DoubleSingleLine, "*** Immediate Range Scan ***", irsData.ToList(), this.Game);
+            IEnumerable<string> renderedData = this.Game.Interact.RenderScanWithNames(ScanRenderType.DoubleSingleLine, "*** Immediate Range Scan ***", irsData.ToList(), this.Game);
 
             return renderedData;
         }

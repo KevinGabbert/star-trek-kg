@@ -9,25 +9,25 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
-    public class Render: IWrite, IConfig
+    public class Render: IInteract, IConfig
     {
         #region Properties
 
-        public IWriter Write { get; set; }
+        public IInteraction Interact { get; set; }
         public IStarTrekKGSettings Config { get; set; }
 
         #endregion
 
-        public Render(IWriter write, IStarTrekKGSettings config)
+        public Render(IInteraction interact, IStarTrekKGSettings config)
         {
             this.Config = config;
-            this.Write = write;
-            this.Write.Config = config;
+            this.Interact = interact;
+            this.Interact.Config = config;
         }
 
         public void CreateSRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            this.Write.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
+            this.Interact.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
 
             int srsRows = Convert.ToInt32(this.GetConfigText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
@@ -35,7 +35,7 @@ namespace StarTrek_KG.Output
                 this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Region.Sectors, totalHostiles, isNebula);
             }
 
-            this.Write.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
+            this.Interact.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
         public void CreateCRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
@@ -107,7 +107,7 @@ namespace StarTrek_KG.Output
             srsLine.Remove(textMeasurement, srsLine.ToString().Length - (textMeasurement));
             srsLine.Insert(textMeasurement, rightSideText);
 
-            this.Write.SingleLine(srsLine.ToString());
+            this.Interact.SingleLine(srsLine.ToString());
         }
 
         private void CRS_Region_ScanLine(string RegionName, string topBorder, Location location)
@@ -122,7 +122,7 @@ namespace StarTrek_KG.Output
 
             regionLineBuilder.Insert(topBorderAreaMeasurement, RegionIndicator);
 
-            this.Write.SingleLine(regionLineBuilder.ToString());
+            this.Interact.SingleLine(regionLineBuilder.ToString());
         }
 
         private string GetCRSRightTextLine(int row, IMap map, IList<string> lrsResults, int totalHostiles)
@@ -266,7 +266,7 @@ namespace StarTrek_KG.Output
 
             if (totalHostiles < 1)
             {
-                this.Write.Output.WriteLine("bug. hostile not removed from display.");
+                this.Interact.Output.WriteLine("bug. hostile not removed from display.");
             }
 
             //todo: hostile feds look like: ++-
@@ -285,7 +285,7 @@ namespace StarTrek_KG.Output
                 this.SRSScanHostile(Region);
             }
 
-            this.Write.OutputConditionAndWarnings(map.Playership, this.Config.GetSetting<int>("ShieldsDownLevel"));
+            this.Interact.OutputConditionAndWarnings(map.Playership, this.Config.GetSetting<int>("ShieldsDownLevel"));
 
             if (shieldsAutoRaised)
             {
@@ -296,7 +296,7 @@ namespace StarTrek_KG.Output
         //todo: this function needs to be part of SRS
         private void SRSScanHostile(IRegion Region)
         {
-            this.Write.Line(string.Format(this.Config.GetText("HostileDetected"), (Region.GetHostiles().Count == 1 ? "" : "s")));
+            this.Interact.Line(string.Format(this.Config.GetText("HostileDetected"), (Region.GetHostiles().Count == 1 ? "" : "s")));
 
             bool inNebula = Region.Type == RegionType.Nebulae;
 
@@ -314,10 +314,10 @@ namespace StarTrek_KG.Output
                     hostileName = hostile.Name + " " + Game.GetFederationShipRegistration(hostile);
                 }
 
-                this.Write.Line($"{this.Config.GetText("IDHostile")}{hostileName}");
+                this.Interact.Line($"{this.Config.GetText("IDHostile")}{hostileName}");
             }
 
-            this.Write.Line("");
+            this.Interact.Line("");
         }
 
         public string GetConfigText(string textToGet)

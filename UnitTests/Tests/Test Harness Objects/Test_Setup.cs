@@ -24,9 +24,9 @@ namespace UnitTests.ShipTests
         public Shields TestShields { get; set; }
         public LongRangeScan TestLongRangeScan { get; set; }
 
-        public IWriter Write
+        public IInteraction Write
         {
-            get { return this.Game.Write; }
+            get { return this.Game.Interact; }
         }
 
         public IMap TestMap
@@ -81,7 +81,7 @@ namespace UnitTests.ShipTests
                                                                      SectorItem.PlayerShip),
                                                                  //todo: this needs to be in a random spo
                                                              }
-                                        }, this.Game.Write, this.Game.Config));
+                                        }, this.Game.Interact, this.Game.Config));
 
             this.VerifyMap();
         }
@@ -99,7 +99,7 @@ namespace UnitTests.ShipTests
                         new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Empty),
                     //todo: this needs to be in a random spo
                 }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             this.VerifyMap();
         }
@@ -121,7 +121,7 @@ namespace UnitTests.ShipTests
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                new Coordinate(0, 1)), SectorItem.HostileShip),
                                                        }
-                                  }, this.Game.Write, this.Game.Config);
+                                  }, this.Game.Interact, this.Game.Config);
             this.VerifyMap();
 
             var hostileShip = this.TestMap.Regions.GetHostiles().Single();
@@ -145,7 +145,7 @@ namespace UnitTests.ShipTests
                                                     new LocationDef(new Coordinate(0, 0),
                                                                     new Coordinate(0, 1)), SectorItem.HostileShip),
                                             }
-            }, this.Game.Write, this.Game.Config, FactionName.Federation);
+            }, this.Game.Interact, this.Game.Config, FactionName.Federation);
             this.VerifyMap();
         }
 
@@ -185,7 +185,7 @@ namespace UnitTests.ShipTests
                                                 new LocationDef(new Coordinate(0, 0),
                                                                 hostileSector), SectorItem.HostileShip),
                                         }
-            }, this.Game.Write, this.Game.Config);
+            }, this.Game.Interact, this.Game.Config);
             this.VerifyMap();
         }
 
@@ -198,7 +198,7 @@ namespace UnitTests.ShipTests
                 {
                    new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.PlayerShip)},
               AddStars = false
-            }, this.Game.Write, this.Game.Config);
+            }, this.Game.Interact, this.Game.Config);
             this.VerifyMap();
         }
 
@@ -214,7 +214,7 @@ namespace UnitTests.ShipTests
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
                                     }
-            }, this.Game.Write, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config));
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
@@ -232,13 +232,13 @@ namespace UnitTests.ShipTests
                 AddStars = false,
                 Initialize = true,
                 //GenerateMap = true
-            }, this.Game.Write, this.Game.Config);
+            }, this.Game.Interact, this.Game.Config);
             this.VerifyMap();
         }
 
         public void SetupBaseMap()
         {
-            this.TestMap = new Map(null, this.Game.Write, this.Game.Config);
+            this.TestMap = new Map(null, this.Game.Interact, this.Game.Config);
             this.VerifyMap();
         }
 

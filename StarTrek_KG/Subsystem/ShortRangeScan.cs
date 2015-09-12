@@ -17,12 +17,12 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
             if (this.Damaged()) return null;
 
-            this.Game.Write.RenderSectors(SectorScanType.ShortRange, this);
-            return this.Game.Write.Output.Queue?.ToList();
+            this.Game.Interact.RenderSectors(SectorScanType.ShortRange, this);
+            return this.Game.Interact.Output.Queue?.ToList();
         }
 
         public static ShortRangeScan For(IShip ship)
@@ -34,7 +34,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
-                this.Game.Write.Line("Cannot locate Objects for calculations");
+                this.Game.Interact.Line("Cannot locate Objects for calculations");
                 return new List<Sector>(); //todo: is this correct?
             }
 

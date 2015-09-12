@@ -17,8 +17,8 @@ namespace StarTrek_KG.Subsystem
                 Map = map
             };
 
-            var write = new Write(config);
-            game.Write = write;
+            var write = new Interaction(config);
+            game.Interact = write;
 
             this.AddRange(new List<ISubsystem>(){
                                      new Debug(shipConnectedTo, game),

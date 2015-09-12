@@ -16,7 +16,7 @@ namespace StarTrek_KG.Interfaces
         Ship Playership { get; set; } // todo: eventually make this an IEnumerable<StarShip>().
         Regions Regions { get; set; }
         SetupOptions GameConfig { get; set; }
-        IWriter Write { get; set; }
+        IInteraction Write { get; set; }
 
         int Stardate { get; set; }
         int timeRemaining { get; set; }

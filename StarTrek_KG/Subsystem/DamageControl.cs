@@ -21,24 +21,24 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
             if (command == "fix")
             {
                 string subsystemToFix;
-                this.Game.Write.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);
+                this.Game.Interact.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);
 
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }
 
-            return this.Game.Write.Output.Queue.ToList();
+            return this.Game.Interact.Output.Queue.ToList();
         }
 
         private string ShowSubsystemsToFix()
         {
-            this.Game.Write.CreateCommandPanel();
-            this.Game.Write.Panel("─── Subsystem to Fix", this.Game.Write.ACTIVITY_PANEL);
-            this.Game.Write.WithNoEndCR("Enter subsystem: ");
+            this.Game.Interact.CreateCommandPanel();
+            this.Game.Interact.Panel("─── Subsystem to Fix", this.Game.Interact.ACTIVITY_PANEL);
+            this.Game.Interact.WithNoEndCR("Enter subsystem: ");
             return "";
         }
 
@@ -48,7 +48,7 @@ namespace StarTrek_KG.Subsystem
 
             if (!subsystemsFound.Any())
             {
-                this.Game.Write.Line("invalid or no fix required.");
+                this.Game.Interact.Line("invalid or no fix required.");
                 return;
             }
 
@@ -60,11 +60,11 @@ namespace StarTrek_KG.Subsystem
             {
                 thisShip.Energy -= 1000;  //todo: resource this out.
                 subsystemToFix.For(thisShip, this.Game).FullRepair();
-                this.Game.Write.Line("Ship Energy now at: " + thisShip.Energy);
+                this.Game.Interact.Line("Ship Energy now at: " + thisShip.Energy);
             }
             else
             {
-                this.Game.Write.Line("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
+                this.Game.Interact.Line("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
             }
         }
 

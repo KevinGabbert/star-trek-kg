@@ -8,7 +8,6 @@ using StarTrek_KG.Output;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
-using W = StarTrek_KG.Output.Write;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
@@ -18,13 +17,13 @@ namespace StarTrek_KG
     /// <summary>
     /// This class consists of methods that have yet to be refactored into separate objects
     /// </summary>
-    public class Game : IDisposable, IWrite, IConfig
+    public class Game : IDisposable, IInteract, IConfig
     {
         #region Properties
         public delegate TResult _promptFunc<T, out TResult>(T input, out T output);
 
         public IStarTrekKGSettings Config { get; set; }
-        public IWriter Write { get; set; }
+        public IInteraction Interact { get; set; }
         public IMap Map { get; set; }
         private Render PrintSector { get; set; }
 
@@ -53,26 +52,26 @@ namespace StarTrek_KG
             this.RandomFactorForTesting = 0;
             this.PlayerNowEnemyToFederation = false;  //todo: resource this out.
             this.Config = config;
-            if (this.Write == null)
+            if (this.Interact == null)
             {
                 try
                 {
-                    this.Write = new Write(config);
+                    this.Interact = new Interaction(config);
 
-                    if (this.Write.Subscriber.Enabled)
+                    if (this.Interact.Subscriber.Enabled)
                     {
-                        this.Write.CurrentPrompt = "Enter Command:>"; //todo: resource this (default prompt)
+                        this.Interact.CurrentPrompt = "Enter Command:>"; //todo: resource this (default prompt)
 
-                        this.Prompt = (string s, out string output) => this.Write.PromptUserSubscriber(s, out output);
+                        this.Prompt = (string s, out string output) => this.Interact.PromptUserSubscriber(s, out output);
                     }
                     else
                     {
-                        this.Prompt = (string s, out string output) => this.Write.PromptUserConsole(s, out output);
+                        this.Prompt = (string s, out string output) => this.Interact.PromptUserConsole(s, out output);
                     }
                 }
                 catch (Exception)
                 {
-                    this.Write = new Write(true)
+                    this.Interact = new Interaction(true)
                     {
                         Output = new SubscriberOutput(config),
                         OutputError = true,
@@ -95,7 +94,7 @@ namespace StarTrek_KG
                 //These constants need to be localized to Game:
                 this.GetConstants();
 
-                this.PrintSector = (new Render(this.Write, this.Config));
+                this.PrintSector = (new Render(this.Interact, this.Config));
 
                 var startConfig = (new SetupOptions
                 {
@@ -104,20 +103,20 @@ namespace StarTrek_KG
                     SectorDefs = SectorSetup()
                 });
 
-                this.Write = new W(this.Config);
-                this.Map = new Map(startConfig, this.Write, this.Config);
-                this.Write = new W(this.Config);
+                this.Interact = new Interaction(this.Config);
+                this.Map = new Map(startConfig, this.Interact, this.Config);
+                this.Interact = new Interaction(this.Config);
 
                 //We don't want to start game without hostiles
                 if (this.HostileCheck(this.Map))
                     return; //todo: unless we want to have a mode that allows it for some reason.
 
                 //Set initial color scheme
-                this.Write.HighlightTextBW(false);
+                this.Interact.HighlightTextBW(false);
 
                 //todo: why are we creating this PrintSector() class a second time??
-                this.Write = new Write(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
-                this.PrintSector = new Render(this.Write, this.Config);
+                this.Interact = new Interaction(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
+                this.PrintSector = new Render(this.Interact, this.Config);
             }
         }
 
@@ -132,7 +131,7 @@ namespace StarTrek_KG
         {
             if (this.GameOver)
             {
-                this.Write.DebugLine("Game Over.");
+                this.Interact.DebugLine("Game Over.");
                 return;
             }
 
@@ -144,7 +143,7 @@ namespace StarTrek_KG
 
                 if (this.GameOver)
                 {
-                    this.Write.DebugLine("Game Over.. Restarting.");
+                    this.Interact.DebugLine("Game Over.. Restarting.");
 
                     this.Initialize();
 
@@ -160,7 +159,7 @@ namespace StarTrek_KG
         /// <returns></returns>
         private bool NewConsoleTurn()
         {
-            this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
+            this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
 
             //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
 
@@ -209,9 +208,9 @@ namespace StarTrek_KG
 
             this.Map.Playership.Game = this;
 
-            this.Write.Output.Clear();
+            this.Interact.Output.Clear();
 
-            retVal = this.Write.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
 
             if (retVal == null)
             {
@@ -237,7 +236,7 @@ namespace StarTrek_KG
         private void Initialize()
         {
             this.Started = true;
-            this.Write.ResetPrompt();
+            this.Interact.ResetPrompt();
 
             //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
             this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
@@ -249,7 +248,7 @@ namespace StarTrek_KG
 
             if (Constants.DEBUG_MODE)
             {
-                this.Write.Line("// ---------------- Debug Mode ----------------");
+                this.Interact.Line("// ---------------- Debug Mode ----------------");
             }
 
             Constants.SECTOR_MIN = this.Config.GetSetting<int>("SECTOR_MIN");
@@ -333,9 +332,9 @@ namespace StarTrek_KG
         {
             this.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
 
-            this.Write.ResourceLine(this.Config.GetText("AppVersion").TrimStart(' '), "UnderConstructionMessage");
+            this.Interact.ResourceLine(this.Config.GetText("AppVersion").TrimStart(' '), "UnderConstructionMessage");
 
-            this.Write.PrintMission();
+            this.Interact.PrintMission();
         }
 
         private void RandomAppTitle()
@@ -357,11 +356,11 @@ namespace StarTrek_KG
                     break;
             }
 
-            this.Write.Resource("AppTitleSpace");
+            this.Interact.Resource("AppTitleSpace");
 
             RandomPicture();
 
-            this.Write.Resource("AppTitleSpace");
+            this.Interact.Resource("AppTitleSpace");
         }
 
         private void RandomPicture()
@@ -448,7 +447,7 @@ namespace StarTrek_KG
         {
             for (int i = 1; i < endingLine; i++)
             {
-                this.Write.Resource("AppTitle" + itemName + i);
+                this.Interact.Resource("AppTitle" + itemName + i);
             }
         }
 
@@ -519,7 +518,7 @@ namespace StarTrek_KG
                 }
                 else
                 {
-                    this.Write.Line("Hostile Starbase fires blindly, unable to get a lock on your position in Nebula.");
+                    this.Interact.Line("Hostile Starbase fires blindly, unable to get a lock on your position in Nebula.");
                 }
             }
         }
@@ -564,9 +563,9 @@ namespace StarTrek_KG
 
         private void AttackDockedPlayership(IShip attacker, int attackingEnergy)
         {
-            string hitMessage = this.Write.ShipHitMessage(attacker, attackingEnergy);
+            string hitMessage = this.Interact.ShipHitMessage(attacker, attackingEnergy);
 
-            this.Write.Line(hitMessage + " No damage due to starbase shields.");
+            this.Interact.Line(hitMessage + " No damage due to starbase shields.");
         }
 
         #endregion
@@ -613,7 +612,7 @@ namespace StarTrek_KG
 
             string currentShipName = null;
 
-            this.Write.Line("");
+            this.Interact.Line("");
 
             if (currentFaction == FactionName.Federation)
             {
@@ -624,12 +623,12 @@ namespace StarTrek_KG
             }
             else if (currentFaction == FactionName.Klingon)
             {
-                this.Write.WithNoEndCR(
+                this.Interact.WithNoEndCR(
                     $"Klingon ship at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
             }
             else
             {
-                this.Write.WithNoEndCR(
+                this.Interact.WithNoEndCR(
                     $"Hostile at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
                 currentShipName = ship.Name;
             }
@@ -640,7 +639,7 @@ namespace StarTrek_KG
 
             this.LatestTaunts.Add(randomThreat);
 
-            this.Write.Line(currentThreat);
+            this.Interact.Line(currentThreat);
             return currentThreat;
         }
 
@@ -690,11 +689,11 @@ namespace StarTrek_KG
             {
                 if (shieldsValueAfterHit == 0)
                 {
-                    this.Write.SingleLine("** Shields are Down **");
+                    this.Interact.SingleLine("** Shields are Down **");
                 }
                 else
                 {
-                    this.Write.SingleLine($"Shields dropped to {Shields.For(map.Playership).Energy}.");
+                    this.Interact.SingleLine($"Shields dropped to {Shields.For(map.Playership).Energy}.");
                 }
             }
         }
@@ -715,8 +714,8 @@ namespace StarTrek_KG
 
             if (emergencyMessageSuccess)
             {
-                this.Write.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
-                this.Write.Line("Federation Ships and starbases will now shoot you on sight!");
+                this.Interact.Line("Before destruction, the Starbase was able to send an emergency message to Starfleet");
+                this.Interact.Line("Federation Ships and starbases will now shoot you on sight!");
 
                 this.PlayerNowEnemyToFederation = true;
 
@@ -725,11 +724,11 @@ namespace StarTrek_KG
             }
             else
             {
-                this.Write.Line("Starbase was destroyed before getting out a distress call.");
+                this.Interact.Line("Starbase was destroyed before getting out a distress call.");
 
                 if (!this.PlayerNowEnemyToFederation)
                 {
-                    this.Write.Line("For now, no one will know of this..");
+                    this.Interact.Line("For now, no one will know of this..");
                 }
             }
         }
@@ -744,7 +743,7 @@ namespace StarTrek_KG
             qLocation.Item = SectorItem.Empty;
 
             //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
-            this.Write.Line($"You have destroyed A Federation starbase! (at sector [{newX},{newY}])");
+            this.Interact.Line($"You have destroyed A Federation starbase! (at sector [{newX},{newY}])");
 
             this.Map.Playership.Scavenge(ScavengeType.Starbase);
 
@@ -840,7 +839,7 @@ namespace StarTrek_KG
         {
             if (!map.Regions.GetHostiles().Any())
             {
-                this.Write.Line("ERROR: --- No Hostiles have been set up.");
+                this.Interact.Line("ERROR: --- No Hostiles have been set up.");
 
                 //todo: perhaps we'd have a reason to make a "freeform" option or mode where you could practice shooting things, moving, etc.
                 //todo: in that case, this function would not be called
@@ -870,7 +869,7 @@ namespace StarTrek_KG
                                   this.Map.timeRemaining > 0);
             }
 
-            this.Write.PrintMissionResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
+            this.Interact.PrintMissionResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
         public static void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)

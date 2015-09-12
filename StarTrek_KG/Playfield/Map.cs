@@ -21,7 +21,7 @@ namespace StarTrek_KG.Playfield
             public Regions Regions { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
             public SetupOptions GameConfig { get; set; }
-            public IWriter Write { get; set; }
+            public IInteraction Write { get; set; }
             public IStarTrekKGSettings Config { get; set; }
             public FactionName DefaultHostile { get; set; }
 
@@ -38,7 +38,7 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(SetupOptions setupOptions, IWriter write, IStarTrekKGSettings config, FactionName defaultHostile = null)
+        public Map(SetupOptions setupOptions, IInteraction write, IStarTrekKGSettings config, FactionName defaultHostile = null)
         {
             this.Config = config;
             this.Write = write;

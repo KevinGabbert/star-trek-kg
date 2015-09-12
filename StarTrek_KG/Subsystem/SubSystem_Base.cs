@@ -36,12 +36,12 @@ namespace StarTrek_KG.Subsystem
 
         protected virtual void OutputDamagedMessage()
         {
-            this.Game.Write.Line(this.Type + " Damaged.");
+            this.Game.Interact.Line(this.Type + " Damaged.");
         }
 
         protected virtual void OutputRepairedMessage()
         {
-            this.Game.Write.Line(this.Type + " Repaired.");
+            this.Game.Interact.Line(this.Type + " Repaired.");
         }
 
         //public virtual void OutputMalfunctioningMessage()
@@ -56,7 +56,7 @@ namespace StarTrek_KG.Subsystem
 
         public virtual List<string> Controls(string command)
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
             return new List<string>();
         }
 

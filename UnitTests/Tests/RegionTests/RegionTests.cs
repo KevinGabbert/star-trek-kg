@@ -16,7 +16,7 @@ namespace UnitTests.ShipTests.RegionTests
         {
             base._testRegion = new Region(this.Game.Map);
 
-            base._testRegion.Map = new Map(null, this.Game.Write, this.Game.Config);
+            base._testRegion.Map = new Map(null, this.Game.Interact, this.Game.Config);
             base._testRegion.Name = "Setup";
             base._testRegion.Scanned = false;
             base._testRegion.X = 0;

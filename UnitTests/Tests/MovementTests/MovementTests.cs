@@ -76,7 +76,7 @@ namespace UnitTests.ShipTests.MovementTests
                                                                   //todo: this needs to be in a random spot
                                                               },
                                              AddStars = false
-                                         }, this.Game.Write, this.Game.Config));
+                                         }, this.Game.Interact, this.Game.Config));
 
             _testMovement = new Movement(this.Game.Map.Playership, this.Game) {BlockedByObstacle = false};
 

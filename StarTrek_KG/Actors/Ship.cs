@@ -228,14 +228,14 @@ namespace StarTrek_KG.Actors
 
             if (attackingEnergy > 0)
             {
-                string hitMessage = this.Game.Write.ShipHitMessage(attacker, attackingEnergy);
+                string hitMessage = this.Game.Interact.ShipHitMessage(attacker, attackingEnergy);
                 this.Map.Write.Line(hitMessage);
 
                 shields.Energy -= attackingEnergy;
             }
             else
             {
-                string message = this.Game.Write.MisfireMessage(attacker);
+                string message = this.Game.Interact.MisfireMessage(attacker);
                 this.Map.Write.Line(message);
             }
 

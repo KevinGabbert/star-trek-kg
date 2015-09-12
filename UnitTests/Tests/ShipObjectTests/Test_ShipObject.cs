@@ -13,7 +13,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
     public class Test_ShipObject
     {
         private Mock<IMap> _mockMap;
-        private Mock<IWriter> _mockWrite;
+        private Mock<IInteraction> _mockWrite;
         private Mock<ISector> _mockSector;
         private Mock<IStarTrekKGSettings> _mockSettings;
         private Mock<ICoordinate> _mockCoordinate;
@@ -22,7 +22,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
         public void Setup()
         {
             _mockMap = new Mock<IMap>();
-            _mockWrite = new Mock<IWriter>();
+            _mockWrite = new Mock<IInteraction>();
             _mockSector = new Mock<ISector>();
             _mockSettings = new Mock<IStarTrekKGSettings>();
             _mockCoordinate = new Mock<ICoordinate>();

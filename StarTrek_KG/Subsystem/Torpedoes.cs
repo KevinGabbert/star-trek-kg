@@ -29,15 +29,15 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
             List<string> hostileCheckOutput;
 
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Regions(this.Game.Map, this.Game.Write)).NoHostiles(this.Game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return this.Game.Write.Output.Queue.ToList();
+                (new Regions(this.Game.Map, this.Game.Interact)).NoHostiles(this.Game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return this.Game.Interact.Output.Queue.ToList();
 
-            this.Game.Write.Output.Write(hostileCheckOutput);
+            this.Game.Interact.Output.Write(hostileCheckOutput);
 
             //todo: resource this out.
             var firingDirection = Environment.NewLine +
@@ -50,24 +50,24 @@ namespace StarTrek_KG.Subsystem
                                   "Enter firing direction (1.0--9.0) ";
 
             string direction;
-            if (!this.Game.Write.PromptUser(SubsystemType.Phasers, "Phasers->", firingDirection, out direction, this.Game.Write.Output.Queue)
+            if (!this.Game.Interact.PromptUser(SubsystemType.Phasers, "Phasers->", firingDirection, out direction, this.Game.Interact.Output.Queue)
                 || int.Parse(direction) < 1.0 
                 || int.Parse(direction) > 9.0)
             {
-                this.Game.Write.Line("Invalid direction.");
-                return this.Game.Write.Output.Queue.ToList();
+                this.Game.Interact.Line("Invalid direction.");
+                return this.Game.Interact.Output.Queue.ToList();
             }
 
             this.Shoot(int.Parse(direction));
 
-            return this.Game.Write.Output.Queue.ToList();
+            return this.Game.Interact.Output.Queue.ToList();
         }
 
         public void Shoot(double direction)
         {
             if(this.Count < 1)
             {
-                this.Game.Write.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
+                this.Game.Interact.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace StarTrek_KG.Subsystem
             //var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
             //var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
 
-            this.Game.Write.Line("Photon torpedo fired...");
+            this.Game.Interact.Line("Photon torpedo fired...");
             this.Count--;
 
             //TODO: WRITE SOME TORPEDO TESTS!
@@ -114,7 +114,7 @@ namespace StarTrek_KG.Subsystem
             //    currentLocation.IncrementBy(torpedoVector);
             //}
 
-            this.Game.Write.Line("Photon torpedo failed to hit anything.");
+            this.Game.Interact.Line("Photon torpedo failed to hit anything.");
         }
 
         //private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation)
@@ -264,7 +264,7 @@ namespace StarTrek_KG.Subsystem
                         starName = star.Name;
                     }
 
-                    this.Game.Write.Line(string.Format(
+                    this.Game.Interact.Line(string.Format(
                         "The torpedo was captured by the gravitational field of star: " + starName +
                         " at sector [{0},{1}].",
                         newX, newY));
@@ -279,7 +279,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Count == 0)
             {
-                this.Game.Write.Line("Photon torpedoes exhausted.");
+                this.Game.Interact.Line("Photon torpedoes exhausted.");
                 return true;
             }
             return false;
@@ -289,11 +289,11 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged())
             {
-                this.Game.Write.Line("Cannot calculate while Torpedo subsystem is damaged.");
+                this.Game.Interact.Line("Cannot calculate while Torpedo subsystem is damaged.");
                 return;
             }
 
-            this.Game.Write.Line("");
+            this.Game.Interact.Line("");
 
             var thisRegion = this.ShipConnectedTo.GetRegion();
             var thisRegionHostiles = thisRegion.GetHostiles();
@@ -309,8 +309,8 @@ namespace StarTrek_KG.Subsystem
 
             if (thisRegionHostiles.Count == 0)
             {
-                this.Game.Write.Line("There are no Hostile ships in this Region.");
-                this.Game.Write.Line("");
+                this.Game.Interact.Line("There are no Hostile ships in this Region.");
+                this.Game.Interact.Line("");
                 return;
             }
 
@@ -324,7 +324,7 @@ namespace StarTrek_KG.Subsystem
 
                 direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);
 
-                this.Game.Write.Line($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
+                this.Game.Interact.Line($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
             }
         }
 
@@ -340,17 +340,17 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            this.Game.Write.Line("");
-            this.Game.Write.Line("Objects to Target:");
+            this.Game.Interact.Line("");
+            this.Game.Interact.Line("Objects to Target:");
 
             Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
-            this.Game.Write.Line("");
-            this.Game.Write.PromptUserConsole("Enter number to target: ", out userReply);
+            this.Game.Interact.Line("");
+            this.Game.Interact.PromptUserConsole("Enter number to target: ", out userReply);
 
-            this.Game.Write.Line("");
-            this.Game.Write.Line("Target Object is not yet supported.");
+            this.Game.Interact.Line("");
+            this.Game.Interact.Line("Target Object is not yet supported.");
         }
     }
 }

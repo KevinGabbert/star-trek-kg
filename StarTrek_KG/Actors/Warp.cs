@@ -6,15 +6,15 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Actors
 {
-    public class Warp: IWrite
+    public class Warp: IInteract
     {
-        public IWriter Write { get; set; }
+        public IInteraction Interact { get; set; }
 
-        public Warp(IWriter writer)
+        public Warp(IInteraction interaction)
         {
-            this.Write = writer;
+            this.Interact = interaction;
 
-            if (this.Write == null)
+            if (this.Interact == null)
             {
                 throw new GameException("Property Write is not set for Warp. ");
             }
@@ -39,7 +39,7 @@ namespace StarTrek_KG.Actors
             var energyRequired = distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
-                this.Write.Line("Insufficient energy to travel that speed.");
+                this.Interact.Line("Insufficient energy to travel that speed.");
                 returnVal = false;
             }
             else
@@ -48,17 +48,17 @@ namespace StarTrek_KG.Actors
                 returnVal = true;
             }
 
-            this.Write.Line("");
+            this.Interact.Line("");
 
             return returnVal;
         }
         public bool PromptAndCheckForInvalidWarpFactor(int maxWarpFactor, out string distance)
         {
-            if (!this.Write.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance, this.Write.Output.Queue)
+            if (!this.Interact.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance, this.Interact.Output.Queue)
                 || int.Parse(distance) < 0 
                 || int.Parse(distance) > maxWarpFactor)
             {
-                this.Write.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
+                this.Interact.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
                 return true;
             }
             return false;

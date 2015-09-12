@@ -6,15 +6,15 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Actors
 {
-    public class Impulse : IWrite
+    public class Impulse : IInteract
     {
-        public IWriter Write { get; set; }
+        public IInteraction Interact { get; set; }
 
-        public Impulse(IWriter writer)
+        public Impulse(IInteraction interaction)
         {
-            this.Write = writer;
+            this.Interact = interaction;
 
-            if (this.Write == null)
+            if (this.Interact == null)
             {
                 throw new GameException("Property Write is not set for Impulse. ");
             }
@@ -33,7 +33,7 @@ namespace StarTrek_KG.Actors
             var energyRequired = distance; //rounds down for values < 1, meaning a distance of .1 is free
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
-                this.Write.Line("Insufficient energy to travel that speed.");
+                this.Interact.Line("Insufficient energy to travel that speed.");
                 returnVal = false;
             }
             else
@@ -42,17 +42,17 @@ namespace StarTrek_KG.Actors
                 returnVal = true;
             }
 
-            this.Write.Line("");
+            this.Interact.Line("");
 
             return returnVal;
         }
         public bool InvalidSublightFactorCheck(int maxSublightDistance, out string distance)
         {
-            if (!this.Write.PromptUser(SubsystemType.None, "Impulse:>", $"Enter Sublight distance (1-{maxSublightDistance}): ", out distance, this.Write.Output.Queue)
+            if (!this.Interact.PromptUser(SubsystemType.None, "Impulse:>", $"Enter Sublight distance (1-{maxSublightDistance}): ", out distance, this.Interact.Output.Queue)
                 || int.Parse(distance) < 0
                 || int.Parse(distance) > maxSublightDistance)
             {
-                this.Write.Line("Invalid sublight distance. Maximum distance is " + maxSublightDistance + " at this time.");
+                this.Interact.Line("Invalid sublight distance. Maximum distance is " + maxSublightDistance + " at this time.");
                 return true;
             }
             return false;

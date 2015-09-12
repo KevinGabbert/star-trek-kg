@@ -32,7 +32,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
             var starship = this.ShipConnectedTo;
 
@@ -83,24 +83,24 @@ namespace StarTrek_KG.Subsystem
                     }
                     else
                     {
-                        this.Game.Write.Line("Nothing to translate..");
+                        this.Game.Interact.Line("Nothing to translate..");
                     }
 
                     break;
 
                 default:
-                    this.Game.Write.Line("Invalid computer this.Write");
+                    this.Game.Interact.Line("Invalid computer this.Write");
                     break;
             }
 
-            return this.Game.Write.Output.Queue.ToList();
+            return this.Game.Interact.Output.Queue.ToList();
         }
 
         private void TargetObjectInRegion()
         {
             string replyFromUser;
 
-            this.Game.Write.PromptUserConsole("Target with (T)orpedoes or (P)hasers? ", out replyFromUser);
+            this.Game.Interact.PromptUserConsole("Target with (T)orpedoes or (P)hasers? ", out replyFromUser);
 
             switch (replyFromUser.ToUpper())
             {
@@ -120,7 +120,7 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged())
             {
-                Game.Write.Line("Unable to List Objects in Region");
+                Game.Interact.Line("Unable to List Objects in Region");
                 return list;
             }
 
@@ -133,7 +133,7 @@ namespace StarTrek_KG.Subsystem
                 {
                     string objectName = sector.Object != null ? sector.Object.Name : "Unknown";
 
-                    this.Game.Write.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, (sector.X + 1),
+                    this.Game.Interact.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, (sector.X + 1),
                         (sector.Y + 1)));
 
                     list.Add(new KeyValuePair<int, Sector>(objectNumber, sector));
@@ -143,7 +143,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.Game.Write.Line("No Sectors with Objects found (this is an error)");
+                this.Game.Interact.Line("No Sectors with Objects found (this is an error)");
             }
 
             return list;
@@ -151,11 +151,11 @@ namespace StarTrek_KG.Subsystem
 
         private void TranslateLatestTaunt()
         {
-            this.Game.Write.Line("Comms was able to translate the latest transmissions: ");
+            this.Game.Interact.Line("Comms was able to translate the latest transmissions: ");
 
             foreach (FactionThreat taunt in this.Game.LatestTaunts)
             {
-                this.Game.Write.Line(taunt.Translation == ""
+                this.Game.Interact.Line(taunt.Translation == ""
                     ? "No Translation required."
                     : taunt.Translation);
             }
@@ -169,27 +169,27 @@ namespace StarTrek_KG.Subsystem
 
             //todo: completely redo this
 
-            this.Game.Write.Output.WriteLine("");
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSTimeRemaining"), map.timeRemaining);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSHostilesRemaining"), map.Regions.GetHostileCount());
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSHostilesInRegion"), currentRegion.GetHostiles().Count);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSStarbases"), map.starbases);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSCRSDamage"), CombinedRangeScan.For(ship).Damage);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSComputerDamage"), computerDamage);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
-            this.Game.Write.Output.WriteLine(this.Game.Config.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
-            this.Game.Write.Output.WriteLine();
+            this.Game.Interact.Output.WriteLine("");
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSTimeRemaining"), map.timeRemaining);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSHostilesRemaining"), map.Regions.GetHostileCount());
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSHostilesInRegion"), currentRegion.GetHostiles().Count);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSStarbases"), map.starbases);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSLRSDamage"), LongRangeScan.For(ship).Damage);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSCRSDamage"), CombinedRangeScan.For(ship).Damage);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSShieldsDamage"), Shields.For(ship).Damage);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSComputerDamage"), computerDamage);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSPhotonDamage"), Torpedoes.For(ship).Damage);
+            this.Game.Interact.Output.WriteLine(this.Game.Config.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
+            this.Game.Interact.Output.WriteLine();
 
             //foreach (var badGuy in currentRegion.Hostiles)
             //{
             //    
             //}
 
-            this.Game.Write.Output.WriteLine();
+            this.Game.Interact.Output.WriteLine();
 
             //todo: Display all baddie names in Region when encountered.
         }
@@ -200,8 +200,8 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged()) return;
 
-            this.Game.Write.Output.WriteLine();
-            this.Game.Write.ResourceSingleLine("GalacticRecordLine");
+            this.Game.Interact.Output.WriteLine();
+            this.Game.Interact.ResourceSingleLine("GalacticRecordLine");
 
             var myLocation = this.ShipConnectedTo.GetLocation();
 
@@ -212,7 +212,7 @@ namespace StarTrek_KG.Subsystem
                     //todo: refactor this function
                     //todo: this needs to be refactored with LRS!
 
-                    this.Game.Write.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER);
+                    this.Game.Interact.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER);
 
                     var Region = Playfield.Regions.Get(Regions, new Coordinate(RegionUB, RegionLB));
                     if (Region.Scanned)
@@ -221,15 +221,15 @@ namespace StarTrek_KG.Subsystem
                     }
                     else
                     {
-                        this.Game.Write.RenderUnscannedRegion(myLocation.Region.X == RegionUB && myLocation.Region.Y == RegionLB); //renderingMyLocation todo: refactor with other calls for that.
+                        this.Game.Interact.RenderUnscannedRegion(myLocation.Region.X == RegionUB && myLocation.Region.Y == RegionLB); //renderingMyLocation todo: refactor with other calls for that.
                     }
                 }
 
-                this.Game.Write.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
-                this.Game.Write.ResourceSingleLine("GalacticRecordLine");
+                this.Game.Interact.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
+                this.Game.Interact.ResourceSingleLine("GalacticRecordLine");
             }
 
-            this.Game.Write.Output.WriteLine();
+            this.Game.Interact.Output.WriteLine();
         }
 
         private void RenderScannedRegion(IRegion Region, Location myLocation, int RegionUB, int RegionLB)
@@ -254,11 +254,11 @@ namespace StarTrek_KG.Subsystem
 
             if (Region.Type != RegionType.Nebulae)
             {
-                this.Game.Write.RenderRegionCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                this.Game.Interact.RenderRegionCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
             }
             else
             {
-                this.Game.Write.RenderNebula(renderingMyLocation);
+                this.Game.Interact.RenderNebula(renderingMyLocation);
             }
         }
 

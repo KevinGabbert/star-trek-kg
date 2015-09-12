@@ -43,9 +43,9 @@ namespace StarTrek_KG.Subsystem
         /// <returns></returns>
         public override List<string> Controls(string command)
         {
-            var promptWriter = this.ShipConnectedTo.Game.Write;
+            var promptWriter = this.ShipConnectedTo.Game.Interact;
 
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
             //now we know that the shield Panel command has been retrieved.
             if (!this.Damaged())
@@ -61,7 +61,7 @@ namespace StarTrek_KG.Subsystem
                 }
                 else if(Shields.NotRecognized(command, promptWriter))
                 {
-                    this.Game.Write.Line("Not recognized.  Exiting panel"); //todo: resource this
+                    this.Game.Interact.Line("Not recognized.  Exiting panel"); //todo: resource this
                     promptWriter.ResetPrompt();
                 }
             }
@@ -70,42 +70,42 @@ namespace StarTrek_KG.Subsystem
                 //todo: do we output something if damaged?
             }
 
-            return this.Game.Write.Output.Queue.ToList();
+            return this.Game.Interact.Output.Queue.ToList();
         }
 
-        private static bool NotRecognized(string command, IWriter promptWriter)
+        private static bool NotRecognized(string command, IInteraction promptInteraction)
         {
-            var recognized = (Shields.AddingTo(command, promptWriter) ||
-                              Shields.SubtractingFrom(command, promptWriter) ||
-                              promptWriter.Subscriber.PromptInfo.Level > 0);
+            var recognized = (Shields.AddingTo(command, promptInteraction) ||
+                              Shields.SubtractingFrom(command, promptInteraction) ||
+                              promptInteraction.Subscriber.PromptInfo.Level > 0);
 
             return !recognized;
         }
 
-        private static bool SubtractingFrom(string command, IWriter promptWriter)
+        private static bool SubtractingFrom(string command, IInteraction promptInteraction)
         {
-            return (command == "sub") || (promptWriter.Subscriber.PromptInfo.SubCommand == "sub");
+            return (command == "sub") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "sub");
         }
 
-        private static bool AddingTo(string command, IWriter promptWriter)
+        private static bool AddingTo(string command, IInteraction promptInteraction)
         {
-            return (command == "add") || (promptWriter.Subscriber.PromptInfo.SubCommand == "add");
+            return (command == "add") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "add");
         }
 
-        private void AddOrGetValue(string command, IWriter promptWriter)
+        private void AddOrGetValue(string command, IInteraction promptInteraction)
         {
             string add = "add"; //todo: resource this
 
             if (command != add)
             {
-                this.TransferAndReset(command, promptWriter, true);
+                this.TransferAndReset(command, promptInteraction, true);
             }
             else
             {
                 this.GetValueFromUser(add);
             }
         }
-        private void SubtractOrGetValue(string command, IWriter promptWriter)
+        private void SubtractOrGetValue(string command, IInteraction promptInteraction)
         {
             string subtract = "sub"; //todo: resource this
 
@@ -114,11 +114,11 @@ namespace StarTrek_KG.Subsystem
                 if (this.Energy > 0)
                 {
                     this.MaxTransfer = this.Energy;
-                    this.TransferAndReset(command, promptWriter, false);
+                    this.TransferAndReset(command, promptInteraction, false);
                 }
                 else
                 {
-                    this.Game.Write.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
+                    this.Game.Interact.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
                 }
             }
             else
@@ -129,12 +129,12 @@ namespace StarTrek_KG.Subsystem
 
         #region Transferring energy
 
-        private void TransferAndReset(string command, IWriter promptWriter, bool adding)
+        private void TransferAndReset(string command, IInteraction promptInteraction, bool adding)
         {
             int energyToTransfer = Convert.ToInt32(command);
 
             this.DoTheTransfer(energyToTransfer, adding);
-            promptWriter.ResetPrompt();
+            promptInteraction.ResetPrompt();
         }
 
         private void DoTheTransfer(int transferAmount, bool adding)
@@ -147,7 +147,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
             {
-                this.Game.Write.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this
+                this.Game.Interact.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this
             }
             else
             {
@@ -155,7 +155,7 @@ namespace StarTrek_KG.Subsystem
                 {
                     if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
                     {
-                        this.Game.Write.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
+                        this.Game.Interact.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
                         return;
                     }
 
@@ -168,7 +168,7 @@ namespace StarTrek_KG.Subsystem
                         {
                             //todo: write code to add the difference if they exceed. There is no reason to make people type twice
 
-                            this.Game.Write.Line("Energy to transfer exceeds Shield Max capability.. No Change");
+                            this.Game.Interact.Line("Energy to transfer exceeds Shield Max capability.. No Change");
                             return;
                         }
 
@@ -182,17 +182,17 @@ namespace StarTrek_KG.Subsystem
                         this.AddEnergy(transfer, adding);
                     }
 
-                    this.Game.Write.Line(
+                    this.Game.Interact.Line(
                         $"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
 
-                    this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+                    this.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
                 }
             }
         }
 
         private void GetValueFromUser(string subCommand)
         {
-            var promptWriter = this.ShipConnectedTo.Game.Write;
+            var promptWriter = this.ShipConnectedTo.Game.Interact;
 
             if (promptWriter.Subscriber.PromptInfo.Level == 1)
             {
@@ -201,7 +201,7 @@ namespace StarTrek_KG.Subsystem
                                         "Shields-> Transfer Energy-> ",
                                         $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
                                         out transfer, 
-                                        this.Game.Write.Output.Queue,
+                                        this.Game.Interact.Output.Queue,
                                         2);
 
                 //todo: this is a little difficult.  why do we need to glue these 2 guys together?
@@ -219,13 +219,13 @@ namespace StarTrek_KG.Subsystem
 
             if (tooLittle)
             {
-                this.Game.Write.Line("Cannot Transfer < 1 unit of Energy");
+                this.Game.Interact.Line("Cannot Transfer < 1 unit of Energy");
                 return 0;
             }
 
             if (tooMuch)
             {
-                this.Game.Write.Line("Cannot Transfer. Too Much Energy");
+                this.Game.Interact.Line("Cannot Transfer. Too Much Energy");
                 return 0;
             }
 

@@ -21,15 +21,15 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
             throw new NotImplementedException();
         }
 
         public List<string> Controls()
         {
-            this.Game.Write.Output.Queue.Clear();
+            this.Game.Interact.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Write.Output.Queue.ToList();
+            if (this.Damaged()) return this.Game.Interact.Output.Queue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -38,17 +38,17 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var line in renderedResults)
             {
-                this.Game.Write.SingleLine(line);
+                this.Game.Interact.SingleLine(line);
             }
 
-            return this.Game.Write.Output.Queue.ToList();
+            return this.Game.Interact.Output.Queue.ToList();
         }
 
         //used by CRS
         public List<string> RunLRSScan(Location shipLocation)
         {
             var tlrsResults = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
-            var renderedData = this.Game.Write.RenderLRSData(tlrsResults, this.Game);
+            var renderedData = this.Game.Interact.RenderLRSData(tlrsResults, this.Game);
 
             return renderedData;
         }
@@ -57,7 +57,7 @@ namespace StarTrek_KG.Subsystem
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<IScanResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.Game);
-            IEnumerable<string> renderedData = this.Game.Write.RenderScanWithNames(ScanRenderType.SingleLine, "*** Long Range Scan ***", lrsData.ToList(), this.Game);
+            IEnumerable<string> renderedData = this.Game.Interact.RenderScanWithNames(ScanRenderType.SingleLine, "*** Long Range Scan ***", lrsData.ToList(), this.Game);
 
             return renderedData;
         }
