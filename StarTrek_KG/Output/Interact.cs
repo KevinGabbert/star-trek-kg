@@ -632,6 +632,13 @@ namespace StarTrek_KG.Output
 
         private List<string> OutputMenu(IShip playerShip, string userCommand)
         {
+
+            if (userCommand == "main") //todo: resource this
+            {
+                this.ResetPrompt();
+                return this.Output.WriteLine("exiting to main prompt."); //todo: resource this;
+            }
+
             List<string> retVal;
 
             if (this.Subscriber.PromptInfo.Level == 0)

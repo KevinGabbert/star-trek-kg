@@ -125,7 +125,15 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.GetValueFromUser(subtract);
+                if (this.Energy < 1)
+                {
+                    this.Game.Interact.Line("Shields are currently DOWN. Cannot subtract energy. \r\n Exiting Panel."); //todo: resource this
+                    promptInteraction.ResetPrompt();
+                }
+                else
+                {
+                    this.GetValueFromUser(subtract);
+                }
             }
         }
 
