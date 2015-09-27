@@ -854,7 +854,8 @@ namespace StarTrek_KG.Output
             return this.Output.Queue.ToList();
         }
 
-        private IEnumerable<string> ShieldMenu(IShip playerShip, string shieldPanelCommand = "")
+        //pass in dependencies and refactor to shield object
+        private IEnumerable<string> ShieldMenu(IShip playerShip, string shieldPanelCommand = "") //config, output
         {
             if (Shields.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 

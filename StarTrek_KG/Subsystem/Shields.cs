@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Lifetime;
 using System.Security.Policy;
+using System.Text.RegularExpressions;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -98,7 +100,7 @@ namespace StarTrek_KG.Subsystem
 
             if (command != add)
             {
-                this.TransferAndReset(command, promptInteraction, true);
+                 this.TransferAndReset(command, promptInteraction, true);
             }
             else
             {
@@ -131,9 +133,16 @@ namespace StarTrek_KG.Subsystem
 
         private void TransferAndReset(string command, IInteraction promptInteraction, bool adding)
         {
-            int energyToTransfer = Convert.ToInt32(command);
+            if ((!string.IsNullOrWhiteSpace(command)) && command.All(char.IsDigit))
+            {
+                int energyToTransfer = Convert.ToInt32(command);
+                this.DoTheTransfer(energyToTransfer, adding);
+            }
+            else
+            {
+                this.Game.Interact.Line("Invalid. Shield Panel Exited."); //todo: resource this
+            }
 
-            this.DoTheTransfer(energyToTransfer, adding);
             promptInteraction.ResetPrompt();
         }
 
