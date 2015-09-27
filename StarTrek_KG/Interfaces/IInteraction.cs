@@ -12,10 +12,10 @@ namespace StarTrek_KG.Interfaces
     /// </summary>
     public interface IInteraction
     {
-        List<string> ACTIVITY_PANEL { get; set; }
+        List<string> SHIP_PANEL { get; }
         IStarTrekKGSettings Config { get; set; }
-        IOutputMethod Output { get; set; }
-        Subscriber Subscriber { get; set; }
+        IOutputMethod Output { get; }
+        Subscriber Subscriber { get; }
 
         string CurrentPrompt { get; set; }
 

@@ -76,7 +76,6 @@
     <Compile Include="Interfaces\IQueue.cs" />
     <Compile Include="Output\Prompt.cs" />
     <Compile Include="Output\Subscriber.cs" />
-    <Compile Include="Output\TelnetOutput.cs" />
     <Compile Include="TypeSafeEnums\Menu.cs" />
     <Compile Include="Enums\MovementType.cs" />
     <Compile Include="Enums\SectorScanType.cs" />

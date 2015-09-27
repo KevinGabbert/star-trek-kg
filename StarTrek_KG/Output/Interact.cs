@@ -41,14 +41,13 @@ namespace StarTrek_KG.Output
             set { _console = value; }
         }
 
-        private int TotalHostiles { get; set; }
-        private int TimeRemaining { get; set; }
-        private int Starbases { get; set; }
+        private int TotalHostiles { get; }
+        private int TimeRemaining { get; }
+        private int Starbases { get; }
+
         private int Stardate { get; set; }
 
-        private bool IsTelnetApp { get; set; }
-
-        public List<string> ACTIVITY_PANEL { get; set; }
+        public List<string> SHIP_PANEL { get; set; }
 
         //todo: resource these out.
         private readonly string ENTER_DEBUG_COMMAND = "Enter Debug command: ";
@@ -63,7 +62,7 @@ namespace StarTrek_KG.Output
 
         public Interaction(IStarTrekKGSettings config)
         {
-            this.ACTIVITY_PANEL = new List<string>();
+            this.SHIP_PANEL = new List<string>();
             this.Config = config;
 
             this.SetOutputMode(config);
@@ -76,7 +75,6 @@ namespace StarTrek_KG.Output
         /// <param name="config"></param>
         private void SetOutputMode(IStarTrekKGSettings config)
         {
-            this.IsTelnetApp = this.Config.GetSetting<bool>("IsTelnetApp");
             var isSubscriberApp = this.Config.GetSetting<bool>("IsSubscriberApp");
 
             if (isSubscriberApp)
@@ -84,11 +82,7 @@ namespace StarTrek_KG.Output
                 this.Subscriber = new Subscriber(this.Config);
             }
 
-            if (this.IsTelnetApp)
-            {
-                this.Output = new TelnetOutput(config); //todo: config might be droppped
-            }
-            else if (this.Subscriber.Enabled)
+            if (this.Subscriber.Enabled)
             {
                 this.Output = new SubscriberOutput(config);
             }
@@ -102,7 +96,7 @@ namespace StarTrek_KG.Output
         {
             this.Subscriber = new Subscriber(this.Config);
 
-            this.ACTIVITY_PANEL = new List<string>();
+            this.SHIP_PANEL = new List<string>();
             this.TotalHostiles = totalHostiles;
             this.Starbases = starbases;
             this.Stardate = stardate;
@@ -617,11 +611,11 @@ namespace StarTrek_KG.Output
         {
             var commands = new Queue<string>(userCommand.Split(' '));
 
-            this.EvalTopLevelMenuCommand(playerShip, commands.Dequeue());
+            List<string> returnVal = this.EvalTopLevelMenuCommand(playerShip, commands.Dequeue());
 
-            List<string> returnVal = null;
+            bool previousCommandWasValid = this.Subscriber.PromptInfo.Level > 0;
 
-            while (commands.Count > 0)
+            while (commands.Count > 0 && previousCommandWasValid)
             {
                 //we only care about the last returnVal
                 returnVal = this.OutputMenu(playerShip, commands.Dequeue());
@@ -669,8 +663,8 @@ namespace StarTrek_KG.Output
 
         public void CreateCommandPanel()
         {
-            //todo: resource out menu
-            ACTIVITY_PANEL = new List<string>
+            //todo: resource out this menu
+            SHIP_PANEL = new List<string>
             {
                 "imp = Impulse Navigation",
                 "wrp = Warp Navigation",
@@ -692,15 +686,15 @@ namespace StarTrek_KG.Output
 
             if (Constants.DEBUG_MODE)
             {
-                ACTIVITY_PANEL.Add("");
-                ACTIVITY_PANEL.Add("─────────────────────────────");
-                ACTIVITY_PANEL.Add(this.DisplayMenuItem(Menu.dbg));
+                SHIP_PANEL.Add("");
+                SHIP_PANEL.Add("─────────────────────────────");
+                SHIP_PANEL.Add(this.DisplayMenuItem(Menu.dbg));
             }
         }
 
         private List<string> EvalTopLevelMenuCommand(IShip playerShip, string menuCommand)
         {
-            IEnumerable<string> retVal = new List<string>();
+            List<string> retVal = new List<string>();
 
             if (menuCommand == Menu.wrp.ToString() || menuCommand == Menu.imp.ToString() || menuCommand == Menu.nto.ToString())
             {
@@ -713,7 +707,7 @@ namespace StarTrek_KG.Output
             else if (menuCommand == Menu.irs.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.ImmediateRangeScan;
-                retVal = ImmediateRangeScan.For(playerShip).Controls();
+                retVal = ImmediateRangeScan.For(playerShip).Controls().ToList();
             }
             else if (menuCommand == Menu.srs.ToString())
             {
@@ -733,7 +727,7 @@ namespace StarTrek_KG.Output
             else if (menuCommand == Menu.pha.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Phasers;
-                retVal = Phasers.For(playerShip).Controls(playerShip);
+                retVal = Phasers.For(playerShip).Controls(playerShip).ToList();
             }
             else if (menuCommand == Menu.tor.ToString())
             {
@@ -744,12 +738,12 @@ namespace StarTrek_KG.Output
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Shields;
 
-                retVal = this.ShieldMenu(playerShip);
+                retVal = this.ShieldMenu(playerShip).ToList();
             }
             else if (menuCommand == Menu.com.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Computer;
-                retVal = this.ComputerMenu(playerShip);
+                retVal = this.ComputerMenu(playerShip).ToList();
             }
             else if (menuCommand == Menu.toq.ToString())
             {
@@ -759,12 +753,12 @@ namespace StarTrek_KG.Output
             else if (menuCommand == Menu.dmg.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.DamageControl;
-                retVal = this.DamageControlMenu(playerShip);
+                retVal = this.DamageControlMenu(playerShip).ToList();
             }
             else if (menuCommand == Menu.dbg.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Debug;
-                retVal = this.DebugMenu(playerShip);
+                retVal = this.DebugMenu(playerShip).ToList();
             }
             else if (menuCommand == Menu.ver.ToString())
             {
@@ -772,8 +766,16 @@ namespace StarTrek_KG.Output
             }
             else
             {
+                if ((menuCommand != "?") && (menuCommand != "help"))
+                {
+                        this.Output.WriteLine("Invalid Command"); //todo: make this to be red text
+                }
+
+                this.ResetPrompt();
                 this.CreateCommandPanel();
-                retVal = this.Panel(this.GetPanelHead(playerShip.Name), ACTIVITY_PANEL);
+
+                var panel = this.Panel(this.GetPanelHead(playerShip.Name), SHIP_PANEL).ToList();
+                retVal.AddRange(panel);
             }
 
             return retVal.ToList();
@@ -991,7 +993,10 @@ namespace StarTrek_KG.Output
                 value = "0";
             }
 
-            queueToWriteTo.Enqueue(this.Output.Queue.Dequeue());
+            foreach (string queueItem in this.Output.Queue.ToList())
+            {
+                queueToWriteTo.Enqueue(this.Output.Queue.Dequeue());
+            }
 
             return retVal;
         }
