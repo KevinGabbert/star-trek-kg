@@ -632,11 +632,10 @@ namespace StarTrek_KG.Output
 
         private List<string> OutputMenu(IShip playerShip, string userCommand)
         {
-
-            if (userCommand == "main") //todo: resource this
+            if (userCommand == "ship") //todo: resource this
             {
                 this.ResetPrompt();
-                return this.Output.WriteLine("exiting to main prompt."); //todo: resource this;
+                return this.Output.WriteLine("Exiting to Ship Panel."); //todo: resource this;
             }
 
             List<string> retVal;
@@ -769,11 +768,7 @@ namespace StarTrek_KG.Output
             }
             else if (menuCommand == Menu.ver.ToString())
             {
-                this.Output.WriteLine(this.GetConfigText("AppVersion").TrimStart(' '));
-            }
-            else if (menuCommand == Menu.cls.ToString())
-            {
-                this.Output.Clear();
+                retVal = this.Output.WriteLine("Application Version: " + this.GetConfigText("AppVersion").Remove(1,1)); //todo: resource this
             }
             else
             {
@@ -817,6 +812,8 @@ namespace StarTrek_KG.Output
         {
            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
 
+            Interaction.AddShipPanelOption(menuItems, Debug.DEBUG_PANEL);
+
             this.OutputStrings(Debug.DEBUG_PANEL);
             this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
 
@@ -834,6 +831,8 @@ namespace StarTrek_KG.Output
 
             IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
 
+            Interaction.AddShipPanelOption(menuItems, Computer.CONTROL_PANEL);
+
             this.OutputStrings(Computer.CONTROL_PANEL);
             this.WithNoEndCR(this.ENTER_COMPUTER_COMMAND);
 
@@ -849,6 +848,8 @@ namespace StarTrek_KG.Output
         {
             IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
 
+            Interaction.AddShipPanelOption(menuItems, DamageControl.DAMAGE_PANEL);
+
             this.OutputStrings(DamageControl.DAMAGE_PANEL);
 
             this.WithNoEndCR("Enter Damage Control Command: ");
@@ -861,9 +862,11 @@ namespace StarTrek_KG.Output
             return this.Output.Queue.ToList();
         }
 
-        //pass in dependencies and refactor to shield object
         private IEnumerable<string> ShieldMenu(IShip playerShip, string shieldPanelCommand = "") //config, output
         {
+            //todo: pass in dependencies and refactor to shield object
+            //pass in config, output, subscriber, promptUser, outputstrings
+
             if (Shields.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
             Shields.SHIELD_PANEL = new List<string>
@@ -879,12 +882,14 @@ namespace StarTrek_KG.Output
 
             //todo: resource out header
             //todo: *DOWN* feature should be a upgrade functionality
+            var menuItemDefs = menuItems as IList<MenuItemDef> ?? menuItems.ToList();
+
             if (currentShieldEnergy > 0)
             {
                 //todo:add header from config file.
                 Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", $"< CURRENTLY AT: {currentShieldEnergy}>"));
 
-                foreach (MenuItemDef menuItem in menuItems)
+                foreach (MenuItemDef menuItem in menuItemDefs)
                 {
                     Shields.SHIELD_PANEL.Add($"{menuItem.name} {menuItem.divider} {menuItem.description}");
                 }
@@ -894,9 +899,11 @@ namespace StarTrek_KG.Output
                 //todo: resource out header
                 Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", "DOWN"));
 
-                var itemToAdd = menuItems.First(m => m.name == "add");
+                MenuItemDef itemToAdd = menuItemDefs.First(m => m.name == "add"); //todo: resource this
                 Shields.SHIELD_PANEL.Add($"{itemToAdd.name} {itemToAdd.divider} {itemToAdd.description}");
             }
+
+            Interaction.AddShipPanelOption(menuItemDefs, Shields.SHIELD_PANEL);
 
             this.OutputStrings(Shields.SHIELD_PANEL);
 
@@ -909,9 +916,15 @@ namespace StarTrek_KG.Output
             //todo: this needs to be divined?
             this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ", null, out shieldPromptReply, this.Output.Queue, 1);
 
-            Shields.For(playerShip).Controls(shieldPanelCommand);         
-            
+            Shields.For(playerShip).Controls(shieldPanelCommand);
+
             return this.Output.Queue;
+        }
+
+        private static void AddShipPanelOption(IEnumerable<MenuItemDef> menuItemDefs, ICollection<string> panel)
+        {
+            MenuItemDef shipOption = menuItemDefs.First(m => m.name == "ship"); //todo: resource this
+            panel.Add($"{shipOption.name} {shipOption.divider} {shipOption.description}");
         }
 
         #endregion

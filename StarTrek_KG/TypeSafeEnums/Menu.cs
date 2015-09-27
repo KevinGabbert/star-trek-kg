@@ -30,7 +30,7 @@ namespace StarTrek_KG.TypeSafeEnums
 
         //todo: support these commands
         public static readonly Menu ver = new Menu(16, "ver", "");
-        public static readonly Menu cls = new Menu(17, "cls", "");
+        public static readonly Menu clear = new Menu(17, "clear", "");
 
         private static Dictionary<string, Menu> instance = new Dictionary<string, Menu>();
 
