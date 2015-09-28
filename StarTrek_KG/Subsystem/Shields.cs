@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.Remoting.Lifetime;
-using System.Security.Policy;
-using System.Text.RegularExpressions;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
-using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
@@ -92,7 +85,6 @@ namespace StarTrek_KG.Subsystem
         {
             return (command == "sub") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "sub");
         }
-
         private bool AddingTo(string command, IInteraction promptInteraction)
         {
             return (command == "add") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "add");
@@ -211,28 +203,6 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        private void GetValueFromUser(string subCommand)
-        {
-            var promptWriter = this.ShipConnectedTo.Game.Interact;
-
-            if (promptWriter.Subscriber.PromptInfo.Level == 1)
-            {
-                string transfer;
-                promptWriter.PromptUser(SubsystemType.Shields,
-                                        "Shields-> Transfer Energy-> ",
-                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
-                                        out transfer, 
-                                        this.Game.Interact.Output.Queue,
-                                        2);
-
-                //todo: this is a little difficult.  why do we need to glue these 2 guys together?
-                //(grabs everything that .PromptUser output)
-                //this.Game.Write.Output.Queue.Enqueue(promptWriter.Output.Queue.Dequeue());
-            }
-
-            promptWriter.Subscriber.PromptInfo.SubCommand = subCommand;
-        }
-
         private int EnergyValidation(double transfer)
         {
             var tooLittle = transfer < 1;
@@ -261,6 +231,28 @@ namespace StarTrek_KG.Subsystem
         }
 
         #endregion
+
+        private void GetValueFromUser(string subCommand)
+        {
+            var promptWriter = this.ShipConnectedTo.Game.Interact;
+
+            if (promptWriter.Subscriber.PromptInfo.Level == 1)
+            {
+                string transfer;
+                promptWriter.PromptUser(SubsystemType.Shields,
+                                        "Shields-> Transfer Energy-> ",
+                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
+                                        out transfer,
+                                        this.Game.Interact.Output.Queue,
+                                        2);
+
+                //todo: this is a little difficult.  why do we need to glue these 2 guys together?
+                //(grabs everything that .PromptUser output)
+                //this.Game.Write.Output.Queue.Enqueue(promptWriter.Output.Queue.Dequeue());
+            }
+
+            promptWriter.Subscriber.PromptInfo.SubCommand = subCommand;
+        }
 
         #region Automation
 

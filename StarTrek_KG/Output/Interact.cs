@@ -664,13 +664,9 @@ namespace StarTrek_KG.Output
                         this.SetPrompt(promptLevel - 1);
                     }
 
-                    //todo: show menu
-
-                    retVal.AddRange(this.Output.WriteLine(""));
+                    retVal.AddRange(this.ShieldMenu(playerShip));
 
                     return retVal;
-
-                    break;
             }
 
             return this.EvalCommand(playerShip, userCommand);
@@ -926,16 +922,25 @@ namespace StarTrek_KG.Output
 
             var currentShieldEnergy = Shields.For(playerShip).Energy;
 
-            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+            try
+            {
+                IEnumerable<MenuItemDef> menuItems =
+                    this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
 
-            this.OutputMenu(menuItems, currentShieldEnergy);
+                this.OutputMenu(menuItems, currentShieldEnergy);
+            }
+            catch
+            {
+                
+            }
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
 
             string shieldPromptReply;
 
             //todo: this needs to be divined?
-            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ", null, out shieldPromptReply, this.Output.Queue, 1);
+            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ",
+                null, out shieldPromptReply, this.Output.Queue, 1);
 
             Shields.For(playerShip).Controls(shieldPanelCommand);
 
