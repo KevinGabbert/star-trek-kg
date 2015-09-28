@@ -59,8 +59,7 @@ namespace StarTrek_KG.Subsystem
             {
                 if (this.NotRecognized(command, promptWriter))
                 {
-                    this.Game.Interact.Line("Not recognized.  Exiting panel"); //todo: resource this
-                    promptWriter.ResetPrompt();
+                    this.Game.Interact.Line("Shield command not recognized."); //todo: resource this
                 }
                 else
                 {
@@ -150,13 +149,13 @@ namespace StarTrek_KG.Subsystem
             {
                 int energyToTransfer = Convert.ToInt32(command);
                 this.DoTheTransfer(energyToTransfer, adding);
+
+                promptInteraction.ResetPrompt();
             }
             else
             {
-                this.Game.Interact.Line("Invalid. Shield Panel Exited."); //todo: resource this
+                this.Game.Interact.Line("Invalid transfer amount."); //todo: resource this
             }
-
-            promptInteraction.ResetPrompt();
         }
 
         private void DoTheTransfer(int transferAmount, bool adding)

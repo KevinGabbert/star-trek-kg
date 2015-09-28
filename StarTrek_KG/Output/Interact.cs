@@ -609,7 +609,11 @@ namespace StarTrek_KG.Output
         /// <returns></returns>
         private List<string> ProcessMultiStepCommand(IShip playerShip, string userCommand)
         {
-            var commands = new Queue<string>(userCommand.Split(' '));
+            this.Subscriber.PromptInfo.RawCommandText = userCommand;
+
+            Queue<string> commands = new Queue<string>(userCommand.Split(' '));
+
+            this.Subscriber.PromptInfo.SetCommands(commands.ToList());
 
             bool previousCommandWasIssuedAndValid = this.Subscriber.PromptInfo.Level > 0;
 
@@ -634,6 +638,7 @@ namespace StarTrek_KG.Output
         private List<string> OutputMenu(IShip playerShip, string userCommand)
         {
             var promptLevel = this.Subscriber.PromptInfo.Level;
+            List<string> retVal = new List<string>();
 
             switch (userCommand)
             {
@@ -641,9 +646,8 @@ namespace StarTrek_KG.Output
                     return this.Output.WriteLine($"At Prompt Level: {promptLevel}"); //todo: resource this
 
                 case "ship":
+                case "out":
                     this.ResetPrompt();
-
-                    List<string> retVal = new List<string>();
 
                     if (promptLevel > 0)
                     {
@@ -653,6 +657,20 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("Ship Panel now Active.")); //todo: resource this
 
                     return retVal;
+                case "back":
+
+                    if (promptLevel > 0)
+                    {
+                        this.SetPrompt(promptLevel - 1);
+                    }
+
+                    //todo: show menu
+
+                    retVal.AddRange(this.Output.WriteLine(""));
+
+                    return retVal;
+
+                    break;
             }
 
             return this.EvalCommand(playerShip, userCommand);
@@ -970,6 +988,23 @@ namespace StarTrek_KG.Output
             this.Subscriber.PromptInfo.SubCommand = "";
             this.Subscriber.PromptInfo.SubSystem = SubsystemType.None;
             this.Subscriber.PromptInfo.Level = 0;
+        }
+
+        public void SetPrompt(int promptLevel)
+        {
+            if (promptLevel == 0)
+            {
+                this.ResetPrompt();
+            }
+            else
+            {
+                if (this.Subscriber.PromptInfo.MultiStepCommandChain != null)
+                {
+                    this.Subscriber.PromptInfo.SetSubCommandTo(promptLevel);
+                }
+
+                this.Subscriber.PromptInfo.Level = promptLevel;
+            }
         }
 
         /// <summary>
