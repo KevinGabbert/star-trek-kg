@@ -656,7 +656,7 @@ namespace StarTrek_KG.Output
         private bool IsAcceptable(string stringToCheck, SubsystemType subsystem, int promptLevel)
         {
             //todo: verify that this config entry exists
-            MenuItems menuItems = this.Config.GetMenuItems($"{subsystem}Panel");
+            MenuItems menuItems = this.Config.GetMenuItems($"{subsystem}Panel"); //todo: resource this
             bool acceptable = menuItems.Cast<MenuItemDef>().Any(m => m.name == stringToCheck && m.promptLevel == promptLevel) != null;
             return acceptable;
         }
@@ -766,7 +766,7 @@ namespace StarTrek_KG.Output
             }
             else
             {
-                if ((menuCommand != "?") && (menuCommand != "help"))
+                if ((menuCommand != "?") && (menuCommand != "help")) //todo: resource this
                 {
                         this.Output.WriteLine("Invalid Command"); //todo: make this to be red text
                 }

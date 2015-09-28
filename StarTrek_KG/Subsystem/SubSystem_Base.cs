@@ -26,6 +26,8 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
+        protected List<string> _myPanel; 
+
         protected SubSystem_Base(Ship shipConnectedTo, Game game)
         {
             this.Game = game;
@@ -134,7 +136,7 @@ namespace StarTrek_KG.Subsystem
             throw new global::System.NotImplementedException();
         }
 
-        public void AddEnergy(int transfer, bool adding)
+        protected void AddEnergy(int transfer, bool adding)
         {
             if (adding)
             {
@@ -197,5 +199,29 @@ namespace StarTrek_KG.Subsystem
 
             return subSystemToReturn;
         }
+
+
+        #region Menu
+
+        /// <summary>
+        /// This should provent recognition of a command that is not found in the first level menu
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="promptInteraction"></param>
+        /// <returns></returns>
+        protected bool InFirstLevelMenu(string command, IInteraction promptInteraction)
+        {
+            bool retVal = true;
+
+            if (promptInteraction.Subscriber.PromptInfo.Level == 1 && command != "")
+            {
+                var search = $"{command}  = "; //todo: modify to use MenuItem "divider" in web.config  -  <MenuItem promptLevel="1" name="ship" description="Exit back to the Ship Panel" ordinalPosition ="1" divider=" = "></MenuItem>
+                retVal = this._myPanel.Any(p => p.Contains(search)); 
+            }
+
+            return retVal;
+        }
+
+        #endregion
     }
 }

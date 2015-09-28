@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.Remoting.Lifetime;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
@@ -47,6 +48,8 @@ namespace StarTrek_KG.Subsystem
         /// <returns></returns>
         public override List<string> Controls(string command)
         {
+            base._myPanel = Shields.SHIELD_PANEL;
+
             var promptWriter = this.ShipConnectedTo.Game.Interact;
 
             this.Game.Interact.Output.Queue.Clear();
@@ -54,19 +57,22 @@ namespace StarTrek_KG.Subsystem
             //now we know that the shield Panel command has been retrieved.
             if (!this.Damaged())
             {
-                //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
-                if (Shields.AddingTo(command, promptWriter))
-                {
-                    this.AddOrGetValue(command, promptWriter);   
-                }
-                else if (Shields.SubtractingFrom(command, promptWriter))
-                {
-                    this.SubtractOrGetValue(command, promptWriter);
-                }
-                else if(Shields.NotRecognized(command, promptWriter))
+                if (this.NotRecognized(command, promptWriter))
                 {
                     this.Game.Interact.Line("Not recognized.  Exiting panel"); //todo: resource this
                     promptWriter.ResetPrompt();
+                }
+                else
+                {
+                    //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
+                    if (this.AddingTo(command, promptWriter))
+                    {
+                        this.AddOrGetValue(command, promptWriter);
+                    }
+                    else if (this.SubtractingFrom(command, promptWriter))
+                    {
+                        this.SubtractOrGetValue(command, promptWriter);
+                    }
                 }
             }
             else
@@ -77,21 +83,18 @@ namespace StarTrek_KG.Subsystem
             return this.Game.Interact.Output.Queue.ToList();
         }
 
-        private static bool NotRecognized(string command, IInteraction promptInteraction)
+        private bool NotRecognized(string command, IInteraction promptInteraction)
         {
-            var recognized = (Shields.AddingTo(command, promptInteraction) ||
-                              Shields.SubtractingFrom(command, promptInteraction) ||
-                              promptInteraction.Subscriber.PromptInfo.Level > 0);
-
+            var recognized = (base.InFirstLevelMenu(command, promptInteraction));
             return !recognized;
         }
 
-        private static bool SubtractingFrom(string command, IInteraction promptInteraction)
+        private bool SubtractingFrom(string command, IInteraction promptInteraction)
         {
             return (command == "sub") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "sub");
         }
 
-        private static bool AddingTo(string command, IInteraction promptInteraction)
+        private bool AddingTo(string command, IInteraction promptInteraction)
         {
             return (command == "add") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "add");
         }
