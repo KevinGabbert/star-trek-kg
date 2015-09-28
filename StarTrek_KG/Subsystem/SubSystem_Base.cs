@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -36,12 +34,14 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo = shipConnectedTo;
         }
 
-        protected virtual void OutputDamagedMessage()
+        #region Output Messages
+
+        private void OutputDamagedMessage()
         {
             this.Game.Interact.Line(this.Type + " Damaged.");
         }
 
-        protected virtual void OutputRepairedMessage()
+        private void OutputRepairedMessage()
         {
             this.Game.Interact.Line(this.Type + " Repaired.");
         }
@@ -50,6 +50,8 @@ namespace StarTrek_KG.Subsystem
         //{
         //    this.Game.Write.Line(this.Type + " Malfunctioning.");
         //}
+
+        #endregion
 
         private void Initialize()
         {   
@@ -61,6 +63,8 @@ namespace StarTrek_KG.Subsystem
             this.Game.Interact.Output.Queue.Clear();
             return new List<string>();
         }
+
+        #region Repair
 
         public virtual bool PartialRepair()
         {
@@ -84,6 +88,10 @@ namespace StarTrek_KG.Subsystem
             //todo: if this system is not debug, then repair
             this.OutputRepairedMessage();
         }
+
+        #endregion
+
+        #region Damage
 
         public bool Damaged()
         {
@@ -126,14 +134,13 @@ namespace StarTrek_KG.Subsystem
             //}
         }
 
-        public int GetNext(int seed)
-        {
-            return (Utility.Utility.Random).Next(seed);
-        }
+        #endregion
+
+        #region Energy
 
         public int TransferredFromUser()
         {
-            throw new global::System.NotImplementedException();
+            throw new System.NotImplementedException();
         }
 
         protected void AddEnergy(int transfer, bool adding)
@@ -157,6 +164,10 @@ namespace StarTrek_KG.Subsystem
             //todo: why add to both objects??
             this.Energy = transfer;
         }
+
+        #endregion
+
+        #region Synctactic sugar
 
         public ISubsystem For(Ship ship, Game game)
         {
@@ -200,6 +211,7 @@ namespace StarTrek_KG.Subsystem
             return subSystemToReturn;
         }
 
+        #endregion
 
         #region Menu
 
@@ -223,5 +235,10 @@ namespace StarTrek_KG.Subsystem
         }
 
         #endregion
+
+        public int GetNext(int seed)
+        {
+            return (Utility.Utility.Random).Next(seed);
+        }
     }
 }

@@ -611,11 +611,18 @@ namespace StarTrek_KG.Output
         {
             var commands = new Queue<string>(userCommand.Split(' '));
 
-            List<string> returnVal = this.EvalTopLevelMenuCommand(playerShip, commands.Dequeue());
+            bool previousCommandWasIssuedAndValid = this.Subscriber.PromptInfo.Level > 0;
 
-            bool previousCommandWasValid = this.Subscriber.PromptInfo.Level > 0;
+            List<string> returnVal = null;
 
-            while (commands.Count > 0 && previousCommandWasValid)
+            if (!previousCommandWasIssuedAndValid)
+            {
+                returnVal = this.EvalTopLevelMenuCommand(playerShip, commands.Dequeue());
+            }
+
+            previousCommandWasIssuedAndValid = this.Subscriber.PromptInfo.Level > 0;
+
+            while (commands.Count > 0 && previousCommandWasIssuedAndValid)
             {
                 //we only care about the last returnVal
                 returnVal = this.OutputMenu(playerShip, commands.Dequeue());
@@ -626,21 +633,44 @@ namespace StarTrek_KG.Output
 
         private List<string> OutputMenu(IShip playerShip, string userCommand)
         {
-            if (userCommand == "ship") //todo: resource this
+            var promptLevel = this.Subscriber.PromptInfo.Level;
+
+            switch (userCommand)
             {
-                this.ResetPrompt();
-                return this.Output.WriteLine("Exiting to Ship Panel."); //todo: resource this;
+                case "level":
+                    return this.Output.WriteLine($"At Prompt Level: {promptLevel}"); //todo: resource this
+
+                case "ship":
+                    this.ResetPrompt();
+
+                    List<string> retVal = new List<string>();
+
+                    if (promptLevel > 0)
+                    {
+                        retVal.AddRange(this.Output.WriteLine("Exiting Panel.")); //todo: resource this
+                    }
+
+                    retVal.AddRange(this.Output.WriteLine("Ship Panel now Active.")); //todo: resource this
+
+                    return retVal;
             }
 
+            return this.EvalCommand(playerShip, userCommand);
+        }
+
+        private List<string> EvalCommand(IShip playerShip, string userCommand)
+        {
             List<string> retVal;
 
-            if (this.Subscriber.PromptInfo.Level == 0)
+            switch (this.Subscriber.PromptInfo.Level)
             {
-                retVal = this.EvalTopLevelMenuCommand(playerShip, userCommand);
-            }
-            else
-            {
-                retVal = this.EvalSubLevelCommand(playerShip, userCommand, this.Subscriber.PromptInfo.Level);
+                case 0:
+                    retVal = this.EvalTopLevelMenuCommand(playerShip, userCommand);
+                    break;
+
+                default:
+                    retVal = this.EvalSubLevelCommand(playerShip, userCommand, this.Subscriber.PromptInfo.Level);
+                    break;
             }
 
             return retVal;
@@ -880,8 +910,22 @@ namespace StarTrek_KG.Output
 
             IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
 
-            //todo: replace the below with menuItems grabbed here.
+            this.OutputMenu(menuItems, currentShieldEnergy);
 
+            Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
+
+            string shieldPromptReply;
+
+            //todo: this needs to be divined?
+            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ", null, out shieldPromptReply, this.Output.Queue, 1);
+
+            Shields.For(playerShip).Controls(shieldPanelCommand);
+
+            return this.Output.Queue;
+        }
+
+        private void OutputMenu(IEnumerable<MenuItemDef> menuItems, int currentShieldEnergy)
+        {
             //todo: resource out header
             //todo: *DOWN* feature should be a upgrade functionality
             var menuItemDefs = menuItems as IList<MenuItemDef> ?? menuItems.ToList();
@@ -908,19 +952,6 @@ namespace StarTrek_KG.Output
             Interaction.AddShipPanelOption(menuItemDefs, Shields.SHIELD_PANEL);
 
             this.OutputStrings(Shields.SHIELD_PANEL);
-
-            //todo: resource out header
-
-            Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
-
-            string shieldPromptReply;
-
-            //todo: this needs to be divined?
-            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ", null, out shieldPromptReply, this.Output.Queue, 1);
-
-            Shields.For(playerShip).Controls(shieldPanelCommand);
-
-            return this.Output.Queue;
         }
 
         private static void AddShipPanelOption(IEnumerable<MenuItemDef> menuItemDefs, ICollection<string> panel)
