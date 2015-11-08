@@ -457,26 +457,25 @@ namespace StarTrek_KG.Playfield
                 if (this.Sectors != null)
                 {
                     IEnumerable<IShip> hostiles = (from sector in this.Sectors
-                                                    select sector.Object into verifiedObject
 
-                                                    where verifiedObject != null
-                                                    let objectType = verifiedObject.Type.Name
-                                                    where objectType == OBJECT_TYPE.SHIP
+                                                    let objectToExamine = sector.Object
+                                                    
+                                                    where objectToExamine != null
+                                                    where objectToExamine.Type.Name == OBJECT_TYPE.SHIP
 
-                                                    select (IShip) verifiedObject into possibleShipToGet
+                                                    let shipToGet = (IShip)objectToExamine
 
-                                                    where !possibleShipToGet.Destroyed
-                                                    where possibleShipToGet.Allegiance == Allegiance.BadGuy
+                                                    where !shipToGet.Destroyed
+                                                    where shipToGet.Allegiance == Allegiance.BadGuy
 
-                                                    select possibleShipToGet);
+                                                    select shipToGet);
                     badGuys.AddRange(hostiles);
                 }
                 else
                 {
                     if (this.Type != RegionType.GalacticBarrier && this.Type != RegionType.Unknown)
                     {
-                        throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") +
-                                                this.Name);
+                        throw new GameException(this.Map.Config.GetSetting<string>("DebugNoSetUpSectorsInRegion") + this.Name);
                     }
                 }
 
@@ -493,13 +492,15 @@ namespace StarTrek_KG.Playfield
             {
                 IEnumerable<Sector> sectorsWithHostiles = (from sector in this.Sectors
 
-                                                            let sectorObject = sector.Object
-                                                            where sectorObject != null
-                                                            where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+                                                           let sectorObject = sector.Object
 
-                                                            let possibleShipToDelete = (IShip) sectorObject
-                                                            where possibleShipToDelete.Allegiance == Allegiance.BadGuy
-                                                            select sector);
+                                                           where sectorObject != null
+                                                           where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+
+                                                           let possibleShipToDelete = (IShip)sectorObject
+
+                                                           where possibleShipToDelete.Allegiance == Allegiance.BadGuy
+                                                           select sector);
 
                 foreach (Sector sector in sectorsWithHostiles)
                 {

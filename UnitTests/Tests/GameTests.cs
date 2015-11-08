@@ -14,29 +14,6 @@ namespace UnitTests.ShipTests
         //PlayOnce
 
         [Test]
-        public void test()
-        {
-            List<decimal?> xxx = new List<decimal?>()
-            {
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                0
-            };
-
-            var y = xxx.AsQueryable().SafeEntitySum(e => e.Value);
-
-
-        }
-
-
-        [Test]
         public void MoveGameTimeForward()
         {
             var map = new Map();
