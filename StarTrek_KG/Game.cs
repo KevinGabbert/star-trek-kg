@@ -82,13 +82,13 @@ namespace StarTrek_KG
                 }
             }
 
+            //The config file is loaded here, and persisted through the rest of the game. 
+            //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
+            //might try to reload the file. #NotInThisVersion
+            this.Config.Get = this.Config.GetConfig();
+
             if (startup)
             {
-                //The config file is loaded here, and persisted through the rest of the game. 
-                //Any settings that are not in the config at this point, will not be updated unless some fault tolerance is built in that
-                //might try to reload the file. #NotInThisVersion
-                this.Config.Get = this.Config.GetConfig();
-
                 this.LatestTaunts = new List<FactionThreat>();
 
                 //These constants need to be localized to Game:
@@ -100,16 +100,16 @@ namespace StarTrek_KG
                 {
                     Initialize = true,
                     AddNebulae = true,
-                    SectorDefs = SectorSetup()
+                    SectorDefs = this.SectorSetup()
                 });
 
-                this.Interact = new Interaction(this.Config);
-                this.Map = new Map(startConfig, this.Interact, this.Config);
-                this.Interact = new Interaction(this.Config);
+                this.InitMap(startConfig);
 
                 //We don't want to start game without hostiles
                 if (this.HostileCheck(this.Map))
+                {
                     return; //todo: unless we want to have a mode that allows it for some reason.
+                }
 
                 //Set initial color scheme
                 this.Interact.HighlightTextBW(false);
@@ -118,6 +118,13 @@ namespace StarTrek_KG
                 this.Interact = new Interaction(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
                 this.PrintSector = new Render(this.Interact, this.Config);
             }
+        }
+
+        private void InitMap(SetupOptions startConfig)
+        {
+            this.Interact = new Interaction(this.Config);
+            this.Map = new Map(startConfig, this.Interact, this.Config);
+            this.Interact = new Interaction(this.Config);
         }
 
         #region Turn System
@@ -193,7 +200,7 @@ namespace StarTrek_KG
         /// </summary>
         public void RunSubscriber()
         {
-            this.Initialize();
+            this.Start();
             this.PrintOpeningScreen();
         }
 
@@ -227,11 +234,17 @@ namespace StarTrek_KG
             return retVal; 
         }
 
-        #endregion  
+        #endregion
 
         #endregion
 
         #region Setup
+
+        private void Start()
+        {
+            this.Started = true;
+            this.Interact.ResetPrompt();
+        }
 
         private void Initialize()
         {
@@ -244,21 +257,21 @@ namespace StarTrek_KG
 
         private void GetConstants()
         {
-            Constants.DEBUG_MODE = this.Config.GetSetting<bool>("DebugMode");
+            DEFAULTS.DEBUG_MODE = this.Config.GetSetting<bool>("DebugMode");
 
-            if (Constants.DEBUG_MODE)
+            if (DEFAULTS.DEBUG_MODE)
             {
                 this.Interact.Line("// ---------------- Debug Mode ----------------");
             }
 
-            Constants.SECTOR_MIN = this.Config.GetSetting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = this.Config.GetSetting<int>("SECTOR_MAX");
+            DEFAULTS.SECTOR_MIN = this.Config.GetSetting<int>("SECTOR_MIN");
+            DEFAULTS.SECTOR_MAX = this.Config.GetSetting<int>("SECTOR_MAX");
 
-            Constants.Region_MIN = this.Config.GetSetting<int>("Region_MIN");
-            Constants.Region_MAX = this.Config.GetSetting<int>("RegionMax");
+            DEFAULTS.Region_MIN = this.Config.GetSetting<int>("Region_MIN");
+            DEFAULTS.Region_MAX = this.Config.GetSetting<int>("RegionMax");
 
-            Constants.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
-            Constants.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");
+            DEFAULTS.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
+            DEFAULTS.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");
         }
 
         private SectorDefs SectorSetup()
@@ -358,7 +371,7 @@ namespace StarTrek_KG
 
             this.Interact.Resource("AppTitleSpace");
 
-            RandomPicture();
+            this.RandomPicture();
 
             this.Interact.Resource("AppTitleSpace");
         }
@@ -447,7 +460,7 @@ namespace StarTrek_KG
         {
             for (int i = 1; i < endingLine; i++)
             {
-                this.Interact.Resource("AppTitle" + itemName + i);
+                this.Interact.Resource($"AppTitle{itemName}{i}");
             }
         }
 
@@ -580,18 +593,19 @@ namespace StarTrek_KG
             //todo: move this to communications subsystem eventually
             var currentRegion = this.Map.Playership.GetRegion();
             var hostilesInRegion = currentRegion.GetHostiles();
-            string currentThreat = "";
 
             this.LatestTaunts = new List<FactionThreat>();
 
-            foreach (var ship in hostilesInRegion)
-            {
-                bool tauntLikely = Utility.Utility.Random.Next(5) == 1; //todo: resource this out.
+            IEnumerable<IShip> shipsWithTaunts = from ship in hostilesInRegion
+                                                    let tauntLikely = Utility.Utility.Random.Next(5) == 1
+                                                    where tauntLikely
+                                                    select ship;
 
-                if (tauntLikely)
-                {
-                    currentThreat = SingleEnemyTaunt(ship, currentThreat);
-                }
+            string currentThreat = "";
+            // ReSharper disable once LoopCanBeConvertedToQuery //Linq should only be for selecting, not executing.
+            foreach (var taunt in shipsWithTaunts)
+            {
+                currentThreat = this.SingleEnemyTaunt(taunt, currentThreat);
             }
         }
 
@@ -623,13 +637,11 @@ namespace StarTrek_KG
             }
             else if (currentFaction == FactionName.Klingon)
             {
-                this.Interact.WithNoEndCR(
-                    $"Klingon ship at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
+                this.Interact.WithNoEndCR($"Klingon ship at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
             }
             else
             {
-                this.Interact.WithNoEndCR(
-                    $"Hostile at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
+                this.Interact.WithNoEndCR($"Hostile at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
                 currentShipName = ship.Name;
             }
 
@@ -883,11 +895,11 @@ namespace StarTrek_KG
 
         public void Dispose()
         {
-            Constants.SECTOR_MIN = 0;
-            Constants.SECTOR_MAX = 0;
+            DEFAULTS.SECTOR_MIN = 0;
+            DEFAULTS.SECTOR_MAX = 0;
 
-            Constants.Region_MIN = 0;
-            Constants.Region_MAX = 0;
+            DEFAULTS.Region_MIN = 0;
+            DEFAULTS.Region_MAX = 0;
         }
 
         public string GetConfigText(string textToGet)

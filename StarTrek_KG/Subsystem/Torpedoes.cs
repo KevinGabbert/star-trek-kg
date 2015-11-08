@@ -5,6 +5,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
@@ -73,7 +74,7 @@ namespace StarTrek_KG.Subsystem
 
             this.Game.ALLHostilesAttack(this.Game.Map);
 
-            var angle = Utility.Utility.ComputeAngle(direction);
+            double angle = Utility.Utility.ComputeAngle(direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
             Region Region = Regions.Get(this.Game.Map, torpedoStartingLocation.Region);
@@ -211,7 +212,7 @@ namespace StarTrek_KG.Subsystem
 
         private static void DebugTrack(Location newLocation)
         {
-            if (Constants.DEBUG_MODE)
+            if (DEFAULTS.DEBUG_MODE)
             {
                 List<Sector> qLocations = newLocation.Region.Sectors.Where(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y).ToList();
 

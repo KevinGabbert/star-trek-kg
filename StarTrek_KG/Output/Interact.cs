@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,11 +6,13 @@ using System.Text;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
+using StarTrek_KG.Constants;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Extensions.System;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
@@ -300,43 +301,50 @@ namespace StarTrek_KG.Output
 
             string currentLRSScanLine = "│";
 
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (LRSResult dataPoint in lrsData)
             {
-                string currentRegionResult = null;
-
-                if (dataPoint.Unknown)
-                {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
-                }
-                else if (dataPoint.GalacticBarrier)
-                {
-                    currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
-                }
-                else
-                {
-                    currentRegionResult += dataPoint;
-                }
-
-                currentLRSScanLine += " " + currentRegionResult + " " + "│";
-
-                if (scanColumn == 2 || scanColumn == 5)
-                {
-                    renderedResults.Add(currentLRSScanLine);
-                    renderedResults.Add("├─────┼─────┼─────┤");
-                    currentLRSScanLine = "│";
-                }
-
-                if (scanColumn == 8)
-                {
-                    renderedResults.Add(currentLRSScanLine);
-                }
-
-                scanColumn++;
+                currentLRSScanLine = BuildLRSInterior(game, dataPoint, currentLRSScanLine, renderedResults, ref scanColumn);
             }
 
             renderedResults.Add("└─────┴─────┴─────┘");
 
             return renderedResults;
+        }
+
+        private static string BuildLRSInterior(IConfig game, IScanResult dataPoint, string currentLRSScanLine, ICollection<string> renderedResults, ref int scanColumn)
+        {
+            string currentRegionResult = null;
+
+            if (dataPoint.Unknown)
+            {
+                currentRegionResult = Utility.Utility.DamagedScannerUnit();
+            }
+            else if (dataPoint.GalacticBarrier)
+            {
+                currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+            }
+            else
+            {
+                currentRegionResult += dataPoint;
+            }
+
+            currentLRSScanLine += $" {currentRegionResult} " + "│";
+
+            if (scanColumn == 2 || scanColumn == 5)
+            {
+                renderedResults.Add(currentLRSScanLine);
+                renderedResults.Add("├─────┼─────┼─────┤");
+                currentLRSScanLine = "│";
+            }
+
+            if (scanColumn == 8)
+            {
+                renderedResults.Add(currentLRSScanLine);
+            }
+
+            scanColumn++;
+            return currentLRSScanLine;
         }
 
         //public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
@@ -390,7 +398,6 @@ namespace StarTrek_KG.Output
         //todo: refactor with RenderLRSWithNames
         public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, Game game)
         {
-            var renderedResults = new List<string>();
             int scanColumn = 0;  //todo resource this
             string longestName = Interaction.GetLongestName(data);
 
@@ -411,10 +418,13 @@ namespace StarTrek_KG.Output
 
             var cellLine = new string(Convert.ToChar(this.Config.Setting(scanRenderType + "CellLine")), cellLength + cellPadding);
 
-            renderedResults.Add("");
-            renderedResults.Add(title.PadCenter(((cellLength + cellPadding) * 3) + 5)); //*3 because of borders, +5 to line it up better.   //todo resource this
-            renderedResults.Add(topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight);
-
+            var renderedResults = new List<string>
+            {
+                "",
+                title.PadCenter(((cellLength + cellPadding)*3) + 5), //*3 because of borders, +5 to line it up better.   //todo resource this
+                topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight
+            };
+  
             this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine);
 
             renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
@@ -449,7 +459,7 @@ namespace StarTrek_KG.Output
 
                 if (scanDataPoint.Coordinate != null)
                 {
-                    regionCoordinate = Constants.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." +
+                    regionCoordinate = DEFAULTS.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." +
                                        scanDataPoint.Coordinate.Y + "";
 
                     currentRegionName += scanDataPoint.RegionName;
@@ -664,7 +674,12 @@ namespace StarTrek_KG.Output
                         this.SetPrompt(promptLevel - 1);
                     }
 
+                    //todo: if level 1 then show this.
                     retVal.AddRange(this.ShieldMenu(playerShip));
+
+                    //todo: if level 0 then show Command Menu
+                    //todo: errors out in this case, tries to look up menu in shield subsystem and it shouldn't.
+                    //Why is it even in there in the first place??
 
                     return retVal;
             }
@@ -728,7 +743,7 @@ namespace StarTrek_KG.Output
                 "dmg = Damage Control"
             };
 
-            if (Constants.DEBUG_MODE)
+            if (DEFAULTS.DEBUG_MODE)
             {
                 SHIP_PANEL.Add("");
                 SHIP_PANEL.Add("─────────────────────────────");
@@ -931,7 +946,7 @@ namespace StarTrek_KG.Output
             }
             catch
             {
-                
+                //todo: fix error
             }
 
             Shields.For(playerShip).MaxTransfer = playerShip.Energy; //todo: this does nothing!
@@ -956,6 +971,8 @@ namespace StarTrek_KG.Output
             if (currentShieldEnergy > 0)
             {
                 //todo:add header from config file.
+
+                // ReSharper disable once UseStringInterpolation //todo: resource this
                 Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", $"< CURRENTLY AT: {currentShieldEnergy}>"));
 
                 foreach (MenuItemDef menuItem in menuItemDefs)
@@ -966,6 +983,7 @@ namespace StarTrek_KG.Output
             else
             {
                 //todo: resource out header
+                // ReSharper disable once UseStringInterpolation
                 Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", "DOWN"));
 
                 MenuItemDef itemToAdd = menuItemDefs.First(m => m.name == "add"); //todo: resource this
@@ -979,7 +997,7 @@ namespace StarTrek_KG.Output
 
         private static void AddShipPanelOption(IEnumerable<MenuItemDef> menuItemDefs, ICollection<string> panel)
         {
-            MenuItemDef shipOption = menuItemDefs.First(m => m.name == "ship"); //todo: resource this
+            MenuItemDef shipOption = menuItemDefs.First(m => m.name == OBJECT_TYPE.SHIP.ToLower()); //todo: resource this
             panel.Add($"{shipOption.name} {shipOption.divider} {shipOption.description}");
         }
 
@@ -1064,6 +1082,7 @@ namespace StarTrek_KG.Output
                 value = "0";
             }
 
+            // ReSharper disable once UnusedVariable
             foreach (string queueItem in this.Output.Queue.ToList())
             {
                 queueToWriteTo.Enqueue(this.Output.Queue.Dequeue());
@@ -1152,7 +1171,7 @@ namespace StarTrek_KG.Output
 
         public void DebugLine(string stringToOutput)
         {
-            if (Constants.DEBUG_MODE)
+            if (DEFAULTS.DEBUG_MODE)
             {
                 this.Output.WriteLine(stringToOutput);
             }

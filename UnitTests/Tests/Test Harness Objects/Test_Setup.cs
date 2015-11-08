@@ -244,18 +244,18 @@ namespace UnitTests.ShipTests
 
         private void Startup()
         {
-            Constants.SECTOR_MIN = 0;
-            Constants.SECTOR_MAX = 0;
+            DEFAULTS.SECTOR_MIN = 0;
+            DEFAULTS.SECTOR_MAX = 0;
 
-            Constants.Region_MIN = 0;
-            Constants.Region_MAX = 0;
+            DEFAULTS.Region_MIN = 0;
+            DEFAULTS.Region_MAX = 0;
 
             this.Game = new Game((new StarTrekKGSettings()), false);
             this.Config = Game.Config;
 
             TestRunner.GetTestConstants();
 
-            Assert.AreEqual(8, Constants.Region_MAX);
+            Assert.AreEqual(8, DEFAULTS.Region_MAX);
         }
 
         public string GetConfigText(string textToGet)

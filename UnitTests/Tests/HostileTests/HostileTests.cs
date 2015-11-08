@@ -398,7 +398,7 @@ namespace UnitTests.Tests.HostileTests
             Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[36].Item);
             Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[37].Item);
 
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count());
+            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
 
             Assert.AreEqual(2, activeRegion.GetHostiles()[0].Sector.X);
             Assert.AreEqual(6, activeRegion.GetHostiles()[0].Sector.Y);
@@ -447,8 +447,8 @@ namespace UnitTests.Tests.HostileTests
             Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[36].Item);
             Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[39].Item);
 
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count());
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count());
+            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
+            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
 
             Assert.AreEqual(2, activeRegion.GetHostiles()[0].Sector.X);
             Assert.AreEqual(7, activeRegion.GetHostiles()[0].Sector.Y);
@@ -537,8 +537,8 @@ namespace UnitTests.Tests.HostileTests
             //todo: why active? are hostiles in the same sector?
             //var activeRegion = activeRegion;
 
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count());
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count());
+            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
+            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
         }
 
         /// <summary>

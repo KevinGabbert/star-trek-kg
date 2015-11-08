@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
@@ -18,6 +20,11 @@ namespace StarTrek_KG.Subsystem
         private Warp Warp { get;}
         private Impulse Impulse { get; }
         public Movement Movement { get; }
+
+        #endregion
+
+        #region Commands
+
 
         #endregion
 
@@ -46,15 +53,15 @@ namespace StarTrek_KG.Subsystem
 
             switch (command)
             {
-                case "wrp":
+                case Commands.Navigation.Warp:
                     this.WarpControls();
                     break;
 
-                case "imp":
+                case Commands.Navigation.Impulse:
                     this.SublightControls();
                     break;
 
-                case "nto":
+                case Commands.Navigation.NavigateToObject:
                     this.NavigateToObject();
                     break;
             }
@@ -252,16 +259,16 @@ namespace StarTrek_KG.Subsystem
                 (thisShip.Region.X), (thisShip.Region.Y)));
 
             if (!this.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX, this.Game.Interact.Output.Queue, 1)
-                || int.Parse(RegionX) < (Constants.Region_MIN + 1)
-                || int.Parse(RegionX) > Constants.Region_MAX)
+                || int.Parse(RegionX) < (DEFAULTS.Region_MIN + 1)
+                || int.Parse(RegionX) > DEFAULTS.Region_MAX)
             {
                 this.Game.Interact.Line(this.Game.Config.GetSetting<string>("InvalidXCoordinate"));
                 return;
             }
 
             if (!this.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY, this.Game.Interact.Output.Queue, 2)
-                || int.Parse(RegionY) < (Constants.Region_MIN + 1)
-                || int.Parse(RegionY) > Constants.Region_MAX)
+                || int.Parse(RegionY) < (DEFAULTS.Region_MIN + 1)
+                || int.Parse(RegionY) > DEFAULTS.Region_MAX)
             {
                 this.Game.Interact.Line(this.Game.Config.GetSetting<string>("InvalidYCoordinate"));
                 return;
@@ -300,10 +307,8 @@ namespace StarTrek_KG.Subsystem
                     this.Game.Interact.Line("-----------------");
                     this.Game.Interact.Line($"Starbase in sector [{(starbase.X + 1)},{(starbase.Y + 1)}].");
 
-                    this.Game.Interact.Line(
-                        $"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
-                    this.Game.Interact.Line(
-                        $"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/Constants.SECTOR_MAX:##.##}");
+                    this.Game.Interact.Line($"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
+                    this.Game.Interact.Line($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.SECTOR_MAX:##.##}");
                 }
             }
             else

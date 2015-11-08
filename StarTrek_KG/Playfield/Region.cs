@@ -2,10 +2,12 @@
 using System.Linq;
 using System.Collections.Generic;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Constants;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
@@ -148,9 +150,9 @@ namespace StarTrek_KG.Playfield
             Region.Sectors = new Sectors(); //todo: pull from app.config. initialize with limit
 
             //This loop creates empty sectors and populates as needed.
-            for (var x = 0; x < Constants.SECTOR_MAX; x++) //todo: pull from app.config. initialize with limit
+            for (var x = 0; x < DEFAULTS.SECTOR_MAX; x++) //todo: pull from app.config. initialize with limit
             {
-                for (var y = 0; y < Constants.SECTOR_MAX; y++)
+                for (var y = 0; y < DEFAULTS.SECTOR_MAX; y++)
                 {
                     this.PopulateMatchingItem(Region, itemsToPopulate, x, y, baddieNames, stockBaddieFaction,
                         makeNebulae);
@@ -160,7 +162,7 @@ namespace StarTrek_KG.Playfield
             if (addStars)
             {
                 //Randomly throw stars in
-                this.AddStars(Region, (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
+                this.AddStars(Region, (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX));
             }
 
             if (makeNebulae)
@@ -170,7 +172,7 @@ namespace StarTrek_KG.Playfield
 
             ////This is possible only in the test harness, as app code currently does not call this function with a null
             ////This makes the code more error tolerant.
-            //if (itemsToPopulate == null)
+            //if (itemsToPopulate.IsNullOrEmpty())
             //{
             //    itemsToPopulate = new List<Sector>();
             //}
@@ -212,8 +214,8 @@ namespace StarTrek_KG.Playfield
 
             while (totalStarsInRegion > 0)
             {
-                var x = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
-                var y = (Utility.Utility.Random).Next(Constants.SECTOR_MAX);
+                var x = (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX);
+                var y = (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX);
 
                 //todo: just pass in coordinate and get its item
                 var sector = Region.Sectors.Single(s => s.X == x && s.Y == y);
@@ -452,33 +454,22 @@ namespace StarTrek_KG.Playfield
         {
             var badGuys = new List<IShip>();
 
-            try
-            {
                 if (this.Sectors != null)
                 {
-                    foreach (var sector in this.Sectors)
-                    {
-                        var @object = sector.Object;
+                    IEnumerable<IShip> hostiles = (from sector in this.Sectors
+                                                    select sector.Object into verifiedObject
 
-                        if (@object != null)
-                        {
-                            var objectType = @object.Type.Name;
-                            if (objectType == "Ship")
-                            {
-                                var possibleShipToGet = (IShip) @object;
+                                                    where verifiedObject != null
+                                                    let objectType = verifiedObject.Type.Name
+                                                    where objectType == OBJECT_TYPE.SHIP
 
-                                if (!possibleShipToGet.Destroyed)
-                                {
-                                    //todo: what if we find a ship that has no energy?
+                                                    select (IShip) verifiedObject into possibleShipToGet
 
-                                    if (possibleShipToGet.Allegiance == Allegiance.BadGuy)
-                                    {
-                                        badGuys.Add(possibleShipToGet);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                                                    where !possibleShipToGet.Destroyed
+                                                    where possibleShipToGet.Allegiance == Allegiance.BadGuy
+
+                                                    select possibleShipToGet);
+                    badGuys.AddRange(hostiles);
                 }
                 else
                 {
@@ -488,11 +479,6 @@ namespace StarTrek_KG.Playfield
                                                 this.Name);
                     }
                 }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
 
             return badGuys;
         }
@@ -505,21 +491,19 @@ namespace StarTrek_KG.Playfield
         {
             if (this.Sectors != null)
             {
-                foreach (var sector in this.Sectors)
-                {
-                    var @object = sector.Object;
+                IEnumerable<Sector> sectorsWithHostiles = (from sector in this.Sectors
 
-                    if (@object != null)
-                    {
-                        if (@object.Type.Name == "Ship")
-                        {
-                            var possibleShipToDelete = (IShip) @object;
-                            if (possibleShipToDelete.Allegiance == Allegiance.BadGuy)
-                            {
-                                sector.Object = null;
-                            }
-                        }
-                    }
+                                                            let sectorObject = sector.Object
+                                                            where sectorObject != null
+                                                            where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+
+                                                            let possibleShipToDelete = (IShip) sectorObject
+                                                            where possibleShipToDelete.Allegiance == Allegiance.BadGuy
+                                                            select sector);
+
+                foreach (Sector sector in sectorsWithHostiles)
+                {
+                    sector.Object = null;
                 }
             }
             else
@@ -609,10 +593,10 @@ namespace StarTrek_KG.Playfield
         public static bool OutOfBounds(ISector coordinate)
         {
             var inTheNegative = coordinate.X < 0 || coordinate.Y < 0;
-            var maxxed = coordinate.X == Constants.SECTOR_MAX || coordinate.Y == Constants.SECTOR_MAX;
+            var maxxed = coordinate.X == DEFAULTS.SECTOR_MAX || coordinate.Y == DEFAULTS.SECTOR_MAX;
 
-            var yInRegion = coordinate.Y >= 0 && coordinate.Y < Constants.SECTOR_MAX;
-            var xInRegion = coordinate.X >= 0 && coordinate.X < Constants.SECTOR_MAX;
+            var yInRegion = coordinate.Y >= 0 && coordinate.Y < DEFAULTS.SECTOR_MAX;
+            var xInRegion = coordinate.X >= 0 && coordinate.X < DEFAULTS.SECTOR_MAX;
 
             return (inTheNegative || maxxed) && !(yInRegion && xInRegion);
         }

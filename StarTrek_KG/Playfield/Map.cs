@@ -103,7 +103,7 @@ namespace StarTrek_KG.Playfield
             }
 
             //Modify this to output everything
-            if (Constants.DEBUG_MODE)
+            if (DEFAULTS.DEBUG_MODE)
             {
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
@@ -120,13 +120,15 @@ namespace StarTrek_KG.Playfield
             //if we have > 0 friendlies with XYs, then we will place them.
             //if we have at least 1 friendly with no XY, then config will be used to generate that type of ship.
 
-            if (sectorDefs.PlayerShips().Any())
+            List<SectorDef> playerShips = sectorDefs.PlayerShips().ToList();
+
+            if (playerShips.Any())
             {
                 try
                 {
-                    this.SetUpPlayerShip(sectorDefs.PlayerShips().Single());
+                    this.SetUpPlayerShip(playerShips.Single()); //todo: this will eventually change
 
-                    var sectorToPlaceShip = Sector.Get(this.Regions.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
+                    Sector sectorToPlaceShip = Sector.Get(this.Regions.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
 
                     //This places our newly created ship into our newly created List of Regions.
                     sectorToPlaceShip.Item = SectorItem.PlayerShip;
@@ -163,14 +165,14 @@ namespace StarTrek_KG.Playfield
 
         public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebula)
         {
-            if (Constants.Region_MAX == 0)
+            if (DEFAULTS.Region_MAX == 0)
             {
                 throw new GameException("No Regions to set up.  Region_MAX set to Zero");
             }
 
-            for (var RegionX = 0; RegionX < Constants.Region_MAX; RegionX++) //todo: app.config
+            for (var RegionX = 0; RegionX < DEFAULTS.Region_MAX; RegionX++) //todo: app.config
             {
-                for (var RegionY = 0; RegionY < Constants.Region_MAX; RegionY++)
+                for (var RegionY = 0; RegionY < DEFAULTS.Region_MAX; RegionY++)
                 {
                     int index;
                     var newRegion = new Region(this);
@@ -189,7 +191,7 @@ namespace StarTrek_KG.Playfield
 
                     this.Regions.Add(newRegion);
 
-                    if (Constants.DEBUG_MODE)
+                    if (DEFAULTS.DEBUG_MODE)
                     {
                         this.Write.SingleLine(this.Config.GetSetting<string>("DebugAddingNewRegion"));
 
@@ -234,14 +236,14 @@ namespace StarTrek_KG.Playfield
             this.Write.DebugLine(this.Config.GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
-            if (this.Regions == null)
+            if (this.Regions.IsNullOrEmpty())
             {
                 throw new GameException(this.Config.GetSetting<string>("RegionsNeedToBeSetup1"));
             }
 
             //todo: if playershipDef.GetFromConfig then grab info from config.  else set up with default random numbers.
 
-            var playerShipName = this.Config.GetSetting<string>("PlayerShip");
+            string playerShipName = this.Config.GetSetting<string>("PlayerShip");
 
             var startingSector = new Sector(new LocationDef(playerShipDef.RegionDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
@@ -317,15 +319,14 @@ namespace StarTrek_KG.Playfield
                 playerShipDef.RegionDef = Coordinate.GetRandom();
             }
 
-            if(this.Regions.Count == 0)
+            if(!this.Regions.Any())
             {
                 throw new ArgumentException(this.Config.GetSetting<string>("RegionsNotSetUp"));
             }
 
-            var m = this.Regions.Single(q => q.X == playerShipDef.RegionDef.X && q.Y == playerShipDef.RegionDef.Y);
-            this.Playership.Coordinate = new Coordinate(m.X, m.Y);
+            Region regionWithPlayershipDef = this.Regions.Single(q => q.X == playerShipDef.RegionDef.X && q.Y == playerShipDef.RegionDef.Y);
+            this.Playership.Coordinate = new Coordinate(regionWithPlayershipDef.X, regionWithPlayershipDef.Y);
 
-            //this.Playership.GetRegion().Active = true;
             this.Playership.GetRegion().SetActive();
         }
 
@@ -372,7 +373,7 @@ namespace StarTrek_KG.Playfield
             {
                 for (int x = j - 1; x <= j + 1; x++)
                 {
-                    var gotSector = Sectors.GetNoError(x, y, sectors);
+                    Sector gotSector = Sectors.GetNoError(x, y, sectors);
 
                     if (gotSector?.Item == SectorItem.Starbase)
                     {
@@ -586,8 +587,8 @@ namespace StarTrek_KG.Playfield
 
         private static Coordinate GetRandomCoordinate()
         {
-            var x = Utility.Utility.Random.Next(Constants.SECTOR_MIN);
-            var y = Utility.Utility.Random.Next(Constants.SECTOR_MAX);
+            var x = Utility.Utility.Random.Next(DEFAULTS.SECTOR_MIN);
+            var y = Utility.Utility.Random.Next(DEFAULTS.SECTOR_MAX);
 
             var randomCoordinate = new Coordinate(x, y);
             return randomCoordinate;
@@ -612,10 +613,10 @@ namespace StarTrek_KG.Playfield
         public bool OutOfBounds(Region region)
         {
             var inTheNegative = region.X < 0 || region.Y < 0;
-            var maxxed = region.X == Constants.Region_MAX || region.Y == Constants.Region_MAX;
+            var maxxed = region.X == DEFAULTS.Region_MAX || region.Y == DEFAULTS.Region_MAX;
 
-            var yOnMap = region.Y >= 0 && region.Y < Constants.Region_MAX;
-            var xOnMap = region.X >= 0 && region.X < Constants.Region_MAX;
+            var yOnMap = region.Y >= 0 && region.Y < DEFAULTS.Region_MAX;
+            var xOnMap = region.X >= 0 && region.X < DEFAULTS.Region_MAX;
 
             return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }

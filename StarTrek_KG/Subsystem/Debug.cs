@@ -3,6 +3,7 @@ using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
 
@@ -135,13 +136,13 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "dbgm":
-                    Constants.DEBUG_MODE = !Constants.DEBUG_MODE;
-                    this.Game.Interact.Line("Debug Mode set to: " + Constants.DEBUG_MODE + ".  This will clear on app restart.");
+                    DEFAULTS.DEBUG_MODE = !DEFAULTS.DEBUG_MODE;
+                    this.Game.Interact.Line("Debug Mode set to: " + DEFAULTS.DEBUG_MODE + ".  This will clear on app restart.");
                     break;
 
                 case "dlrs":
-                    LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Regions(Constants.DEBUG_MODE);
-                    this.Game.Interact.Line("All Regions set to: " + Constants.DEBUG_MODE + ".  (set debugmode to true to make this scan all.)");
+                    LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Regions(DEFAULTS.DEBUG_MODE);
+                    this.Game.Interact.Line( $"All Regions set to: {DEFAULTS.DEBUG_MODE}.  (set debugmode to true to make this scan all.)");
                     break;
 
                 default:

@@ -1,5 +1,6 @@
 ﻿using StarTrek_KG.Config;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Settings;
 
 namespace StarTrek_KG.Playfield
 {
@@ -46,8 +47,8 @@ namespace StarTrek_KG.Playfield
 
         public static Coordinate GetRandom()
         {
-            return new Coordinate((Utility.Utility.Random).Next(Constants.SECTOR_MAX),
-                                  (Utility.Utility.Random).Next(Constants.SECTOR_MAX));
+            return new Coordinate((Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX),
+                                  (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX));
         }
 
         private void CheckForOutOfBounds(int value)

@@ -4,12 +4,13 @@ using System.Drawing;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
+using Region = StarTrek_KG.Playfield.Region;
 
 namespace StarTrek_KG.Actors
 {
@@ -305,16 +306,9 @@ namespace StarTrek_KG.Actors
         public Playfield.Region GetRegion()
         {
             //todo: get rid of this.Map ?
-            var retVal = this.Map.Regions.Where(s => s.X == this.Coordinate.X && s.Y == this.Coordinate.Y).ToList();
-
-            string regionNotFound = this.Map.Write.GetFormattedConfigText("RegionNotFound", this.Coordinate.X, this.Coordinate.Y);
+            Region retVal = this.Map.Regions.SingleOrDefault(s => s.X == this.Coordinate.X && s.Y == this.Coordinate.Y);
 
             if (retVal == null)
-            {
-                throw new GameConfigException(regionNotFound);
-            }
-
-            if (!retVal.Any())
             {
                 if (this.Coordinate == null)
                 {
@@ -322,11 +316,12 @@ namespace StarTrek_KG.Actors
                 }
                 else
                 {
+                    string regionNotFound = this.Map.Write.GetFormattedConfigText("RegionNotFound", this.Coordinate.X, this.Coordinate.Y);
                     throw new GameConfigException(regionNotFound);
                 }
             }
 
-            return retVal.Single();
+            return retVal;
         }
 
         //todo: refactor these 2 into prop?
@@ -368,7 +363,6 @@ namespace StarTrek_KG.Actors
 
             return condition;
         }
-
 
         /// <summary>
         /// Used to get an idea of the area immediately surrounding the ship

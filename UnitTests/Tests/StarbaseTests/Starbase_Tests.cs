@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using StarTrek_KG;
+using StarTrek_KG.Settings;
 
 namespace UnitTests.ShipTests.StarbaseTests
 {
@@ -14,11 +14,11 @@ namespace UnitTests.ShipTests.StarbaseTests
         [TearDown]
         public void TearDown()
         {
-            Constants.SECTOR_MIN = 0;
-            Constants.SECTOR_MAX = 0;
+            DEFAULTS.SECTOR_MIN = 0;
+            DEFAULTS.SECTOR_MAX = 0;
 
-            Constants.Region_MIN = 0;
-            Constants.Region_MAX = 0;
+            DEFAULTS.Region_MIN = 0;
+            DEFAULTS.Region_MAX = 0;
         }
 
 

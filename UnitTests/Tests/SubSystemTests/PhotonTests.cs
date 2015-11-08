@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using StarTrek_KG;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests.SubSystemTests
@@ -17,7 +17,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [SetUp]
         public void Setup()
         {
-            Constants.DEBUG_MODE = false;
+            DEFAULTS.DEBUG_MODE = false;
             _photonsToTest = new Torpedoes(_setup.TestMap.Playership, this.Game);
         }
 
@@ -50,13 +50,13 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void VerifyRunsOutOfTorpedoes()
         {
-            Constants.DEBUG_MODE = false;
+            DEFAULTS.DEBUG_MODE = false;
             _setup.SetupMapWith1Friendly();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
             _testRegion = _setup.TestMap.Playership.GetRegion();
 
-            Constants.DEBUG_MODE = true;
+            DEFAULTS.DEBUG_MODE = true;
 
             for (int i = 0; i < 10; i++)
             {
@@ -91,7 +91,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(0, hostile.Sector.X);
             Assert.AreEqual(1, hostile.Sector.Y);
 
-            Constants.DEBUG_MODE = true;
+            DEFAULTS.DEBUG_MODE = true;
 
             _photonsToTest.Shoot(7);
 
@@ -116,7 +116,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(0, hostile.Sector.X);
             Assert.AreEqual(1, hostile.Sector.Y);
 
-            Constants.DEBUG_MODE = true;
+            DEFAULTS.DEBUG_MODE = true;
 
             _photonsToTest.Shoot(7);
             _photonsToTest.Shoot(1);
@@ -162,7 +162,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(SectorItem.HostileShip, hostile.Sector.Item);
             Assert.IsNotNull(hostile.Sector.Object);
 
-            Constants.DEBUG_MODE = debugMode;
+            DEFAULTS.DEBUG_MODE = debugMode;
 
 
             Assert.IsTrue(_setup.TestMap == _photonsToTest.Game.Map);
@@ -231,7 +231,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
         public void ShootHostileAt(Coordinate friendlySector, Coordinate hostileSector, int directionToShoot, bool debugMode)
         {
-            Constants.DEBUG_MODE = false;
+            DEFAULTS.DEBUG_MODE = false;
 
             _setup.SetupMapWith1HostileAtSector(friendlySector, hostileSector);
 
@@ -253,7 +253,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(SectorItem.HostileShip, hostile.Sector.Item);
             Assert.IsNotNull(hostile.Sector.Object);
 
-            Constants.DEBUG_MODE = debugMode;
+            DEFAULTS.DEBUG_MODE = debugMode;
             _photonsToTest.Shoot(directionToShoot);
 
             var noMoreHostile = _testRegion.GetHostiles();

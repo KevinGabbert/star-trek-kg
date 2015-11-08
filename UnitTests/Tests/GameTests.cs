@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Playfield;
 
@@ -10,6 +12,29 @@ namespace UnitTests.ShipTests
         //Initialize
         //Run
         //PlayOnce
+
+        [Test]
+        public void test()
+        {
+            List<decimal?> xxx = new List<decimal?>()
+            {
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                0
+            };
+
+            var y = xxx.AsQueryable().SafeEntitySum(e => e.Value);
+
+
+        }
+
 
         [Test]
         public void MoveGameTimeForward()

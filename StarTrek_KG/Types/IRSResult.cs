@@ -1,6 +1,7 @@
 ﻿using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 
 namespace StarTrek_KG.Types
 {
@@ -29,7 +30,7 @@ namespace StarTrek_KG.Types
                 case SectorItem.HostileShip:
                 case SectorItem.Star:
 
-                    returnVal = this.Object != null ? this.Object.Name : Constants.SECTOR_INDICATOR + " Error"; //todo: resource this out
+                    returnVal = this.Object != null ? this.Object.Name : DEFAULTS.SECTOR_INDICATOR + " Error"; //todo: resource this out
 
                     break;
 

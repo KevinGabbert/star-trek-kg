@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Constants;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.TypeSafeEnums;
@@ -36,20 +38,16 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public bool IsGalacticBarrier(int regionX, int regionY)
         {
-            bool isGalacticBarrier = false;
-
            Region gotRegion = (this.Map?.Regions)?.FirstOrDefault(region => region.X == regionX && region.Y == regionY);
 
-            isGalacticBarrier = gotRegion == null;
-
-            return isGalacticBarrier;
+            return gotRegion == null;
         }
 
         public static Region Get(IMap map, Coordinate region)
         {
-            List<Region> i = map.Regions.Where(q => q.X == region.X && q.Y == region.Y).ToList();
+            IEnumerable<Region> i = map.Regions.Where(q => q.X == region.X && q.Y == region.Y);
 
-            return i.Any() ? i.Single() : new Region(map, region.X, region.Y, RegionType.GalacticBarrier);
+            return i.DefaultIfEmpty(new Region(map, region.X, region.Y, RegionType.GalacticBarrier)).Single();
         }
 
         public Region Get(string name)
@@ -112,13 +110,13 @@ namespace StarTrek_KG.Playfield
             return activeRegions.Single();
         }
 
-        public bool NoHostiles(List<IShip> hostiles, out List<string> outputLines)
+        public bool NoHostiles(IEnumerable<IShip> hostiles, out List<string> outputLines)
         {
             outputLines = new List<string>();
 
-            if (hostiles.Count == 0)
+            if (!hostiles.Any())
             {
-                outputLines = (new Interaction(this.Map.Config)).Line("There are no Hostile ships in this Region.");
+                outputLines = (new Interaction(this.Map.Config)).Line("There are no Hostile ships in this Region."); //todo: resource this
                 return true;
             }
             return false;
@@ -144,7 +142,7 @@ namespace StarTrek_KG.Playfield
 
         public void Remove(IEnumerable<IShip> shipsToRemove)
         {
-            foreach (var ship in shipsToRemove)
+            foreach (IShip ship in shipsToRemove)
             {
                 this.Remove(ship);
             }
@@ -158,58 +156,26 @@ namespace StarTrek_KG.Playfield
         {
             Sector sectorToDeleteShip = null;
 
-            //There should only be 1 ship with this name
-
             foreach (var Region in this)
             {
-                if (Region.Sectors != null)
-                {
-                    foreach (var sector in Region.Sectors)
-                    {
-                        var @object = sector.Object;
+                sectorToDeleteShip = (from sector in Region?.Sectors
 
-                        if (@object != null)
-                        {
-                            if (@object.Type.Name == "Ship")
-                            {
-                                var possibleShipToDelete = (IShip) @object;
-                                if (possibleShipToDelete.Name == name)
-                                {
-                                    sectorToDeleteShip = Regions.GetFoundShip(name, sector, sectorToDeleteShip);
-                                    goto DeleteNow;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    throw new GameException("No Sectors Set up in Region: " + Region.Name + "...");
-                }
+                                        let sectorObject = sector.Object
+                                        where sectorObject != null
+                                        where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+
+                                        let possibleShipToDelete = (IShip) sectorObject
+                                        where possibleShipToDelete.Name == name
+                                        select sector).SingleOrDefault();  //There should only be 1 ship with this name            
             }
 
-            DeleteNow:
             if (sectorToDeleteShip == null)
             {
-                throw new GameException("Unexpected State. " + name + " not found.");
+                throw new GameException($"Unexpected State. {name} not found.");
             }
 
             sectorToDeleteShip.Item = SectorItem.Empty;
             sectorToDeleteShip.Object = null;
-        }
-
-        private static Sector GetFoundShip(string name, Sector sector, Sector sectorToDeleteShip)
-        {
-            if (sectorToDeleteShip == null)
-            {
-                sectorToDeleteShip = sector;
-            }
-            else
-            {
-                throw new GameException("Unexpected State. > instance of " + name + " found.");
-            }
-
-            return sectorToDeleteShip;
         }
 
         public void Remove(IShip shipToRemove)
@@ -233,7 +199,7 @@ namespace StarTrek_KG.Playfield
             if (shipToRemove.Faction == FactionName.Federation)
             {
                 shipToRemoveName = shipToRemove.Name;
-                this.Map.AddACoupleHostileFederationShipsToExistingMap();
+                this.Map.AddACoupleHostileFederationShipsToExistingMap(); //todo: this needs to be configurable
             }
 
             this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemoveName, this.Map.Config.GetText("shipDestroyed")));
@@ -241,22 +207,17 @@ namespace StarTrek_KG.Playfield
 
         public bool NotFound(Coordinate coordinate)
         {
-            var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
-            return notFound;
+            return !this.Any(s => s.X == coordinate.X && s.Y == coordinate.Y);
         }
 
         public void ClearActive()
         {
-            var RegionsToClear = this.Where(q => q.Active).ToList();
-
-            foreach (var Region in RegionsToClear)
+            if (!this.IsNullOrEmpty())
             {
-                Region.Active = false;
-            }
-
-            if(RegionsToClear.Count() > 1)
-            {
-                //log a config error
+                foreach (var region in this)
+                {
+                    region.Active = false;
+                }
             }
         }
 

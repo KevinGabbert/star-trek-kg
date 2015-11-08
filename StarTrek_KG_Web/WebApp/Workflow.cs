@@ -118,7 +118,8 @@ namespace StarTrek_KG_Web.WebApp
 
         private List<string> RunWeb(List<string> responseLines, out Game game)
         {
-            var settingsForWholeGame = (new StarTrekKGSettings());
+            StarTrekKGSettings settingsForWholeGame = (new StarTrekKGSettings());
+  
             game = new Game(settingsForWholeGame); //todo: GET should set the app.config setting to true?
             game.Interact.Subscriber.Enabled = true;
 

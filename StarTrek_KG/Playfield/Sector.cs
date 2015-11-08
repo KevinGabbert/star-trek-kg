@@ -5,6 +5,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Types;
 
 namespace StarTrek_KG.Playfield
@@ -56,12 +57,12 @@ namespace StarTrek_KG.Playfield
 
             if (!gotSectors.Any())
             {
-                throw new GameConfigException("Sector not found:  X: " + sX + " Y: " + sY + " Total Sectors: " + sectors.Count());
+                throw new GameConfigException("Sector not found:  X: " + sX + " Y: " + sY + " Total Sectors: " + sectors.Count);
             }
 
-            if (gotSectors.Count() > 1)
+            if (gotSectors.Count > 1)
             {
-                throw new GameConfigException("Multiple sectors found. X: " + sX + " Y: " + sY + " Total Sectors: " + sectors.Count());
+                throw new GameConfigException("Multiple sectors found. X: " + sX + " Y: " + sY + " Total Sectors: " + sectors.Count);
             }
 
             //There can only be one active sector
@@ -70,17 +71,17 @@ namespace StarTrek_KG.Playfield
 
         public static Sector GetFrom(Ship shipToGetFrom)
         {
-            var shipRegion = shipToGetFrom.GetRegion();
-            var gotSectors = shipRegion.Sectors.Where(s => s.X == shipToGetFrom.Sector.X && s.Y == shipToGetFrom.Sector.Y).ToList();
+            Region shipRegion = shipToGetFrom.GetRegion();
+            List<Sector> gotSectors = shipRegion.Sectors.Where(s => s.X == shipToGetFrom.Sector.X && s.Y == shipToGetFrom.Sector.Y).ToList();
 
             if (!gotSectors.Any())
             {
-                throw new GameConfigException("Sector not found:  X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipRegion.Sectors.Count());
+                throw new GameConfigException("Sector not found:  X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipRegion.Sectors.Count);
             }
 
-            if (gotSectors.Count() > 1)
+            if (gotSectors.Count > 1)
             {
-                throw new GameConfigException("Multiple sectors found. X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipRegion.Sectors.Count());
+                throw new GameConfigException("Multiple sectors found. X: " + shipToGetFrom.Sector.X + " Y: " + shipToGetFrom.Sector.Y + " Total Sectors: " + shipRegion.Sectors.Count);
             }
 
             //There can only be one active sector
@@ -106,7 +107,7 @@ namespace StarTrek_KG.Playfield
         {
             int retVal;
 
-            if (coordinateDimension >= Constants.SECTOR_MAX)
+            if (coordinateDimension >= DEFAULTS.SECTOR_MAX)
             {
                 retVal = 0;
             }
@@ -130,7 +131,7 @@ namespace StarTrek_KG.Playfield
         {
             int retVal;
 
-            if (coordinateDimension < Constants.SECTOR_MIN)
+            if (coordinateDimension < DEFAULTS.SECTOR_MIN)
             {
                 retVal = 7;
             }

@@ -71,7 +71,10 @@
     <Compile Include="Config\Elements\Name.cs" />
     <Compile Include="Config\Elements\NameHeader.cs" />
     <Compile Include="Config\Elements\SeverityValueTranslation.cs" />
+    <Compile Include="Constants\Commands\Commands.cs" />
+    <Compile Include="Constants\OBJECT_TYPE.cs" />
     <Compile Include="Experimental\Experimental.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Interfaces\IOutputMethod.cs" />
     <Compile Include="Interfaces\IQueue.cs" />
     <Compile Include="Output\Prompt.cs" />
@@ -142,7 +145,7 @@
     <Compile Include="Playfield\Vector.cs" />
     <Compile Include="Settings\SetupOptions.cs" />
     <Compile Include="Subsystem\Computer.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Settings\DEFAULTS.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Interfaces\IMap.cs" />
     <Compile Include="Interfaces\IShip.cs" />

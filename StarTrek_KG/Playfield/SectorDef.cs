@@ -2,6 +2,7 @@
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Settings;
 
 namespace StarTrek_KG.Playfield
 {
@@ -31,24 +32,24 @@ namespace StarTrek_KG.Playfield
 
             string sectorSetupError = (new StarTrekKGSettings()).GetText("SectorDefSetupError");
 
-            if (location.Sector.X < Constants.SECTOR_MIN)
+            if (location.Sector.X < DEFAULTS.SECTOR_MIN)
             {
-                throw new GameConfigException(sectorSetupError + " Sector x < " + Constants.SECTOR_MIN);
+                throw new GameConfigException(sectorSetupError + " Sector x < " + DEFAULTS.SECTOR_MIN);
             }
 
-            if (location.Sector.X > Constants.SECTOR_MAX)
+            if (location.Sector.X > DEFAULTS.SECTOR_MAX)
             {
-                throw new GameConfigException(sectorSetupError + " Sector x > " + Constants.SECTOR_MAX);
+                throw new GameConfigException(sectorSetupError + " Sector x > " + DEFAULTS.SECTOR_MAX);
             }
 
-            if (location.Sector.Y < Constants.SECTOR_MIN)
+            if (location.Sector.Y < DEFAULTS.SECTOR_MIN)
             {
-                throw new GameConfigException(sectorSetupError + "Sector y < " + Constants.SECTOR_MIN);
+                throw new GameConfigException(sectorSetupError + "Sector y < " + DEFAULTS.SECTOR_MIN);
             }
 
-            if (location.Sector.Y > Constants.SECTOR_MAX)
+            if (location.Sector.Y > DEFAULTS.SECTOR_MAX)
             {
-                throw new GameConfigException(sectorSetupError + "Sector y > " + Constants.SECTOR_MAX);
+                throw new GameConfigException(sectorSetupError + "Sector y > " + DEFAULTS.SECTOR_MAX);
             }
 
             this.Sector = new Sector(new LocationDef(location.Region, new Coordinate(location.Sector.X, location.Sector.Y)));

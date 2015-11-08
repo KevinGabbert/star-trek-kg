@@ -4,6 +4,7 @@ using System.Text;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -163,7 +164,7 @@ namespace StarTrek_KG.Output
 
         private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles, bool isNebula)
         {
-            for (var column = 0; column < Constants.SECTOR_MAX; column++)
+            for (var column = 0; column < DEFAULTS.SECTOR_MAX; column++)
             {
                 Sector sector = Sector.Get(sectors, row, column);
 
@@ -172,11 +173,11 @@ namespace StarTrek_KG.Output
                     case SectorItem.Empty:
 
                         //todo: might be good to put some false positives here  (jsut throw in some random faction letters)
-                        sb.Append(isNebula ? Utility.Utility.DamagedScannerUnit() : Constants.EMPTY);
+                        sb.Append(isNebula ? Utility.Utility.DamagedScannerUnit() : DEFAULTS.EMPTY);
                         break;
 
                     case SectorItem.PlayerShip:
-                        sb.Append(Constants.PLAYERSHIP);
+                        sb.Append(DEFAULTS.PLAYERSHIP);
                         break;
 
                     case SectorItem.HostileShip:
@@ -203,7 +204,7 @@ namespace StarTrek_KG.Output
                         bool canActuallySeeStar = (!isNebula) || (isNebula && (Utility.Utility.Random.Next(10) == 6)); //todo: resource this out
                         if (canActuallySeeStar)
                         {
-                            sb.Append(Constants.STAR);
+                            sb.Append(DEFAULTS.STAR);
                         }
                         else
                         {
@@ -219,15 +220,15 @@ namespace StarTrek_KG.Output
                         //todo:  this.AppendFactionDesignator(sb, totalHostiles, sector);
                         //this code will be used when starbase is an object
 
-                        sb.Append(Constants.STARBASE);
+                        sb.Append(DEFAULTS.STARBASE);
                         break;
 
                     case SectorItem.Debug:
-                        sb.Append(Constants.DEBUG_MARKER);
+                        sb.Append(DEFAULTS.DEBUG_MARKER);
                         break;
 
                     default:
-                        sb.Append(Constants.NULL_MARKER);
+                        sb.Append(DEFAULTS.NULL_MARKER);
                         break;
                 }
             }

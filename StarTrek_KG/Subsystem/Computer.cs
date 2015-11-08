@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -39,11 +41,11 @@ namespace StarTrek_KG.Subsystem
             //todo: thise commands should be pulled from web.config entries
             switch (command.ToLower())
             {
-                case "rec":
+                case Commands.Computer.GalacticRecord:
                     Computer.For(this.ShipConnectedTo).PrintGalacticRecord(this.Game.Map.Regions);
                     break;
 
-                case "sta":
+                case Commands.Computer.Status:
 
                     //todo: get a list of all baddie names in Region
 
@@ -53,29 +55,29 @@ namespace StarTrek_KG.Subsystem
                                               this.ShipConnectedTo.GetRegion());
                     break;
 
-                case "tor":
+                case Commands.Computer.TorpedoCalculator:
                     //todo: calculator code will be refactored to this object
                     if (this.Damaged()) return null;
                     Torpedoes.For(this.ShipConnectedTo).Calculator();
                     break;
 
-                case "toq":
+                case Commands.Computer.TargetObjectInRegion:
                     this.TargetObjectInRegion();
                     break;
 
-                case "bas":
+                case Commands.Computer.StarbaseCalculator:
                     //todo: calculator code will be refactored to this object
                     if (this.Damaged()) return null;
                     Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo); 
                     break;
 
-                case "nav":
+                case Commands.Computer.NavigationCalculator:
                     //todo: calculator code will be refactored to this object
                     if (this.Damaged()) return null;
                     Navigation.For(this.ShipConnectedTo).Calculator();
                     break;
 
-                case "tlm":
+                case Commands.Computer.TranslateLastMessage:
 
                     if (this.Game.LatestTaunts != null && this.Game.LatestTaunts.Count > 0)
                     {
@@ -205,14 +207,14 @@ namespace StarTrek_KG.Subsystem
 
             var myLocation = this.ShipConnectedTo.GetLocation();
 
-            for (var RegionLB = 0; RegionLB < Constants.Region_MAX; RegionLB++)
+            for (var RegionLB = 0; RegionLB < DEFAULTS.Region_MAX; RegionLB++)
             {
-                for (var RegionUB = 0; RegionUB < Constants.Region_MAX; RegionUB++)
+                for (var RegionUB = 0; RegionUB < DEFAULTS.Region_MAX; RegionUB++)
                 {
                     //todo: refactor this function
                     //todo: this needs to be refactored with LRS!
 
-                    this.Game.Interact.WithNoEndCR(Constants.SCAN_SECTOR_DIVIDER);
+                    this.Game.Interact.WithNoEndCR(DEFAULTS.SCAN_SECTOR_DIVIDER);
 
                     var Region = Playfield.Regions.Get(Regions, new Coordinate(RegionUB, RegionLB));
                     if (Region.Scanned)
@@ -225,7 +227,7 @@ namespace StarTrek_KG.Subsystem
                     }
                 }
 
-                this.Game.Interact.SingleLine(Constants.SCAN_SECTOR_DIVIDER);
+                this.Game.Interact.SingleLine(DEFAULTS.SCAN_SECTOR_DIVIDER);
                 this.Game.Interact.ResourceSingleLine("GalacticRecordLine");
             }
 
@@ -242,7 +244,7 @@ namespace StarTrek_KG.Subsystem
             {
                 starbaseCount = Region.GetStarbaseCount();
                 starCount = Region.GetStarCount();
-                hostileCount = Region.GetHostiles().Count();
+                hostileCount = Region.GetHostiles().Count;
             }
 
             bool renderingMyLocation = false;

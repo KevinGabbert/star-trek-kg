@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -23,7 +24,7 @@ namespace StarTrek_KG.Subsystem
         {
             this.Game.Interact.Output.Queue.Clear();
 
-            if (command == "fix")
+            if (command == Commands.DamageControl.FixSubsystem)
             {
                 string subsystemToFix;
                 this.Game.Interact.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);

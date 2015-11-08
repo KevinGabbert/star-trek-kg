@@ -1,7 +1,7 @@
 ﻿using Moq;
 using NUnit.Framework;
-using StarTrek_KG;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Settings;
 
 namespace UnitTests.ShipTests.SubSystemTests
 {
@@ -10,7 +10,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         [Test]
         public void TakeDamage()
         {
-            Constants.DEBUG_MODE = false;
+            DEFAULTS.DEBUG_MODE = false;
             var mockedShields = new Mock<ISubsystem>();
 
             int i = 0;

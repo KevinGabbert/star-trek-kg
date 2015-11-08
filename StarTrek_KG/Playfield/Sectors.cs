@@ -9,16 +9,16 @@ namespace StarTrek_KG.Playfield
     {
         public Sector Get(ICoordinate coordinate)
         {
-            var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
+            List<Sector> gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
 
             if (!gotSectors.Any())
             {
-                throw new GameConfigException("Sector not found:  X: " + coordinate.X + " Y: " + coordinate.Y + " Total Sectors: " + " Total Sectors: " + gotSectors.Count());
+                throw new GameConfigException("Sector not found:  X: " + coordinate.X + " Y: " + coordinate.Y + " Total Sectors: " + " Total Sectors: " + gotSectors.Count);
             }
 
-            if (gotSectors.Count() > 1)
+            if (gotSectors.Count > 1)
             {
-                throw new GameConfigException("Multiple sectors found. X: " + coordinate.X + " Y: " + coordinate.Y + " Total Sectors: " + gotSectors.Count());
+                throw new GameConfigException("Multiple sectors found. X: " + coordinate.X + " Y: " + coordinate.Y + " Total Sectors: " + gotSectors.Count);
             }
 
             //There can only be one active sector
@@ -27,24 +27,20 @@ namespace StarTrek_KG.Playfield
 
         public Sector GetNoError(ICoordinate coordinate)
         {
-            var gotSectors = this.Where(s => s.X == coordinate.X && s.Y == coordinate.Y).ToList();
-
-            //There can only be one active sector
-            return gotSectors.SingleOrDefault();
+            return this.SingleOrDefault(s => s.X == coordinate.X && s.Y == coordinate.Y); //There can only be one active sector
         }
 
         public static Sector GetNoError(int x, int y, IEnumerable<Sector> sectors)
         {
-            var sectorFound = sectors.Where(si => si.X == x && si.Y == y).ToList();
+            List<Sector> sectorFound = sectors.Where(si => si.X == x && si.Y == y).ToList();
 
-            return sectorFound.Count() == 1 ? sectorFound.Single() : null;
+            return sectorFound.Count == 1 ? sectorFound.SingleOrDefault() : null;
         }
 
         //todo: refactor this against Region.NotFound()
         private bool NotFound(ICoordinate coordinate)
         {
-            var notFound = this.Count(s => s.X == coordinate.X && s.Y == coordinate.Y) == 0;
-            return notFound;
+            return !this.Any(s => s.X == coordinate.X && s.Y == coordinate.Y);
         }
 
         public static void SetupNewSector(SectorDef sectorDef, Sectors newSectors, Regions Regions)
@@ -58,7 +54,7 @@ namespace StarTrek_KG.Playfield
             {
                 Sectors.SetupRandomRegionDef(sectorDef, Regions);
 
-                var locationDef = new LocationDef(sectorDef.RegionDef, new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
+                LocationDef locationDef = new LocationDef(sectorDef.RegionDef, new Coordinate(sectorDef.Sector.X, sectorDef.Sector.Y));
                 var newSector = new Sector(locationDef)
                 {
                     Item = sectorDef.Item

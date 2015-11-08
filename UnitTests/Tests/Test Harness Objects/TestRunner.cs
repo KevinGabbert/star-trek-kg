@@ -1,5 +1,5 @@
-﻿using StarTrek_KG;
-using StarTrek_KG.Config;
+﻿using StarTrek_KG.Config;
+using StarTrek_KG.Settings;
 
 namespace UnitTests
 {
@@ -7,11 +7,11 @@ namespace UnitTests
     {
         public static void GetTestConstants()
         {
-            Constants.SECTOR_MIN = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MIN");
-            Constants.SECTOR_MAX = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MAX");
+            DEFAULTS.SECTOR_MIN = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MIN");
+            DEFAULTS.SECTOR_MAX = (new StarTrekKGSettings()).GetSetting<int>("SECTOR_MAX");
 
-            Constants.Region_MIN = (new StarTrekKGSettings()).GetSetting<int>("Region_MIN");
-            Constants.Region_MAX = (new StarTrekKGSettings()).GetSetting<int>("RegionMax");
+            DEFAULTS.Region_MIN = (new StarTrekKGSettings()).GetSetting<int>("Region_MIN");
+            DEFAULTS.Region_MAX = (new StarTrekKGSettings()).GetSetting<int>("RegionMax");
         }
     }
 }

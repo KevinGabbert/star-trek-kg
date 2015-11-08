@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
-using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 
 namespace UnitTests.ShipTests.SubSystemTests
@@ -20,11 +20,11 @@ namespace UnitTests.ShipTests.SubSystemTests
         [TearDown]
         public void TearDown()
         {
-            Constants.SECTOR_MIN = 0;
-            Constants.SECTOR_MAX = 0;
+            DEFAULTS.SECTOR_MIN = 0;
+            DEFAULTS.SECTOR_MAX = 0;
 
-            Constants.Region_MIN = 0;
-            Constants.Region_MAX = 0;
+            DEFAULTS.Region_MIN = 0;
+            DEFAULTS.Region_MAX = 0;
         }
 
         [Test]
