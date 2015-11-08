@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Utility
@@ -12,7 +13,7 @@ namespace StarTrek_KG.Utility
         public static Stack<string> RandomGreekLetter; 
         public static Random Random = new Random(Guid.NewGuid().GetHashCode());
 
-        public static int TestableRandom(Game game)
+        public static int TestableRandom(IGame game)
         {
             var testingRandom = game.RandomFactorForTesting;
             int random = testingRandom == 0 ? Random.Next(1, int.MaxValue) : testingRandom;
@@ -20,7 +21,7 @@ namespace StarTrek_KG.Utility
             return random;
         }
 
-        public static int TestableRandom(Game game, int seed, int limit)
+        public static int TestableRandom(IGame game, int seed, int limit)
         {
             var testingRandom = game.RandomFactorForTesting;
             int random = testingRandom == 0 || testingRandom > limit ? Random.Next(1, seed) : testingRandom;

@@ -9,7 +9,7 @@ namespace StarTrek_KG.Interfaces
     /// </summary>
     public interface ISubsystem
     {
-        Game Game { get; set; }
+        IGame Game { get; set; }
         SubsystemType Type { get; set; }
         Ship ShipConnectedTo { get; set; }
 
@@ -17,7 +17,7 @@ namespace StarTrek_KG.Interfaces
         int MaxTransfer { get; set; }
         int Energy { get; set; }
 
-        ISubsystem For(Ship ship, Game game);
+        ISubsystem For(Ship ship, IGame game);
 
         /// <summary>
         /// A common feature of this method is this is where you recieve damage

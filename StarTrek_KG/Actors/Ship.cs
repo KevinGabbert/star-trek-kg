@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
-using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
@@ -20,7 +19,7 @@ namespace StarTrek_KG.Actors
         //todo: needs access to Regions and utility and game for subsystem FOR mnemonic to work for DI
         #region Properties
 
-            public Game Game { get; set; }
+            public IGame Game { get; set; }
 
             //todo: (maybe) create function GetRegion() to replace this (will query map.Regions for ship)
             public Coordinate Coordinate { get; set; }
@@ -44,7 +43,7 @@ namespace StarTrek_KG.Actors
             //todo: get current Region of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(FactionName faction, string name, ISector sector, IConfig map, Game game)
+        public Ship(FactionName faction, string name, ISector sector, IConfig map, IGame game)
         {
             this.Game = game;
 

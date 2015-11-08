@@ -28,8 +28,10 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockCoordinate = new Mock<ICoordinate>();
             _mockMap.Setup(m => m.Regions).Returns(new Regions(_mockMap.Object, _mockWrite.Object));
 
-            var Regions = new Regions(_mockMap.Object, _mockWrite.Object);
-            Regions.Add(new Region(new Coordinate()));
+            var Regions = new Regions(_mockMap.Object, _mockWrite.Object)
+            {
+                new Region(new Coordinate())
+            };
 
             _mockMap.Setup(m => m.Regions).Returns(Regions);
             _mockMap.Setup(m => m.Write).Returns(_mockWrite.Object);

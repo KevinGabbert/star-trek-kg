@@ -18,7 +18,7 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
+        public Torpedoes(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Torpedoes; //for lookup
         }

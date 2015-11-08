@@ -14,7 +14,7 @@ namespace StarTrek_KG.Interfaces
     {
         List<string> SHIP_PANEL { get; }
         IStarTrekKGSettings Config { get; set; }
-        IOutputMethod Output { get; }
+        IOutputMethod Output { get; set; }
         Subscriber Subscriber { get; }
 
         string CurrentPrompt { get; set; }
@@ -48,15 +48,15 @@ namespace StarTrek_KG.Interfaces
 
         void RenderNebula(bool renderingMyLocation);
         void RenderUnscannedRegion(bool renderingMyLocation);
-        List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game);
-        //IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsResults, Game game);
-        //IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, Game game);
-        IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> list, Game game);
+        List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, IGame game);
+        //IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsResults, IGame game);
+        //IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, IGame game);
+        IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> list, IGame game);
 
         void CreateCommandPanel();
         List<string> Panel(string panelHead, IEnumerable<string> strings);
         //string GetPanelHead(string shipName);
-        List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null);
+        List<string> ReadAndOutput(Ship playerShip, string mapText, IGame game, string userInput = null);
 
         void ResetPrompt();
         bool PromptUser(SubsystemType promptSubsystem, string promptDisplay, string promptMessage, out string value, Queue<string> queueToWriteTo, int subPromptLevel = 0);

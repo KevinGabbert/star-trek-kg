@@ -14,7 +14,7 @@ namespace StarTrek_KG.Subsystem
     //todo: fix hostiles and starbases and stars to test fully
     public class LongRangeScan : SubSystem_Base
     {
-        public LongRangeScan(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
+        public LongRangeScan(Ship shipConnectedTo, IGame game) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.LongRangeScan;
         }

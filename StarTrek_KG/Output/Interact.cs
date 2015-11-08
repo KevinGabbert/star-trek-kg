@@ -28,6 +28,7 @@ namespace StarTrek_KG.Output
     public class Interaction: IConfig, IInteraction
     {
         #region Properties and Constants
+
         public IStarTrekKGSettings Config { get; set; }
         public IOutputMethod Output { get; set; }
 
@@ -270,7 +271,7 @@ namespace StarTrek_KG.Output
             Region.Scanned = true;
         }
 
-        public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, Game game)
+        public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, IGame game)
         {
             var renderedResults = new List<string>();
             int scanColumn = 0;
@@ -290,7 +291,7 @@ namespace StarTrek_KG.Output
             return renderedResults;
         }
 
-        private static string BuildLRSInterior(IConfig game, IScanResult dataPoint, string currentLRSScanLine, ICollection<string> renderedResults, ref int scanColumn)
+        private static string BuildLRSInterior(IGame game, IScanResult dataPoint, string currentLRSScanLine, ICollection<string> renderedResults, ref int scanColumn)
         {
             string currentRegionResult = null;
 
@@ -374,7 +375,7 @@ namespace StarTrek_KG.Output
         //}
 
         //todo: refactor with RenderLRSWithNames
-        public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, Game game)
+        public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, IGame game)
         {
             int scanColumn = 0;  //todo resource this
             string longestName = Interaction.GetLongestName(data);
@@ -540,7 +541,7 @@ namespace StarTrek_KG.Output
         /// <param name="mapText"></param>
         /// <param name="game"></param>
         /// <param name="userInput"></param>
-        public List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null)
+        public List<string> ReadAndOutput(Ship playerShip, string mapText, IGame game, string userInput = null)
         {
             this.Output.Write(mapText);
 

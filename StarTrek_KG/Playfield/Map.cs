@@ -17,7 +17,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-            public Game Game { get; set; }
+            public IGame Game { get; set; }
             public Regions Regions { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
             public SetupOptions GameConfig { get; set; }

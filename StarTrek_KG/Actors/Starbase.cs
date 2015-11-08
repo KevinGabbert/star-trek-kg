@@ -8,7 +8,7 @@ namespace StarTrek_KG.Actors
     //TODO: Not Implemented Yet..
     public class Starbase : ISystem, IShip
     {
-        public Game Game { get; set; }
+        public IGame Game { get; set; }
 
         public ISector Sector
         {

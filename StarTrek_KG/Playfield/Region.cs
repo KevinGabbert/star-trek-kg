@@ -21,7 +21,7 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-        public Game Game { private get; set; }
+        public IGame Game { private get; set; }
         public RegionType Type { get; set; }
         public string Name { get; set; }
 
@@ -402,7 +402,7 @@ namespace StarTrek_KG.Playfield
         /// <param name="stockBaddieFaction"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, FactionName stockBaddieFaction, Game game)
+        public Ship CreateHostileShip(ISector position, Stack<string> listOfBaddies, FactionName stockBaddieFaction, IGame game)
         {
             //todo: modify this to populate more than a single baddie faction
 
@@ -559,7 +559,7 @@ namespace StarTrek_KG.Playfield
         //or rather.. LongRangeScan subsystem comes up with the numbers, then hands it to the Print
 
         //todo: refactor this with GetLRSFullData.  Pay attention to OutOfBounds
-        public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, Game game)
+        public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, IGame game)
         {
             var scanData = new List<IRSResult>();
 
@@ -608,7 +608,7 @@ namespace StarTrek_KG.Playfield
         /// <param name="location"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public IEnumerable<LRSResult> GetLRSFullData(Location location, Game game)
+        public IEnumerable<LRSResult> GetLRSFullData(Location location, IGame game)
         {
             bool currentlyInNebula = location.Region.Type == RegionType.Nebulae;
 
@@ -652,7 +652,7 @@ namespace StarTrek_KG.Playfield
             return scanData;
         }
 
-        private Region Item(bool currentlyInNebula, Game game, int locationX, int locationY)
+        private Region Item(bool currentlyInNebula, IGame game, int locationX, int locationY)
         {
             Region region;
 
@@ -680,7 +680,7 @@ namespace StarTrek_KG.Playfield
             return region;
         }
 
-        public IRSResult GetSectorInfo(Region currentRegion, ICoordinate sector, bool outOfBounds, Game game)
+        public IRSResult GetSectorInfo(Region currentRegion, ICoordinate sector, bool outOfBounds, IGame game)
         {
             var currentResult = new IRSResult();
 
@@ -725,7 +725,7 @@ namespace StarTrek_KG.Playfield
             return regionResult;
         }
 
-        private IRSResult GetSectorData(Region currentRegion, ICoordinate sector, Game game)
+        private IRSResult GetSectorData(Region currentRegion, ICoordinate sector, IGame game)
         {
             Sector sectorToScan = this.Sectors.GetNoError(sector);
 

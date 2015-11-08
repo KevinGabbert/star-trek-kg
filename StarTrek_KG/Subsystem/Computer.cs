@@ -26,7 +26,7 @@ namespace StarTrek_KG.Subsystem
                                                             "tlm = Translate Last Message" //todo: new feature, auto translate upgrade
                                                         };
 
-        public Computer(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
+        public Computer(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Computer;
             this.Damage = 0;

@@ -15,7 +15,7 @@ namespace StarTrek_KG.Subsystem
         //Regions
         //Utility
 
-        public Phasers(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
+        public Phasers(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
         {
             this.Game.Interact = this.Game.Interact; //todo: remove this when all subsystems are converted
             this.Type = SubsystemType.Phasers;

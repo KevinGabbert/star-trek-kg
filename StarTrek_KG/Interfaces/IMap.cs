@@ -12,7 +12,7 @@ namespace StarTrek_KG.Interfaces
     /// </summary>
     public interface IMap : IConfig
     {
-        Game Game { get; set; }
+        IGame Game { get; set; }
         Ship Playership { get; set; } // todo: eventually make this an IEnumerable<StarShip>().
         Regions Regions { get; set; }
         SetupOptions GameConfig { get; set; }

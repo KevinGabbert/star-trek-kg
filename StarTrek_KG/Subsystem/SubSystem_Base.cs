@@ -26,7 +26,7 @@ namespace StarTrek_KG.Subsystem
 
         protected List<string> _myPanel; 
 
-        protected SubSystem_Base(Ship shipConnectedTo, Game game)
+        protected SubSystem_Base(Ship shipConnectedTo, IGame game)
         {
             this.Game = game;
             this.Initialize();
@@ -169,7 +169,7 @@ namespace StarTrek_KG.Subsystem
 
         #region Synctactic sugar
 
-        public ISubsystem For(Ship ship, Game game)
+        public ISubsystem For(Ship ship, IGame game)
         {
             if (ship == null)
             {

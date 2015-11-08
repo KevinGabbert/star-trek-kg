@@ -75,6 +75,7 @@
     <Compile Include="Constants\OBJECT_TYPE.cs" />
     <Compile Include="Experimental\Experimental.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\IOutputMethod.cs" />
     <Compile Include="Interfaces\IQueue.cs" />
     <Compile Include="Output\Prompt.cs" />

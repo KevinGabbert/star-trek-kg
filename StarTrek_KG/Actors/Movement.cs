@@ -17,7 +17,7 @@ namespace StarTrek_KG.Actors
 
         private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil";
 
-        public Movement(Ship shipConnectedTo, Game game)
+        public Movement(Ship shipConnectedTo, IGame game)
         {
             base.Game = game;
             base.ShipConnectedTo = shipConnectedTo;
@@ -50,7 +50,7 @@ namespace StarTrek_KG.Actors
                     {
                         newLocation.SetActive();
                         this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Region 
-                        Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
+                        this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
                     }
 
                     break;
@@ -295,7 +295,7 @@ namespace StarTrek_KG.Actors
 
             this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Region  
 
-            Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
+            this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
         }
 
         /// <summary>

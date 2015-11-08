@@ -18,7 +18,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public static List<string> SHIELD_PANEL = new List<string>();
 
-        public Shields(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
+        public Shields(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Shields;
 
@@ -270,7 +270,7 @@ namespace StarTrek_KG.Subsystem
             bool shieldsAutoRaised = false;
             if (region.GetHostiles().Count > 0)
             {
-                shieldsAutoRaised = Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, region);
+                shieldsAutoRaised = this.Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, region);
             }
 
             return shieldsAutoRaised;

@@ -17,7 +17,7 @@ namespace StarTrek_KG
     /// <summary>
     /// This class consists of methods that have yet to be refactored into separate objects
     /// </summary>
-    public class Game : IDisposable, IInteract, IConfig
+    public class Game : IDisposable, IInteract, IConfig, IGame
     {
         #region Properties
         public delegate TResult _promptFunc<T, out TResult>(T input, out T output);
@@ -27,10 +27,10 @@ namespace StarTrek_KG
         public IMap Map { get; set; }
         private Render PrintSector { get; set; }
 
-        public Game._promptFunc<string, bool> Prompt { get; private set; }
+        public Game._promptFunc<string, bool> Prompt { get; set; }
 
-        public List<FactionThreat> LatestTaunts { get; private set; } //todo: temporary until proper object is created
-        public bool PlayerNowEnemyToFederation { get; private set; } //todo: temporary until Starbase object is created
+        public List<FactionThreat> LatestTaunts { get; set; } //todo: temporary until proper object is created
+        public bool PlayerNowEnemyToFederation { get; set; } //todo: temporary until Starbase object is created
 
         public bool Started { get; set; }
         public bool GameOver { get; private set; }
@@ -654,7 +654,7 @@ namespace StarTrek_KG
 
         #region Shields
 
-        public static bool Auto_Raise_Shields(IMap map, IRegion Region)
+        public bool Auto_Raise_Shields(IMap map, IRegion Region)
         {
             bool shieldsRaised = false;
 
@@ -879,7 +879,7 @@ namespace StarTrek_KG
             this.Interact.PrintMissionResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
-        public static void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
+        public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
         {
             if (lastRegion.X != Region.X || lastRegion.Y != Region.Y)
             {

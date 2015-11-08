@@ -10,7 +10,7 @@ namespace StarTrek_KG.Subsystem
 {
     public class ImmediateRangeScan : SubSystem_Base
     {
-        public ImmediateRangeScan(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
+        public ImmediateRangeScan(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.ImmediateRangeScan;
         }

@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
@@ -79,10 +81,16 @@ namespace UnitTests.ShipTests.RegionTests
             const bool setupNebula = true;
             this.SetupRegion(setupNebula);
 
-            var mockedWrite = new Mock<IInteraction>();
-            _setup.Game.Interact = mockedWrite.Object;
-
             _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
+
+            var mockedWrite = new Mock<IInteraction>();
+
+            _setup.TestLongRangeScan.Game.Interact = mockedWrite.Object;
+
+            var mockedOutput = new Mock<IOutputMethod>();
+
+            //todo: this property won't set
+            _setup.TestLongRangeScan.Game.Interact.Output = mockedOutput.Object;
 
             _setup.TestLongRangeScan.Controls();
 

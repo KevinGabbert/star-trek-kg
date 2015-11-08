@@ -9,7 +9,7 @@ namespace StarTrek_KG.Subsystem
 {
     class CombinedRangeScan : SubSystem_Base
     {
-        public CombinedRangeScan(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
+        public CombinedRangeScan(Ship shipConnectedTo, IGame game) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.CombinedRangeScan;
         }

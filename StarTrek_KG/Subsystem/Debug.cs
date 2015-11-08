@@ -44,7 +44,7 @@ namespace StarTrek_KG.Subsystem
                                                     "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
-        public Debug(Ship shipConnectedTo, Game game): base(shipConnectedTo, game)
+        public Debug(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Debug; //this is required if you want this system to be able to be looked up
             this.Damage = 0;

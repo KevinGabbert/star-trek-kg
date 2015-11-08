@@ -28,7 +28,7 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Navigation(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
+        public Navigation(Ship shipConnectedTo, IGame game) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Navigation;
             this.Warp = new Warp(this.Game.Interact);
