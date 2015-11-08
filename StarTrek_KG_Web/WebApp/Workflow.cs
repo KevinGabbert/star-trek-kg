@@ -121,7 +121,6 @@ namespace StarTrek_KG_Web.WebApp
             StarTrekKGSettings settingsForWholeGame = (new StarTrekKGSettings());
   
             game = new Game(settingsForWholeGame); //todo: GET should set the app.config setting to true?
-            game.Interact.Subscriber.Enabled = true;
 
             HttpContext.Current.Session["game"] = game;
 

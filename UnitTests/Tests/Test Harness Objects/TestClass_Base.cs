@@ -1,4 +1,5 @@
 ﻿using StarTrek_KG;
+using StarTrek_KG.Config;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 
@@ -12,10 +13,15 @@ namespace UnitTests.ShipTests
 
         public TestClass_Base()
         {
-            _setup.Game.Interact = new Interaction(null);
-            _setup.TestMap = new Map(null, _setup.Game.Interact, _setup.Config);
-            _setup.TestMap.Write = new Interaction(_setup.TestMap.Config);
-            _setup.Game.Interact = new Interaction(_setup.TestMap.Config);
+            //todo: pass in config
+            _setup.Game.Interact = new Interaction(new StarTrekKGSettings());
+
+            _setup.TestMap = new Map(null, _setup.Game.Interact, _setup.Config)
+            {
+                Write = _setup.Game.Interact
+            };
+
+            _setup.Game.Interact = _setup.Game.Interact;
 
             this.Game = _setup.Game;
         }

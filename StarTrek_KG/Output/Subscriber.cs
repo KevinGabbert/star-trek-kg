@@ -13,11 +13,6 @@ namespace StarTrek_KG.Output
 
             string defaultPrompt = this.Config.GetText("defaultPrompt");
             PromptInfo = new PromptInfo(defaultPrompt);
-
-            bool enabled = this.Config.GetSetting<bool>("IsSubscriberApp");
-            this.Enabled = enabled;
         }
-
-        public bool Enabled { get; set; }
     }
 }

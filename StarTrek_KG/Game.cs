@@ -56,22 +56,17 @@ namespace StarTrek_KG
             {
                 try
                 {
-                    this.Interact = new Interaction(config);
-
-                    if (this.Interact.Subscriber.Enabled)
+                    this.Interact = new Interaction(config)
                     {
-                        this.Interact.CurrentPrompt = "Enter Command:>"; //todo: resource this (default prompt)
+                        CurrentPrompt = "Enter Command:>" //todo: resource this (default prompt)
+                    };
 
-                        this.Prompt = (string s, out string output) => this.Interact.PromptUserSubscriber(s, out output);
-                    }
-                    else
-                    {
-                        this.Prompt = (string s, out string output) => this.Interact.PromptUserConsole(s, out output);
-                    }
+                    this.Prompt = (string s, out string output) => this.Interact.PromptUserSubscriber(s, out output);
+
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    this.Interact = new Interaction(true)
+                    this.Interact = new Interaction()
                     {
                         Output = new SubscriberOutput(config),
                         OutputError = true,

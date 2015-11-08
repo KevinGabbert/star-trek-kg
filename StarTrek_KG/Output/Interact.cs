@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using StarTrek_KG.Actors;
@@ -56,7 +57,7 @@ namespace StarTrek_KG.Output
 
         #endregion
 
-        public Interaction(bool subscriberAppEnabled)
+        public Interaction()
         {
             this.Subscriber = new Subscriber(this.Config);
         }
@@ -66,31 +67,8 @@ namespace StarTrek_KG.Output
             this.SHIP_PANEL = new List<string>();
             this.Config = config;
 
-            this.SetOutputMode(config);
-        }
-
-        /// <summary>
-        /// This is where the output is set to be telnet, console, or Web--er, Subscriber.
-        /// as of v9.6.15, Console and telnet may not be supported to the level of Subscriber, but ithe abstraction will be kept in mind when programming
-        /// </summary>
-        /// <param name="config"></param>
-        private void SetOutputMode(IStarTrekKGSettings config)
-        {
-            var isSubscriberApp = this.Config.GetSetting<bool>("IsSubscriberApp");
-
-            if (isSubscriberApp)
-            {
-                this.Subscriber = new Subscriber(this.Config);
-            }
-
-            if (this.Subscriber.Enabled)
-            {
-                this.Output = new SubscriberOutput(config);
-            }
-            else
-            {
-                this.Output = this.Console;
-            }
+            this.Subscriber = new Subscriber(this.Config);
+            this.Output = new SubscriberOutput(config);
         }
 
         public Interaction(int totalHostiles, int starbases, int stardate, int timeRemaining, IStarTrekKGSettings config) : this(config)
@@ -564,10 +542,7 @@ namespace StarTrek_KG.Output
         /// <param name="userInput"></param>
         public List<string> ReadAndOutput(Ship playerShip, string mapText, Game game, string userInput = null)
         {
-            if (!this.Subscriber.Enabled)
-            {
-                this.Output.Write(mapText);
-            }
+            this.Output.Write(mapText);
 
             return this.ProcessInputString(playerShip, userInput);
         }
@@ -592,7 +567,7 @@ namespace StarTrek_KG.Output
 
         private bool GetUserCommand(string userInput, out string userCommand)
         {
-            if (userInput != null && this.Subscriber.Enabled)
+            if (userInput != null)
             {
                 userCommand = userInput.Trim().ToLower();
                 this.Output.Clear();
@@ -1058,23 +1033,15 @@ namespace StarTrek_KG.Output
                     this.WithNoEndCR(promptMessage);
                 }
 
-                if (this.Subscriber.Enabled)
-                {
-                    this.CurrentPrompt = promptDisplay;
+                this.CurrentPrompt = promptDisplay;
 
-                    //todo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. they need to be broken out to a separate class.
-                    this.Subscriber.PromptInfo.SubSystem = promptSubsystem;
-                    this.Subscriber.PromptInfo.Level = subPromptLevel;
+                //todo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. they need to be broken out to a separate class.
+                this.Subscriber.PromptInfo.SubSystem = promptSubsystem;
+                this.Subscriber.PromptInfo.Level = subPromptLevel;
 
-                    //todo: an endCR might need to be added here
+                //todo: an endCR might need to be added here
 
-                    value = "-1";
-                }
-                else
-                {
-                    value = this.Output.ReadLine().Trim().ToLower();
-                }
-
+                value = "-1";
                 retVal = true;
             }
             catch
