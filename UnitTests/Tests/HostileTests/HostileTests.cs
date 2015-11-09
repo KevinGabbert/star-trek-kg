@@ -333,7 +333,7 @@ namespace UnitTests.Tests.HostileTests
 
             _setup.TestMap.Regions[0].AddShip(hostileShip, _setup.TestMap.Regions[0].Sectors.Get(new Coordinate(1, 7)));
 
-            _setup.TestMap.Regions.RemoveShip(hostileShip.Name);
+            _setup.TestMap.Regions.RemoveShip(hostileShip);
 
             Assert.AreEqual(0, _setup.TestMap.Regions.GetHostiles().Count);
         }

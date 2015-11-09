@@ -159,7 +159,7 @@ namespace StarTrek_KG.Output
 
         #region Rendering
 
-        public void RenderRegionCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount)
+        public void RenderRegionCounts(bool renderingMyLocation, int? starbaseCount, int? starCount, int? hostileCount)
         {
             if (renderingMyLocation)
             {
@@ -176,7 +176,7 @@ namespace StarTrek_KG.Output
             }
         }
 
-        public string RenderRegionCounts(int starbaseCount, int starCount, int hostileCount)
+        public string RenderRegionCounts(int? starbaseCount, int? starCount, int? hostileCount)
         {
             string counts = "";
 

@@ -152,30 +152,57 @@ namespace StarTrek_KG.Playfield
         /// goes through each sector in this Region and clears hostiles
         /// </summary>
         /// <returns></returns>
-        public void RemoveShip(string name)
+        public void RemoveShip(IShip ship)
         {
             Sector sectorToDeleteShip = null;
 
-            foreach (var Region in this)
-            {
-                sectorToDeleteShip = (from sector in Region?.Sectors
+            Region regionToDeleteFrom = ship.GetRegion();
 
-                                        let sectorObject = sector.Object
-                                        where sectorObject != null
-                                        where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+            sectorToDeleteShip = (from sector in regionToDeleteFrom.Sectors
 
-                                        let possibleShipToDelete = (IShip) sectorObject
-                                        where possibleShipToDelete.Name == name
-                                        select sector).SingleOrDefault();  //There should only be 1 ship with this name            
-            }
+                                    let sectorObject = sector.Object
+                                    where sectorObject != null
+                                    where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+
+                                    let possibleShipToDelete = (IShip) sectorObject
+                                    where possibleShipToDelete.Name == ship.Name
+                                    select sector).SingleOrDefault();  //There should only be 1 ship with this name          
 
             if (sectorToDeleteShip == null)
             {
-                throw new GameException($"Unexpected State. {name} not found.");
+                throw new GameException($"Unexpected State. {ship.Name} not found.");
             }
 
             sectorToDeleteShip.Item = SectorItem.Empty;
             sectorToDeleteShip.Object = null;
+        }
+
+        /// <summary>
+        /// goes through each sector in this Region and clears hostiles
+        /// </summary>
+        /// <returns></returns>
+        public void RemoveShipFromMap(string shipName)
+        {
+            Sector sectorWithShipToDelete = this.Select(region => (from sector in region.Sectors
+
+                                                                    let sectorObject = sector.Object
+                                                                    where sectorObject != null
+                                                                    where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+
+                                                                    let possibleShipToDelete = (IShip) sectorObject
+                                                                    where possibleShipToDelete.Name == shipName
+                                                                    select sector).SingleOrDefault()).SingleOrDefault();
+
+            if (sectorWithShipToDelete != null)
+            {
+                sectorWithShipToDelete.Item = SectorItem.Empty;
+                sectorWithShipToDelete.Object = null;
+            }
+            else
+            {
+
+                throw new GameException($"Unexpected State. {shipName} not found.");
+            }
         }
 
         public void Remove(IShip shipToRemove)
@@ -192,7 +219,7 @@ namespace StarTrek_KG.Playfield
                 throw new GameConfigException("ship has no location. ");
             }
 
-            this.RemoveShip(shipToRemove.Name);
+            this.RemoveShip(shipToRemove);
 
             string shipToRemoveName = shipToRemove.Name;
 

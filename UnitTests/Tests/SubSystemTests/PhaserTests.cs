@@ -163,7 +163,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var playershipAfter = _setup.TestMap.Playership;
 
-            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1576);
+            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1743);
 
             var afterHostiles = activeRegion.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;
@@ -224,7 +224,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var playershipAfter = _setup.TestMap.Playership;
 
-            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1489);
+            this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1524);
 
             var afterHostiles = activeRegion.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;

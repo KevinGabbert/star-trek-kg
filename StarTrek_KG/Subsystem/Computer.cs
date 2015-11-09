@@ -236,9 +236,9 @@ namespace StarTrek_KG.Subsystem
 
         private void RenderScannedRegion(IRegion Region, Location myLocation, int RegionUB, int RegionLB)
         {
-            int starbaseCount = -1;
-            int starCount = -1;
-            int hostileCount = -1;
+            int? starbaseCount = null;
+            int? starCount = null;
+            int? hostileCount = null;
 
             if (Region.Type != RegionType.Nebulae)
             {

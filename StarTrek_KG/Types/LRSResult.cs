@@ -17,9 +17,9 @@ namespace StarTrek_KG.Types
         public bool Unknown { get; set; }
         public string Name { get; set; }
 
-        public int Hostiles { get; set; } = -1;
-        public int Starbases { get; set; } = -1;
-        public int Stars { get; set; } = -1;
+        public int? Hostiles { get; set; }
+        public int? Starbases { get; set; }
+        public int? Stars { get; set; }
 
         public override string ToString()
         {

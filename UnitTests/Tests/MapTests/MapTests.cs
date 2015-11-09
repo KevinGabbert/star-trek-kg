@@ -424,13 +424,13 @@ namespace UnitTests.ShipTests.MapTests
             Assert.IsNotNull(_setup.TestMap.Regions.GetActive().GetHostiles().Single(s => s.Name == "ship1"));
             Assert.IsNotNull(_setup.TestMap.Regions.GetActive().GetHostiles().Single(s => s.Name == "ship2"));
 
-            _setup.TestMap.Regions.RemoveShip("ship1");
+            _setup.TestMap.Regions.RemoveShipFromMap("ship1");
 
             //var verifiedGone = _setup.TestMap.Regions.Active.Hostiles.SingleOrDefault(s => s.Name == "this is the ship");
 
             Assert.AreEqual(1, _setup.TestMap.Regions.GetActive().GetHostiles().Count);
 
-            _setup.TestMap.Regions.RemoveShip("ship2");
+            _setup.TestMap.Regions.RemoveShipFromMap("ship2");
             Assert.AreEqual(0, _setup.TestMap.Regions.GetActive().GetHostiles().Count);
         }
 

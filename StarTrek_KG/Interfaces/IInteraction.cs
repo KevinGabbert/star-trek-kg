@@ -43,8 +43,8 @@ namespace StarTrek_KG.Interfaces
         void WithNoEndCR(string stringToOutput);
         void DisplayPropertiesOf(object @object);
 
-        void RenderRegionCounts(bool renderingMyLocation, int starbaseCount, int starCount, int hostileCount);
-        string RenderRegionCounts(int starbaseCount, int starCount, int hostileCount);
+        void RenderRegionCounts(bool renderingMyLocation, int? starbaseCount, int? starCount, int? hostileCount);
+        string RenderRegionCounts(int? starbaseCount, int? starCount, int? hostileCount);
 
         void RenderNebula(bool renderingMyLocation);
         void RenderUnscannedRegion(bool renderingMyLocation);
