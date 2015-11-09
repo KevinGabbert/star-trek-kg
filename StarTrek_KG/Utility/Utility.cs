@@ -225,7 +225,7 @@ namespace StarTrek_KG.Utility
         {
             if (thisRegion.Type == RegionType.Nebulae)
             {
-                switch (StarTrek_KG.Utility.Utility.Random.Next(2))
+                switch (Utility.Random.Next(2))
                 {
                     case 0:
                         x = "?";
@@ -242,6 +242,5 @@ namespace StarTrek_KG.Utility
 
             return new OutputCoordinate(x, y);
         }
-
     }
 }

@@ -12,6 +12,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
     [TestFixture]
     public class Test_ShipObject
     {
+        private Mock<IGame> _mockGame;
         private Mock<IMap> _mockMap;
         private Mock<IInteraction> _mockWrite;
         private Mock<ISector> _mockSector;
@@ -21,6 +22,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
         [SetUp]
         public void Setup()
         {
+            _mockGame = new Mock<IGame>();
             _mockMap = new Mock<IMap>();
             _mockWrite = new Mock<IInteraction>();
             _mockSector = new Mock<ISector>();
@@ -28,14 +30,21 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockCoordinate = new Mock<ICoordinate>();
             _mockMap.Setup(m => m.Regions).Returns(new Regions(_mockMap.Object, _mockWrite.Object));
 
-            var Regions = new Regions(_mockMap.Object, _mockWrite.Object)
+            var regions = new Regions(_mockMap.Object, _mockWrite.Object)
             {
                 new Region(new Coordinate())
             };
 
-            _mockMap.Setup(m => m.Regions).Returns(Regions);
+            _mockGame.Setup(m => m.Interact).Returns(_mockWrite.Object);
+
+            _mockMap.Setup(m => m.Game).Returns(_mockGame.Object);
+            _mockMap.Setup(m => m.Regions).Returns(regions);
             _mockMap.Setup(m => m.Write).Returns(_mockWrite.Object);
+
             _mockSector.Setup(c => c.RegionDef).Returns(new Coordinate());
+
+            //todo: write needs an interact set up
+            _mockWrite.Setup(m => m.ShipHitMessage(It.IsAny<IShip>(), It.IsAny<int>()));
 
             _mockMap.Setup(m => m.Config).Returns(_mockSettings.Object);
         }
@@ -97,12 +106,8 @@ namespace UnitTests.ShipTests.ShipObjectTests
             Assert.AreEqual(50, Shields.For(shipToTest).Energy);
 
             //Verifications of Output to User
-            _mockSector.Verify(s => s.X, Times.Exactly(1));
-            _mockSector.Verify(s => s.Y, Times.Exactly(1));
-
-            _mockWrite.Verify(w => w.Line(It.IsAny<string>()), Times.Exactly(2));
-            _mockWrite.Verify(w => w.Line(Moq.It.Is<string>(s => s.StartsWith("Your ship has been hit by"))), Times.AtLeastOnce());
-            _mockWrite.Verify(w => w.Line("No Damage."), Times.Once());
+            _mockWrite.Verify(i => i.ShipHitMessage(It.IsAny<IShip>(), It.IsAny<int>()), Times.Exactly(1));
+            _mockWrite.Verify(i => i.ConfigText("NoDamage"), Times.Exactly(1));
         }
 
         [Ignore]

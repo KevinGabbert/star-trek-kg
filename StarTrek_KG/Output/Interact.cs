@@ -1152,8 +1152,8 @@ namespace StarTrek_KG.Output
 
         public string ShipHitMessage(IShip attacker, int attackingEnergy)
         {
-            var attackerRegion = attacker.GetRegion();
-            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
+            Region attackerRegion = attacker.GetRegion();
+            OutputCoordinate attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
 
             string attackerName = attackerRegion.Type == RegionType.Nebulae ? "Unknown Ship" : attacker.Name;
 

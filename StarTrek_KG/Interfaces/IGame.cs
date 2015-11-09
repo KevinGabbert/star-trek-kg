@@ -18,6 +18,5 @@ namespace StarTrek_KG.Interfaces
         void ALLHostilesAttack(IMap map);
         bool Auto_Raise_Shields(IMap map, IRegion Region);
         void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region);
-
     }
 }
