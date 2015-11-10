@@ -54,7 +54,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void CountOfConsoleText()
         {
-            Assert.AreEqual(186, config.Get.ConsoleText.Count);
+            Assert.AreEqual(217, config.Get.ConsoleText.Count);
         }
     }
 }

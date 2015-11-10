@@ -183,26 +183,41 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public void RemoveShipFromMap(string shipName)
         {
-            Sector sectorWithShipToDelete = this.Select(region => (from sector in region.Sectors
-
-                                                                    let sectorObject = sector.Object
-                                                                    where sectorObject != null
-                                                                    where sectorObject.Type.Name == OBJECT_TYPE.SHIP
-
-                                                                    let possibleShipToDelete = (IShip) sectorObject
-                                                                    where possibleShipToDelete.Name == shipName
-                                                                    select sector).SingleOrDefault()).SingleOrDefault();
-
-            if (sectorWithShipToDelete != null)
+            try
             {
-                sectorWithShipToDelete.Item = SectorItem.Empty;
-                sectorWithShipToDelete.Object = null;
+                Sector sectorWithShipToDelete = this.Select(region => (SectorsWithMatchingShips(shipName, region))
+                    .SingleOrDefault()).SingleOrDefault(s => s != null);
+
+                if (sectorWithShipToDelete != null)
+                {
+                    sectorWithShipToDelete.Item = SectorItem.Empty;
+                    sectorWithShipToDelete.Object = null;
+                }
+                else
+                {
+                    throw new GameException($"Unexpected State. {shipName} not found.");
+                }
             }
-            else
+            catch
             {
-
                 throw new GameException($"Unexpected State. {shipName} not found.");
             }
+        }
+
+        private static IEnumerable<Sector> SectorsWithMatchingShips(string shipName, IRegion region)
+        {
+            IEnumerable<Sector> sectorsWithMatchingShips =  from sector in region.Sectors
+
+                                                            let sectorObject = sector.Object
+
+                                                            where sectorObject != null
+                                                            where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+
+                                                            let possibleShipToDelete = (IShip) sectorObject
+
+                                                            where possibleShipToDelete.Name == shipName
+                                                            select sector;
+            return sectorsWithMatchingShips;
         }
 
         public void Remove(IShip shipToRemove)

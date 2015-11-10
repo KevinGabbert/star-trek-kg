@@ -419,14 +419,10 @@ namespace UnitTests.ShipTests.MapTests
             _setup.TestMap.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
             _setup.TestMap.Regions.GetActive().AddShip(hostileShip2, hostileShip2.Sector);
 
-            var x = _setup.TestMap.Regions.GetActive().GetHostiles();
-
             Assert.IsNotNull(_setup.TestMap.Regions.GetActive().GetHostiles().Single(s => s.Name == "ship1"));
             Assert.IsNotNull(_setup.TestMap.Regions.GetActive().GetHostiles().Single(s => s.Name == "ship2"));
 
             _setup.TestMap.Regions.RemoveShipFromMap("ship1");
-
-            //var verifiedGone = _setup.TestMap.Regions.Active.Hostiles.SingleOrDefault(s => s.Name == "this is the ship");
 
             Assert.AreEqual(1, _setup.TestMap.Regions.GetActive().GetHostiles().Count);
 
@@ -437,8 +433,8 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void Distance()
         {
-            const double oneDiagonalSector = 1.4142135623730951;
-            const double twoDiagonalSectors = 2.8284271247461903;
+            const double oneDiagonalSector = 1; //1.4142135623730951;
+            const double twoDiagonalSectors = 3;// 2.8284271247461903;
 
             Assert.AreEqual(twoDiagonalSectors, Utility.Distance(0, 0, 2, 2));
             Assert.AreEqual(twoDiagonalSectors, Utility.Distance(2, 2, 0, 0));
