@@ -22,12 +22,19 @@ namespace UnitTests.ShipTests.SubSystemTests
 
         }
 
+        //todo: needs a mock set up to read interaction output
         [Test]
         public void ControlsDamaged()
         {
             _setup.TestShields.Damage = 47;
             _setup.TestShields.Controls("AHHHHHHHH");
+
             Assert.IsTrue(_setup.TestShields.Damaged());
+
+            //todo:  read the following message from IInteraction
+            //(see Test_ShipObject for example)
+
+            //"Shields are Damaged. DamageLevel: {this.Damage}"
         }
 
         [Ignore]

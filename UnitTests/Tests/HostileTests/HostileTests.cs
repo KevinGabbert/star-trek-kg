@@ -602,10 +602,17 @@ namespace UnitTests.Tests.HostileTests
 
         #region OutOfBounds
 
+        //Fix this.
         [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile()
         {
+            //todo: the issue with this one is that SECTOR_MAX is set to 8 in the config files, and it would seem that 
+            //it should be set to 7.  ssetting it to 7 breaks about 30 tests.  Don't have the brain power to look into
+            //that now.
+
+            //Methinks that the navigation needs to be tested completely before this can be fixed
+
             _setup.TestMap = (new Map(new SetupOptions
             {
                 Initialize = true,

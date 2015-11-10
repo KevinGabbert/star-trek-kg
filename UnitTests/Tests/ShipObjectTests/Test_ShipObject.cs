@@ -18,21 +18,17 @@ namespace UnitTests.ShipTests.ShipObjectTests
         private Mock<IInteraction> _mockWrite;
         private Mock<ISector> _mockSector;
         private Mock<IStarTrekKGSettings> _mockSettings;
-        private Mock<ICoordinate> _mockCoordinate;
         private Mock<IOutputMethod> _mockOutput;
-        private Mock<IQueue> _mockQueue;
 
         [SetUp]
         public void Setup()
         {
-            _mockQueue = new Mock<IQueue>();
             _mockOutput = new Mock<IOutputMethod>();
             _mockGame = new Mock<IGame>();
             _mockMap = new Mock<IMap>();
             _mockWrite = new Mock<IInteraction>();
             _mockSector = new Mock<ISector>();
             _mockSettings = new Mock<IStarTrekKGSettings>();
-            _mockCoordinate = new Mock<ICoordinate>();
             _mockMap.Setup(m => m.Regions).Returns(new Regions(_mockMap.Object, _mockWrite.Object));
 
             var regions = new Regions(_mockMap.Object, _mockWrite.Object)
@@ -52,11 +48,6 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockSector.Setup(c => c.RegionDef).Returns(new Coordinate());
 
             _mockOutput.Setup(m => m.Queue).Returns(new Queue<string>());
-
-
-
-            //_mockQueue.Setup(m => m.Queue).Returns(new Queue<string>());
-
             _mockMap.Setup(m => m.Config).Returns(_mockSettings.Object);
         }
 

@@ -43,7 +43,7 @@ namespace StarTrek_KG.Subsystem
         {
             base._myPanel = Shields.SHIELD_PANEL;
 
-            var promptWriter = this.ShipConnectedTo.Game.Interact;
+            IInteraction promptWriter = this.Game.Interact;
 
             this.Game.Interact.Output.Queue.Clear();
 
@@ -69,7 +69,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                //todo: do we output something if damaged?
+                this.Game.Interact.Line("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
             }
 
             return this.Game.Interact.Output.Queue.ToList();
