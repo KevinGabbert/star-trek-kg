@@ -17,7 +17,6 @@ using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
-using Console = StarTrek_KG.Utility.Console;
 
 namespace StarTrek_KG.Output
 {
@@ -36,13 +35,6 @@ namespace StarTrek_KG.Output
 
         public string CurrentPrompt { get; set; }
         public bool OutputError { get; set; }
-
-        private Console _console;
-        private Console Console
-        {
-            get { return _console ?? (_console = new Console()); }
-            set { _console = value; }
-        }
 
         private int TotalHostiles { get; }
         private int TimeRemaining { get; }
@@ -1018,8 +1010,7 @@ namespace StarTrek_KG.Output
 
         /// <summary>
         /// The point of this method is to get information from the user.  
-        /// In the case of the console, readline will display cursor, and wait for the user to reply.
-        /// In the case of Sebscriber (ex. Web), then we must end the call that got us here so we can get the information back from the user.
+        /// We must end the call that got us here so we can get the information back from the user.
         /// </summary>
         /// <param name="promptSubsystem"></param>
         /// <param name="promptDisplay"></param>

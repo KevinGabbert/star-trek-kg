@@ -42,7 +42,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             for (int i = 1; i < 10; i++)
             {
-                System.Console.Write("-");
+                //System.Console.Write("-");
                 this.ShootHostileTest(false);
             }
         }

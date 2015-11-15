@@ -69,7 +69,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Experimental\ConsoleColors.cs" />
     <Compile Include="GameTests\GameTests.cs" />
     <Compile Include="Tests\AppSettingTests\AppSettingTests.cs" />
     <Compile Include="Tests\AppSettingTests\AppSettingCounts.cs" />
@@ -108,8 +107,6 @@
     <Compile Include="Tests\WarpTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Test Harness Objects\TestRunner.cs" />
-    <Compile Include="UtilityTests\Beep_Tests.cs" />
-    <Compile Include="UtilityTests\MelodyPlayer_Tests.cs" />
     <Compile Include="UtilityTests\UtilityTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +124,9 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Experimental\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -347,17 +347,15 @@ namespace StarTrek_KG.Actors
             if (currentRegion.GetHostiles().Count > 0)
             {
                 condition = this.Map.Config.GetText("ConditionAlert");
-
-                ConsoleHelper.SetConsoleIcon(SystemIcons.Error);
             }
             else if (this.AtLowEnergyLevel() || currentRegion.IsNebulae())
             {
                 condition = this.Map.Config.GetText("ConditionElevated");
-                ConsoleHelper.SetConsoleIcon(SystemIcons.Exclamation);
+                
             }
             else
             {
-                ConsoleHelper.SetConsoleIcon(SystemIcons.Shield);
+                
             }
 
             return condition;

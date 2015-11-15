@@ -68,7 +68,7 @@ namespace StarTrek_KG
                 {
                     this.Interact = new Interaction()
                     {
-                        Output = new SubscriberOutput(config),
+                        Output = new Output.SubscriberOutput(config),
                         OutputError = true,
                         CurrentPrompt = "Terminal: " //todo: resource this.
                     };
@@ -123,70 +123,6 @@ namespace StarTrek_KG
         }
 
         #region Turn System
-
-        #region Console/Telnet
-
-        /// <summary>
-        /// Game ends when user runs out of power, wins, or is destroyed
-        /// </summary>
-        private void PlayOnce()
-        {
-            if (this.GameOver)
-            {
-                this.Interact.DebugLine("Game Over.");
-                return;
-            }
-
-            this.PrintOpeningScreen();
-
-            while (!this.GameOver)
-            {
-                this.GameOver = this.NewConsoleTurn(); //Shows Command Prompt
-
-                if (this.GameOver)
-                {
-                    this.Interact.DebugLine("Game Over.. Restarting.");
-
-                    this.Initialize();
-
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// A turn is represented as each time the Console requires a new command from the user
-        /// This does not include sub-commands, such as adding power to the shields, etc.
-        /// </summary>
-        /// <returns></returns>
-        private bool NewConsoleTurn()
-        {
-            this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this);
-
-            //todo: move this to Console app.//Have Game expose and raise a CommandPrompt event.  //Have console subscribe to that event
-
-            this.ReportGameStatus();
-
-            return this.GameOver;
-        }
-
-        /// <summary>
-        /// Starts the game in Console or Telnet Mode. Repeats indefinitely (as the original did) if App.config is set to do so.
-        /// </summary>
-        public void RunConsoleOrTelnet()
-        {
-            bool keepPlaying = true;
-
-            while (keepPlaying)
-            {
-                keepPlaying = this.Config.GetSetting<bool>("KeepPlaying");
-
-                this.PlayOnce();
-                this.GameOver = false;
-            }
-        }
-
-        #endregion
 
         #region Web
 

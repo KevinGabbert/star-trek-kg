@@ -73,7 +73,6 @@
     <Compile Include="Config\Elements\SeverityValueTranslation.cs" />
     <Compile Include="Constants\Commands\Commands.cs" />
     <Compile Include="Constants\OBJECT_TYPE.cs" />
-    <Compile Include="Experimental\Experimental.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\IInteract.cs" />
@@ -162,7 +161,6 @@
     <Compile Include="Enums\SectorItem.cs" />
     <Compile Include="TypeSafeEnums\SubsystemType.cs" />
     <Compile Include="Types\LRSResult.cs" />
-    <Compile Include="Utility\Console.cs" />
     <Compile Include="Subsystem\Debug.cs" />
     <Compile Include="Subsystem\Disruptors.cs" />
     <Compile Include="Subsystem\LongRangeScan.cs" />
@@ -174,9 +172,7 @@
     <Compile Include="Subsystem\SubSystem_Base.cs" />
     <Compile Include="Subsystem\Torpedoes.cs" />
     <Compile Include="Actors\System.cs" />
-    <Compile Include="Utility\ConsoleHelper.cs" />
     <Compile Include="Utility\EnumUtil.cs" />
-    <Compile Include="Utility\MelodyPlayer.cs" />
     <Compile Include="Output\SubscriberOutput.cs" />
     <Compile Include="Utility\Telnet.cs" />
     <Compile Include="Utility\Utility.cs" />
@@ -187,7 +183,9 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Experimental\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Content\ASCII Repository.txt" />
     <Content Include="Content\Enterprise.gif" />
