@@ -6,7 +6,7 @@ namespace StarTrek_KG.TypeSafeEnums
     public sealed class SubsystemType
     {
         public string Name { get; }
-        public string Abbreviation { get; }
+        private string Abbreviation { get; }
         private readonly int value;
 
         public static readonly SubsystemType None = new SubsystemType(1, "None", "");
@@ -22,6 +22,8 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly SubsystemType CombinedRangeScan = new SubsystemType(10, "Combined Range Scan", "crs");
         public static readonly SubsystemType Disruptors = new SubsystemType(11, "Disruptors", "dsr");
         public static readonly SubsystemType ImmediateRangeScan = new SubsystemType(12, "Immediate Range Scan", "irs");
+        public static readonly SubsystemType Warp = new SubsystemType(13, "Warp Drive", "wrp");
+        public static readonly SubsystemType Impulse = new SubsystemType(14, "Impulse Engines", "imp");
 
         private static Dictionary<string, SubsystemType> instance = new Dictionary<string, SubsystemType>();
 
@@ -49,9 +51,13 @@ namespace StarTrek_KG.TypeSafeEnums
         {
             SubsystemType result;
             if (instance.TryGetValue(str, out result))
+            {
                 return result;
+            }
             else
+            {
                 throw new InvalidCastException();
+            }
         }
 
         internal static SubsystemType GetFromAbbreviation(string subsystemAbbr)

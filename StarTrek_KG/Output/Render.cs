@@ -10,7 +10,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Output
 {
-    public class Render: IInteract, IConfig
+    public class Render: IInteractContainer, IConfig
     {
         #region Properties
 

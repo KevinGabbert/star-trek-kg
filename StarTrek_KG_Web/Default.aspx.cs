@@ -100,7 +100,7 @@ namespace StarTrek_KG_Web
             return json;
         }
 
-        private static string AddHeader(IInteract game)
+        private static string AddHeader(IInteractContainer game)
         {
             if (game != null)
             {

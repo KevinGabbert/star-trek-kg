@@ -11,7 +11,7 @@ namespace StarTrek_KG.Subsystem
     /// <summary>
     /// 
     /// </summary>
-    public class Shields : SubSystem_Base
+    public class Shields : SubSystem_Base, IInteract
     {
         /// <summary>
         /// This is the shield "menu" that the user will be using
@@ -33,6 +33,8 @@ namespace StarTrek_KG.Subsystem
         {
             return (Shields)SubSystem_Base.For(ship, SubsystemType.Shields);
         }
+
+        #region Commands
 
         /// <summary>
         /// 
@@ -73,12 +75,6 @@ namespace StarTrek_KG.Subsystem
             }
 
             return this.Game.Interact.Output.Queue.ToList();
-        }
-
-        private bool NotRecognized(string command, IInteraction promptInteraction)
-        {
-            var recognized = (base.InFirstLevelMenu(command, promptInteraction));
-            return !recognized;
         }
 
         private bool SubtractingFrom(string command, IInteraction promptInteraction)
@@ -132,6 +128,8 @@ namespace StarTrek_KG.Subsystem
                 }
             }
         }
+
+        #endregion
 
         #region Transferring energy
 
@@ -232,7 +230,9 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        private void GetValueFromUser(string subCommand)
+
+        //Interface
+        public void GetValueFromUser(string subCommand)
         {
             var promptWriter = this.ShipConnectedTo.Game.Interact;
 

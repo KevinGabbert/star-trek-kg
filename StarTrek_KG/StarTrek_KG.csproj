@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actors\Impulse.cs" />
+    <Compile Include="Actors\ImpulseActor.cs" />
     <Compile Include="Config\Collections\MenuElement.cs" />
     <Compile Include="Config\Collections\MenuItemDefs.cs" />
     <Compile Include="Config\Collections\MenuItems.cs" />
@@ -76,10 +76,13 @@
     <Compile Include="Experimental\Experimental.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Interfaces\IGame.cs" />
+    <Compile Include="Interfaces\IInteract.cs" />
     <Compile Include="Interfaces\IOutputMethod.cs" />
     <Compile Include="Interfaces\IQueue.cs" />
     <Compile Include="Output\Prompt.cs" />
     <Compile Include="Output\Subscriber.cs" />
+    <Compile Include="Subsystem\Impulse.cs" />
+    <Compile Include="Subsystem\Warp.cs" />
     <Compile Include="TypeSafeEnums\Menu.cs" />
     <Compile Include="Enums\MovementType.cs" />
     <Compile Include="Enums\SectorScanType.cs" />
@@ -105,7 +108,7 @@
     <Compile Include="Interfaces\IRegion.cs" />
     <Compile Include="Interfaces\ISector.cs" />
     <Compile Include="Interfaces\IStarTrekKGSettings.cs" />
-    <Compile Include="Interfaces\IInteract.cs" />
+    <Compile Include="Interfaces\IInteractContainer.cs" />
     <Compile Include="Config\Collections\Factions.cs" />
     <Compile Include="Config\Collections\NameAllegianceDesignators.cs" />
     <Compile Include="Config\Collections\FactionShips.cs" />
@@ -177,7 +180,7 @@
     <Compile Include="Output\SubscriberOutput.cs" />
     <Compile Include="Utility\Telnet.cs" />
     <Compile Include="Utility\Utility.cs" />
-    <Compile Include="Actors\Warp.cs" />
+    <Compile Include="Actors\WarpActor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

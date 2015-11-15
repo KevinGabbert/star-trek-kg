@@ -17,7 +17,7 @@ namespace StarTrek_KG
     /// <summary>
     /// This class consists of methods that have yet to be refactored into separate objects
     /// </summary>
-    public class Game : IDisposable, IInteract, IConfig, IGame
+    public class Game : IDisposable, IInteractContainer, IConfig, IGame
     {
         #region Properties
         public delegate TResult _promptFunc<T, out TResult>(T input, out T output);

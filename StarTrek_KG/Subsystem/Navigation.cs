@@ -17,22 +17,20 @@ namespace StarTrek_KG.Subsystem
         public bool Docked { get; set; } //todo: move this to ship
         public int MaxWarpFactor { get; set; }
 
-        private Warp Warp { get;}
-        private Impulse Impulse { get; }
+        private WarpActor Warp { get;}
+        private ImpulseActor Impulse { get; }
+
         public Movement Movement { get; }
-
-        #endregion
-
-        #region Commands
-
 
         #endregion
 
         public Navigation(Ship shipConnectedTo, IGame game) : base(shipConnectedTo, game)
         {
             this.Type = SubsystemType.Navigation;
-            this.Warp = new Warp(this.Game.Interact);
-            this.Impulse = new Impulse(this.Game.Interact);
+
+            this.Warp = new WarpActor(this.Game.Interact);
+            this.Impulse = new ImpulseActor(this.Game.Interact);
+
             this.Movement = new Movement(shipConnectedTo, game);
 
             //todo: refactor this to be a module variable

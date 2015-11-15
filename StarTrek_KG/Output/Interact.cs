@@ -731,13 +731,23 @@ namespace StarTrek_KG.Output
         {
             List<string> retVal = new List<string>();
 
-            if (menuCommand == Menu.wrp.ToString() || menuCommand == Menu.imp.ToString() || menuCommand == Menu.nto.ToString())
+            if (menuCommand == Menu.nto.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Navigation;
 
                 //todo: we may need to break out warp and imp, or change the process here because we can't tell which of the 3 we need for prompt.
 
                 retVal = Navigation.For(playerShip).Controls(menuCommand);
+            }
+            else if (menuCommand == Menu.wrp.ToString())
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.Warp;
+                retVal = Warp.For(playerShip).Controls(menuCommand).ToList();
+            }
+            else if (menuCommand == Menu.imp.ToString())
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.Impulse;
+                retVal = Impulse.For(playerShip).Controls(menuCommand);
             }
             else if (menuCommand == Menu.irs.ToString())
             {

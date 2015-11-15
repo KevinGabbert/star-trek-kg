@@ -38,12 +38,12 @@ namespace StarTrek_KG.Subsystem
 
         private void OutputDamagedMessage()
         {
-            this.Game.Interact.Line(this.Type + " Damaged.");
+            this.Game.Interact.Line($"{this.Type} Damaged.");
         }
 
         private void OutputRepairedMessage()
         {
-            this.Game.Interact.Line(this.Type + " Repaired.");
+            this.Game.Interact.Line($"{this.Type} Repaired.");
         }
 
         //public virtual void OutputMalfunctioningMessage()
@@ -239,6 +239,12 @@ namespace StarTrek_KG.Subsystem
         public int GetNext(int seed)
         {
             return (Utility.Utility.Random).Next(seed);
+        }
+
+        public bool NotRecognized(string command, IInteraction promptInteraction)
+        {
+            bool recognized = (this.InFirstLevelMenu(command, promptInteraction));
+            return !recognized;
         }
     }
 }
