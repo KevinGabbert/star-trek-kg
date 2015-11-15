@@ -63,7 +63,7 @@ namespace StarTrek_KG.Subsystem
             return null;
         }
 
-        public void GetValueFromUser(string subCommand)
+        public void GetValueFromUser(string subCommand, IInteraction prompt)
         {
             //var promptWriter = this.ShipConnectedTo.Game.Interact;
 
