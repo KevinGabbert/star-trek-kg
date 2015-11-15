@@ -57,7 +57,7 @@ namespace StarTrek_KG.Actors
             }
             return false;
         }
-        public bool Engage(int direction, int distance, out int lastRegionY, out int lastRegionX, IMap map)
+        public bool Engage(NavDirection direction, int distance, out int lastRegionY, out int lastRegionX, IMap map)
         {
             var success = this.EnergySubtracted(map.Playership, ref distance);
 

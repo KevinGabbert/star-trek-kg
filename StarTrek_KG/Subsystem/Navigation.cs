@@ -103,7 +103,7 @@ namespace StarTrek_KG.Subsystem
             this.Game.Interact.Output.Queue.Clear();
 
             string distance;
-            int direction;
+            NavDirection direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
             {
@@ -138,7 +138,7 @@ namespace StarTrek_KG.Subsystem
         /// <summary>
         /// This is the Warp Workflow
         /// </summary>
-        private List<string> WarpControls()
+        private void WarpControls()
         {
             this.Game.Interact.Output.Queue.Clear();
 
@@ -148,21 +148,21 @@ namespace StarTrek_KG.Subsystem
             }
 
             string distance;
-            int direction;
+            NavDirection direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
             {
-                return null;
+                return;
             }
 
-            if (this.Warp.PromptAndCheckForInvalidWarpFactor(this.MaxWarpFactor, out distance)) return null;
+            if (this.Warp.PromptAndCheckForInvalidWarpFactor(this.MaxWarpFactor, out distance)) return;
 
             int lastRegionY;
             int lastRegionX;
 
             if (!Warp.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.Game.Map))
             {
-                return null;
+                return;
             }
 
             this.RepairOrTakeDamage(lastRegionX, lastRegionY);
@@ -180,7 +180,7 @@ namespace StarTrek_KG.Subsystem
             //todo: upon arriving in Region, all damaged controls need to be enumerated
             //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            return this.Game.Interact.Output.Queue.ToList();
+            return;
         }
 
         private void RepairOrTakeDamage(int lastRegionX, int lastRegionY)

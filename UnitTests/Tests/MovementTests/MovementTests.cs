@@ -111,7 +111,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitGalacticBarrierNorth()
         {
-            this.Move_Region(((int)NavDirection.North).ToString(), 5 * 8);
+            this.Move_Region(((int)NavDirection.Up).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
@@ -125,7 +125,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitGalacticBarrierSouth()
         {
-            this.Move_Region(((int)NavDirection.South).ToString(), 5 * 8);
+            this.Move_Region(((int)NavDirection.Down).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
@@ -139,7 +139,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitGalacticBarrierEast()
         {
-            this.Move_Region(((int)NavDirection.East).ToString(), 5 * 8);
+            this.Move_Region(((int)NavDirection.Right).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
@@ -154,7 +154,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitGalacticBarrierWest()
         {
-            this.Move_Region(((int)NavDirection.West).ToString(), 5 * 8);
+            this.Move_Region(((int)NavDirection.Left).ToString(), 5 * 8);
 
             Assert.IsTrue(_testMovement.BlockedByGalacticBarrier, "Expected Galactic Barrier to be hit");
 
@@ -303,29 +303,29 @@ namespace UnitTests.ShipTests.MovementTests
         //    }
         //}
 
-        private void Move_Sector(string direction, int distance)
-        {
-            var playershipRegion = this.Game.Map.Playership.GetRegion();
+        //private void Move_Sector(NavDirection direction, int distance)
+        //{
+        //    var playershipRegion = this.Game.Map.Playership.GetRegion();
 
-            _startingRegion = new Coordinate(playershipRegion.X, playershipRegion.Y);
+        //    _startingRegion = new Coordinate(playershipRegion.X, playershipRegion.Y);
 
-            _startingSectorX = this.Game.Map.Playership.Sector.X;
-            _startingSectorY = this.Game.Map.Playership.Sector.Y;
+        //    _startingSectorX = this.Game.Map.Playership.Sector.X;
+        //    _startingSectorY = this.Game.Map.Playership.Sector.Y;
 
-            //verify that the ship is where we think it is before we start
-            Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(this.Game.Map.Regions.GetActive().Sectors,
-                                                           this.Game.Map.Playership.Sector.X,
-                                                           this.Game.Map.Playership.Sector.Y).Item);
-            var sectorItem =
-                Sector.Get(_testMovement.Game.Map.Regions.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
-                                                                       _testMovement.Game.Map.Playership.Sector.Y).Item;
-            Assert.AreEqual(SectorItem.PlayerShip, sectorItem);
+        //    //verify that the ship is where we think it is before we start
+        //    Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(this.Game.Map.Regions.GetActive().Sectors,
+        //                                                   this.Game.Map.Playership.Sector.X,
+        //                                                   this.Game.Map.Playership.Sector.Y).Item);
+        //    var sectorItem =
+        //        Sector.Get(_testMovement.Game.Map.Regions.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
+        //                                                               _testMovement.Game.Map.Playership.Sector.Y).Item;
+        //    Assert.AreEqual(SectorItem.PlayerShip, sectorItem);
 
-            _testMovement.Execute(MovementType.Impulse, Convert.ToInt32(direction), distance, out _lastRegionX, out _lastRegionY);
+        //    _testMovement.Execute(MovementType.Impulse, direction, distance, out _lastRegionX, out _lastRegionY);
 
-            //EnergySubtracted changes an entered value of .1 to .8
-            //todo: measure time passed
-        }
+        //    //EnergySubtracted changes an entered value of .1 to .8
+        //    //todo: measure time passed
+        //}
 
 #endregion
         #region Regions
@@ -504,7 +504,10 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveRegion_East()
         {
-            this.Move_Region(((int)NavDirection.East).ToString(), 1*8);
+            //todo: fails from hitting galactic barrier.  map init error??
+
+
+            this.Move_Region(((int)NavDirection.Right).ToString(), 1*8);
 
             //TODO: verify that "Friendly" has been set back down on map after movement (because console app is showing
             //TODO: it dissappearing.) -- verify sector
@@ -522,7 +525,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveRegion_SouthEast()
         {
-            this.Move_Region(((int)NavDirection.SouthEast).ToString(), 1 * 8);
+            this.Move_Region(((int)NavDirection.RightDown).ToString(), 1 * 8);
 
             this.CheckRegionsAfterMovement(true);
 
@@ -538,7 +541,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveRegion_South()
         {
-            this.Move_Region(((int)NavDirection.South).ToString(), 1 * 8);
+            this.Move_Region(((int)NavDirection.Down).ToString(), 1 * 8);
 
             this.CheckRegionsAfterMovement(true);
 
@@ -550,7 +553,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveRegion_SouthWest()
         {
-            this.Move_Region(((int)NavDirection.SouthWest).ToString(), 1 * 8);
+            this.Move_Region(((int)NavDirection.LeftDown).ToString(), 1 * 8);
 
             this.CheckRegionsAfterMovement(true);
 
@@ -573,7 +576,7 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(4, _startingRegion.X);
             Assert.AreEqual(4, _startingRegion.Y);
 
-            this.Move_Region(((int)NavDirection.West).ToString(), 1 * 8);
+            this.Move_Region(((int)NavDirection.Left).ToString(), 1 * 8);
 
             Assert.AreEqual(4, _startingRegion.X);
             Assert.AreEqual(4, _startingRegion.Y);
@@ -588,7 +591,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveRegion_NorthWest()
         {
-            this.Move_Region(((int)NavDirection.NorthWest).ToString(), 1 * 8);
+            this.Move_Region(((int)NavDirection.LeftUp).ToString(), 1 * 8);
 
             this.CheckRegionsAfterMovement(true);
 
@@ -604,7 +607,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveRegion_North()
         {
-            this.Move_Region(((int)NavDirection.North).ToString(), 1 * 8);
+            this.Move_Region(((int)NavDirection.Up).ToString(), 1 * 8);
 
             this.CheckRegionsAfterMovement(true);
 
@@ -616,7 +619,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void MoveRegion_NorthEast()
         {
-            this.Move_Region(((int)NavDirection.NorthEast).ToString(), 1 * 8);
+            this.Move_Region(((int)NavDirection.RightUp).ToString(), 1 * 8);
 
             this.CheckRegionsAfterMovement(true);
 
@@ -669,7 +672,7 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void Move_Region(string direction, int distance)
         {
-            _testMovement.Execute(MovementType.Warp, Convert.ToInt32(direction), distance, out _lastRegionX, out _lastRegionY);
+            _testMovement.Execute(MovementType.Warp, (NavDirection)(Convert.ToInt32(direction)), distance, out _lastRegionX, out _lastRegionY);
         }
 
         //todo: this needs to be refactored into a ship setup testfixture or something.

@@ -2,13 +2,13 @@
 {
     public enum NavDirection
     {
-        East = 7,
-        SouthEast = 8,
-        South = 1,
-        SouthWest = 2,
-        West = 3,
-        NorthWest = 4,
-        North = 5,
-        NorthEast = 6
+        Right = 7,
+        RightDown = 8,
+        Down = 1,
+        LeftDown = 2,
+        Left = 3,
+        LeftUp = 4,
+        Up = 5,
+        RightUp = 6
     }
 }

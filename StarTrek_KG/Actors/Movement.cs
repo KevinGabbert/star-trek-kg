@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
@@ -23,7 +24,7 @@ namespace StarTrek_KG.Actors
             base.ShipConnectedTo = shipConnectedTo;
         }
 
-        public void Execute(MovementType movementType, int direction, int distance, out int lastRegionX, out int lastRegionY)
+        public void Execute(MovementType movementType, NavDirection direction, int distance, out int lastRegionX, out int lastRegionY)
         {
             Region playershipRegion = this.ShipConnectedTo.GetRegion();
 
@@ -63,7 +64,9 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        private void TravelThroughSectors(int distance, int direction, IShip travellingShip)
+        #region Sectors
+
+        private void TravelThroughSectors(int distance, NavDirection direction, IShip travellingShip)
         {
             // 4   5   6
             //   \ ↑ /
@@ -71,49 +74,56 @@ namespace StarTrek_KG.Actors
             //   / ↓ \
             // 2   1   8
 
-            direction = -direction + 8;
+            //int navDirection = -(int)direction + 8;
 
             var currentRegion = travellingShip.GetRegion();
 
-            int currentSX = travellingShip.Sector.X;
-            int currentSY = travellingShip.Sector.Y;
+            int currentSectorX = travellingShip.Sector.X;
+            int currentSectorY = travellingShip.Sector.Y;
 
-            for (int i = 0; i < distance; i++)
+            for (int sector = 0; sector < distance; sector++)
             {
-                switch (Convert.ToInt32(direction))
+                switch (direction)
                 {
-                    case 3:
-                        currentSX--; //left
+                    case NavDirection.Left:
+                        this.GoLeft(ref currentSectorX);
                         break;
-                    case 4:
-                        currentSX--; //left
-                        currentSY--; //up
+
+                    case NavDirection.LeftUp:
+                        this.GoLeft(ref currentSectorX);
+                        this.GoUp(ref currentSectorY);
                         break;
-                    case 5:
-                        currentSY--; //up
+
+                    case NavDirection.Up:
+                        this.GoUp(ref currentSectorY);
                         break;
-                    case 6:
-                        currentSX++; //right
-                        currentSY--; //up
+
+                    case NavDirection.RightUp:
+                        this.GoRight(ref currentSectorX);
+                        this.GoUp(ref currentSectorY);
                         break;
-                    case 7:
-                        currentSX++; //right
+
+                    case NavDirection.Right:
+                        this.GoRight(ref currentSectorX);
                         break;
-                    case 0:
-                        currentSX++; //right
-                        currentSY++; //down
+
+                    case NavDirection.RightDown:
+                        this.GoRight(ref currentSectorX);
+                        this.GoDown(ref currentSectorY);
                         break;
-                    case 1:
-                        currentSY++; //down
+
+                    case NavDirection.Down:
+                        this.GoDown(ref currentSectorY);
                         break;
-                    case 2:
-                        currentSX--; //left
-                        currentSY++; //down
+
+                    case NavDirection.LeftDown:
+                        this.GoLeft(ref currentSectorX);
+                        this.GoDown(ref currentSectorY);
                         break;
                 }
 
                 //if on the edge of a Region, newSector will have negative numbers
-                var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, currentSX, currentSY), false);
+                var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, currentSectorX, currentSectorY), false);
 
                 var locationToScan = new Location(this.ShipConnectedTo.GetRegion(), newSectorCandidate);
 
@@ -151,13 +161,6 @@ namespace StarTrek_KG.Actors
                 Location newLocation = locationToScan;
                 newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
 
-                //todo: finish this.
-                var shipRegion = travellingShip.GetRegion();
-
-                if (newLocation.Region != shipRegion)
-                {
-                    newLocation.Sector = this.AdjustSectorToNewRegion(newLocation, this.Game.Map, shipRegion);
-                }
 
                 this.Game.Map.SetPlayershipInLocation(travellingShip, this.Game.Map, newLocation);
 
@@ -165,33 +168,26 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        /// <summary>
-        /// This will take any segative or > max values and reset them to the new region
-        /// </summary>
-        /// <param name="locationWithNewRegionButBadSectorNumbers"></param>
-        /// <param name="map"></param>
-        /// <param name="currentRegion"></param>
-        /// <returns></returns>
-        private ISector AdjustSectorToNewRegion(Location locationWithNewRegionButBadSectorNumbers, IMap map, Region currentRegion)
+        private void GoLeft(ref int x)
         {
-            //you have the old region, and you have a sector with negative values. 
-            var result = currentRegion.DivineSectorOnMap(locationWithNewRegionButBadSectorNumbers, map);  //.  This should tell you what sector should be
-
-            //We are ignoring result.Region because it will be wrong.  
-            //TODO: Refactor .DivineSectorOnMap to take just a sector (or create overload)
-
-            //not sure why, but using .DivineSectorOnMap() this way switches the axes.  (another reason to refactor!) 
-
-
-            ////HACK: This is for test only.  Sector.Item/.Object etc will not be updated.
-            //var newY = result.Sector.X;
-            //var newX = result.Sector.Y;
-
-            //result.Sector.X = newX;
-            //result.Sector.Y = newY;
-
-            return result.Sector;
+            x--;
         }
+        private void GoRight(ref int x)
+        {
+            x++;
+        }
+        private void GoUp(ref int y)
+        {
+            y--;
+        }
+        private void GoDown(ref int y)
+        {
+            y++;
+        }
+
+        #endregion
+
+        #region Regions
 
         private Region TravelThroughRegions(int distance, int direction, IShip playership)
         {
@@ -280,6 +276,8 @@ namespace StarTrek_KG.Actors
             //if good then jump out of loop
         }
 
+        #endregion
+
         //todo: for warp-to-Region
         public void Execute(string destinationRegionName, out int lastRegionX, out int lastRegionY)
         {
@@ -308,7 +306,7 @@ namespace StarTrek_KG.Actors
         /// <param name="activeSectors"> </param>
         /// <param name="lastSector"> </param>
         /// <returns></returns>
-        private bool SublightObstacleCheck(Coordinate lastSector, Coordinate sector, Sectors activeSectors)
+        private bool SublightObstacleCheck(ICoordinate lastSector, ICoordinate sector, Sectors activeSectors)
         {
             //todo:  I think I destroyed a star and appeared in its place when navigating to a new Region.  (That or LRS is broken, or maybe it is working fine!)
             try
@@ -396,10 +394,11 @@ namespace StarTrek_KG.Actors
         //}
 
         //This prompt needs to be exposed to the user as an event
-        public bool PromptAndCheckCourse(out int direction)
+        public bool PromptAndCheckCourse(out NavDirection direction)
         {
             //var course = this.Game.Write.Course() + "Enter Course: ";
             string userDirection = "";
+            List<int> availableDirections = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 
             bool userEnteredCourse = this.Game.Prompt.Invoke($"{this.Game.Interact.RenderCourse()} Enter Course: ", out userDirection);
 
@@ -410,23 +409,23 @@ namespace StarTrek_KG.Actors
                 if (!userDirection.IsNumeric() || userDirection.Contains("."))
                 {
                     this.Game.Interact.Line("Invalid course.");
-                    direction = 0;
+                    direction = NavDirection.Up;
 
                     return true;
                 }
 
-                var directionToCheck = Convert.ToInt32(userDirection);
+                int directionToCheck = Convert.ToInt32(userDirection);
 
-                if (directionToCheck > 8 || directionToCheck < 0)
+                if (directionToCheck > availableDirections.Max() || directionToCheck < availableDirections.Min())
                 {
                     this.Game.Interact.Line("Invalid course..");
-                    direction = 0;
+                    direction = NavDirection.Up;
 
                     return true;
                 }
             }
 
-            direction = Convert.ToInt32(userDirection);
+            direction = (NavDirection)availableDirections.Where(d => d == Convert.ToInt32(userDirection)).SingleOrDefault();
 
             return false;
         }
