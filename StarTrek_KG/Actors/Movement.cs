@@ -12,11 +12,17 @@ namespace StarTrek_KG.Actors
 {
     public class Movement : System
     {
+        // 4   5   6
+        //   \ ↑ /
+        //3 ← <*> → 7
+        //   / ↓ \
+        // 2   1   8
+
         //todo: to fully abstract this out, this could be a Blocked by property, set to whatever stops us from moving.
         public bool BlockedByObstacle { get; set; }
         public bool BlockedByGalacticBarrier { get; private set; }
 
-        private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil";
+        private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil"; //todo: resource this.
 
         public Movement(Ship shipConnectedTo, IGame game)
         {
@@ -42,8 +48,7 @@ namespace StarTrek_KG.Actors
                     break;
 
                 case MovementType.Warp:
-                    Region newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), Convert.ToInt32(direction),
-                        this.ShipConnectedTo);
+                    Region newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), direction, this.ShipConnectedTo);
 
                     this.ShipConnectedTo.Coordinate = newLocation;
 
@@ -56,261 +61,15 @@ namespace StarTrek_KG.Actors
 
                     break;
                     //todo:
-                    //case MovementType.X:
-                    //    newLocation = this.TravelThroughGalaxies()
+
+                //case MovementType.TransWarp:
+                //    newLocation = this.TravelThroughGalaxies()
+
                 default:
                     this.Game.Interact.Line("Unsupported Movement Type");
                     break;
             }
         }
-
-        #region Sectors
-
-        private void TravelThroughSectors(int distance, NavDirection impulseTravelDirection, IShip travellingShip)
-        {
-            // 4   5   6
-            //   \ ↑ /
-            //3 ← <*> → 7
-            //   / ↓ \
-            // 2   1   8
-
-            //int navDirection = -(int)direction + 8;
-
-            var currentRegion = travellingShip.GetRegion();
-
-            int currentSectorX = travellingShip.Sector.X;
-            int currentSectorY = travellingShip.Sector.Y;
-
-            for (int sector = 0; sector < distance; sector++)
-            {
-                switch (impulseTravelDirection)
-                {
-                    case NavDirection.Left:
-                        this.GoLeft(ref currentSectorX);
-                        break;
-
-                    case NavDirection.LeftUp:
-                        this.GoLeft(ref currentSectorX);
-                        this.GoUp(ref currentSectorY);
-                        break;
-
-                    case NavDirection.Up:
-                        this.GoUp(ref currentSectorY);
-                        break;
-
-                    case NavDirection.RightUp:
-                        this.GoRight(ref currentSectorX);
-                        this.GoUp(ref currentSectorY);
-                        break;
-
-                    case NavDirection.Right:
-                        this.GoRight(ref currentSectorX);
-                        break;
-
-                    case NavDirection.RightDown:
-                        this.GoRight(ref currentSectorX);
-                        this.GoDown(ref currentSectorY);
-                        break;
-
-                    case NavDirection.Down:
-                        this.GoDown(ref currentSectorY);
-                        break;
-
-                    case NavDirection.LeftDown:
-                        this.GoLeft(ref currentSectorX);
-                        this.GoDown(ref currentSectorY);
-                        break;
-                }
-
-                bool stopNavigation;
-                Location newLocation = this.GetNewLocation(impulseTravelDirection, travellingShip, currentRegion, new Coordinate(currentSectorX, currentSectorY), out stopNavigation);
-
-                if (stopNavigation)
-                {
-                    break;
-                }
-                else
-                {
-                    this.Game.Map.SetPlayershipInLocation(travellingShip, this.Game.Map, newLocation);
-                }
-
-                //todo:  this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
-            }
-        }
-
-        private Location GetNewLocation(NavDirection impulseTravelDirection, ISectorObject travellingShip, Region currentRegion, ICoordinate newCoordinate, out bool stopNavigation)
-        {
-            //if on the edge of a Region, newSector will have negative numbers
-            var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, newCoordinate.X, newCoordinate.Y));
-
-            Region newRegionCandidate = null;
-
-            if (newSectorCandidate.Invalid())
-            {
-                newRegionCandidate = Regions.GetNext(this.ShipConnectedTo.Map, currentRegion, newSectorCandidate, impulseTravelDirection);
-                newSectorCandidate.IncrementForNewRegion();
-            }
-            else
-            {
-                newRegionCandidate = this.ShipConnectedTo.GetRegion();
-            }
-
-            var locationToScan = new Location(newRegionCandidate, newSectorCandidate);
-
-            //run IRS on sector we are moving into
-            IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan);
-
-            //If newSectorCandidate had negative numbers, then scanResult will have the newly updated region in it
-
-            if (scanResult.GalacticBarrier)
-            {
-                this.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
-                stopNavigation = true;
-            }
-            else
-            {
-                //todo: how we gonna check for obstacles if scanresult has bad numbers in it?
-                bool obstacleEncountered = this.SublightObstacleCheck((Coordinate) travellingShip.Sector, newSectorCandidate, currentRegion.Sectors);
-
-                if (obstacleEncountered)
-                {
-                    this.Game.Interact.Line("All Stop.");
-                    stopNavigation = true;
-                }
-
-                stopNavigation = false;
-
-                //bool nebulaEncountered = Sectors.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
-                //if (nebulaEncountered)
-                //{
-                //    this.Game.Write.Line("Nebula Encountered. Navigation stopped to manually recalibrate warp coil");
-                //    return;
-                //}
-            }
-
-            Location newLocation = locationToScan;
-
-            if (stopNavigation)
-            {
-                newLocation = null;
-            }
-            else
-            {
-                newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
-            }
-
-            return newLocation;
-        }
-
-        private void GoLeft(ref int x)
-        {
-            x--;
-        }
-        private void GoRight(ref int x)
-        {
-            x++;
-        }
-        private void GoUp(ref int y)
-        {
-            y--;
-        }
-        private void GoDown(ref int y)
-        {
-            y++;
-        }
-
-        #endregion
-
-        #region Regions
-
-        private Region TravelThroughRegions(int distance, int direction, IShip playership)
-        {
-            // 4   5   6
-            //   \ ↑ /
-            //3 ← <*> → 7
-            //   / ↓ \
-            // 2   1   8
-
-            Region currentRegion = playership.GetRegion();
-            Region newRegion = currentRegion;
-
-            //todo: get rid of this double-stuff. I'm only doing this so that IsGalacticBarrier can be used by both Region and Sector Navigation.
-            int futureShipRegionX = currentRegion.X;
-            int futureShipRegionY = currentRegion.Y;
-
-            for (int i = 0; i < distance; i++)
-            {
-                switch (direction)
-                {
-                    case 3:
-                        futureShipRegionX--; //left
-                        break;
-                    case 4:
-                        futureShipRegionX--; //left
-                        futureShipRegionY--; //up
-                        break;
-                    case 5:
-                        futureShipRegionY--; //up
-                        break;
-                    case 6:
-                        futureShipRegionX++; //right
-                        futureShipRegionY--; //up
-                        break;
-                    case 7:
-                        futureShipRegionX++; //right
-                        break;
-                    case 8:
-                        futureShipRegionX++; //right
-                        futureShipRegionY++; //down
-                        break;
-                    case 1:
-                        futureShipRegionY++; //down
-                        break;
-                    case 2:
-                        futureShipRegionX--; //left
-                        futureShipRegionY++; //down
-                        break;
-                }
-
-                //todo: check if Region is nebula or out of bounds
-
-                bool barrierHit = this.Game.Map.Regions.IsGalacticBarrier(futureShipRegionX, futureShipRegionY);  //XY will be set to safe value in here
-                this.BlockedByGalacticBarrier = barrierHit;
-
-                if (barrierHit)
-                {
-                    //ship location is not updated. this means the ship will stop right before the barrier
-                    //todo: later, a config option could be that the ship can be thrown to an adjacent region.
-                    break;
-                }
-                else
-                {
-                    //set ship location to the new location
-                    newRegion = Regions.Get(this.ShipConnectedTo.Map, new Coordinate(futureShipRegionX, futureShipRegionY));
-
-                    bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
-                    if (nebulaEncountered)
-                    {
-                        base.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
-                        break;
-                    }
-                }
-
-            } //for loop end
-
-            return newRegion;
-
-            //todo: once we have found Region..
-            //is target location blocked?
-            //if true, then output that expected location was blocked, and ship's computers have picked a new spot
-            
-            //while loop
-            //   pick a random sector
-            //   check it for obstacle
-            //if good then jump out of loop
-        }
-
-        #endregion
 
         //todo: for warp-to-Region
         public void Execute(string destinationRegionName, out int lastRegionX, out int lastRegionY)
@@ -328,6 +87,35 @@ namespace StarTrek_KG.Actors
             this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Region  
 
             this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
+        }
+
+        #region Sectors
+
+        private void TravelThroughSectors(int distance, NavDirection impulseTravelDirection, IShip travellingShip)
+        {
+            var currentRegion = travellingShip.GetRegion();
+
+            int currentSectorX = travellingShip.Sector.X;
+            int currentSectorY = travellingShip.Sector.Y;
+
+            for (int sector = 0; sector < distance; sector++)
+            {
+                this.GetNewCoordinate(impulseTravelDirection, ref currentSectorX, ref currentSectorY);
+
+                bool stopNavigation;
+                Location newLocation = this.GetNewLocation(impulseTravelDirection, travellingShip, currentRegion, new Coordinate(currentSectorX, currentSectorY), out stopNavigation);
+
+                if (stopNavigation)
+                {
+                    break;
+                }
+                else
+                {
+                    this.Game.Map.SetPlayershipInLocation(travellingShip, this.Game.Map, newLocation);
+                }
+
+                //todo:  this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
+            }
         }
 
         /// <summary>
@@ -388,7 +176,7 @@ namespace StarTrek_KG.Actors
                                       sector.Y + "]");
                     break;
 
-                    
+
                 case SectorItem.Starbase:
                     this.Game.Interact.Line("Starbase encountered while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
@@ -397,6 +185,174 @@ namespace StarTrek_KG.Actors
                     this.Game.Interact.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
                     break;
             }
+        }
+
+        #endregion
+
+        #region Regions
+
+        private Region TravelThroughRegions(int distance, NavDirection warpDirection, IShip playership)
+        {
+            Region currentRegion = playership.GetRegion();
+            Region newRegion = currentRegion;
+
+            //todo: get rid of this double-stuff. I'm only doing this so that IsGalacticBarrier can be used by both Region and Sector Navigation.
+            int futureShipRegionX = currentRegion.X;
+            int futureShipRegionY = currentRegion.Y;
+
+            for (int i = 0; i < distance; i++)
+            {
+                this.GetNewCoordinate(warpDirection, ref futureShipRegionX, ref futureShipRegionY);
+
+                //todo: refactor this with sector stuff
+
+                //todo: check if Region is nebula or out of bounds
+
+                bool barrierHit = this.Game.Map.Regions.IsGalacticBarrier(futureShipRegionX, futureShipRegionY);  //XY will be set to safe value in here
+                this.BlockedByGalacticBarrier = barrierHit;
+
+                if (barrierHit)
+                {
+                    //ship location is not updated. this means the ship will stop right before the barrier
+                    //todo: later, a config option could be that the ship can be thrown to an adjacent region.
+                    break;
+                }
+                else
+                {
+                    //set ship location to the new location
+                    newRegion = Regions.Get(this.ShipConnectedTo.Map, new Coordinate(futureShipRegionX, futureShipRegionY));
+
+                    bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
+                    if (nebulaEncountered)
+                    {
+                        base.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
+                        break;
+                    }
+                }
+
+            } //for loop end
+
+            return newRegion;
+
+            //todo: once we have found Region..
+            //is target location blocked?
+            //if true, then output that expected location was blocked, and ship's computers have picked a new spot
+            
+            //while loop
+            //   pick a random sector
+            //   check it for obstacle
+            //if good then jump out of loop
+        }
+
+        #endregion
+
+        private void GetNewCoordinate(NavDirection travelDirection, ref int currentCoordinateX, ref int currentCoordinateY)
+        {
+            switch (travelDirection)
+            {
+                case NavDirection.Left:
+                    this.GoLeft(ref currentCoordinateX);
+                    break;
+
+                case NavDirection.LeftUp:
+                    this.GoLeft(ref currentCoordinateX);
+                    this.GoUp(ref currentCoordinateY);
+                    break;
+
+                case NavDirection.Up:
+                    this.GoUp(ref currentCoordinateY);
+                    break;
+
+                case NavDirection.RightUp:
+                    this.GoRight(ref currentCoordinateX);
+                    this.GoUp(ref currentCoordinateY);
+                    break;
+
+                case NavDirection.Right:
+                    this.GoRight(ref currentCoordinateX);
+                    break;
+
+                case NavDirection.RightDown:
+                    this.GoRight(ref currentCoordinateX);
+                    this.GoDown(ref currentCoordinateY);
+                    break;
+
+                case NavDirection.Down:
+                    this.GoDown(ref currentCoordinateY);
+                    break;
+
+                case NavDirection.LeftDown:
+                    this.GoLeft(ref currentCoordinateX);
+                    this.GoDown(ref currentCoordinateY);
+                    break;
+
+                default:
+                    throw new ArgumentException("NavDirection not supported.");
+            }
+        }
+
+        private Location GetNewLocation(NavDirection impulseTravelDirection, ISectorObject travellingShip, Region currentRegion, ICoordinate newCoordinate, out bool stopNavigation)
+        {
+            //if on the edge of a Region, newSector will have negative numbers
+            var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, newCoordinate.X, newCoordinate.Y));
+
+            Region newRegionCandidate = null;
+
+            if (newSectorCandidate.Invalid())
+            {
+                newRegionCandidate = Regions.GetNext(this.ShipConnectedTo.Map, currentRegion, impulseTravelDirection);
+                newSectorCandidate.IncrementForNewRegion();
+            }
+            else
+            {
+                newRegionCandidate = this.ShipConnectedTo.GetRegion();
+            }
+
+            var locationToScan = new Location(newRegionCandidate, newSectorCandidate);
+
+            //run IRS on sector we are moving into
+            IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan);
+
+            //If newSectorCandidate had negative numbers, then scanResult will have the newly updated region in it
+
+            if (scanResult.GalacticBarrier)
+            {
+                this.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
+                stopNavigation = true;
+            }
+            else
+            {
+                //todo: how we gonna check for obstacles if scanresult has bad numbers in it?
+                bool obstacleEncountered = this.SublightObstacleCheck((Coordinate)travellingShip.Sector, newSectorCandidate, currentRegion.Sectors);
+
+                if (obstacleEncountered)
+                {
+                    this.Game.Interact.Line("All Stop.");
+                    stopNavigation = true;
+                }
+
+                stopNavigation = false;
+
+                //bool nebulaEncountered = Sectors.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
+                //if (nebulaEncountered)
+                //{
+                //    this.Game.Write.Line("Nebula Encountered. Navigation stopped to manually recalibrate warp coil");
+                //    return;
+                //}
+            }
+
+            Location newLocation = locationToScan;
+
+            if (stopNavigation)
+            {
+                newLocation = null;
+            }
+            else
+            {
+                newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
+            }
+
+            return newLocation;
         }
 
         //private Region SetShipLocation(double vectorX, double vectorY)
@@ -497,5 +453,22 @@ namespace StarTrek_KG.Actors
 
         //    return false;
         //}
+
+        private void GoLeft(ref int x)
+        {
+            x--;
+        }
+        private void GoRight(ref int x)
+        {
+            x++;
+        }
+        private void GoUp(ref int y)
+        {
+            y--;
+        }
+        private void GoDown(ref int y)
+        {
+            y++;
+        }
     }
 } 

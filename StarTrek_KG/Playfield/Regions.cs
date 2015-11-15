@@ -183,8 +183,10 @@ namespace StarTrek_KG.Playfield
         /// Gets the next region in the direction provided
         /// </summary>
         /// <param name="direction"></param>
+        /// <param name="map"></param>
+        /// <param name="currentRegion"></param>
         /// <returns></returns>
-        internal static Region GetNext(IMap map, Region currentRegion, Sector newSectorCandidate, NavDirection direction)
+        internal static Region GetNext(IMap map, Region currentRegion, NavDirection direction)
         {
             int newRegionX = 0;
             int newRegionY = 0;
