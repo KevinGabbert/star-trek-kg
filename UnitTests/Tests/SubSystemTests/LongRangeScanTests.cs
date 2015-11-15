@@ -40,8 +40,8 @@ namespace UnitTests.Tests.SubSystemTests
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
 
-            DEFAULTS.Region_MIN = 0;
-            DEFAULTS.Region_MAX = 0;
+            DEFAULTS.REGION_MIN = 0;
+            DEFAULTS.REGION_MAX = 0;
 
             this.Game.Map = null;
         }
@@ -143,7 +143,7 @@ namespace UnitTests.Tests.SubSystemTests
                 Initialize = true,
                 SectorDefs = new SectorDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(DEFAULTS.Region_MAX - 1, DEFAULTS.Region_MAX - 1), new Coordinate(DEFAULTS.Region_MAX - 1, DEFAULTS.Region_MAX - 1)), SectorItem.PlayerShip)
+                        new SectorDef(new LocationDef(new Coordinate(DEFAULTS.REGION_MAX - 1, DEFAULTS.REGION_MAX - 1), new Coordinate(DEFAULTS.REGION_MAX - 1, DEFAULTS.REGION_MAX - 1)), SectorItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config);

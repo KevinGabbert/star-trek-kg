@@ -207,9 +207,9 @@ namespace StarTrek_KG.Subsystem
 
             var myLocation = this.ShipConnectedTo.GetLocation();
 
-            for (var RegionLB = 0; RegionLB < DEFAULTS.Region_MAX; RegionLB++)
+            for (var RegionLB = 0; RegionLB < DEFAULTS.REGION_MAX; RegionLB++)
             {
-                for (var RegionUB = 0; RegionUB < DEFAULTS.Region_MAX; RegionUB++)
+                for (var RegionUB = 0; RegionUB < DEFAULTS.REGION_MAX; RegionUB++)
                 {
                     //todo: refactor this function
                     //todo: this needs to be refactored with LRS!

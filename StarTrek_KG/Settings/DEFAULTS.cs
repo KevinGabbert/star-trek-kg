@@ -24,13 +24,12 @@ namespace StarTrek_KG.Settings
         public static int SECTOR_MIN; 
         public static int SECTOR_MAX; 
 
-        public static int Region_MIN; 
-        public static int Region_MAX;
+        public static int REGION_MIN; 
+        public static int REGION_MAX;
 
         public static int SHIELDS_DOWN_LEVEL;
         public static int LOW_ENERGY_LEVEL;
 
-        public static readonly List<string> MAP_DIRECTION = new List<string>() { "1", "2", "3", "4", "5", "6", "7", "8" };
         public static bool DEBUG_MODE;
 
         public static string SECTOR_INDICATOR = "§"; //todo: resource this out

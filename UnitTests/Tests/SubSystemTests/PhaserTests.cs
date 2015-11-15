@@ -23,8 +23,8 @@ namespace UnitTests.ShipTests.SubSystemTests
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
 
-            DEFAULTS.Region_MIN = 0;
-            DEFAULTS.Region_MAX = 0;
+            DEFAULTS.REGION_MIN = 0;
+            DEFAULTS.REGION_MAX = 0;
         }
 
         [Test]

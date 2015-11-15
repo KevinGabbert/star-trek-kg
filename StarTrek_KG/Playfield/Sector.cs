@@ -43,26 +43,18 @@ namespace StarTrek_KG.Playfield
             this.RegionDef = location.Region;
         }
 
-        public Sector(LocationDef location, bool enforceBoundsChecking)
-        {
-            this.Type = SectorType.Space;
-            this.X = location.Sector.X;
-            this.Y = location.Sector.Y;
-            this.RegionDef = location.Region;
-        }
-
         public static Sector Get(Sectors sectors, int sX, int sY)
         {
             var gotSectors = sectors.Where(s => s.X == sX && s.Y == sY).ToList();
 
             if (!gotSectors.Any())
             {
-                throw new GameConfigException("Sector not found:  X: " + sX + " Y: " + sY + " Total Sectors: " + sectors.Count);
+                throw new GameConfigException($"Sector not found:  X: {sX} Y: {sY} Total Sectors: {sectors.Count}");
             }
 
             if (gotSectors.Count > 1)
             {
-                throw new GameConfigException("Multiple sectors found. X: " + sX + " Y: " + sY + " Total Sectors: " + sectors.Count);
+                throw new GameConfigException($"Multiple sectors found. X: {sX} Y: {sY} Total Sectors: {sectors.Count}");
             }
 
             //There can only be one active sector
@@ -100,7 +92,7 @@ namespace StarTrek_KG.Playfield
 
         public override string ToString()
         {
-            return "Sector: " + this.X + ", " + this.Y;
+            return $"Sector: {this.X}, {this.Y}";
         }
 
         public static int SIncrement(int coordinateDimension)
@@ -174,6 +166,44 @@ namespace StarTrek_KG.Playfield
         public Coordinate GetCoordinate()
         {
             return new Coordinate(this.X, this.Y);
+        }
+
+        public bool Invalid()
+        {
+            bool invalid = this.X < DEFAULTS.SECTOR_MIN || 
+                           this.X >= DEFAULTS.SECTOR_MAX ||
+                           this.Y < DEFAULTS.SECTOR_MIN ||
+                           this.Y >= DEFAULTS.SECTOR_MAX;
+
+            return invalid;
+        }
+
+        public void IncrementForNewRegion()
+        {
+            int currentX = this.X;
+            int currentY = this.Y;
+
+            int resetValue = DEFAULTS.SECTOR_MAX + 1;
+
+            if (this.X < DEFAULTS.SECTOR_MIN)
+            {
+                this.X = currentX - resetValue;
+            }
+
+            if (this.Y < DEFAULTS.SECTOR_MIN)
+            {
+                this.Y = currentY - resetValue;
+            }
+
+            if (this.X > DEFAULTS.SECTOR_MAX)
+            {
+                this.X = resetValue - currentX;
+            }
+
+            if (this.Y >= DEFAULTS.SECTOR_MAX)
+            {
+                this.Y = resetValue - currentY;
+            }
         }
     }
 }

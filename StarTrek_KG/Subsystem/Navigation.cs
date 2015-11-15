@@ -259,16 +259,16 @@ namespace StarTrek_KG.Subsystem
                 (thisShip.Region.X), (thisShip.Region.Y)));
 
             if (!this.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionX"), out RegionX, this.Game.Interact.Output.Queue, 1)
-                || int.Parse(RegionX) < (DEFAULTS.Region_MIN + 1)
-                || int.Parse(RegionX) > DEFAULTS.Region_MAX)
+                || int.Parse(RegionX) < (DEFAULTS.REGION_MIN + 1)
+                || int.Parse(RegionX) > DEFAULTS.REGION_MAX)
             {
                 this.Game.Interact.Line(this.Game.Config.GetSetting<string>("InvalidXCoordinate"));
                 return;
             }
 
             if (!this.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", this.Game.Config.GetSetting<string>("DestinationRegionY"), out RegionY, this.Game.Interact.Output.Queue, 2)
-                || int.Parse(RegionY) < (DEFAULTS.Region_MIN + 1)
-                || int.Parse(RegionY) > DEFAULTS.Region_MAX)
+                || int.Parse(RegionY) < (DEFAULTS.REGION_MIN + 1)
+                || int.Parse(RegionY) > DEFAULTS.REGION_MAX)
             {
                 this.Game.Interact.Line(this.Game.Config.GetSetting<string>("InvalidYCoordinate"));
                 return;

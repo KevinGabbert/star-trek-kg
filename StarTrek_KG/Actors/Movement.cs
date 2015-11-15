@@ -66,7 +66,7 @@ namespace StarTrek_KG.Actors
 
         #region Sectors
 
-        private void TravelThroughSectors(int distance, NavDirection direction, IShip travellingShip)
+        private void TravelThroughSectors(int distance, NavDirection impulseTravelDirection, IShip travellingShip)
         {
             // 4   5   6
             //   \ ↑ /
@@ -83,7 +83,7 @@ namespace StarTrek_KG.Actors
 
             for (int sector = 0; sector < distance; sector++)
             {
-                switch (direction)
+                switch (impulseTravelDirection)
                 {
                     case NavDirection.Left:
                         this.GoLeft(ref currentSectorX);
@@ -122,50 +122,84 @@ namespace StarTrek_KG.Actors
                         break;
                 }
 
-                //if on the edge of a Region, newSector will have negative numbers
-                var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, currentSectorX, currentSectorY), false);
+                bool stopNavigation;
+                Location newLocation = this.GetNewLocation(impulseTravelDirection, travellingShip, currentRegion, new Coordinate(currentSectorX, currentSectorY), out stopNavigation);
 
-                var locationToScan = new Location(this.ShipConnectedTo.GetRegion(), newSectorCandidate);
-
-                //run IRS on sector we are moving into
-                IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan);
-
-                //If newSectorCandidate had negative numbers, then scanResult will have the newly updated region in it
-
-                if (scanResult.GalacticBarrier)
+                if (stopNavigation)
                 {
-                    this.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
-                    return;
+                    break;
                 }
                 else
                 {
-                    //throw new NotImplementedException(); //how we gonna check for obstacles if scanresult has bad numbers in it?
-
-                    //AdjustSectorToNewRegion may need to be called here
-
-                    bool obstacleEncountered = this.SublightObstacleCheck((Coordinate) travellingShip.Sector, newSectorCandidate, currentRegion.Sectors);
-                    if (obstacleEncountered)
-                    {
-                        this.Game.Interact.Line("All Stop.");
-                        return;
-                    }
-
-                    //bool nebulaEncountered = Sectors.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
-                    //if (nebulaEncountered)
-                    //{
-                    //    this.Game.Write.Line("Nebula Encountered. Navigation stopped to manually recalibrate warp coil");
-                    //    return;
-                    //}
+                    this.Game.Map.SetPlayershipInLocation(travellingShip, this.Game.Map, newLocation);
                 }
-
-                Location newLocation = locationToScan;
-                newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
-
-
-                this.Game.Map.SetPlayershipInLocation(travellingShip, this.Game.Map, newLocation);
 
                 //todo:  this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
             }
+        }
+
+        private Location GetNewLocation(NavDirection impulseTravelDirection, ISectorObject travellingShip, Region currentRegion, ICoordinate newCoordinate, out bool stopNavigation)
+        {
+            //if on the edge of a Region, newSector will have negative numbers
+            var newSectorCandidate = new Sector(new LocationDef(currentRegion.X, currentRegion.Y, newCoordinate.X, newCoordinate.Y));
+
+            Region newRegionCandidate = null;
+
+            if (newSectorCandidate.Invalid())
+            {
+                newRegionCandidate = Regions.GetNext(this.ShipConnectedTo.Map, currentRegion, newSectorCandidate, impulseTravelDirection);
+                newSectorCandidate.IncrementForNewRegion();
+            }
+            else
+            {
+                newRegionCandidate = this.ShipConnectedTo.GetRegion();
+            }
+
+            var locationToScan = new Location(newRegionCandidate, newSectorCandidate);
+
+            //run IRS on sector we are moving into
+            IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan);
+
+            //If newSectorCandidate had negative numbers, then scanResult will have the newly updated region in it
+
+            if (scanResult.GalacticBarrier)
+            {
+                this.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
+                stopNavigation = true;
+            }
+            else
+            {
+                //todo: how we gonna check for obstacles if scanresult has bad numbers in it?
+                bool obstacleEncountered = this.SublightObstacleCheck((Coordinate) travellingShip.Sector, newSectorCandidate, currentRegion.Sectors);
+
+                if (obstacleEncountered)
+                {
+                    this.Game.Interact.Line("All Stop.");
+                    stopNavigation = true;
+                }
+
+                stopNavigation = false;
+
+                //bool nebulaEncountered = Sectors.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
+                //if (nebulaEncountered)
+                //{
+                //    this.Game.Write.Line("Nebula Encountered. Navigation stopped to manually recalibrate warp coil");
+                //    return;
+                //}
+            }
+
+            Location newLocation = locationToScan;
+
+            if (stopNavigation)
+            {
+                newLocation = null;
+            }
+            else
+            {
+                newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
+            }
+
+            return newLocation;
         }
 
         private void GoLeft(ref int x)

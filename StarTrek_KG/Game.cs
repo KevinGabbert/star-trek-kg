@@ -262,8 +262,8 @@ namespace StarTrek_KG
             DEFAULTS.SECTOR_MIN = this.Config.GetSetting<int>("SECTOR_MIN");
             DEFAULTS.SECTOR_MAX = this.Config.GetSetting<int>("SECTOR_MAX");
 
-            DEFAULTS.Region_MIN = this.Config.GetSetting<int>("Region_MIN");
-            DEFAULTS.Region_MAX = this.Config.GetSetting<int>("RegionMax");
+            DEFAULTS.REGION_MIN = this.Config.GetSetting<int>("Region_MIN");
+            DEFAULTS.REGION_MAX = this.Config.GetSetting<int>("RegionMax");
 
             DEFAULTS.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
             DEFAULTS.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");
@@ -893,8 +893,8 @@ namespace StarTrek_KG
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
 
-            DEFAULTS.Region_MIN = 0;
-            DEFAULTS.Region_MAX = 0;
+            DEFAULTS.REGION_MIN = 0;
+            DEFAULTS.REGION_MAX = 0;
         }
 
         public string GetConfigText(string textToGet)

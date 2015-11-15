@@ -165,14 +165,14 @@ namespace StarTrek_KG.Playfield
 
         public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebula)
         {
-            if (DEFAULTS.Region_MAX == 0)
+            if (DEFAULTS.REGION_MAX == 0)
             {
                 throw new GameException("No Regions to set up.  Region_MAX set to Zero");
             }
 
-            for (var RegionX = 0; RegionX < DEFAULTS.Region_MAX; RegionX++) //todo: app.config
+            for (var RegionX = 0; RegionX < DEFAULTS.REGION_MAX; RegionX++) //todo: app.config
             {
-                for (var RegionY = 0; RegionY < DEFAULTS.Region_MAX; RegionY++)
+                for (var RegionY = 0; RegionY < DEFAULTS.REGION_MAX; RegionY++)
                 {
                     int index;
                     var newRegion = new Region(this);
@@ -613,10 +613,10 @@ namespace StarTrek_KG.Playfield
         public bool OutOfBounds(Region region)
         {
             var inTheNegative = region.X < 0 || region.Y < 0;
-            var maxxed = region.X == DEFAULTS.Region_MAX || region.Y == DEFAULTS.Region_MAX;
+            var maxxed = region.X == DEFAULTS.REGION_MAX || region.Y == DEFAULTS.REGION_MAX;
 
-            var yOnMap = region.Y >= 0 && region.Y < DEFAULTS.Region_MAX;
-            var xOnMap = region.X >= 0 && region.X < DEFAULTS.Region_MAX;
+            var yOnMap = region.Y >= 0 && region.Y < DEFAULTS.REGION_MAX;
+            var xOnMap = region.X >= 0 && region.X < DEFAULTS.REGION_MAX;
 
             return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
         }

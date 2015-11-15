@@ -731,7 +731,7 @@ namespace StarTrek_KG.Playfield
 
             Coordinate xx = sectorToScan ?? new Coordinate(sector.X, sector.Y);
 
-            ISector sectorToExamine = new Sector(new LocationDef(currentRegion, xx), false);
+            ISector sectorToExamine = new Sector(new LocationDef(currentRegion, xx));
             var locationToExamine = new Location(currentRegion, sectorToExamine);
 
             Location divinedLocationOnMap = currentRegion.DivineSectorOnMap(locationToExamine, this.Map);
@@ -744,7 +744,6 @@ namespace StarTrek_KG.Playfield
             {
                 
             }
-
 
             IRSResult sectorResult = ImmediateRangeScan.For(game.Map.Playership).Execute(divinedLocationOnMap);
 
@@ -1028,6 +1027,16 @@ namespace StarTrek_KG.Playfield
         public Coordinate GetCoordinate()
         {
             return new Coordinate(this.X, this.Y);
+        }
+
+        public bool Invalid()
+        {
+            bool invalid = this.X < DEFAULTS.REGION_MIN ||
+                           this.X >= DEFAULTS.REGION_MAX ||
+                           this.Y < DEFAULTS.REGION_MIN ||
+                           this.Y >= DEFAULTS.REGION_MAX;
+
+            return invalid;
         }
     }
 }

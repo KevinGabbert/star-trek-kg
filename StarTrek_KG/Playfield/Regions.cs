@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using StarTrek_KG.Constants;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
+using StarTrek_KG.Settings;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Playfield
@@ -178,6 +180,63 @@ namespace StarTrek_KG.Playfield
         }
 
         /// <summary>
+        /// Gets the next region in the direction provided
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        internal static Region GetNext(IMap map, Region currentRegion, Sector newSectorCandidate, NavDirection direction)
+        {
+            int newRegionX = 0;
+            int newRegionY = 0;
+
+            switch (direction)
+            {
+                case NavDirection.Right:
+                    newRegionX = currentRegion.X + 1;
+                    break;
+                
+                case NavDirection.RightDown:
+                    newRegionX = currentRegion.X + 1;
+                    newRegionY = currentRegion.Y + 1;
+                    break;
+
+                case NavDirection.Down:
+                    newRegionY = currentRegion.Y + 1;
+                    break;
+
+                case NavDirection.LeftDown:
+                    newRegionX = currentRegion.X - 1;
+                    newRegionY = currentRegion.Y + 1;
+                    break;
+
+                case NavDirection.Left:
+                    newRegionX = currentRegion.X - 1;
+                    break;
+
+                case NavDirection.LeftUp:
+                    newRegionX = currentRegion.X - 1;
+                    break;
+
+                case NavDirection.Up:
+                    newRegionY = currentRegion.Y - 1;
+                    break;
+
+                case NavDirection.RightUp:
+                    newRegionY = currentRegion.Y - 1;
+                    newRegionX = currentRegion.X + 1;
+                    break;
+
+                default:
+                    throw new ArgumentException("Not a valid Region");
+            }
+
+            Region newRegion = new Region(new Coordinate(newRegionX, newRegionY));
+
+            var returnVal = !newRegion.Invalid() ? Regions.Get(map, newRegion) : null;
+            return returnVal;
+        }
+
+        /// <summary>
         /// goes through each sector in this Region and clears hostiles
         /// </summary>
         /// <returns></returns>
@@ -186,7 +245,8 @@ namespace StarTrek_KG.Playfield
             try
             {
                 Sector sectorWithShipToDelete = this.Select(region => (SectorsWithMatchingShips(shipName, region))
-                    .SingleOrDefault()).SingleOrDefault(s => s != null);
+                                                    .SingleOrDefault()
+                                                    ).SingleOrDefault(s => s != null);
 
                 if (sectorWithShipToDelete != null)
                 {

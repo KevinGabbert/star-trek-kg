@@ -5,7 +5,14 @@
     /// </summary>
     public interface ICoordinate
     {
+        /// <summary>
+        /// Left (-) to Right (+)
+        /// </summary>
         int X { get; set; }
+
+        /// <summary>
+        /// Up (-) to Down (+)
+        /// </summary>
         int Y { get; set; }
     }
 }
