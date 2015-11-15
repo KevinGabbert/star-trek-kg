@@ -74,6 +74,8 @@ namespace StarTrek_KG.Subsystem
                 this.Game.Interact.Line("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
             }
 
+            this.Game.Interact.Subscriber.PromptInfo.SubCommand = this.ShipConnectedTo.Game.Interact.Subscriber.PromptInfo.SubCommand;
+
             return this.Game.Interact.Output.Queue.ToList();
         }
 
