@@ -14,7 +14,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             DEFAULTS.DEBUG_MODE = false;
            _setup.SetupMapWith1Hostile();
 
-           _setup.TestShields = new Shields(_setup.TestMap.Playership, _setup.Game);  
+           _setup.TestShields = new Shields(_setup.TestMap.Playership);  
         }
 
         public void TestPhaserHit()
