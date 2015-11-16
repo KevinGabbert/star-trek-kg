@@ -729,7 +729,7 @@ namespace StarTrek_KG.Output
         {
             List<string> retVal = new List<string>();
 
-            if (menuCommand == Menu.nto.ToString())
+            if (menuCommand == Menu.nto.ToString() || menuCommand == Menu.wrp.ToString() || menuCommand == Menu.imp.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Navigation;
 
@@ -737,16 +737,16 @@ namespace StarTrek_KG.Output
 
                 retVal = Navigation.For(playerShip).Controls(menuCommand);
             }
-            else if (menuCommand == Menu.wrp.ToString())
-            {
-                this.Subscriber.PromptInfo.SubSystem = SubsystemType.Warp;
-                retVal = Warp.For(playerShip).Controls(menuCommand).ToList();
-            }
-            else if (menuCommand == Menu.imp.ToString())
-            {
-                this.Subscriber.PromptInfo.SubSystem = SubsystemType.Impulse;
-                retVal = Impulse.For(playerShip).Controls(menuCommand);
-            }
+            //else if (menuCommand == Menu.wrp.ToString())
+            //{
+            //    this.Subscriber.PromptInfo.SubSystem = SubsystemType.Warp;
+            //    retVal = Warp.For(playerShip).Controls(menuCommand).ToList();
+            //}
+            //else if (menuCommand == Menu.imp.ToString())
+            //{
+            //    this.Subscriber.PromptInfo.SubSystem = SubsystemType.Impulse;
+            //    retVal = Impulse.For(playerShip).Controls(menuCommand);
+            //}
             else if (menuCommand == Menu.irs.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.ImmediateRangeScan;

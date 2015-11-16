@@ -144,20 +144,7 @@ namespace StarTrek_KG
 
             this.Interact.Output.Clear();
 
-            //*****
-
-            //this updates the shield subsystems reference to game
             retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, command);
-
-            //todo:
-            //problem: shields promptlevel has been updated, but the game's promptLevel has not.
-            //look.  I don't know who did what.  I'm going to have to go through a lot of linq to fix this.
-
-            //after subsystem.Prompt.Level is set, then shipConnectedTo.Game.Interaction.PromptLevel needs to be set
-
-            //grab the highest promptlevel in any subsystem
-
-            //theGame.Interact.Subscriber.PromptInfo.Level = 
 
             if (retVal == null)
             {

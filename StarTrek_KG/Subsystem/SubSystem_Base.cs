@@ -183,10 +183,15 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException($"Ship not set up with Subsystem: {subsystemType}");
+                throw new GameConfigException("Ship not set up");
             }
 
-            ISubsystem subSystemToReturn = ship.Subsystems.Single(s => s.Type == subsystemType);
+            ISubsystem subSystemToReturn = ship.Subsystems.SingleOrDefault(s => s.Type == subsystemType);
+
+            if (subSystemToReturn == null)
+            {
+                throw new GameConfigException($"Ship not set up with Subsystem: {subsystemType}");
+            }
 
             return subSystemToReturn;
         }
