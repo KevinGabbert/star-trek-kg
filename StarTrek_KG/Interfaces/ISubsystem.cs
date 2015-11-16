@@ -15,8 +15,9 @@ namespace StarTrek_KG.Interfaces
         int Damage { get; set; }
         int MaxTransfer { get; set; }
         int Energy { get; set; }
+        IInteraction Prompt { get; set; }
 
-        ISubsystem For(Ship ship, IGame game);
+        ISubsystem For(Ship ship);
 
         /// <summary>
         /// A common feature of this method is this is where you recieve damage

@@ -53,15 +53,15 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            var subsystemToFix = subsystemsFound.Single();  //yeah.  I'd rather say single() above, but oh well..
+            ISubsystem subsystemToFix = subsystemsFound.Single();  //yeah.  I'd rather say single() above, but oh well..
 
-            var thisShip = this.ShipConnectedTo;
+            Ship ship = this.ShipConnectedTo;
 
-            if (thisShip.Energy > 1000) //todo: resource this out.
+            if (ship.Energy > 1000) //todo: resource this out.
             {
-                thisShip.Energy -= 1000;  //todo: resource this out.
-                subsystemToFix.For(thisShip, this.ShipConnectedTo.Game).FullRepair();
-                this.Prompt.Line($"Ship Energy now at: {thisShip.Energy}");
+                ship.Energy -= 1000;  //todo: resource this out.
+                subsystemToFix.For(ship).FullRepair();
+                this.Prompt.Line($"Ship Energy now at: {ship.Energy}");
             }
             else
             {

@@ -22,21 +22,19 @@ namespace StarTrek_KG.Subsystem
 
             shipConnectedTo.Game = game;
 
-            this.AddRange(new List<ISubsystem>(){
-                                     new Shields(shipConnectedTo),
-                                     new ImmediateRangeScan(shipConnectedTo),
-                                     new ShortRangeScan(shipConnectedTo),
-                                     new LongRangeScan(shipConnectedTo),
-                                     new CombinedRangeScan(shipConnectedTo),
-                                     new Warp(shipConnectedTo),
-                                     new Impulse(shipConnectedTo),
-                                     new Debug(shipConnectedTo, game),
-                                     new Computer(shipConnectedTo),
-                                     new Navigation(shipConnectedTo),
-                                     new Torpedoes(shipConnectedTo),
-                                     new Phasers(shipConnectedTo),
-                                     new DamageControl(shipConnectedTo)//TODO: get game ref from shipCOnnectedTo
-                                  });
+            this.Add(new Shields(shipConnectedTo));
+            this.Add(new ImmediateRangeScan(shipConnectedTo));
+            this.Add(new ShortRangeScan(shipConnectedTo));
+            this.Add(new LongRangeScan(shipConnectedTo));
+            this.Add(new CombinedRangeScan(shipConnectedTo));
+            this.Add(new Warp(shipConnectedTo));
+            this.Add(new Impulse(shipConnectedTo));
+            this.Add(new Computer(shipConnectedTo));
+            this.Add(new Navigation(shipConnectedTo));
+            this.Add(new Torpedoes(shipConnectedTo));
+            this.Add(new Phasers(shipConnectedTo));
+            this.Add(new DamageControl(shipConnectedTo));
+            this.Add(new Debug(shipConnectedTo));
         }
 
         //todo: create an indexer so we can look up a subsystem

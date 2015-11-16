@@ -989,6 +989,7 @@ namespace StarTrek_KG.Output
         public void ResetPrompt()
         {
             this.CurrentPrompt = this.Subscriber.PromptInfo.DefaultPrompt; //todo: set this to config file default prompt 
+
             this.Subscriber.PromptInfo.SubCommand = "";
             this.Subscriber.PromptInfo.SubSystem = SubsystemType.None;
             this.Subscriber.PromptInfo.Level = 0;
@@ -1029,6 +1030,7 @@ namespace StarTrek_KG.Output
                                 Queue<string> queueToWriteTo, 
                                 int subPromptLevel = 0)
         {
+        
             bool retVal = false;
 
             try

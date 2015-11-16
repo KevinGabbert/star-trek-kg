@@ -4,6 +4,7 @@ using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
@@ -31,7 +32,7 @@ namespace StarTrek_KG.Subsystem
 
         public static Shields For(IShip ship)
         {
-            return (Shields)SubSystem_Base.For(ship, SubsystemType.Shields);
+            return (Shields)For(ship, SubsystemType.Shields);
         }
 
         #region Commands
@@ -50,20 +51,20 @@ namespace StarTrek_KG.Subsystem
             //now we know that the shield Panel command has been retrieved.
             if (!this.Damaged())
             {
-                if (this.NotRecognized(command, this.Prompt))
+                if (this.NotRecognized(command))
                 {
                     this.Prompt.Line("Shield command not recognized."); //todo: resource this
                 }
                 else
                 {
                     //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
-                    if (this.AddingTo(command, this.Prompt))
+                    if (this.AddingTo(command))
                     {
-                        this.AddOrGetValue(command, this.Prompt);
+                        this.AddOrGetValue(command);
                     }
-                    else if (this.SubtractingFrom(command, this.Prompt))
+                    else if (this.SubtractingFrom(command))
                     {
-                        this.SubtractOrGetValue(command, this.Prompt);
+                        this.SubtractOrGetValue(command);
                     }
                 }
             }
@@ -75,29 +76,29 @@ namespace StarTrek_KG.Subsystem
             return this.Prompt.Output.Queue.ToList();
         }
 
-        private bool SubtractingFrom(string command, IInteraction promptInteraction)
+        private bool SubtractingFrom(string command)
         {
-            return (command == "sub") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "sub");
+            return (command == "sub") || (this.Prompt.Subscriber.PromptInfo.SubCommand == "sub");
         }
-        private bool AddingTo(string command, IInteraction promptInteraction)
+        private bool AddingTo(string command)
         {
-            return (command == "add") || (promptInteraction.Subscriber.PromptInfo.SubCommand == "add");
+            return (command == "add") || (this.Prompt.Subscriber.PromptInfo.SubCommand == "add");
         }
 
-        private void AddOrGetValue(string command, IInteraction prompt)
+        private void AddOrGetValue(string command)
         {
             string add = "add"; //todo: resource this
 
             if (command != add)
             {
-                 this.TransferAndReset(command, prompt, true);
+                 this.TransferAndReset(command, true);
             }
             else
             {
-                this.GetValueFromUser(add, prompt);
+                this.GetValueFromUser(add);
             }
         }
-        private void SubtractOrGetValue(string command, IInteraction prompt)
+        private void SubtractOrGetValue(string command)
         {
             string subtract = "sub"; //todo: resource this
 
@@ -106,23 +107,23 @@ namespace StarTrek_KG.Subsystem
                 if (this.Energy > 0)
                 {
                     this.MaxTransfer = this.Energy;
-                    this.TransferAndReset(command, prompt, false);
+                    this.TransferAndReset(command, false);
                 }
                 else
                 {
-                    prompt.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
+                    this.Prompt.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
                 }
             }
             else
             {
                 if (this.Energy < 1)
                 {
-                    prompt.Line("Shields are currently DOWN. Cannot subtract energy. \r\n Exiting Panel."); //todo: resource this
-                    prompt.ResetPrompt();
+                    this.Prompt.Line("Shields are currently DOWN. Cannot subtract energy. \r\n Exiting Panel."); //todo: resource this
+                    this.Prompt.ResetPrompt();
                 }
                 else
                 {
-                    this.GetValueFromUser(subtract, prompt);
+                    this.GetValueFromUser(subtract);
                 }
             }
         }
@@ -131,18 +132,18 @@ namespace StarTrek_KG.Subsystem
 
         #region Transferring energy
 
-        private void TransferAndReset(string command, IInteraction prompt, bool adding)
+        private void TransferAndReset(string command, bool adding)
         {
             if ((!string.IsNullOrWhiteSpace(command)) && command.All(char.IsDigit))
             {
                 int energyToTransfer = Convert.ToInt32(command);
                 this.DoTheTransfer(energyToTransfer, adding);
 
-                prompt.ResetPrompt();
+                this.Prompt.ResetPrompt();
             }
             else
             {
-                prompt.Line("Invalid transfer amount."); //todo: resource this
+                this.Prompt.Line("Invalid transfer amount."); //todo: resource this
             }
         }
 
@@ -228,28 +229,23 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-
         //Interface
-        public void GetValueFromUser(string subCommand, IInteraction prompt)
+        public void GetValueFromUser(string subCommand)
         {
-            //var promptWriter = this.ShipConnectedTo.Game.Interact;
+            PromptInfo promptInfo = this.Prompt.Subscriber.PromptInfo;
 
-            if (prompt.Subscriber.PromptInfo.Level == 1)
+            if (promptInfo.Level == 1)
             {
                 string transfer;
-                prompt.PromptUser(SubsystemType.Shields,
-                                        "Shields-> Transfer Energy-> ",
-                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
-                                        out transfer,
-                                        prompt.Output.Queue,
-                                        2);
-
-                //todo: this is a little difficult.  why do we need to glue these 2 guys together?
-                //(grabs everything that .PromptUser output)
-                //this.Game.Write.Output.Queue.Enqueue(promptWriter.Output.Queue.Dequeue());
+                this.Prompt.PromptUser(SubsystemType.Shields,
+                                       "Shields-> Transfer Energy-> ",
+                                       $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
+                                       out transfer,
+                                       this.Prompt.Output.Queue,
+                                       subPromptLevel: 2);
             }
 
-            prompt.Subscriber.PromptInfo.SubCommand = subCommand;
+            promptInfo.SubCommand = subCommand;
         }
 
         #region Automation

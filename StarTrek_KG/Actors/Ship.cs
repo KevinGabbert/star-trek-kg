@@ -41,10 +41,8 @@ namespace StarTrek_KG.Actors
             //todo: get current Region of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(FactionName faction, string name, ISector sector, IConfig map, IGame game)
+        public Ship(FactionName faction, string name, ISector sector, IConfig map)
         {
-            this.Game = game;
-
             this.Map = (IMap)CheckParam(map);
 
             //todo: this could actually be a feature later..

@@ -21,7 +21,7 @@ namespace StarTrek_KG.Subsystem
             public int Damage { get; set; }
             public int MaxTransfer { get; set; }
             public SubsystemType Type { get; set; }
-            public IInteraction Prompt { get; set;  }
+            public IInteraction Prompt { get; set; }
 
         #endregion
 
@@ -29,9 +29,9 @@ namespace StarTrek_KG.Subsystem
 
         protected SubSystem_Base(Ship shipConnectedTo)
         {
+            this.Prompt = shipConnectedTo.Game.Interact;
             this.ShipConnectedTo = shipConnectedTo;
             this.Initialize();
-            this.Prompt = shipConnectedTo.Game.Interact;
         }
 
         #region Output Messages
@@ -169,7 +169,7 @@ namespace StarTrek_KG.Subsystem
 
         #region Synctactic sugar
 
-        public ISubsystem For(Ship ship, IGame game)
+        public ISubsystem For(Ship ship)
         {
             if (ship == null)
             {
@@ -185,10 +185,10 @@ namespace StarTrek_KG.Subsystem
         {
             if (ship == null)
             {
-                throw new GameConfigException("Ship not set up with Subsystem: " + subsystemType);
+                throw new GameConfigException($"Ship not set up with Subsystem: {subsystemType}");
             }
 
-            var subSystemToReturn = ship.Subsystems.Single(s => s.Type == subsystemType);
+            ISubsystem subSystemToReturn = ship.Subsystems.Single(s => s.Type == subsystemType);
 
             return subSystemToReturn;
         }
@@ -220,11 +220,11 @@ namespace StarTrek_KG.Subsystem
         /// <param name="command"></param>
         /// <param name="promptInteraction"></param>
         /// <returns></returns>
-        protected bool InFirstLevelMenu(string command, IInteraction promptInteraction)
+        protected bool InFirstLevelMenu(string command)
         {
             bool retVal = true;
 
-            if (promptInteraction.Subscriber.PromptInfo.Level == 1 && command != "")
+            if (this.Prompt.Subscriber.PromptInfo.Level == 1 && command != "")
             {
                 var search = $"{command}  = "; //todo: modify to use MenuItem "divider" in web.config  -  <MenuItem promptLevel="1" name="ship" description="Exit back to the Ship Panel" ordinalPosition ="1" divider=" = "></MenuItem>
                 retVal = this._myPanel.Any(p => p.Contains(search)); 
@@ -240,9 +240,9 @@ namespace StarTrek_KG.Subsystem
             return (Utility.Utility.Random).Next(seed);
         }
 
-        public bool NotRecognized(string command, IInteraction promptInteraction)
+        public bool NotRecognized(string command)
         {
-            bool recognized = (this.InFirstLevelMenu(command, promptInteraction));
+            bool recognized = (this.InFirstLevelMenu(command));
             return !recognized;
         }
     }

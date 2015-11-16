@@ -117,8 +117,7 @@ namespace StarTrek_KG
 
         private void InitMap(SetupOptions startConfig)
         {
-            this.Interact = new Interaction(this.Config);
-            this.Map = new Map(startConfig, this.Interact, this.Config);
+            this.Map = new Map(startConfig, new Interaction(this.Config), this.Config);
             this.Interact = new Interaction(this.Config);
         }
 
@@ -146,9 +145,28 @@ namespace StarTrek_KG
 
             this.Map.Playership.Game = this;
 
-            this.Interact.Output.Clear();
+            IInteraction prompt = this.Map.Playership.Game.Interact;
 
-            retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            prompt.Output.Clear();
+
+            //this.Playership.Subsystem.Prompt is not being updated with this.interact.level
+            //update the prompt for the ship subsystems.
+            prompt.Subscriber.PromptInfo.Level = this.Interact.Subscriber.PromptInfo.Level;
+
+            foreach (ISubsystem subsystem in this.Map.Playership.Subsystems)
+            {
+                subsystem.Prompt.Subscriber.PromptInfo.Level = this.Interact.Subscriber.PromptInfo.Level;
+            }
+
+
+
+            retVal = prompt.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+
+            //todo:
+            //problem: shields promptlevel has been updated, but the game's promptLevel has not.
+            //look.  I don't know who did what.  I'm going to have to go through a lot of linq to fix this.
+
+
 
             if (retVal == null)
             {
@@ -177,14 +195,14 @@ namespace StarTrek_KG
             this.Interact.ResetPrompt();
         }
 
-        private void Initialize()
-        {
-            this.Started = true;
-            this.Interact.ResetPrompt();
+        //private void Initialize()
+        //{
+        //    this.Started = true;
+        //    this.Interact.ResetPrompt();
 
-            //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
-            this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
-        }
+        //    //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
+        //    this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
+        //}
 
         private void GetConstants()
         {

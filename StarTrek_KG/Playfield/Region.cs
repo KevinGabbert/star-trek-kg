@@ -407,7 +407,7 @@ namespace StarTrek_KG.Playfield
             //todo: modify this to populate more than a single baddie faction
 
             //todo: this should be a random baddie, from the list of baddies in app.config
-            var hostileShip = new Ship(stockBaddieFaction, listOfBaddies.Pop(), position, this.Map, game)
+            var hostileShip = new Ship(stockBaddieFaction, listOfBaddies.Pop(), position, this.Map)
             {
                 //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
                 Sector = {X = position.X, Y = position.Y},

@@ -44,7 +44,7 @@ namespace StarTrek_KG.Subsystem
                                                     "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
-        public Debug(Ship shipConnectedTo, IGame game): base(shipConnectedTo)
+        public Debug(Ship shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Debug; //this is required if you want this system to be able to be looked up
             this.Damage = 0;
@@ -96,7 +96,7 @@ namespace StarTrek_KG.Subsystem
 
                     this.ShipConnectedTo.Game.Map.Config = this.ShipConnectedTo.Game.Config;
 
-                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.ShipConnectedTo.Game.Map, this.ShipConnectedTo.Game);
+                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.ShipConnectedTo.Game.Map);
                     Shields.For(hostileShip).Energy = Utility.Utility.Random.Next(100, 200); //todo: resource those numbers out
 
                     this.ShipConnectedTo.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);

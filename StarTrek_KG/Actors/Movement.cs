@@ -21,13 +21,14 @@ namespace StarTrek_KG.Actors
         //todo: to fully abstract this out, this could be a Blocked by property, set to whatever stops us from moving.
         public bool BlockedByObstacle { get; set; }
         public bool BlockedByGalacticBarrier { get; private set; }
+        public IInteraction SystemPrompt { get; set; }
 
         private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil"; //todo: resource this.
 
         public Movement(Ship shipConnectedTo)
         {
             base.ShipConnectedTo = shipConnectedTo;
-            this.Prompt = shipConnectedTo.Game.Interact;
+            this.SystemPrompt = shipConnectedTo.Game.Interact;
         }
 
         public void Execute(MovementType movementType, NavDirection direction, int distance, out int lastRegionX, out int lastRegionY)
@@ -170,21 +171,21 @@ namespace StarTrek_KG.Actors
             {
                 case SectorItem.Star:
                     var star = currentObject;
-                    this.Prompt.Line($"Stellar body {star.Name.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.SystemPrompt.Line($"Stellar body {star.Name.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
                 case SectorItem.HostileShip:
                     var hostile = currentObject;
-                    this.Prompt.Line($"Ship {hostile.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.SystemPrompt.Line($"Ship {hostile.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
 
                 case SectorItem.Starbase:
-                    this.Prompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.SystemPrompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
                 default:
-                    this.Prompt.Line($"Detected an unidentified obstacle while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.SystemPrompt.Line($"Detected an unidentified obstacle while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
             }
         }
@@ -394,7 +395,7 @@ namespace StarTrek_KG.Actors
             string userDirection = "";
             List<int> availableDirections = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 
-            bool userEnteredCourse = this.ShipConnectedTo.Game.Prompt.Invoke($"{this.Prompt.RenderCourse()} Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.ShipConnectedTo.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()} Enter Course: ", out userDirection);
 
             if (userEnteredCourse)
             {
@@ -402,7 +403,7 @@ namespace StarTrek_KG.Actors
 
                 if (!userDirection.IsNumeric() || userDirection.Contains("."))
                 {
-                    this.Prompt.Line("Invalid course.");
+                    this.SystemPrompt.Line("Invalid course.");
                     direction = NavDirection.Up;
 
                     return true;
@@ -412,7 +413,7 @@ namespace StarTrek_KG.Actors
 
                 if (directionToCheck > availableDirections.Max() || directionToCheck < availableDirections.Min())
                 {
-                    this.Prompt.Line("Invalid course..");
+                    this.SystemPrompt.Line("Invalid course..");
                     direction = NavDirection.Up;
 
                     return true;

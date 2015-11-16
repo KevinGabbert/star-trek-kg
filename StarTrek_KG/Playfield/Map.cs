@@ -247,7 +247,7 @@ namespace StarTrek_KG.Playfield
 
             var startingSector = new Sector(new LocationDef(playerShipDef.RegionDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
 
-            this.Playership = new Ship(FactionName.Federation, playerShipName, startingSector, this, this.Game)
+            this.Playership = new Ship(FactionName.Federation, playerShipName, startingSector, this)
             {
                 Allegiance = Allegiance.GoodGuy,
                 Energy = this.Config.GetSetting<int>("energy")
@@ -596,7 +596,7 @@ namespace StarTrek_KG.Playfield
 
         private void AddHostileFederale(IRegion Region, ISector sector, Stack<string> federaleNames)
         {
-            var newPissedOffFederale = new Ship(FactionName.Federation, federaleNames.Pop(), sector, this, this.Game);
+            var newPissedOffFederale = new Ship(FactionName.Federation, federaleNames.Pop(), sector, this);
             Shields.For(newPissedOffFederale).Energy = Utility.Utility.Random.Next(100, 500); //todo: resource those numbers out
 
             Region.AddShip(newPissedOffFederale, sector);
