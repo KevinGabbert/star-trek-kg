@@ -242,6 +242,7 @@ namespace StarTrek_KG.Subsystem
                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
                                        out transfer,
                                        this.Prompt.Output.Queue,
+                                     
                                        subPromptLevel: 2);
             }
 

@@ -2,26 +2,14 @@
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
     public class Subsystems: List<ISubsystem>
     {
-        public Subsystems(IMap map, Ship shipConnectedTo, IStarTrekKGSettings config)
+        public Subsystems(Ship shipConnectedTo)
         {
-            // TODO: Complete member initialization
-            var game = new Game(config, false)
-            {
-                Map = map
-            };
-
-            var write = new Interaction(config);
-            game.Interact = write;
-
-            shipConnectedTo.Game = game;
-
             this.Add(new Shields(shipConnectedTo));
             this.Add(new ImmediateRangeScan(shipConnectedTo));
             this.Add(new ShortRangeScan(shipConnectedTo));

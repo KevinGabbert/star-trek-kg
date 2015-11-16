@@ -322,7 +322,7 @@ namespace UnitTests.ShipTests.MapTests
 
             //add a ship to remove
             var sector = new Sector(new LocationDef(new Coordinate(testRegionX, testRegionY), new Coordinate(testSectX, testSectY)));
-            var hostileShip = new Ship(FactionName.Klingon, "this is the ship", sector, this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "this is the ship", sector, this.Game.Map, _setup.Game);
 
             _setup.TestMap.Regions.Single(q => q.X == hostileShip.Coordinate.X &&
                                            q.Y == hostileShip.Coordinate.Y).AddShip(hostileShip, sector);
@@ -380,7 +380,7 @@ namespace UnitTests.ShipTests.MapTests
 
             //add a ship
             var ship = new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)));
-            var hostileShip = new Ship(FactionName.Klingon, "this is the ship", ship, this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "this is the ship", ship, this.Game.Map, _setup.Game);
 
             _setup.TestMap.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
@@ -413,8 +413,8 @@ namespace UnitTests.ShipTests.MapTests
             }, this.Game.Interact, this.Game.Config));
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Game.Map);
-            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.Game.Map, _setup.Game);
+            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 2))), this.Game.Map, _setup.Game);
 
             _setup.TestMap.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
             _setup.TestMap.Regions.GetActive().AddShip(hostileShip2, hostileShip2.Sector);

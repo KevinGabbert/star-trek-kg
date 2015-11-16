@@ -277,7 +277,7 @@ namespace UnitTests.Tests.HostileTests
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(locationDef), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(locationDef), this.Game.Map, _setup.Game);
 
             _setup.TestMap.Regions[0].AddShip(hostileShip, _setup.TestMap.Regions[0].Sectors.Get(new Coordinate(1, 7)));
 
@@ -329,7 +329,7 @@ namespace UnitTests.Tests.HostileTests
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(locationDef), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(locationDef), this.Game.Map, _setup.Game);
 
             _setup.TestMap.Regions[0].AddShip(hostileShip, _setup.TestMap.Regions[0].Sectors.Get(new Coordinate(1, 7)));
 
@@ -582,8 +582,8 @@ namespace UnitTests.Tests.HostileTests
             //var activeRegion = activeRegion;
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(activeRegion, new Coordinate(1, 7))), this.Game.Map);
-            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(activeRegion, new Coordinate(1, 6))), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(activeRegion, new Coordinate(1, 7))), this.Game.Map, _setup.Game);
+            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(activeRegion, new Coordinate(1, 6))), this.Game.Map, _setup.Game);
 
             activeRegion.AddShip(hostileShip, hostileShip.Sector);
             activeRegion.AddShip(hostileShip2, hostileShip2.Sector);

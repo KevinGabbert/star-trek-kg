@@ -62,13 +62,12 @@ namespace StarTrek_KG
                     };
 
                     this.Prompt = (string s, out string output) => this.Interact.PromptUserSubscriber(s, out output);
-
                 }
                 catch (Exception ex)
                 {
                     this.Interact = new Interaction()
                     {
-                        Output = new Output.SubscriberOutput(config),
+                        Output = new SubscriberOutput(config),
                         OutputError = true,
                         CurrentPrompt = "Terminal: " //todo: resource this.
                     };
@@ -98,7 +97,7 @@ namespace StarTrek_KG
                     SectorDefs = this.SectorSetup()
                 });
 
-                this.InitMap(startConfig);
+                this.InitMap(startConfig, this);
 
                 //We don't want to start game without hostiles
                 if (this.HostileCheck(this.Map))
@@ -115,9 +114,9 @@ namespace StarTrek_KG
             }
         }
 
-        private void InitMap(SetupOptions startConfig)
+        private void InitMap(SetupOptions startConfig, IGame game)
         {
-            this.Map = new Map(startConfig, new Interaction(this.Config), this.Config);
+            this.Map = new Map(startConfig, new Interaction(this.Config), this.Config, game);
             this.Interact = new Interaction(this.Config);
         }
 
@@ -143,28 +142,35 @@ namespace StarTrek_KG
         {
             List<string> retVal = null;
 
-            this.Map.Playership.Game = this;
+            IGame theGame = this; //singleton
+            this.Map.Playership.Game = theGame; //my ship with shields
 
             IInteraction prompt = this.Map.Playership.Game.Interact;
-
             prompt.Output.Clear();
 
             //this.Playership.Subsystem.Prompt is not being updated with this.interact.level
-            //update the prompt for the ship subsystems.
+            //***update the prompt for the ship subsystems.
             prompt.Subscriber.PromptInfo.Level = this.Interact.Subscriber.PromptInfo.Level;
 
             foreach (ISubsystem subsystem in this.Map.Playership.Subsystems)
             {
                 subsystem.Prompt.Subscriber.PromptInfo.Level = this.Interact.Subscriber.PromptInfo.Level;
             }
+            //*****
 
-
-
+            //this updates the shield subsystems reference to game
             retVal = prompt.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
 
             //todo:
             //problem: shields promptlevel has been updated, but the game's promptLevel has not.
             //look.  I don't know who did what.  I'm going to have to go through a lot of linq to fix this.
+
+            //after subsystem.Prompt.Level is set, then shipConnectedTo.Game.Interaction.PromptLevel needs to be set
+
+            //grab the highest promptlevel in any subsystem
+
+
+            //theGame.Interact.Subscriber.PromptInfo.Level = 
 
 
 

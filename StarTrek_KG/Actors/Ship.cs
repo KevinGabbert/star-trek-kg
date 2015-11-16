@@ -41,9 +41,9 @@ namespace StarTrek_KG.Actors
             //todo: get current Region of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(FactionName faction, string name, ISector sector, IConfig map)
+        public Ship(FactionName faction, string name, ISector sector, IMap map)
         {
-            this.Map = (IMap)CheckParam(map);
+            this.Map = map;
 
             //todo: this could actually be a feature later..
             if (faction == null)
@@ -77,8 +77,9 @@ namespace StarTrek_KG.Actors
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
             this.Faction = faction;
+            this.Game = map.Game;
             
-            this.Subsystems = new Subsystems(this.Map, this, this.Config);
+            this.Subsystems = new Subsystems(this, this.Config);
 
             //todo: support the shieldEnergy config setting.
             //If there is a config setting, use it.  otherwise, 0

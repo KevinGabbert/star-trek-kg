@@ -1028,8 +1028,11 @@ namespace StarTrek_KG.Output
                                 string promptMessage, 
                                 out string value, 
                                 Queue<string> queueToWriteTo, 
+                                
                                 int subPromptLevel = 0)
         {
+
+            //this.Subscriber.PromptInfo.ShipReference = shipReference;
         
             bool retVal = false;
 

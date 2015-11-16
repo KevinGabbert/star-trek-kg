@@ -21,7 +21,6 @@ namespace StarTrek_KG.Playfield
     {
         #region Properties
 
-        public IGame Game { private get; set; }
         public RegionType Type { get; set; }
         public string Name { get; set; }
 
@@ -324,18 +323,15 @@ namespace StarTrek_KG.Playfield
             this.AddSector(Region, x, y, sectorItemToPopulate, baddieNames, stockBaddieFaction);
         }
 
-        public void AddSector(Region Region, int x, int y, SectorItem itemToPopulate, Stack<string> stockBaddieNames,
-            FactionName stockBaddieFaction)
+        public void AddSector(Region Region, int x, int y, SectorItem itemToPopulate, Stack<string> stockBaddieNames, FactionName stockBaddieFaction)
         {
             var newlyCreatedSector = Sector.CreateEmpty(Region, new Coordinate(x, y));
-            this.Map.Write.DebugLine("Added new Empty Sector to Region: " + Region.Name + " Coordinate: " +
-                                     newlyCreatedSector);
+            this.Map.Write.DebugLine($"Added new Empty Sector to Region: {Region.Name} Coordinate: {newlyCreatedSector}");
 
             if (itemToPopulate == SectorItem.HostileShip)
             {
-                
                 //if a baddie name is passed, then use it.  otherwise
-                var newShip = this.CreateHostileShip(newlyCreatedSector, stockBaddieNames, stockBaddieFaction, this.Game);
+                var newShip = this.CreateHostileShip(newlyCreatedSector, stockBaddieNames, stockBaddieFaction, this.Map.Game);
                 Region.AddShip(newShip, newlyCreatedSector);
             }
             else
@@ -661,7 +657,7 @@ namespace StarTrek_KG.Playfield
                 region = game.Map.Regions.SingleOrDefault(r => r.X == locationX && r.Y == locationY) ??
                              new Region(new Coordinate(locationX, locationY))
                              { 
-                                 Game = game,
+                                 Map = game.Map,
                                  Empty = true,
                                  Type = RegionType.GalacticBarrier,
                                  Name = "Galactic Barrier",
@@ -672,7 +668,7 @@ namespace StarTrek_KG.Playfield
             {
                 region = new Region(new Coordinate(locationX, locationY))
                 {
-                    Game = game,
+                    Map = game.Map,
                     Type = RegionType.Unknown
                 };
             }

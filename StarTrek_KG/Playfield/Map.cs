@@ -38,13 +38,13 @@ namespace StarTrek_KG.Playfield
 
         }
 
-        public Map(SetupOptions setupOptions, IInteraction write, IStarTrekKGSettings config, FactionName defaultHostile = null)
+        public Map(SetupOptions setupOptions, IInteraction write, IStarTrekKGSettings config, IGame game, FactionName defaultHostile = null)
         {
+            this.Game = game;
             this.Config = config;
             this.Write = write;
 
             this.DefaultHostile = defaultHostile ?? FactionName.Klingon;
-
             this.Initialize(setupOptions);
         }
 
@@ -186,8 +186,6 @@ namespace StarTrek_KG.Playfield
 
                     newRegion.Create(names, baddieNames, stockBaddieFaction, RegionXY, out index, itemsToPopulate,
                                        this.GameConfig.AddStars, isNebulae);
-
-                    newRegion.Game = this.Game;
 
                     this.Regions.Add(newRegion);
 
