@@ -34,7 +34,7 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        public Map Map
+        public IMap Map
         {
             get
             {

@@ -142,24 +142,15 @@ namespace StarTrek_KG
         {
             List<string> retVal = null;
 
-            IGame theGame = this; //singleton
-            this.Map.Playership.Game = theGame; //my ship with shields
+            //IGame theGame = this; //singleton
+            //this.Map.Playership.Map.Game = theGame; //my ship with shields
 
-            IInteraction prompt = this.Map.Playership.Game.Interact;
-            prompt.Output.Clear();
+            this.Map.Game.Interact.Output.Clear();
 
-            //this.Playership.Subsystem.Prompt is not being updated with this.interact.level
-            //***update the prompt for the ship subsystems.
-            prompt.Subscriber.PromptInfo.Level = this.Interact.Subscriber.PromptInfo.Level;
-
-            foreach (ISubsystem subsystem in this.Map.Playership.Subsystems)
-            {
-                subsystem.Prompt.Subscriber.PromptInfo.Level = this.Interact.Subscriber.PromptInfo.Level;
-            }
             //*****
 
             //this updates the shield subsystems reference to game
-            retVal = prompt.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            retVal = this.Map.Game.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
 
             //todo:
             //problem: shields promptlevel has been updated, but the game's promptLevel has not.

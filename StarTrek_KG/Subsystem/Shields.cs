@@ -169,7 +169,7 @@ namespace StarTrek_KG.Subsystem
                         return;
                     }
 
-                    var maxEnergy = (Convert.ToInt32(this.ShipConnectedTo.Game.Config.GetSetting<string>("SHIELDS_MAX")));
+                    var maxEnergy = (Convert.ToInt32(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("SHIELDS_MAX")));
                     var totalEnergy = (this.Energy + transfer);
 
                     if (adding && (totalEnergy > maxEnergy))
@@ -194,14 +194,14 @@ namespace StarTrek_KG.Subsystem
 
                     this.Prompt.Line($"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
 
-                    this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+                    this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
                 }
             }
         }
 
         private int EnergyValidation(double transfer)
         {
-            var prompt = this.ShipConnectedTo.Game.Interact;
+            var prompt = this.ShipConnectedTo.Map.Game.Interact;
             bool tooLittle = transfer < 1;
             bool tooMuch = transfer > this.MaxTransfer;
 
@@ -265,7 +265,7 @@ namespace StarTrek_KG.Subsystem
             bool shieldsAutoRaised = false;
             if (region.GetHostiles().Count > 0)
             {
-                shieldsAutoRaised = this.ShipConnectedTo.Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, region);
+                shieldsAutoRaised = this.ShipConnectedTo.Map.Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, region);
             }
 
             return shieldsAutoRaised;

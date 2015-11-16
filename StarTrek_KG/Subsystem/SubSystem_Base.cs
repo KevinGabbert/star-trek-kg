@@ -29,7 +29,7 @@ namespace StarTrek_KG.Subsystem
 
         protected SubSystem_Base(Ship shipConnectedTo)
         {
-            this.Prompt = shipConnectedTo.Game.Interact;
+            this.Prompt = shipConnectedTo.Map.Game.Interact;
             this.ShipConnectedTo = shipConnectedTo;
             this.Initialize();
         }
@@ -38,12 +38,12 @@ namespace StarTrek_KG.Subsystem
 
         private void OutputDamagedMessage()
         {
-            this.ShipConnectedTo.Game.Interact.Line($"{this.Type} Damaged.");
+            this.ShipConnectedTo.Map.Game.Interact.Line($"{this.Type} Damaged.");
         }
 
         private void OutputRepairedMessage()
         {
-            this.ShipConnectedTo.Game.Interact.Line($"{this.Type} Repaired.");
+            this.ShipConnectedTo.Map.Game.Interact.Line($"{this.Type} Repaired.");
         }
 
         //public virtual void OutputMalfunctioningMessage()
@@ -60,7 +60,7 @@ namespace StarTrek_KG.Subsystem
 
         public virtual List<string> Controls(string command)
         {
-            this.ShipConnectedTo.Game.Interact.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
             return new List<string>();
         }
 
@@ -110,7 +110,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public void TakeDamage()
         {
-            this.Damage = 1 + (Utility.Utility.Random).Next(this.ShipConnectedTo.Game.Config.GetSetting<int>("DamageSeed"));
+            this.Damage = 1 + (Utility.Utility.Random).Next(this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("DamageSeed"));
 
             //todo: if number is small, then this.OutputMalfunctioningMessage.. else...
             this.OutputDamagedMessage();

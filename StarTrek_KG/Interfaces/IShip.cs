@@ -7,7 +7,7 @@ namespace StarTrek_KG.Interfaces
 {
     public interface IShip: ISectorObject
     {
-        IGame Game { get; set; }
+        IMap Map { get; set; }
         FactionName Faction { get; set; }
         Subsystems Subsystems { get; set; }
         Coordinate Coordinate { get; set; }

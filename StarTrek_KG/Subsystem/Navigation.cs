@@ -28,8 +28,8 @@ namespace StarTrek_KG.Subsystem
         {
             this.Type = SubsystemType.Navigation;
 
-            this.Warp = new WarpActor(this.ShipConnectedTo.Game.Interact);
-            this.Impulse = new ImpulseActor(this.ShipConnectedTo.Game.Interact);
+            this.Warp = new WarpActor(this.ShipConnectedTo.Map.Game.Interact);
+            this.Impulse = new ImpulseActor(this.ShipConnectedTo.Map.Game.Interact);
 
             this.Movement = new Movement(shipConnectedTo);
 
@@ -41,7 +41,7 @@ namespace StarTrek_KG.Subsystem
             this.MaxWarpFactor = (int) (0.2 + (Utility.Utility.Random).Next(9));
 
                 //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
-            this.Prompt.Line(string.Format(this.ShipConnectedTo.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
+            this.Prompt.Line(string.Format(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
                 this.MaxWarpFactor));
         }
 
@@ -65,7 +65,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             //todo: upon arriving in Region, all damaged controls need to be enumerated
-            this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+            this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
             ShipConnectedTo.UpdateDivinedSectors();
 
@@ -113,7 +113,7 @@ namespace StarTrek_KG.Subsystem
             int lastRegionY;
             int lastRegionX;
 
-            if (!Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.ShipConnectedTo.Game.Map))
+            if (!Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.ShipConnectedTo.Map))
             {
                 return this.Prompt.Output.Queue.ToList();
             }
@@ -158,7 +158,7 @@ namespace StarTrek_KG.Subsystem
             int lastRegionY;
             int lastRegionX;
 
-            if (!Warp.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.ShipConnectedTo.Game.Map))
+            if (!Warp.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.ShipConnectedTo.Map))
             {
                 return;
             }
@@ -186,7 +186,7 @@ namespace StarTrek_KG.Subsystem
             this.Docked = false;
 
             Location thisShip = this.ShipConnectedTo.GetLocation();
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             if (!game.PlayerNowEnemyToFederation) //No Docking allowed if they hate you.
             {
@@ -213,14 +213,14 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo.RepairEverything();
 
-            this.Prompt.ResourceLine(this.ShipConnectedTo.Game.Config.GetSetting<string>("PlayerShip"), "SuccessfullDock");
+            this.Prompt.ResourceLine(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("PlayerShip"), "SuccessfullDock");
         }
 
         //todo: move to Game() object
         private void TakeAttackDamageOrRepair(IMap map, int lastRegionY, int lastRegionX)
         {
             Location thisShip = this.ShipConnectedTo.GetLocation();
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             var currentRegion = Regions.Get(map, thisShip.Region);
 
@@ -248,7 +248,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged()) return;
 
-            IStarTrekKGSettings config = this.ShipConnectedTo.Game.Config;
+            IStarTrekKGSettings config = this.ShipConnectedTo.Map.Game.Config;
 
             //todo: ask additional question.  sublight or warp
 

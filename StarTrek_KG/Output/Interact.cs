@@ -227,7 +227,7 @@ namespace StarTrek_KG.Output
         public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
         {
             IShip shipConnectedTo = subsystem.ShipConnectedTo;
-            IGame game = shipConnectedTo.Game;
+            IGame game = shipConnectedTo.Map.Game;
 
             var location = shipConnectedTo.GetLocation();
             Region region = Regions.Get(game.Map, location.Region);

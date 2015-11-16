@@ -87,19 +87,19 @@ namespace StarTrek_KG.Subsystem
 
                     //todo: newly appeared ship needs to NOT fire inbetween turns!
 
-                    var testShipNames = this.ShipConnectedTo.Game.Config.FactionShips(FactionName.TestFaction).ToList().Shuffle();
+                    var testShipNames = this.ShipConnectedTo.Map.Game.Config.FactionShips(FactionName.TestFaction).ToList().Shuffle();
 
                     var RegionX = Coordinate.GetRandom();
                     var RegionY = Coordinate.GetRandom();
 
                     var randomSector = new Sector(new LocationDef(RegionX, RegionY));
 
-                    this.ShipConnectedTo.Game.Map.Config = this.ShipConnectedTo.Game.Config;
+                    this.ShipConnectedTo.Map.Config = this.ShipConnectedTo.Map.Game.Config;
 
-                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.ShipConnectedTo.Game.Map);
+                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.ShipConnectedTo.Map);
                     Shields.For(hostileShip).Energy = Utility.Utility.Random.Next(100, 200); //todo: resource those numbers out
 
-                    this.ShipConnectedTo.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
+                    this.ShipConnectedTo.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
                     //todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
                     this.Prompt.Line(
@@ -120,7 +120,7 @@ namespace StarTrek_KG.Subsystem
 
                     //var starbase = new Starbase("starbaseAlpha", this.Game.Map, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
 
-                    var activeRegion = this.ShipConnectedTo.Game.Map.Regions.GetActive();
+                    var activeRegion = this.ShipConnectedTo.Map.Regions.GetActive();
 
                     //activeRegion[randomSector].Item = SectorItem.Starbase;
                     //activeRegion.AddShip(starbase, starbase.Sector);
@@ -134,7 +134,7 @@ namespace StarTrek_KG.Subsystem
                     //this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
                     break;
                 case "dist":
-                    var sectorWithNewStar = this.ShipConnectedTo.Game.Map.Regions.GetActive().AddStar(this.ShipConnectedTo.Game.Map.Regions.GetActive());
+                    var sectorWithNewStar = this.ShipConnectedTo.Map.Regions.GetActive().AddStar(this.ShipConnectedTo.Map.Regions.GetActive());
                     this.Prompt.Line("A star has just formed spontaneously at: " +
                                 $"[{sectorWithNewStar.X},{sectorWithNewStar.Y}]");
                     this.Prompt.Line($"Stellar Cartography has named it: {((Star) sectorWithNewStar.Object).Name}");

@@ -30,7 +30,7 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
             IInteraction prompt = game.Interact;
 
             prompt.Output.Queue.Clear();
@@ -69,7 +69,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Shoot(double direction)
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
             if (this.Count < 1)
             {
                 this.Prompt.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
@@ -169,7 +169,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool HitSomething(Location location)
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             if (this.HitHostile(location.Sector.Y, location.Sector.X))
             {
@@ -191,7 +191,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool HitHostile(int newY, int newX)
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             var thisRegion = game.Map.Regions.GetActive();
             var hostilesInRegion = thisRegion.GetHostiles();
@@ -243,7 +243,7 @@ namespace StarTrek_KG.Subsystem
                                       int newY, 
                                       int newX)
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
@@ -290,7 +290,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Count == 0)
             {
-                this.ShipConnectedTo.Game.Interact.Line("Photon torpedoes exhausted.");
+                this.ShipConnectedTo.Map.Game.Interact.Line("Photon torpedoes exhausted.");
                 return true;
             }
             return false;
@@ -312,7 +312,7 @@ namespace StarTrek_KG.Subsystem
             //todo: once starbases are an object, then they are merely another hostile.  Delete this IF and the rest of the code should work fine.
             if (thisRegion.GetStarbaseCount() > 0)
             {
-                if (this.ShipConnectedTo.Game.PlayerNowEnemyToFederation)
+                if (this.ShipConnectedTo.Map.Game.PlayerNowEnemyToFederation)
                 {
                     Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo);
                 }

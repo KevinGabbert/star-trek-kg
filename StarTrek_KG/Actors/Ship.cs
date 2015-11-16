@@ -17,8 +17,6 @@ namespace StarTrek_KG.Actors
         //todo: needs access to Regions and utility and game for subsystem FOR mnemonic to work for DI
         #region Properties
 
-            public IGame Game { get; set; }
-
             //todo: (maybe) create function GetRegion() to replace this (will query map.Regions for ship)
             public Coordinate Coordinate { get; set; }
 
@@ -77,9 +75,8 @@ namespace StarTrek_KG.Actors
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
             this.Faction = faction;
-            this.Game = map.Game;
             
-            this.Subsystems = new Subsystems(this, this.Config);
+            this.Subsystems = new Subsystems(this);
 
             //todo: support the shieldEnergy config setting.
             //If there is a config setting, use it.  otherwise, 0
@@ -170,8 +167,8 @@ namespace StarTrek_KG.Actors
                     //int randomPhotonsScavenged = testingTorpsScavenged == 0 ? Utility.Utility.Random.Next(2) : testingTorpsScavenged;
                     //int randomEnergyScavenged = testingEnergyScavenged == 0 ? Utility.Utility.Random.Next(100) : testingEnergyScavenged;
 
-                    photonsScavenged = Utility.Utility.TestableRandom(this.Game, 2, 2); //randomPhotonsScavenged; //todo: resource out this number
-                    energyScavenged = Utility.Utility.TestableRandom(this.Game, 100, 100); //randomEnergyScavenged; //todo: resource out this number
+                    photonsScavenged = Utility.Utility.TestableRandom(this.Map.Game, 2, 2); //randomPhotonsScavenged; //todo: resource out this number
+                    energyScavenged = Utility.Utility.TestableRandom(this.Map.Game, 100, 100); //randomEnergyScavenged; //todo: resource out this number
                     scavengedFrom = this.Map.Config.GetText("OtherShipScavengeType"); ;
                     break;
 
@@ -225,14 +222,14 @@ namespace StarTrek_KG.Actors
 
             if (attackingEnergy > 0)
             {
-                string hitMessage = this.Game.Interact.ShipHitMessage(attacker, attackingEnergy);
+                string hitMessage = this.Map.Game.Interact.ShipHitMessage(attacker, attackingEnergy);
                 this.Map.Write.Line(hitMessage);
 
                 shields.Energy -= attackingEnergy;
             }
             else
             {
-                string message = this.Game.Interact.MisfireMessage(attacker);
+                string message = this.Map.Game.Interact.MisfireMessage(attacker);
                 this.Map.Write.Line(message);
             }
 

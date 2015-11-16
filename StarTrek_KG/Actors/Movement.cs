@@ -28,7 +28,7 @@ namespace StarTrek_KG.Actors
         public Movement(Ship shipConnectedTo)
         {
             base.ShipConnectedTo = shipConnectedTo;
-            this.SystemPrompt = shipConnectedTo.Game.Interact;
+            this.SystemPrompt = shipConnectedTo.Map.Game.Interact;
         }
 
         public void Execute(MovementType movementType, NavDirection direction, int distance, out int lastRegionX, out int lastRegionY)
@@ -42,7 +42,7 @@ namespace StarTrek_KG.Actors
 
             Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;//Clear Old Sector
 
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             switch (movementType)
             {
@@ -82,7 +82,7 @@ namespace StarTrek_KG.Actors
             lastRegionY = playershipRegion.Y;
             lastRegionX = playershipRegion.X;
 
-            IMap map = this.ShipConnectedTo.Game.Map;
+            IMap map = this.ShipConnectedTo.Map;
 
             Region destinationRegion = map.Regions.Get(destinationRegionName);
 
@@ -91,7 +91,7 @@ namespace StarTrek_KG.Actors
 
             map.SetPlayershipInActiveSector(map); //sets friendly in Active Region  
 
-            this.ShipConnectedTo.Game.MoveTimeForward(map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
+            this.ShipConnectedTo.Map.Game.MoveTimeForward(map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
         }
 
         #region Sectors
@@ -116,7 +116,7 @@ namespace StarTrek_KG.Actors
                 }
                 else
                 {
-                    this.ShipConnectedTo.Game.Map.SetPlayershipInLocation(travellingShip, this.ShipConnectedTo.Game.Map, newLocation);
+                    this.ShipConnectedTo.Map.SetPlayershipInLocation(travellingShip, this.ShipConnectedTo.Map, newLocation);
                 }
 
                 //todo:  this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
@@ -203,7 +203,7 @@ namespace StarTrek_KG.Actors
             int futureShipRegionX = currentRegion.X;
             int futureShipRegionY = currentRegion.Y;
 
-            Regions regions = this.ShipConnectedTo.Game.Map.Regions;
+            Regions regions = this.ShipConnectedTo.Map.Regions;
 
             for (int i = 0; i < distance; i++)
             {
@@ -230,7 +230,7 @@ namespace StarTrek_KG.Actors
                     bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
                     if (nebulaEncountered)
                     {
-                        this.ShipConnectedTo.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
+                        this.ShipConnectedTo.Map.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
                         break;
                     }
                 }
@@ -322,7 +322,7 @@ namespace StarTrek_KG.Actors
 
             if (scanResult.GalacticBarrier)
             {
-                this.ShipConnectedTo.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
+                this.ShipConnectedTo.Map.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
                 stopNavigation = true;
             }
             else
@@ -332,7 +332,7 @@ namespace StarTrek_KG.Actors
 
                 if (obstacleEncountered)
                 {
-                    this.ShipConnectedTo.Game.Interact.Line("All Stop.");
+                    this.ShipConnectedTo.Map.Game.Interact.Line("All Stop.");
                     stopNavigation = true;
                 }
 
@@ -354,7 +354,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                newLocation.Region = this.ShipConnectedTo.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
+                newLocation.Region = this.ShipConnectedTo.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
             }
 
             return newLocation;
@@ -395,7 +395,7 @@ namespace StarTrek_KG.Actors
             string userDirection = "";
             List<int> availableDirections = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 
-            bool userEnteredCourse = this.ShipConnectedTo.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()} Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.ShipConnectedTo.Map.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()} Enter Course: ", out userDirection);
 
             if (userEnteredCourse)
             {

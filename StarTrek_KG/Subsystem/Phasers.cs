@@ -23,7 +23,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Fire(int energyToFire) //, IShip shipFiringPhasers
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             if (!this.EnergyCheckFail(energyToFire, this.ShipConnectedTo))
             {
@@ -48,7 +48,7 @@ namespace StarTrek_KG.Subsystem
 
             //todo:  this doesn't *work* too well as a feature of *Regions*, but rather, of Ship?
 
-            var regions = new Regions(this.ShipConnectedTo.Game.Map, this.Prompt);
+            var regions = new Regions(this.ShipConnectedTo.Map, this.Prompt);
 
             //todo: this may need a different refactor
             List<string> hostilesOutputLines;
@@ -70,14 +70,14 @@ namespace StarTrek_KG.Subsystem
             this.Prompt.Line("");
 
             this.Fire(int.Parse(phaserEnergy)); //, shipFiringPhasers
-            this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+            this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
             return this.Prompt.Output.Queue.ToList();
         }
 
         private void Execute(double phaserEnergy)
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
             bool inNebula = this.InNebula();
 
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
@@ -108,7 +108,7 @@ namespace StarTrek_KG.Subsystem
 
             if (inNebula)
             {
-                this.ShipConnectedTo.Game.Interact.Line("Due to the Nebula, phaser effectiveness will be reduced.");
+                this.ShipConnectedTo.Map.Game.Interact.Line("Due to the Nebula, phaser effectiveness will be reduced.");
             }
 
             return inNebula;
@@ -220,7 +220,7 @@ namespace StarTrek_KG.Subsystem
             var hostilesHaveAttacked = false;
             if (!this.EnergyCheckFail(int.Parse(phaserEnergy), this.ShipConnectedTo))
             {
-                IGame game = this.ShipConnectedTo.Game;
+                IGame game = this.ShipConnectedTo.Map.Game;
                 int randomBadGuyShoots = Utility.Utility.TestableRandom(game, 2, 2);
                 if (randomBadGuyShoots == 1)
                 {

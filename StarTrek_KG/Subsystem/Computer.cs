@@ -35,7 +35,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             game.Interact.Output.Queue.Clear();
 
@@ -105,7 +105,7 @@ namespace StarTrek_KG.Subsystem
         {
             string replyFromUser;
 
-            this.ShipConnectedTo.Game.Interact.PromptUserConsole("Target with (T)orpedoes or (P)hasers? ", out replyFromUser);
+            this.ShipConnectedTo.Map.Game.Interact.PromptUserConsole("Target with (T)orpedoes or (P)hasers? ", out replyFromUser);
 
             switch (replyFromUser.ToUpper())
             {
@@ -125,7 +125,7 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged())
             {
-                this.ShipConnectedTo.Game.Interact.Line("Unable to List Objects in Region");
+                this.ShipConnectedTo.Map.Game.Interact.Line("Unable to List Objects in Region");
                 return list;
             }
 
@@ -138,7 +138,7 @@ namespace StarTrek_KG.Subsystem
                 {
                     string objectName = sector.Object != null ? sector.Object.Name : "Unknown";
 
-                    this.ShipConnectedTo.Game.Interact.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, (sector.X + 1),
+                    this.ShipConnectedTo.Map.Game.Interact.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, (sector.X + 1),
                         (sector.Y + 1)));
 
                     list.Add(new KeyValuePair<int, Sector>(objectNumber, sector));
@@ -148,7 +148,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.ShipConnectedTo.Game.Interact.Line("No Sectors with Objects found (this is an error)");
+                this.ShipConnectedTo.Map.Game.Interact.Line("No Sectors with Objects found (this is an error)");
             }
 
             return list;
@@ -158,7 +158,7 @@ namespace StarTrek_KG.Subsystem
         {
             this.Prompt.Line("Comms was able to translate the latest transmissions: ");
 
-            foreach (FactionThreat taunt in this.ShipConnectedTo.Game.LatestTaunts)
+            foreach (FactionThreat taunt in this.ShipConnectedTo.Map.Game.LatestTaunts)
             {
                 this.Prompt.Line(taunt.Translation == "" ? "No Translation required." : taunt.Translation);
             }
@@ -166,12 +166,12 @@ namespace StarTrek_KG.Subsystem
 
         //output this as KeyValueCollection that the UI can display as it likes.
 
-        private void PrintCurrentStatus(IMap map, int computerDamage, Ship ship, Region currentRegion)
+        private void PrintCurrentStatus(IMap map, int computerDamage, IShip ship, IRegion currentRegion)
         {
             if (this.Damaged()) return;
 
-            IStarTrekKGSettings config = this.ShipConnectedTo.Game.Config;
-            IOutputMethod output = this.ShipConnectedTo.Game.Interact.Output;
+            IStarTrekKGSettings config = map.Game.Config;
+            IOutputMethod output = map.Game.Interact.Output;
 
             //todo: completely redo this
 

@@ -21,7 +21,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.ShipConnectedTo.Game.Interact.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
             throw new NotImplementedException();
         }
 
@@ -47,7 +47,7 @@ namespace StarTrek_KG.Subsystem
         //used by CRS
         public List<string> RunLRSScan(Location shipLocation)
         {
-            IGame game = this.ShipConnectedTo.Game;
+            IGame game = this.ShipConnectedTo.Map.Game;
 
             IEnumerable<LRSResult> tlrsResults = shipLocation.Region.GetLRSFullData(shipLocation, game);
             var renderedData = game.Interact.RenderLRSData(tlrsResults, game);
@@ -58,8 +58,8 @@ namespace StarTrek_KG.Subsystem
         private IEnumerable<string> RunFullLRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
-            IEnumerable<IScanResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.ShipConnectedTo.Game);
-            IEnumerable<string> renderedData = this.Prompt.RenderScanWithNames(ScanRenderType.SingleLine, "*** Long Range Scan ***", lrsData.ToList(), this.ShipConnectedTo.Game);
+            IEnumerable<IScanResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.ShipConnectedTo.Map.Game);
+            IEnumerable<string> renderedData = this.Prompt.RenderScanWithNames(ScanRenderType.SingleLine, "*** Long Range Scan ***", lrsData.ToList(), this.ShipConnectedTo.Map.Game);
 
             return renderedData;
         }
@@ -110,7 +110,7 @@ namespace StarTrek_KG.Subsystem
 
         public void Debug_Scan_All_Regions(bool setScanned)
         {
-            foreach (var Region in this.ShipConnectedTo.Game.Map.Regions)
+            foreach (var Region in this.ShipConnectedTo.Map.Regions)
             {
                 Region.Scanned = setScanned;
             }

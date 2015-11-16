@@ -34,7 +34,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
-                this.ShipConnectedTo.Game.Interact.Line("Cannot locate Objects for calculations");
+                this.ShipConnectedTo.Map.Game.Interact.Line("Cannot locate Objects for calculations");
                 return new List<Sector>(); //todo: is this correct?
             }
 
