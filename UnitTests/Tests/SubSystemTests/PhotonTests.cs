@@ -165,7 +165,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             DEFAULTS.DEBUG_MODE = debugMode;
 
 
-            Assert.IsTrue(_setup.TestMap == _photonsToTest.ShipConnectedTo.Game.Map);
+            Assert.IsTrue(_setup.TestMap == _photonsToTest.ShipConnectedTo.Map);
 
             _photonsToTest.Shoot(7);
 

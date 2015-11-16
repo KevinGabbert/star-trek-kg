@@ -16,7 +16,7 @@ namespace UnitTests.ShipTests
             //todo: pass in config
             _setup.Game.Interact = new Interaction(new StarTrekKGSettings());
 
-            _setup.TestMap = new Map(null, _setup.Game.Interact, _setup.Config)
+            _setup.TestMap = new Map(null, _setup.Game.Interact, _setup.Config, this.Game)
             {
                 Write = _setup.Game.Interact
             };

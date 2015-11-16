@@ -21,7 +21,7 @@ namespace UnitTests.ShipTests.RegionTests
         {
             _testRegion = new Region(this.Game.Map);
 
-            _testRegion.Map = new Map(null, this.Game.Interact, this.Game.Config);
+            _testRegion.Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game);
             _testRegion.Name = "Setup";
             _testRegion.Scanned = false;
             _testRegion.Type = RegionType.Nebulae;

@@ -151,12 +151,12 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //Random numbers that are used in this operation:
             var phasers = Phasers.For(playershipBefore);
-            phasers.ShipConnectedTo.Game.RandomFactorForTesting = 3;
+            phasers.ShipConnectedTo.Map.Game.RandomFactorForTesting = 3;
 
-            playershipBefore.Game = phasers.ShipConnectedTo.Game;
-            Torpedoes.For(playershipBefore).ShipConnectedTo.Game.RandomFactorForTesting = 2;
+            playershipBefore.Map.Game = phasers.ShipConnectedTo.Map.Game;
+            Torpedoes.For(playershipBefore).ShipConnectedTo.Map.Game.RandomFactorForTesting = 2;
 
-            badGuyShields.ShipConnectedTo.Game.RandomFactorForTesting = 200;
+            badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 200;
 
             //This action will hit every single hostile in the Region
             phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
@@ -212,12 +212,12 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //Random numbers that are used in this operation:
             var phasers = Phasers.For(playershipBefore);
-            phasers.ShipConnectedTo.Game.RandomFactorForTesting = 3;
+            phasers.ShipConnectedTo.Map.Game.RandomFactorForTesting = 3;
 
-            playershipBefore.Game = phasers.ShipConnectedTo.Game;
-            Torpedoes.For(playershipBefore).ShipConnectedTo.Game.RandomFactorForTesting = 2;
+            playershipBefore.Map.Game = phasers.ShipConnectedTo.Map.Game;
+            Torpedoes.For(playershipBefore).ShipConnectedTo.Map.Game.RandomFactorForTesting = 2;
 
-            badGuyShields.ShipConnectedTo.Game.RandomFactorForTesting = 200;
+            badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 200;
 
             //This action will hit every single hostile in the Region
             phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.

@@ -57,8 +57,8 @@ namespace UnitTests.ShipTests
             this.SetupMapWith1Friendly();
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap, this.Game);
-            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap, this.Game);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))), this.TestMap);
+            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 5))), this.TestMap);
 
             var activeRegion = this.TestMap.Regions.GetActive();
             activeRegion.AddShip(hostileShip, hostileShip.Sector);
@@ -81,7 +81,7 @@ namespace UnitTests.ShipTests
                                                                      SectorItem.PlayerShip),
                                                                  //todo: this needs to be in a random spo
                                                              }
-                                        }, this.Game.Interact, this.Game.Config));
+                                        }, this.Game.Interact, this.Game.Config, this.Game));
 
             this.VerifyMap();
         }
@@ -99,7 +99,7 @@ namespace UnitTests.ShipTests
                         new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Empty),
                     //todo: this needs to be in a random spo
                 }
-            }, this.Game.Interact, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config, this.Game));
 
             this.VerifyMap();
         }
@@ -121,7 +121,7 @@ namespace UnitTests.ShipTests
                                                                new LocationDef(new Coordinate(0, 0),
                                                                                new Coordinate(0, 1)), SectorItem.HostileShip),
                                                        }
-                                  }, this.Game.Interact, this.Game.Config);
+                                  }, this.Game.Interact, this.Game.Config, this.Game);
             this.VerifyMap();
 
             var hostileShip = this.TestMap.Regions.GetHostiles().Single();
@@ -145,7 +145,7 @@ namespace UnitTests.ShipTests
                                                     new LocationDef(new Coordinate(0, 0),
                                                                     new Coordinate(0, 1)), SectorItem.HostileShip),
                                             }
-            }, this.Game.Interact, this.Game.Config, FactionName.Federation);
+            }, this.Game.Interact, this.Game.Config, this.Game);
             this.VerifyMap();
         }
 
@@ -185,7 +185,7 @@ namespace UnitTests.ShipTests
                                                 new LocationDef(new Coordinate(0, 0),
                                                                 hostileSector), SectorItem.HostileShip),
                                         }
-            }, this.Game.Interact, this.Game.Config);
+            }, this.Game.Interact, this.Game.Config, this.Game);
             this.VerifyMap();
         }
 
@@ -198,7 +198,7 @@ namespace UnitTests.ShipTests
                 {
                    new SectorDef(new LocationDef(new Coordinate(0, 0),friendlySector),SectorItem.PlayerShip)},
               AddStars = false
-            }, this.Game.Interact, this.Game.Config);
+            }, this.Game.Interact, this.Game.Config, this.Game);
             this.VerifyMap();
         }
 
@@ -214,7 +214,7 @@ namespace UnitTests.ShipTests
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
                                     }
-            }, this.Game.Interact, this.Game.Config));
+            }, this.Game.Interact, this.Game.Config, this.Game));
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
@@ -232,13 +232,13 @@ namespace UnitTests.ShipTests
                 AddStars = false,
                 Initialize = true,
                 //GenerateMap = true
-            }, this.Game.Interact, this.Game.Config);
+            }, this.Game.Interact, this.Game.Config, this.Game);
             this.VerifyMap();
         }
 
         public void SetupBaseMap()
         {
-            this.TestMap = new Map(null, this.Game.Interact, this.Game.Config);
+            this.TestMap = new Map(null, this.Game.Interact, this.Game.Config, this.Game);
             this.VerifyMap();
         }
 

@@ -76,7 +76,7 @@ namespace UnitTests.ShipTests.MovementTests
                                                                   //todo: this needs to be in a random spot
                                                               },
                                              AddStars = false
-                                         }, this.Game.Interact, this.Game.Config));
+                                         }, this.Game.Interact, this.Game.Config, this.Game));
 
             _testMovement = new Movement(this.Game.Map.Playership) {BlockedByObstacle = false};
             _testShip = this.Game.Map.Playership; //synctactic sugar
@@ -324,8 +324,8 @@ namespace UnitTests.ShipTests.MovementTests
                                                            this.Game.Map.Playership.Sector.X,
                                                            this.Game.Map.Playership.Sector.Y).Item);
             var sectorItem =
-                Sector.Get(_testMovement.ShipConnectedTo.Game.Map.Regions.GetActive().Sectors, _testMovement.ShipConnectedTo.Game.Map.Playership.Sector.X,
-                                                                       _testMovement.ShipConnectedTo.Game.Map.Playership.Sector.Y).Item;
+                Sector.Get(_testMovement.ShipConnectedTo.Map.Regions.GetActive().Sectors, _testMovement.ShipConnectedTo.Map.Playership.Sector.X,
+                                                                       _testMovement.ShipConnectedTo.Map.Playership.Sector.Y).Item;
             Assert.AreEqual(SectorItem.PlayerShip, sectorItem);
 
             _testMovement.Execute(MovementType.Impulse, direction, distance, out _lastRegionX, out _lastRegionY);
