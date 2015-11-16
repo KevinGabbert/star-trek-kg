@@ -16,18 +16,18 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Prompt.Output.Queue.ToList();
+            if (this.Damaged()) return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
 
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
-                this.Prompt.Line("Combined Scan needs SRS Subsystem in order to run.");
+                this.ShipConnectedTo.Map.Game.Interact.Line("Combined Scan needs SRS Subsystem in order to run.");
             }
 
-            this.Prompt.RenderSectors(SectorScanType.CombinedRange, this);
+            this.ShipConnectedTo.Map.Game.Interact.RenderSectors(SectorScanType.CombinedRange, this);
 
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         public static CombinedRangeScan For(IShip ship)

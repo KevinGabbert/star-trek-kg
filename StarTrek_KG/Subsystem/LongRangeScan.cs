@@ -27,9 +27,9 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Prompt.Output.Queue.ToList();
+            if (this.Damaged()) return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -38,10 +38,10 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var line in renderedResults)
             {
-                this.Prompt.SingleLine(line);
+                this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
             }
 
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         //used by CRS
@@ -59,7 +59,7 @@ namespace StarTrek_KG.Subsystem
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
             IEnumerable<IScanResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.ShipConnectedTo.Map.Game);
-            IEnumerable<string> renderedData = this.Prompt.RenderScanWithNames(ScanRenderType.SingleLine, "*** Long Range Scan ***", lrsData.ToList(), this.ShipConnectedTo.Map.Game);
+            IEnumerable<string> renderedData = this.ShipConnectedTo.Map.Game.Interact.RenderScanWithNames(ScanRenderType.SingleLine, "*** Long Range Scan ***", lrsData.ToList(), this.ShipConnectedTo.Map.Game);
 
             return renderedData;
         }

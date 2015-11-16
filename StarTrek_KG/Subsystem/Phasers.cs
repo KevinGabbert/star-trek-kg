@@ -42,13 +42,13 @@ namespace StarTrek_KG.Subsystem
 
         public IEnumerable<string> Controls(IShip shipFiringPhasers)
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Prompt.Output.Queue.ToList();
+            if (this.Damaged()) return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
 
             //todo:  this doesn't *work* too well as a feature of *Regions*, but rather, of Ship?
 
-            var regions = new Regions(this.ShipConnectedTo.Map, this.Prompt);
+            var regions = new Regions(this.ShipConnectedTo.Map, this.ShipConnectedTo.Map.Game.Interact);
 
             //todo: this may need a different refactor
             List<string> hostilesOutputLines;
@@ -63,16 +63,16 @@ namespace StarTrek_KG.Subsystem
 
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
-                this.Prompt.Line("Invalid energy level.");
-                return this.Prompt.Output.Queue.ToList();
+                this.ShipConnectedTo.Map.Game.Interact.Line("Invalid energy level.");
+                return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
             }
 
-            this.Prompt.Line("");
+            this.ShipConnectedTo.Map.Game.Interact.Line("");
 
             this.Fire(int.Parse(phaserEnergy)); //, shipFiringPhasers
-            this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+            this.ShipConnectedTo.Map.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         private void Execute(double phaserEnergy)
@@ -118,7 +118,7 @@ namespace StarTrek_KG.Subsystem
         {
             Location location = this.ShipConnectedTo.GetLocation();
 
-            this.Prompt.Line("Phasers locked on: " + badGuyShip.Name);
+            this.ShipConnectedTo.Map.Game.Interact.Line("Phasers locked on: " + badGuyShip.Name);
 
             double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X,
                 badGuyShip.Sector.Y);
@@ -130,7 +130,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool PromptUserForPhaserEnergy(out string phaserEnergy)
         {
-            return this.Prompt.PromptUser(SubsystemType.Phasers, "Phasers:>", $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy, this.Prompt.Output.Queue);
+            return this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Phasers, "Phasers:>", $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy, this.ShipConnectedTo.Map.Game.Interact.Output.Queue);
         }
 
         //todo: move to Utility() object
@@ -170,7 +170,7 @@ namespace StarTrek_KG.Subsystem
 
             var badGuy = Utility.Utility.HideXorYIfNebula(badGuyShip.GetRegion(), badGuyShip.Sector.X.ToString(), badGuyShip.Sector.Y.ToString());
 
-            this.Prompt.Line(
+            this.ShipConnectedTo.Map.Game.Interact.Line(
                 string.Format("Hit " + badGuyShipName + " at sector [{0},{1}], shield strength now at {2}.", badGuy.X, badGuy.Y, badguyShieldEnergy));
         }
 
@@ -198,14 +198,14 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            this.Prompt.Line("");
-            this.Prompt.Line("Objects to Target:");
+            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.Map.Game.Interact.Line("Objects to Target:");
 
             List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply;
-            this.Prompt.Line("");
-            this.Prompt.PromptUserConsole("Enter number to lock Phasers: ", out userReply);
+            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.Map.Game.Interact.PromptUserConsole("Enter number to lock Phasers: ", out userReply);
 
             int number = Convert.ToInt32(userReply);
             var objectToFireOn = sectorsWithObjects.Single(i => i.Key == number).Value;
@@ -213,7 +213,7 @@ namespace StarTrek_KG.Subsystem
             string phaserEnergy;
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
-                this.Prompt.Line("Invalid phaser energy level.");
+                this.ShipConnectedTo.Map.Game.Interact.Line("Invalid phaser energy level.");
                 return;
             }
 
@@ -259,8 +259,8 @@ namespace StarTrek_KG.Subsystem
 
         private void FireOnStar(IStar iStar)
         {
-            this.Prompt.Line("");
-            this.Prompt.Line($"Direct hit on {iStar.Name}. No apparent damage to stellar body.");
+            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.Map.Game.Interact.Line($"Direct hit on {iStar.Name}. No apparent damage to stellar body.");
         }
     }
 }

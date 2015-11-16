@@ -41,13 +41,13 @@ namespace StarTrek_KG.Subsystem
             this.MaxWarpFactor = (int) (0.2 + (Utility.Utility.Random).Next(9));
 
                 //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
-            this.Prompt.Line(string.Format(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
+            this.ShipConnectedTo.Map.Game.Interact.Line(string.Format(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
                 this.MaxWarpFactor));
         }
 
         public override List<string> Controls(string command)
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             switch (command)
             {
@@ -65,57 +65,57 @@ namespace StarTrek_KG.Subsystem
             }
 
             //todo: upon arriving in Region, all damaged controls need to be enumerated
-            this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+            this.ShipConnectedTo.Map.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
             ShipConnectedTo.UpdateDivinedSectors();
 
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         private List<string> NavigateToObject()
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             if (this.Damaged()) //todo: change this to Impulse.For(  when navigation object is removed
             {
-                return this.Prompt.Output.Queue.ToList();
+                return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
             }
 
-            this.Prompt.Line("");
-            this.Prompt.Line("Objects in Region:");
+            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.Map.Game.Interact.Line("Objects in Region:");
 
             Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
-            this.Prompt.PromptUserConsole("Enter number of Object to travel to: ", out userReply);
+            this.ShipConnectedTo.Map.Game.Interact.PromptUserConsole("Enter number of Object to travel to: ", out userReply);
 
-            this.Prompt.Line("");
-            this.Prompt.Line("Navigate to Object is not yet supported.");
+            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.Map.Game.Interact.Line("Navigate to Object is not yet supported.");
 
             //this.NavigateToObject();
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         private List<string> SublightControls()
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             string distance;
             NavDirection direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
             {
-                return this.Prompt.Output.Queue.ToList();
+                return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
             }
 
-            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.Prompt.Output.Queue.ToList();
+            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
 
             int lastRegionY;
             int lastRegionX;
 
             if (!Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.ShipConnectedTo.Map))
             {
-                return this.Prompt.Output.Queue.ToList();
+                return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
             }
 
             this.RepairOrTakeDamage(lastRegionX, lastRegionY);
@@ -130,7 +130,7 @@ namespace StarTrek_KG.Subsystem
                 crs.Controls();
             }
 
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         private void WarpControls()
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             if (this.Damaged())
             {
@@ -206,14 +206,14 @@ namespace StarTrek_KG.Subsystem
 
         private void SuccessfulDockWithStarbase()
         {
-            this.Prompt.ResourceLine("DockingMessageLowerShields");
+            this.ShipConnectedTo.Map.Game.Interact.ResourceLine("DockingMessageLowerShields");
             Shields.For(this.ShipConnectedTo).Energy = 0;
 
             Shields.For(this.ShipConnectedTo).Damage = 0;
 
             this.ShipConnectedTo.RepairEverything();
 
-            this.Prompt.ResourceLine(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("PlayerShip"), "SuccessfullDock");
+            this.ShipConnectedTo.Map.Game.Interact.ResourceLine(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("PlayerShip"), "SuccessfullDock");
         }
 
         //todo: move to Game() object
@@ -257,39 +257,39 @@ namespace StarTrek_KG.Subsystem
             string RegionX;
             string RegionY;
 
-            this.Prompt.Line(string.Format("Your Ship" + config.GetSetting<string>("LocatedInRegion"),
+            this.ShipConnectedTo.Map.Game.Interact.Line(string.Format("Your Ship" + config.GetSetting<string>("LocatedInRegion"),
                 (thisShip.Region.X), (thisShip.Region.Y)));
 
-            if (!this.Prompt.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionX"), out RegionX, this.Prompt.Output.Queue, 1)
+            if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionX"), out RegionX, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 1)
                 || int.Parse(RegionX) < (DEFAULTS.REGION_MIN + 1)
                 || int.Parse(RegionX) > DEFAULTS.REGION_MAX)
             {
-                this.Prompt.Line(config.GetSetting<string>("InvalidXCoordinate"));
+                this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("InvalidXCoordinate"));
                 return;
             }
 
-            if (!this.Prompt.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionY"), out RegionY, this.Prompt.Output.Queue, 2)
+            if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionY"), out RegionY, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 2)
                 || int.Parse(RegionY) < (DEFAULTS.REGION_MIN + 1)
                 || int.Parse(RegionY) > DEFAULTS.REGION_MAX)
             {
-                this.Prompt.Line(config.GetSetting<string>("InvalidYCoordinate"));
+                this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("InvalidYCoordinate"));
                 return;
             }
 
-            this.Prompt.Line("");
+            this.ShipConnectedTo.Map.Game.Interact.Line("");
             var qx = int.Parse(RegionX) - 1;
             var qy = int.Parse(RegionY) - 1;
             if (qx == thisShip.Region.X && qy == thisShip.Region.Y)
             {
-                this.Prompt.Line(config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
+                this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 
-            this.Prompt.Line($"Direction: {Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy):#.##}");
-            this.Prompt.Line($"Distance:  {Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy):##.##}");
+            this.ShipConnectedTo.Map.Game.Interact.Line($"Direction: {Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy):#.##}");
+            this.ShipConnectedTo.Map.Game.Interact.Line($"Distance:  {Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy):##.##}");
         }
 
-        public void StarbaseCalculator(Ship shipConnectedTo)
+        public void StarbaseCalculator(IShip shipConnectedTo)
         {
             if (this.Damaged())
             {
@@ -306,16 +306,16 @@ namespace StarTrek_KG.Subsystem
             {
                 foreach (var starbase in starbasesInSector)
                 {
-                    this.Prompt.Line("-----------------");
-                    this.Prompt.Line($"Starbase in sector [{(starbase.X + 1)},{(starbase.Y + 1)}].");
+                    this.ShipConnectedTo.Map.Game.Interact.Line("-----------------");
+                    this.ShipConnectedTo.Map.Game.Interact.Line($"Starbase in sector [{(starbase.X + 1)},{(starbase.Y + 1)}].");
                     
-                    this.Prompt.Line($"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
-                    this.Prompt.Line($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.SECTOR_MAX:##.##}");
+                    this.ShipConnectedTo.Map.Game.Interact.Line($"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
+                    this.ShipConnectedTo.Map.Game.Interact.Line($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.SECTOR_MAX:##.##}");
                 }
             }
             else
             {
-                this.Prompt.Line("There are no starbases in this Region.");
+                this.ShipConnectedTo.Map.Game.Interact.Line("There are no starbases in this Region.");
             }
         }
 

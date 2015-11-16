@@ -156,11 +156,11 @@ namespace StarTrek_KG.Subsystem
 
         private void TranslateLatestTaunt()
         {
-            this.Prompt.Line("Comms was able to translate the latest transmissions: ");
+            this.ShipConnectedTo.Map.Game.Interact.Line("Comms was able to translate the latest transmissions: ");
 
             foreach (FactionThreat taunt in this.ShipConnectedTo.Map.Game.LatestTaunts)
             {
-                this.Prompt.Line(taunt.Translation == "" ? "No Translation required." : taunt.Translation);
+                this.ShipConnectedTo.Map.Game.Interact.Line(taunt.Translation == "" ? "No Translation required." : taunt.Translation);
             }
         }
 
@@ -206,8 +206,8 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged()) return;
 
-            this.Prompt.Output.WriteLine();
-            this.Prompt.ResourceSingleLine("GalacticRecordLine");
+            this.ShipConnectedTo.Map.Game.Interact.Output.WriteLine();
+            this.ShipConnectedTo.Map.Game.Interact.ResourceSingleLine("GalacticRecordLine");
 
             var myLocation = this.ShipConnectedTo.GetLocation();
 
@@ -218,7 +218,7 @@ namespace StarTrek_KG.Subsystem
                     //todo: refactor this function
                     //todo: this needs to be refactored with LRS!
 
-                    this.Prompt.WithNoEndCR(DEFAULTS.SCAN_SECTOR_DIVIDER);
+                    this.ShipConnectedTo.Map.Game.Interact.WithNoEndCR(DEFAULTS.SCAN_SECTOR_DIVIDER);
 
                     var Region = Playfield.Regions.Get(Regions, new Coordinate(RegionUB, RegionLB));
                     if (Region.Scanned)
@@ -227,15 +227,15 @@ namespace StarTrek_KG.Subsystem
                     }
                     else
                     {
-                        this.Prompt.RenderUnscannedRegion(myLocation.Region.X == RegionUB && myLocation.Region.Y == RegionLB); //renderingMyLocation todo: refactor with other calls for that.
+                        this.ShipConnectedTo.Map.Game.Interact.RenderUnscannedRegion(myLocation.Region.X == RegionUB && myLocation.Region.Y == RegionLB); //renderingMyLocation todo: refactor with other calls for that.
                     }
                 }
 
-                this.Prompt.SingleLine(DEFAULTS.SCAN_SECTOR_DIVIDER);
-                this.Prompt.ResourceSingleLine("GalacticRecordLine");
+                this.ShipConnectedTo.Map.Game.Interact.SingleLine(DEFAULTS.SCAN_SECTOR_DIVIDER);
+                this.ShipConnectedTo.Map.Game.Interact.ResourceSingleLine("GalacticRecordLine");
             }
 
-            this.Prompt.Output.WriteLine();
+            this.ShipConnectedTo.Map.Game.Interact.Output.WriteLine();
         }
 
         private void RenderScannedRegion(IRegion Region, Location myLocation, int RegionUB, int RegionLB)
@@ -260,11 +260,11 @@ namespace StarTrek_KG.Subsystem
 
             if (Region.Type != RegionType.Nebulae)
             {
-                this.Prompt.RenderRegionCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                this.ShipConnectedTo.Map.Game.Interact.RenderRegionCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
             }
             else
             {
-                this.Prompt.RenderNebula(renderingMyLocation);
+                this.ShipConnectedTo.Map.Game.Interact.RenderNebula(renderingMyLocation);
             }
         }
 

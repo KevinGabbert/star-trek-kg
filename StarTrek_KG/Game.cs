@@ -142,15 +142,12 @@ namespace StarTrek_KG
         {
             List<string> retVal = null;
 
-            //IGame theGame = this; //singleton
-            //this.Map.Playership.Map.Game = theGame; //my ship with shields
-
-            this.Map.Game.Interact.Output.Clear();
+            this.Interact.Output.Clear();
 
             //*****
 
             //this updates the shield subsystems reference to game
-            retVal = this.Map.Game.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
 
             //todo:
             //problem: shields promptlevel has been updated, but the game's promptLevel has not.
@@ -160,10 +157,7 @@ namespace StarTrek_KG
 
             //grab the highest promptlevel in any subsystem
 
-
             //theGame.Interact.Subscriber.PromptInfo.Level = 
-
-
 
             if (retVal == null)
             {

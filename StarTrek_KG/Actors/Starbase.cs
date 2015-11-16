@@ -1,4 +1,5 @@
 ﻿using System;
+using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
@@ -104,6 +105,21 @@ namespace StarTrek_KG.Actors
         }
 
         public Location GetLocation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateDivinedSectors()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Scavenge(ScavengeType scavengeType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RepairEverything()
         {
             throw new NotImplementedException();
         }

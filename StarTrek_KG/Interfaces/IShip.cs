@@ -18,5 +18,8 @@ namespace StarTrek_KG.Interfaces
 
         Region GetRegion();
         Location GetLocation();
+        void UpdateDivinedSectors();
+        void Scavenge(ScavengeType scavengeType);
+        void RepairEverything();
     }
 }

@@ -66,7 +66,7 @@ namespace StarTrek_KG.Interfaces
 
         List<string> EvalSubLevelCommand(IShip playerShip, string playerEnteredText, int promptLevel);
 
-        void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel);
+        void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel);
         void RenderSectors(SectorScanType scanType, ISubsystem subsystem);
         string RenderCourse();
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using StarTrek_KG.Actors;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Interfaces
@@ -10,14 +9,13 @@ namespace StarTrek_KG.Interfaces
     public interface ISubsystem
     {
         SubsystemType Type { get; set; }
-        Ship ShipConnectedTo { get; set; }
+        IShip ShipConnectedTo { get; set; }
 
         int Damage { get; set; }
         int MaxTransfer { get; set; }
         int Energy { get; set; }
-        IInteraction Prompt { get; set; }
 
-        ISubsystem For(Ship ship);
+        ISubsystem For(IShip ship);
 
         /// <summary>
         /// A common feature of this method is this is where you recieve damage

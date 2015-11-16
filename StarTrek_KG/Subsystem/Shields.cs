@@ -46,14 +46,14 @@ namespace StarTrek_KG.Subsystem
         {
             base._myPanel = Shields.SHIELD_PANEL;
 
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             //now we know that the shield Panel command has been retrieved.
             if (!this.Damaged())
             {
                 if (this.NotRecognized(command))
                 {
-                    this.Prompt.Line("Shield command not recognized."); //todo: resource this
+                    this.ShipConnectedTo.Map.Game.Interact.Line("Shield command not recognized."); //todo: resource this
                 }
                 else
                 {
@@ -70,19 +70,19 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.Prompt.Line("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
+                this.ShipConnectedTo.Map.Game.Interact.Line("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
             }
 
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         private bool SubtractingFrom(string command)
         {
-            return (command == "sub") || (this.Prompt.Subscriber.PromptInfo.SubCommand == "sub");
+            return (command == "sub") || (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubCommand == "sub");
         }
         private bool AddingTo(string command)
         {
-            return (command == "add") || (this.Prompt.Subscriber.PromptInfo.SubCommand == "add");
+            return (command == "add") || (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubCommand == "add");
         }
 
         private void AddOrGetValue(string command)
@@ -111,15 +111,15 @@ namespace StarTrek_KG.Subsystem
                 }
                 else
                 {
-                    this.Prompt.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
+                    this.ShipConnectedTo.Map.Game.Interact.Line("Shields are currently DOWN.  Cannot subtract energy"); //todo: resource this
                 }
             }
             else
             {
                 if (this.Energy < 1)
                 {
-                    this.Prompt.Line("Shields are currently DOWN. Cannot subtract energy. \r\n Exiting Panel."); //todo: resource this
-                    this.Prompt.ResetPrompt();
+                    this.ShipConnectedTo.Map.Game.Interact.Line("Shields are currently DOWN. Cannot subtract energy. \r\n Exiting Panel."); //todo: resource this
+                    this.ShipConnectedTo.Map.Game.Interact.ResetPrompt();
                 }
                 else
                 {
@@ -139,11 +139,11 @@ namespace StarTrek_KG.Subsystem
                 int energyToTransfer = Convert.ToInt32(command);
                 this.DoTheTransfer(energyToTransfer, adding);
 
-                this.Prompt.ResetPrompt();
+                this.ShipConnectedTo.Map.Game.Interact.ResetPrompt();
             }
             else
             {
-                this.Prompt.Line("Invalid transfer amount."); //todo: resource this
+                this.ShipConnectedTo.Map.Game.Interact.Line("Invalid transfer amount."); //todo: resource this
             }
         }
 
@@ -157,7 +157,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
             {
-                this.Prompt.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this
+                this.ShipConnectedTo.Map.Game.Interact.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this
             }
             else
             {
@@ -165,7 +165,7 @@ namespace StarTrek_KG.Subsystem
                 {
                     if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
                     {
-                        this.Prompt.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
+                        this.ShipConnectedTo.Map.Game.Interact.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
                         return;
                     }
 
@@ -178,7 +178,7 @@ namespace StarTrek_KG.Subsystem
                         {
                             //todo: write code to add the difference if they exceed. There is no reason to make people type twice
 
-                            this.Prompt.Line("Energy to transfer exceeds Shield Max capability.. No Change");
+                            this.ShipConnectedTo.Map.Game.Interact.Line("Energy to transfer exceeds Shield Max capability.. No Change");
                             return;
                         }
 
@@ -192,9 +192,9 @@ namespace StarTrek_KG.Subsystem
                         this.AddEnergy(transfer, adding);
                     }
 
-                    this.Prompt.Line($"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
+                    this.ShipConnectedTo.Map.Game.Interact.Line($"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
 
-                    this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+                    this.ShipConnectedTo.Map.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
                 }
             }
         }
@@ -232,16 +232,17 @@ namespace StarTrek_KG.Subsystem
         //Interface
         public void GetValueFromUser(string subCommand)
         {
-            PromptInfo promptInfo = this.Prompt.Subscriber.PromptInfo;
+            //PromptInfo promptInfo = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo;
+            PromptInfo promptInfo = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo;
 
             if (promptInfo.Level == 1)
             {
                 string transfer;
-                this.Prompt.PromptUser(SubsystemType.Shields,
+                this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Shields,
                                        "Shields-> Transfer Energy-> ",
                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
                                        out transfer,
-                                       this.Prompt.Output.Queue,
+                                       this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
                                      
                                        subPromptLevel: 2);
             }

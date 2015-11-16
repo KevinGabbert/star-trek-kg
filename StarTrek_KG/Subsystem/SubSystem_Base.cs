@@ -21,15 +21,13 @@ namespace StarTrek_KG.Subsystem
             public int Damage { get; set; }
             public int MaxTransfer { get; set; }
             public SubsystemType Type { get; set; }
-            public IInteraction Prompt { get; set; }
 
         #endregion
 
         protected List<string> _myPanel; 
 
-        protected SubSystem_Base(Ship shipConnectedTo)
+        protected SubSystem_Base(IShip shipConnectedTo)
         {
-            this.Prompt = shipConnectedTo.Map.Game.Interact;
             this.ShipConnectedTo = shipConnectedTo;
             this.Initialize();
         }
@@ -169,7 +167,7 @@ namespace StarTrek_KG.Subsystem
 
         #region Synctactic sugar
 
-        public ISubsystem For(Ship ship)
+        public ISubsystem For(IShip ship)
         {
             if (ship == null)
             {
@@ -224,7 +222,7 @@ namespace StarTrek_KG.Subsystem
         {
             bool retVal = true;
 
-            if (this.Prompt.Subscriber.PromptInfo.Level == 1 && command != "")
+            if (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level == 1 && command != "")
             {
                 var search = $"{command}  = "; //todo: modify to use MenuItem "divider" in web.config  -  <MenuItem promptLevel="1" name="ship" description="Exit back to the Ship Panel" ordinalPosition ="1" divider=" = "></MenuItem>
                 retVal = this._myPanel.Any(p => p.Contains(search)); 

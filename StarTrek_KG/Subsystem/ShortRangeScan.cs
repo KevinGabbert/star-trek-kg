@@ -17,12 +17,12 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             if (this.Damaged()) return null;
 
-            this.Prompt.RenderSectors(SectorScanType.ShortRange, this);
-            return this.Prompt.Output.Queue?.ToList();
+            this.ShipConnectedTo.Map.Game.Interact.RenderSectors(SectorScanType.ShortRange, this);
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue?.ToList();
         }
 
         public static ShortRangeScan For(IShip ship)

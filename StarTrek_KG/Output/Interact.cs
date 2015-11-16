@@ -224,6 +224,11 @@ namespace StarTrek_KG.Output
             }
         }
 
+        public void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel)
+        {
+            this.Output.Write("OutputConditionAndWarnings not implemented."); //todo: implement this.
+        }
+
         public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
         {
             IShip shipConnectedTo = subsystem.ShipConnectedTo;

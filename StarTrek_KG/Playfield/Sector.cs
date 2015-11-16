@@ -61,7 +61,7 @@ namespace StarTrek_KG.Playfield
             return gotSectors.Single();
         }
 
-        public static Sector GetFrom(Ship shipToGetFrom)
+        public static Sector GetFrom(IShip shipToGetFrom)
         {
             Region shipRegion = shipToGetFrom.GetRegion();
             List<Sector> gotSectors = shipRegion.Sectors.Where(s => s.X == shipToGetFrom.Sector.X && s.Y == shipToGetFrom.Sector.Y).ToList();

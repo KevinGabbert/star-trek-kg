@@ -15,31 +15,31 @@ namespace StarTrek_KG.Subsystem
                                                     "fix = Emergency Fix subsystem"
                                                 };
 
-        public DamageControl(Ship shipConnectedTo) : base(shipConnectedTo)
+        public DamageControl(IShip shipConnectedTo) : base(shipConnectedTo)
         {
             this.Type = SubsystemType.DamageControl; //needed for lookup
         }
 
         public override List<string> Controls(string command)
         {
-            this.Prompt.Output.Queue.Clear();
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             if (command == Commands.DamageControl.FixSubsystem)
             {
                 string subsystemToFix;
-                this.Prompt.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);
+                this.ShipConnectedTo.Map.Game.Interact.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);
 
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }
 
-            return this.Prompt.Output.Queue.ToList();
+            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
         }
 
         private string ShowSubsystemsToFix()
         {
-            this.Prompt.CreateCommandPanel();
-            this.Prompt.Panel("─── Subsystem to Fix", this.Prompt.SHIP_PANEL);
-            this.Prompt.WithNoEndCR("Enter subsystem: ");
+            this.ShipConnectedTo.Map.Game.Interact.CreateCommandPanel();
+            this.ShipConnectedTo.Map.Game.Interact.Panel("─── Subsystem to Fix", this.ShipConnectedTo.Map.Game.Interact.SHIP_PANEL);
+            this.ShipConnectedTo.Map.Game.Interact.WithNoEndCR("Enter subsystem: ");
             return "";
         }
 
@@ -49,23 +49,23 @@ namespace StarTrek_KG.Subsystem
 
             if (!subsystemsFound.Any())
             {
-                this.Prompt.Line("invalid or no fix required.");
+                this.ShipConnectedTo.Map.Game.Interact.Line("invalid or no fix required.");
                 return;
             }
 
             ISubsystem subsystemToFix = subsystemsFound.Single();  //yeah.  I'd rather say single() above, but oh well..
 
-            Ship ship = this.ShipConnectedTo;
+            IShip ship = this.ShipConnectedTo;
 
             if (ship.Energy > 1000) //todo: resource this out.
             {
                 ship.Energy -= 1000;  //todo: resource this out.
                 subsystemToFix.For(ship).FullRepair();
-                this.Prompt.Line($"Ship Energy now at: {ship.Energy}");
+                this.ShipConnectedTo.Map.Game.Interact.Line($"Ship Energy now at: {ship.Energy}");
             }
             else
             {
-                this.Prompt.Line("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
+                this.ShipConnectedTo.Map.Game.Interact.Line("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
             }
         }
 
