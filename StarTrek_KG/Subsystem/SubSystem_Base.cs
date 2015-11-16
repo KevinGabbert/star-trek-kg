@@ -21,29 +21,29 @@ namespace StarTrek_KG.Subsystem
             public int Damage { get; set; }
             public int MaxTransfer { get; set; }
             public SubsystemType Type { get; set; }
+            public IInteraction Prompt { get; set;  }
 
         #endregion
 
         protected List<string> _myPanel; 
 
-        protected SubSystem_Base(Ship shipConnectedTo, IGame game)
+        protected SubSystem_Base(Ship shipConnectedTo)
         {
-            this.Game = game;
-            this.Initialize();
-
             this.ShipConnectedTo = shipConnectedTo;
+            this.Initialize();
+            this.Prompt = shipConnectedTo.Game.Interact;
         }
 
         #region Output Messages
 
         private void OutputDamagedMessage()
         {
-            this.Game.Interact.Line($"{this.Type} Damaged.");
+            this.ShipConnectedTo.Game.Interact.Line($"{this.Type} Damaged.");
         }
 
         private void OutputRepairedMessage()
         {
-            this.Game.Interact.Line($"{this.Type} Repaired.");
+            this.ShipConnectedTo.Game.Interact.Line($"{this.Type} Repaired.");
         }
 
         //public virtual void OutputMalfunctioningMessage()
@@ -60,7 +60,7 @@ namespace StarTrek_KG.Subsystem
 
         public virtual List<string> Controls(string command)
         {
-            this.Game.Interact.Output.Queue.Clear();
+            this.ShipConnectedTo.Game.Interact.Output.Queue.Clear();
             return new List<string>();
         }
 
@@ -110,7 +110,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public void TakeDamage()
         {
-            this.Damage = 1 + (Utility.Utility.Random).Next(this.Game.Config.GetSetting<int>("DamageSeed"));
+            this.Damage = 1 + (Utility.Utility.Random).Next(this.ShipConnectedTo.Game.Config.GetSetting<int>("DamageSeed"));
 
             //todo: if number is small, then this.OutputMalfunctioningMessage.. else...
             this.OutputDamagedMessage();
@@ -176,8 +176,7 @@ namespace StarTrek_KG.Subsystem
                 throw new GameConfigException("Ship not set up (ISubsystem). ");
             }
 
-            var subSystem = ship.Subsystems.Single(s => s.Type == this.Type);
-            subSystem.Game = game;
+            ISubsystem subSystem = ship.Subsystems.Single(s => s.Type == this.Type);
 
             return subSystem;
         }

@@ -24,10 +24,10 @@ namespace StarTrek_KG.Actors
 
         private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil"; //todo: resource this.
 
-        public Movement(Ship shipConnectedTo, IGame game)
+        public Movement(Ship shipConnectedTo)
         {
-            base.Game = game;
             base.ShipConnectedTo = shipConnectedTo;
+            this.Prompt = shipConnectedTo.Game.Interact;
         }
 
         public void Execute(MovementType movementType, NavDirection direction, int distance, out int lastRegionX, out int lastRegionY)
@@ -40,6 +40,8 @@ namespace StarTrek_KG.Actors
             //var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
 
             Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;//Clear Old Sector
+
+            IGame game = this.ShipConnectedTo.Game;
 
             switch (movementType)
             {
@@ -55,8 +57,8 @@ namespace StarTrek_KG.Actors
                     if (newLocation != null)
                     {
                         newLocation.SetActive();
-                        this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Region 
-                        this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
+                        game.Map.SetPlayershipInActiveSector(game.Map); //sets friendly in Active Region 
+                        game.MoveTimeForward(game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
                     }
 
                     break;
@@ -66,7 +68,7 @@ namespace StarTrek_KG.Actors
                 //    newLocation = this.TravelThroughGalaxies()
 
                 default:
-                    this.Game.Interact.Line("Unsupported Movement Type");
+                    game.Interact.Line("Unsupported Movement Type");
                     break;
             }
         }
@@ -79,14 +81,16 @@ namespace StarTrek_KG.Actors
             lastRegionY = playershipRegion.Y;
             lastRegionX = playershipRegion.X;
 
-            Region destinationRegion = this.Game.Map.Regions.Get(destinationRegionName);
+            IMap map = this.ShipConnectedTo.Game.Map;
+
+            Region destinationRegion = map.Regions.Get(destinationRegionName);
 
             //destinationRegion.Active = true;
             destinationRegion.SetActive();
 
-            this.Game.Map.SetPlayershipInActiveSector(this.Game.Map); //sets friendly in Active Region  
+            map.SetPlayershipInActiveSector(map); //sets friendly in Active Region  
 
-            this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
+            this.ShipConnectedTo.Game.MoveTimeForward(map, new Coordinate(lastRegionX, lastRegionY), destinationRegion);
         }
 
         #region Sectors
@@ -111,7 +115,7 @@ namespace StarTrek_KG.Actors
                 }
                 else
                 {
-                    this.Game.Map.SetPlayershipInLocation(travellingShip, this.Game.Map, newLocation);
+                    this.ShipConnectedTo.Game.Map.SetPlayershipInLocation(travellingShip, this.ShipConnectedTo.Game.Map, newLocation);
                 }
 
                 //todo:  this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
@@ -166,23 +170,21 @@ namespace StarTrek_KG.Actors
             {
                 case SectorItem.Star:
                     var star = currentObject;
-                    this.Game.Interact.Line("Stellar body " + star.Name.ToUpper() + " encountered while navigating at sector: [" + sector.X + "," +
-                                      sector.Y + "]");
+                    this.Prompt.Line($"Stellar body {star.Name.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
                 case SectorItem.HostileShip:
                     var hostile = currentObject;
-                    this.Game.Interact.Line("Ship " + hostile.Name + " encountered while navigating at sector: [" + sector.X + "," +
-                                      sector.Y + "]");
+                    this.Prompt.Line($"Ship {hostile.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
 
                 case SectorItem.Starbase:
-                    this.Game.Interact.Line("Starbase encountered while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    this.Prompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
                 default:
-                    this.Game.Interact.Line("Detected an unidentified obstacle while navigating at sector: [" + sector.X + "," + sector.Y + "]");
+                    this.Prompt.Line($"Detected an unidentified obstacle while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
             }
         }
@@ -200,6 +202,8 @@ namespace StarTrek_KG.Actors
             int futureShipRegionX = currentRegion.X;
             int futureShipRegionY = currentRegion.Y;
 
+            Regions regions = this.ShipConnectedTo.Game.Map.Regions;
+
             for (int i = 0; i < distance; i++)
             {
                 this.GetNewCoordinate(warpDirection, ref futureShipRegionX, ref futureShipRegionY);
@@ -208,7 +212,7 @@ namespace StarTrek_KG.Actors
 
                 //todo: check if Region is nebula or out of bounds
 
-                bool barrierHit = this.Game.Map.Regions.IsGalacticBarrier(futureShipRegionX, futureShipRegionY);  //XY will be set to safe value in here
+                bool barrierHit = regions.IsGalacticBarrier(futureShipRegionX, futureShipRegionY);  //XY will be set to safe value in here
                 this.BlockedByGalacticBarrier = barrierHit;
 
                 if (barrierHit)
@@ -225,7 +229,7 @@ namespace StarTrek_KG.Actors
                     bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
                     if (nebulaEncountered)
                     {
-                        base.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
+                        this.ShipConnectedTo.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
                         break;
                     }
                 }
@@ -317,7 +321,7 @@ namespace StarTrek_KG.Actors
 
             if (scanResult.GalacticBarrier)
             {
-                this.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
+                this.ShipConnectedTo.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
                 stopNavigation = true;
             }
             else
@@ -327,7 +331,7 @@ namespace StarTrek_KG.Actors
 
                 if (obstacleEncountered)
                 {
-                    this.Game.Interact.Line("All Stop.");
+                    this.ShipConnectedTo.Game.Interact.Line("All Stop.");
                     stopNavigation = true;
                 }
 
@@ -349,7 +353,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                newLocation.Region = this.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
+                newLocation.Region = this.ShipConnectedTo.Game.Map.Regions.Where(r => r.Name == scanResult.RegionName).Single();
             }
 
             return newLocation;
@@ -390,7 +394,7 @@ namespace StarTrek_KG.Actors
             string userDirection = "";
             List<int> availableDirections = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 
-            bool userEnteredCourse = this.Game.Prompt.Invoke($"{this.Game.Interact.RenderCourse()} Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.ShipConnectedTo.Game.Prompt.Invoke($"{this.Prompt.RenderCourse()} Enter Course: ", out userDirection);
 
             if (userEnteredCourse)
             {
@@ -398,7 +402,7 @@ namespace StarTrek_KG.Actors
 
                 if (!userDirection.IsNumeric() || userDirection.Contains("."))
                 {
-                    this.Game.Interact.Line("Invalid course.");
+                    this.Prompt.Line("Invalid course.");
                     direction = NavDirection.Up;
 
                     return true;
@@ -408,7 +412,7 @@ namespace StarTrek_KG.Actors
 
                 if (directionToCheck > availableDirections.Max() || directionToCheck < availableDirections.Min())
                 {
-                    this.Game.Interact.Line("Invalid course..");
+                    this.Prompt.Line("Invalid course..");
                     direction = NavDirection.Up;
 
                     return true;

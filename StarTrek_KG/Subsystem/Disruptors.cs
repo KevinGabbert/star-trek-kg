@@ -8,7 +8,7 @@ namespace StarTrek_KG.Subsystem
     public class Disruptors : SubSystem_Base, IWeapon
     {
         //this.Initialize();
-        public Disruptors(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
+        public Disruptors(Ship shipConnectedTo, IGame game): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Disruptors;
         }
@@ -105,8 +105,8 @@ namespace StarTrek_KG.Subsystem
 
         private void FireOnStar(IStar iStar)
         {
-            this.Game.Interact.Line("");
-            this.Game.Interact.Line("Direct hit on " + iStar.Name + ". No apparent damage to Stellar Body.");
+            this.Prompt.Line("");
+            this.Prompt.Line($"Direct hit on {iStar.Name}. No apparent damage to Stellar Body.");
         }
     }
 }

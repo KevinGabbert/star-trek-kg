@@ -18,7 +18,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         public void Setup()
         {
             DEFAULTS.DEBUG_MODE = false;
-            _photonsToTest = new Torpedoes(_setup.TestMap.Playership, this.Game);
+            _photonsToTest = new Torpedoes(_setup.TestMap.Playership);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             DEFAULTS.DEBUG_MODE = debugMode;
 
 
-            Assert.IsTrue(_setup.TestMap == _photonsToTest.Game.Map);
+            Assert.IsTrue(_setup.TestMap == _photonsToTest.ShipConnectedTo.Game.Map);
 
             _photonsToTest.Shoot(7);
 

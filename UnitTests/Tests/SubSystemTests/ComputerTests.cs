@@ -11,7 +11,7 @@ namespace UnitTests.Tests.SubSystemTests
         public void Setup()
         {
             _setup.SetupMapWith1Friendly();
-            _setup.TestComputer = new Computer(this.Game.Map.Playership, this.Game); 
+            _setup.TestComputer = new Computer(this.Game.Map.Playership); 
         }
 
         [Test]

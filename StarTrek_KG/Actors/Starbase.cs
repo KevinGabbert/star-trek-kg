@@ -103,6 +103,11 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
+        public Location GetLocation()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public Type Type()
         {

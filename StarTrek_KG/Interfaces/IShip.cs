@@ -17,5 +17,6 @@ namespace StarTrek_KG.Interfaces
         bool Destroyed { get; set; }
 
         Region GetRegion();
+        Location GetLocation();
     }
 }

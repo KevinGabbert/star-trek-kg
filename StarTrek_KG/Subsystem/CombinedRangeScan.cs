@@ -9,30 +9,30 @@ namespace StarTrek_KG.Subsystem
 {
     class CombinedRangeScan : SubSystem_Base
     {
-        public CombinedRangeScan(Ship shipConnectedTo, IGame game) : base(shipConnectedTo, game)
+        public CombinedRangeScan(Ship shipConnectedTo) : base(shipConnectedTo)
         {
             this.Type = SubsystemType.CombinedRangeScan;
         }
 
         public List<string> Controls()
         {
-            this.Game.Interact.Output.Queue.Clear();
+            this.Prompt.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Interact.Output.Queue.ToList();
+            if (this.Damaged()) return this.Prompt.Output.Queue.ToList();
 
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
-                this.Game.Interact.Line("Combined Scan needs SRS Subsystem in order to run.");
+                this.Prompt.Line("Combined Scan needs SRS Subsystem in order to run.");
             }
 
-            this.Game.Interact.RenderSectors(SectorScanType.CombinedRange, this);
+            this.Prompt.RenderSectors(SectorScanType.CombinedRange, this);
 
-            return this.Game.Interact.Output.Queue.ToList();
+            return this.Prompt.Output.Queue.ToList();
         }
 
         public static CombinedRangeScan For(IShip ship)
         {
-            return (CombinedRangeScan)SubSystem_Base.For(ship, SubsystemType.CombinedRangeScan);
+            return (CombinedRangeScan)For(ship, SubsystemType.CombinedRangeScan);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             _setup.SetupMapWith1Hostile();
 
-            _setup.TestNavigation = new Navigation(_setup.TestMap.Playership, this.Game); 
+            _setup.TestNavigation = new Navigation(_setup.TestMap.Playership); 
         }
 
 

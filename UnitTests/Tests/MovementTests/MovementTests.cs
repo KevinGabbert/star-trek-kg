@@ -78,7 +78,7 @@ namespace UnitTests.ShipTests.MovementTests
                                              AddStars = false
                                          }, this.Game.Interact, this.Game.Config));
 
-            _testMovement = new Movement(this.Game.Map.Playership, this.Game) {BlockedByObstacle = false};
+            _testMovement = new Movement(this.Game.Map.Playership) {BlockedByObstacle = false};
             _testShip = this.Game.Map.Playership; //synctactic sugar
 
             #region "Manually set ship. todo: write test to ensure that this method works too"
@@ -324,8 +324,8 @@ namespace UnitTests.ShipTests.MovementTests
                                                            this.Game.Map.Playership.Sector.X,
                                                            this.Game.Map.Playership.Sector.Y).Item);
             var sectorItem =
-                Sector.Get(_testMovement.Game.Map.Regions.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
-                                                                       _testMovement.Game.Map.Playership.Sector.Y).Item;
+                Sector.Get(_testMovement.ShipConnectedTo.Game.Map.Regions.GetActive().Sectors, _testMovement.ShipConnectedTo.Game.Map.Playership.Sector.X,
+                                                                       _testMovement.ShipConnectedTo.Game.Map.Playership.Sector.Y).Item;
             Assert.AreEqual(SectorItem.PlayerShip, sectorItem);
 
             _testMovement.Execute(MovementType.Impulse, direction, distance, out _lastRegionX, out _lastRegionY);
@@ -666,7 +666,7 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void TravelAlongCourse_BugVerification()
         {
-            var testMovement = new Movement( this.Game.Map.Playership, this.Game);
+            var testMovement = new Movement( this.Game.Map.Playership);
 
             double x = 31.5084577259018;
             double y = 31.5084577259018;

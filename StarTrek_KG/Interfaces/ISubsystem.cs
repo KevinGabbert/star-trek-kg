@@ -9,7 +9,6 @@ namespace StarTrek_KG.Interfaces
     /// </summary>
     public interface ISubsystem
     {
-        IGame Game { get; set; }
         SubsystemType Type { get; set; }
         Ship ShipConnectedTo { get; set; }
 

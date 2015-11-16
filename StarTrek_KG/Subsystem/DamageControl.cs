@@ -15,31 +15,31 @@ namespace StarTrek_KG.Subsystem
                                                     "fix = Emergency Fix subsystem"
                                                 };
 
-        public DamageControl(Ship shipConnectedTo, Game game) : base(shipConnectedTo, game)
+        public DamageControl(Ship shipConnectedTo) : base(shipConnectedTo)
         {
             this.Type = SubsystemType.DamageControl; //needed for lookup
         }
 
         public override List<string> Controls(string command)
         {
-            this.Game.Interact.Output.Queue.Clear();
+            this.Prompt.Output.Queue.Clear();
 
             if (command == Commands.DamageControl.FixSubsystem)
             {
                 string subsystemToFix;
-                this.Game.Interact.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);
+                this.Prompt.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);
 
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }
 
-            return this.Game.Interact.Output.Queue.ToList();
+            return this.Prompt.Output.Queue.ToList();
         }
 
         private string ShowSubsystemsToFix()
         {
-            this.Game.Interact.CreateCommandPanel();
-            this.Game.Interact.Panel("─── Subsystem to Fix", this.Game.Interact.SHIP_PANEL);
-            this.Game.Interact.WithNoEndCR("Enter subsystem: ");
+            this.Prompt.CreateCommandPanel();
+            this.Prompt.Panel("─── Subsystem to Fix", this.Prompt.SHIP_PANEL);
+            this.Prompt.WithNoEndCR("Enter subsystem: ");
             return "";
         }
 
@@ -49,7 +49,7 @@ namespace StarTrek_KG.Subsystem
 
             if (!subsystemsFound.Any())
             {
-                this.Game.Interact.Line("invalid or no fix required.");
+                this.Prompt.Line("invalid or no fix required.");
                 return;
             }
 
@@ -60,18 +60,18 @@ namespace StarTrek_KG.Subsystem
             if (thisShip.Energy > 1000) //todo: resource this out.
             {
                 thisShip.Energy -= 1000;  //todo: resource this out.
-                subsystemToFix.For(thisShip, this.Game).FullRepair();
-                this.Game.Interact.Line("Ship Energy now at: " + thisShip.Energy);
+                subsystemToFix.For(thisShip, this.ShipConnectedTo.Game).FullRepair();
+                this.Prompt.Line($"Ship Energy now at: {thisShip.Energy}");
             }
             else
             {
-                this.Game.Interact.Line("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
+                this.Prompt.Line("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
             }
         }
 
         public static DamageControl For(IShip ship)
         {
-            return (DamageControl)SubSystem_Base.For(ship, SubsystemType.DamageControl);
+            return (DamageControl)For(ship, SubsystemType.DamageControl);
         }
     }
 }

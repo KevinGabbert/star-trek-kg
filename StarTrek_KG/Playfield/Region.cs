@@ -416,7 +416,7 @@ namespace StarTrek_KG.Playfield
             var hostileShipShields = Shields.For(hostileShip);
 
             //var testinghostileShipShields = hostileShipShields.Game.RandomFactorForTesting;
-            int hostileShipShieldsRandom = Utility.Utility.TestableRandom(hostileShipShields.Game); //testinghostileShipShields == 0 ? Utility.Utility.Random.Next(200) : testinghostileShipShields;
+            int hostileShipShieldsRandom = Utility.Utility.TestableRandom(hostileShipShields.ShipConnectedTo.Game); //testinghostileShipShields == 0 ? Utility.Utility.Random.Next(200) : testinghostileShipShields;
 
             hostileShipShields.Energy = 300 + hostileShipShieldsRandom; //todo: resource this out
 

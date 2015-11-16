@@ -7,7 +7,7 @@ namespace StarTrek_KG.Subsystem
 {
     public class Impulse : SubSystem_Base, IInteract
     {
-        public Impulse(Ship shipConnectedTo, IGame game) : base(shipConnectedTo, game)
+        public Impulse(Ship shipConnectedTo) : base(shipConnectedTo)
         {
         }
 

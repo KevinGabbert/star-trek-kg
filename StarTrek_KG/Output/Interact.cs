@@ -226,19 +226,22 @@ namespace StarTrek_KG.Output
 
         public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
         {
-            var location = subsystem.ShipConnectedTo.GetLocation();
-            Region Region = Regions.Get(subsystem.Game.Map, location.Region);
-            var shieldsAutoRaised = Shields.For(subsystem.ShipConnectedTo).AutoRaiseShieldsIfNeeded(Region);
-            var printSector = (new Render(this, subsystem.Game.Config));
+            IShip shipConnectedTo = subsystem.ShipConnectedTo;
+            IGame game = shipConnectedTo.Game;
 
-            int totalHostiles = subsystem.Game.Map.Regions.GetHostileCount();
-            var isNebula = (Region.Type == RegionType.Nebulae);
-            string RegionDisplayName = Region.Name;
+            var location = shipConnectedTo.GetLocation();
+            Region region = Regions.Get(game.Map, location.Region);
+            var shieldsAutoRaised = Shields.For(shipConnectedTo).AutoRaiseShieldsIfNeeded(region);
+            var printSector = (new Render(this, game.Config));
+
+            int totalHostiles = game.Map.Regions.GetHostileCount();
+            var isNebula = (region.Type == RegionType.Nebulae);
+            string regionDisplayName = region.Name;
             var sectorScanStringBuilder = new StringBuilder();
 
             if (isNebula)
             {
-                RegionDisplayName += " Nebula"; //todo: resource out.
+                regionDisplayName += " Nebula"; //todo: resource out.
             }
 
             this.Line("");
@@ -246,21 +249,21 @@ namespace StarTrek_KG.Output
             switch (scanType)
             {
                 case SectorScanType.CombinedRange:
-                    printSector.CreateCRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);
+                    printSector.CreateCRSViewScreen(region, game.Map, location, totalHostiles, regionDisplayName, isNebula, sectorScanStringBuilder);
                     break;
 
                 case SectorScanType.ShortRange:
-                    printSector.CreateSRSViewScreen(Region, subsystem.Game.Map, location, totalHostiles, RegionDisplayName, isNebula, sectorScanStringBuilder);
+                    printSector.CreateSRSViewScreen(region, game.Map, location, totalHostiles, regionDisplayName, isNebula, sectorScanStringBuilder);
                     break;
 
                 default:
                     throw new NotImplementedException();
             }
 
-            printSector.OutputScanWarnings(Region, subsystem.Game.Map, shieldsAutoRaised);
+            printSector.OutputScanWarnings(region, game.Map, shieldsAutoRaised);
 
-            Region.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
-            Region.Scanned = true;
+            region.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
+            region.Scanned = true;
         }
 
         public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, IGame game)

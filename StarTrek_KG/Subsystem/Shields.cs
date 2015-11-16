@@ -18,7 +18,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public static List<string> SHIELD_PANEL = new List<string>();
 
-        public Shields(Ship shipConnectedTo): base(shipConnectedTo, shipConnectedTo.Game)
+        public Shields(Ship shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Shields;
 
@@ -45,36 +45,34 @@ namespace StarTrek_KG.Subsystem
         {
             base._myPanel = Shields.SHIELD_PANEL;
 
-            IInteraction prompt = this.ShipConnectedTo.Game.Interact;
-
-            prompt.Output.Queue.Clear();
+            this.Prompt.Output.Queue.Clear();
 
             //now we know that the shield Panel command has been retrieved.
             if (!this.Damaged())
             {
-                if (this.NotRecognized(command, prompt))
+                if (this.NotRecognized(command, this.Prompt))
                 {
-                    prompt.Line("Shield command not recognized."); //todo: resource this
+                    this.Prompt.Line("Shield command not recognized."); //todo: resource this
                 }
                 else
                 {
                     //todo: this needs to change to read this.Game.Write.SubscriberPromptSubCommand, and that var needs to be "add"
-                    if (this.AddingTo(command, prompt))
+                    if (this.AddingTo(command, this.Prompt))
                     {
-                        this.AddOrGetValue(command, prompt);
+                        this.AddOrGetValue(command, this.Prompt);
                     }
-                    else if (this.SubtractingFrom(command, prompt))
+                    else if (this.SubtractingFrom(command, this.Prompt))
                     {
-                        this.SubtractOrGetValue(command, prompt);
+                        this.SubtractOrGetValue(command, this.Prompt);
                     }
                 }
             }
             else
             {
-                prompt.Line("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
+                this.Prompt.Line("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
             }
 
-            return prompt.Output.Queue.ToList();
+            return this.Prompt.Output.Queue.ToList();
         }
 
         private bool SubtractingFrom(string command, IInteraction promptInteraction)
@@ -156,11 +154,9 @@ namespace StarTrek_KG.Subsystem
 
         private void TransferEnergy(int transfer, bool adding)
         {
-            IInteraction prompt = this.ShipConnectedTo.Game.Interact;
-
             if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
             {
-                prompt.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this
+                this.Prompt.Line("Energy cannot be added to shields while in a nebula."); //todo: resource this
             }
             else
             {
@@ -168,11 +164,11 @@ namespace StarTrek_KG.Subsystem
                 {
                     if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
                     {
-                        prompt.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
+                        this.Prompt.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
                         return;
                     }
 
-                    var maxEnergy = (Convert.ToInt32(this.Game.Config.GetSetting<string>("SHIELDS_MAX")));
+                    var maxEnergy = (Convert.ToInt32(this.ShipConnectedTo.Game.Config.GetSetting<string>("SHIELDS_MAX")));
                     var totalEnergy = (this.Energy + transfer);
 
                     if (adding && (totalEnergy > maxEnergy))
@@ -181,7 +177,7 @@ namespace StarTrek_KG.Subsystem
                         {
                             //todo: write code to add the difference if they exceed. There is no reason to make people type twice
 
-                            prompt.Line("Energy to transfer exceeds Shield Max capability.. No Change");
+                            this.Prompt.Line("Energy to transfer exceeds Shield Max capability.. No Change");
                             return;
                         }
 
@@ -195,9 +191,9 @@ namespace StarTrek_KG.Subsystem
                         this.AddEnergy(transfer, adding);
                     }
 
-                    prompt.Line($"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
+                    this.Prompt.Line($"Shield strength is now {this.Energy}. Total Energy level is now {this.ShipConnectedTo.Energy}.");
 
-                    prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+                    this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Game.Config.GetSetting<int>("ShieldsDownLevel"));
                 }
             }
         }
@@ -272,7 +268,7 @@ namespace StarTrek_KG.Subsystem
             bool shieldsAutoRaised = false;
             if (region.GetHostiles().Count > 0)
             {
-                shieldsAutoRaised = this.Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, region);
+                shieldsAutoRaised = this.ShipConnectedTo.Game.Auto_Raise_Shields(this.ShipConnectedTo.Map, region);
             }
 
             return shieldsAutoRaised;

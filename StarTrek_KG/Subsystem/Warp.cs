@@ -7,7 +7,7 @@ namespace StarTrek_KG.Subsystem
 {
     class Warp : SubSystem_Base, IInteract
     {
-        public Warp(Ship shipConnectedTo, IGame game) : base(shipConnectedTo, game)
+        public Warp(Ship shipConnectedTo) : base(shipConnectedTo)
         {
         }
 

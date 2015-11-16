@@ -82,7 +82,7 @@ namespace UnitTests.ShipTests.RegionTests
             const bool setupNebula = true;
             this.SetupRegion(setupNebula);
 
-            _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership);
 
             _setup.TestLongRangeScan.Controls();
 
@@ -149,7 +149,7 @@ namespace UnitTests.ShipTests.RegionTests
             var hostilesReallyInRegion = _testRegion.GetHostiles().Count;
             Assert.AreEqual(1, hostilesReallyInRegion);
 
-            _setup.TestLongRangeScan = new LongRangeScan(_setup.TestMap.Playership, _setup.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(_setup.TestMap.Playership);
 
             LRSResult scanResult = LongRangeScan.Execute(_testRegion);
 

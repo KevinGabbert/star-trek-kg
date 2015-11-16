@@ -18,7 +18,7 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
+        public Torpedoes(Ship shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Torpedoes; //for lookup
         }
@@ -30,15 +30,18 @@ namespace StarTrek_KG.Subsystem
 
         public List<string> Controls()
         {
-            this.Game.Interact.Output.Queue.Clear();
+            IGame game = this.ShipConnectedTo.Game;
+            IInteraction prompt = game.Interact;
+
+            prompt.Output.Queue.Clear();
 
             List<string> hostileCheckOutput;
 
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Regions(this.Game.Map, this.Game.Interact)).NoHostiles(this.Game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return this.Game.Interact.Output.Queue.ToList();
+                (new Regions(game.Map, prompt)).NoHostiles(game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return prompt.Output.Queue.ToList();
 
-            this.Game.Interact.Output.Write(hostileCheckOutput);
+            prompt.Output.Write(hostileCheckOutput);
 
             //todo: resource this out.
             var firingDirection = Environment.NewLine +
@@ -51,38 +54,39 @@ namespace StarTrek_KG.Subsystem
                                   "Enter firing direction (1.0--9.0) ";
 
             string direction;
-            if (!this.Game.Interact.PromptUser(SubsystemType.Phasers, "Phasers->", firingDirection, out direction, this.Game.Interact.Output.Queue)
+            if (!prompt.PromptUser(SubsystemType.Phasers, "Phasers->", firingDirection, out direction, prompt.Output.Queue)
                 || int.Parse(direction) < 1.0 
                 || int.Parse(direction) > 9.0)
             {
-                this.Game.Interact.Line("Invalid direction.");
-                return this.Game.Interact.Output.Queue.ToList();
+                prompt.Line("Invalid direction.");
+                return prompt.Output.Queue.ToList();
             }
 
             this.Shoot(int.Parse(direction));
 
-            return this.Game.Interact.Output.Queue.ToList();
+            return prompt.Output.Queue.ToList();
         }
 
         public void Shoot(double direction)
         {
-            if(this.Count < 1)
+            IGame game = this.ShipConnectedTo.Game;
+            if (this.Count < 1)
             {
-                this.Game.Interact.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
+                this.Prompt.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
                 return;
             }
 
-            this.Game.ALLHostilesAttack(this.Game.Map);
+            game.ALLHostilesAttack(game.Map);
 
             double angle = Utility.Utility.ComputeAngle(direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
-            Region Region = Regions.Get(this.Game.Map, torpedoStartingLocation.Region);
+            Region Region = Regions.Get(game.Map, torpedoStartingLocation.Region);
 
             //var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
             //var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
 
-            this.Game.Interact.Line("Photon torpedo fired...");
+            this.Prompt.Line("Photon torpedo fired...");
             this.Count--;
 
             //TODO: WRITE SOME TORPEDO TESTS!
@@ -115,7 +119,7 @@ namespace StarTrek_KG.Subsystem
             //    currentLocation.IncrementBy(torpedoVector);
             //}
 
-            this.Game.Interact.Line("Photon torpedo failed to hit anything.");
+            this.Prompt.Line("Photon torpedo failed to hit anything.");
         }
 
         //private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation)
@@ -165,18 +169,20 @@ namespace StarTrek_KG.Subsystem
 
         private bool HitSomething(Location location)
         {
+            IGame game = this.ShipConnectedTo.Game;
+
             if (this.HitHostile(location.Sector.Y, location.Sector.X))
             {
                 //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
 
-                this.Game.ALLHostilesAttack(this.Game.Map);
+                game.ALLHostilesAttack(game.Map);
                 return true;
             }
 
-            if (this.HitSomethingElse(this.Game.Map, location.Region, location.Sector.Y, location.Sector.X))
+            if (this.HitSomethingElse(game.Map, location.Region, location.Sector.Y, location.Sector.X))
             {
                 //TODO: Remove this from Torpedo Subsystem.  This needs to be called after a torpedo has fired
-                this.Game.ALLHostilesAttack(this.Game.Map);
+                game.ALLHostilesAttack(game.Map);
                 return true;
             }
 
@@ -185,17 +191,19 @@ namespace StarTrek_KG.Subsystem
 
         private bool HitHostile(int newY, int newX)
         {
-            var thisRegion = this.Game.Map.Regions.GetActive();
+            IGame game = this.ShipConnectedTo.Game;
+
+            var thisRegion = game.Map.Regions.GetActive();
             var hostilesInRegion = thisRegion.GetHostiles();
             IShip hostileInSector = hostilesInRegion.SingleOrDefault(hostileShip => hostileShip.Sector.X == newX &&
                                                                                       hostileShip.Sector.Y == newY);
             if (hostileInSector != null)
             {
-                this.Game.Map.RemoveTargetFromSector(this.Game.Map, hostileInSector);
+                game.Map.RemoveTargetFromSector(game.Map, hostileInSector);
 
                 if (hostileInSector.Faction == FactionName.Federation)
                 {
-                    this.Game.Map.AddACoupleHostileFederationShipsToExistingMap();
+                    game.Map.AddACoupleHostileFederationShipsToExistingMap();
                     this.ShipConnectedTo.Scavenge(ScavengeType.FederationShip);
                 }
 
@@ -235,6 +243,8 @@ namespace StarTrek_KG.Subsystem
                                       int newY, 
                                       int newX)
         {
+            IGame game = this.ShipConnectedTo.Game;
+
 
             //todo: move this code out of the function and pass location as Sector instead of a Navigation object
             List<Sector> qLocations = Region.Sectors.Where(s => s.X == newX && s.Y == newY).ToList();
@@ -250,7 +260,7 @@ namespace StarTrek_KG.Subsystem
             {
                 case SectorItem.Starbase:
 
-                    this.Game.DestroyStarbase(map, newY, newX, qLocation);
+                    game.DestroyStarbase(map, newY, newX, qLocation);
 
                     return true;
 
@@ -265,7 +275,7 @@ namespace StarTrek_KG.Subsystem
                         starName = star.Name;
                     }
 
-                    this.Game.Interact.Line(string.Format(
+                    game.Interact.Line(string.Format(
                         "The torpedo was captured by the gravitational field of star: " + starName +
                         " at sector [{0},{1}].",
                         newX, newY));
@@ -280,7 +290,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Count == 0)
             {
-                this.Game.Interact.Line("Photon torpedoes exhausted.");
+                this.ShipConnectedTo.Game.Interact.Line("Photon torpedoes exhausted.");
                 return true;
             }
             return false;
@@ -290,11 +300,11 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged())
             {
-                this.Game.Interact.Line("Cannot calculate while Torpedo subsystem is damaged.");
+                this.Prompt.Line("Cannot calculate while Torpedo subsystem is damaged.");
                 return;
             }
 
-            this.Game.Interact.Line("");
+            this.Prompt.Line("");
 
             var thisRegion = this.ShipConnectedTo.GetRegion();
             var thisRegionHostiles = thisRegion.GetHostiles();
@@ -302,7 +312,7 @@ namespace StarTrek_KG.Subsystem
             //todo: once starbases are an object, then they are merely another hostile.  Delete this IF and the rest of the code should work fine.
             if (thisRegion.GetStarbaseCount() > 0)
             {
-                if (Game.PlayerNowEnemyToFederation)
+                if (this.ShipConnectedTo.Game.PlayerNowEnemyToFederation)
                 {
                     Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo);
                 }
@@ -310,8 +320,8 @@ namespace StarTrek_KG.Subsystem
 
             if (thisRegionHostiles.Count == 0)
             {
-                this.Game.Interact.Line("There are no Hostile ships in this Region.");
-                this.Game.Interact.Line("");
+                this.Prompt.Line("There are no Hostile ships in this Region.");
+                this.Prompt.Line("");
                 return;
             }
 
@@ -325,7 +335,7 @@ namespace StarTrek_KG.Subsystem
 
                 direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);
 
-                this.Game.Interact.Line($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
+                this.Prompt.Line($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
             }
         }
 
@@ -341,17 +351,17 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            this.Game.Interact.Line("");
-            this.Game.Interact.Line("Objects to Target:");
+            this.Prompt.Line("");
+            this.Prompt.Line("Objects to Target:");
 
             Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
-            this.Game.Interact.Line("");
-            this.Game.Interact.PromptUserConsole("Enter number to target: ", out userReply);
+            this.Prompt.Line("");
+            this.Prompt.PromptUserConsole("Enter number to target: ", out userReply);
 
-            this.Game.Interact.Line("");
-            this.Game.Interact.Line("Target Object is not yet supported.");
+            this.Prompt.Line("");
+            this.Prompt.Line("Target Object is not yet supported.");
         }
     }
 }

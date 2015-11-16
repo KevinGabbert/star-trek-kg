@@ -15,19 +15,20 @@ namespace StarTrek_KG.Subsystem
         //Regions
         //Utility
 
-        public Phasers(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
+        public Phasers(Ship shipConnectedTo): base(shipConnectedTo)
         {
-            this.Game.Interact = this.Game.Interact; //todo: remove this when all subsystems are converted
             this.Type = SubsystemType.Phasers;
             this.ShipConnectedTo = shipConnectedTo;
         }
 
         public void Fire(int energyToFire) //, IShip shipFiringPhasers
         {
+            IGame game = this.ShipConnectedTo.Game;
+
             if (!this.EnergyCheckFail(energyToFire, this.ShipConnectedTo))
             {
                 //todo: move to Game() object
-                this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
+                game.ALLHostilesAttack(game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.
 
                 this.ShipConnectedTo.Energy = this.ShipConnectedTo.Energy -= energyToFire;
                 Phasers.For(this.ShipConnectedTo).Execute(energyToFire);
@@ -35,19 +36,19 @@ namespace StarTrek_KG.Subsystem
             else
             {
                 //Energy Check has failed
-                this.Game.Interact.Line("Not enough Energy to fire Phasers");
+                game.Interact.Line("Not enough Energy to fire Phasers");
             }
         }
 
         public IEnumerable<string> Controls(IShip shipFiringPhasers)
         {
-            this.Game.Interact.Output.Queue.Clear();
+            this.Prompt.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Interact.Output.Queue.ToList();
+            if (this.Damaged()) return this.Prompt.Output.Queue.ToList();
 
             //todo:  this doesn't *work* too well as a feature of *Regions*, but rather, of Ship?
 
-            var regions = new Regions(this.Game.Map, this.Game.Interact);
+            var regions = new Regions(this.ShipConnectedTo.Game.Map, this.Prompt);
 
             //todo: this may need a different refactor
             List<string> hostilesOutputLines;
@@ -62,42 +63,43 @@ namespace StarTrek_KG.Subsystem
 
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
-                this.Game.Interact.Line("Invalid energy level.");
-                return this.Game.Interact.Output.Queue.ToList();
+                this.Prompt.Line("Invalid energy level.");
+                return this.Prompt.Output.Queue.ToList();
             }
 
-            this.Game.Interact.Line("");
+            this.Prompt.Line("");
 
             this.Fire(int.Parse(phaserEnergy)); //, shipFiringPhasers
-            this.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
+            this.Prompt.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
-            return this.Game.Interact.Output.Queue.ToList();
+            return this.Prompt.Output.Queue.ToList();
         }
 
         private void Execute(double phaserEnergy)
         {
-            var inNebula = this.InNebula();
+            IGame game = this.ShipConnectedTo.Game;
+            bool inNebula = this.InNebula();
 
             //TODO: BUG: fired phaser energy won't subtract from ship's energy
 
             var destroyedShips = new List<IShip>();
 
-            List<IShip> hostiles = this.Game.Map.Regions.GetActive().GetHostiles();
+            List<IShip> hostiles = game.Map.Regions.GetActive().GetHostiles();
 
             foreach (var badGuyShip in hostiles)
             {
                 this.FireOnShip(phaserEnergy, badGuyShip, inNebula, destroyedShips);
             }
 
-            if (this.ShipConnectedTo.GetRegion().GetStarbaseCount() > 0 && this.Game.PlayerNowEnemyToFederation)
+            if (this.ShipConnectedTo.GetRegion().GetStarbaseCount() > 0 && game.PlayerNowEnemyToFederation)
             {
                 //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
                 
                 //for what its worth, Starbases will have a lot more power!
-                this.Game.Interact.Line("Starbases cannot be hit with phasers.. Yet..");
+                game.Interact.Line("Starbases cannot be hit with phasers.. Yet..");
             }
 
-            this.Game.Map.RemoveDestroyedShipsAndScavenge(destroyedShips);
+            game.Map.RemoveDestroyedShipsAndScavenge(destroyedShips);
         }
 
         private bool InNebula()
@@ -106,7 +108,7 @@ namespace StarTrek_KG.Subsystem
 
             if (inNebula)
             {
-                this.Game.Interact.Line("Due to the Nebula, phaser effectiveness will be reduced.");
+                this.ShipConnectedTo.Game.Interact.Line("Due to the Nebula, phaser effectiveness will be reduced.");
             }
 
             return inNebula;
@@ -116,7 +118,7 @@ namespace StarTrek_KG.Subsystem
         {
             Location location = this.ShipConnectedTo.GetLocation();
 
-            this.Game.Interact.Line("Phasers locked on: " + badGuyShip.Name);
+            this.Prompt.Line("Phasers locked on: " + badGuyShip.Name);
 
             double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X,
                 badGuyShip.Sector.Y);
@@ -128,7 +130,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool PromptUserForPhaserEnergy(out string phaserEnergy)
         {
-            return this.Game.Interact.PromptUser(SubsystemType.Phasers, "Phasers:>", $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy, this.Game.Interact.Output.Queue);
+            return this.Prompt.PromptUser(SubsystemType.Phasers, "Phasers:>", $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy, this.Prompt.Output.Queue);
         }
 
         //todo: move to Utility() object
@@ -168,10 +170,8 @@ namespace StarTrek_KG.Subsystem
 
             var badGuy = Utility.Utility.HideXorYIfNebula(badGuyShip.GetRegion(), badGuyShip.Sector.X.ToString(), badGuyShip.Sector.Y.ToString());
 
-            this.Game.Interact.Line(
-                string.Format(
-                    "Hit " + badGuyShipName + " at sector [{0},{1}], shield strength now at {2}.",
-                    badGuy.X, badGuy.Y, badguyShieldEnergy));
+            this.Prompt.Line(
+                string.Format("Hit " + badGuyShipName + " at sector [{0},{1}], shield strength now at {2}.", badGuy.X, badGuy.Y, badguyShieldEnergy));
         }
 
         private static void DestroyBadGuy(ICollection<IShip> destroyedShips, IShip badGuyShip)
@@ -198,14 +198,14 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            this.Game.Interact.Line("");
-            this.Game.Interact.Line("Objects to Target:");
+            this.Prompt.Line("");
+            this.Prompt.Line("Objects to Target:");
 
             List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply;
-            this.Game.Interact.Line("");
-            this.Game.Interact.PromptUserConsole("Enter number to lock Phasers: ", out userReply);
+            this.Prompt.Line("");
+            this.Prompt.PromptUserConsole("Enter number to lock Phasers: ", out userReply);
 
             int number = Convert.ToInt32(userReply);
             var objectToFireOn = sectorsWithObjects.Single(i => i.Key == number).Value;
@@ -213,17 +213,18 @@ namespace StarTrek_KG.Subsystem
             string phaserEnergy;
             if (!this.PromptUserForPhaserEnergy(out phaserEnergy))
             {
-                this.Game.Interact.Line("Invalid phaser energy level.");
+                this.Prompt.Line("Invalid phaser energy level.");
                 return;
             }
 
             var hostilesHaveAttacked = false;
             if (!this.EnergyCheckFail(int.Parse(phaserEnergy), this.ShipConnectedTo))
             {
-                int randomBadGuyShoots = Utility.Utility.TestableRandom(this.Game, 2, 2);
+                IGame game = this.ShipConnectedTo.Game;
+                int randomBadGuyShoots = Utility.Utility.TestableRandom(game, 2, 2);
                 if (randomBadGuyShoots == 1)
                 {
-                    this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.  
+                    game.ALLHostilesAttack(game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.  
                     hostilesHaveAttacked = true;
                 }
 
@@ -239,7 +240,7 @@ namespace StarTrek_KG.Subsystem
 
                      case SectorItem.Starbase:
                         //todo: support Starbase Hit points
-                        this.Game.DestroyStarbase(this.Game.Map, objectToFireOn.Y, objectToFireOn.X, objectToFireOn);
+                        game.DestroyStarbase(game.Map, objectToFireOn.Y, objectToFireOn.X, objectToFireOn);
                         break;
 
                      case SectorItem.Star:
@@ -247,19 +248,19 @@ namespace StarTrek_KG.Subsystem
                         break;
                 }
 
-                this.Game.Map.RemoveDestroyedShipsAndScavenge(destroyedShips);
+                game.Map.RemoveDestroyedShipsAndScavenge(destroyedShips);
 
                 if (!hostilesHaveAttacked)
                 {
-                    this.Game.ALLHostilesAttack(this.Game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.  
+                    game.ALLHostilesAttack(game.Map); //todo: this can't stay here becouse if an enemy ship has phasers, this will have an indefinite loop.  to fix, we should probably pass back phaserenergy success, and do the output. later.  
                 }
             }
         }
 
         private void FireOnStar(IStar iStar)
         {
-            this.Game.Interact.Line("");
-            this.Game.Interact.Line($"Direct hit on {iStar.Name}. No apparent damage to stellar body.");
+            this.Prompt.Line("");
+            this.Prompt.Line($"Direct hit on {iStar.Name}. No apparent damage to stellar body.");
         }
     }
 }

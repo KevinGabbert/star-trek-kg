@@ -7,6 +7,6 @@ namespace StarTrek_KG.Actors
         public Ship ShipConnectedTo { get; set; }
         public int Energy { get; set; }
         public bool Destroyed { get; set; }
-        public IGame Game { get; set; }
+        public IInteraction Prompt { get; set; }
     }
 }

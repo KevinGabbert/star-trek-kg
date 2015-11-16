@@ -30,7 +30,7 @@ namespace UnitTests.Tests.SubSystemTests
                                           AddStars = false
                                       }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
             Assert.AreEqual(SubsystemType.LongRangeScan, _setup.TestLongRangeScan.Type);
         }
 
@@ -110,7 +110,7 @@ namespace UnitTests.Tests.SubSystemTests
                 AddStars = false
             }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
             _setup.TestLongRangeScan.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -129,7 +129,7 @@ namespace UnitTests.Tests.SubSystemTests
                 AddStars = false
             }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
             _setup.TestLongRangeScan.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -148,7 +148,7 @@ namespace UnitTests.Tests.SubSystemTests
                 AddStars = false
             }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
             _setup.TestLongRangeScan.Controls();
 
             //todo: mock Write, Pass it in, and test its Output
@@ -170,7 +170,7 @@ namespace UnitTests.Tests.SubSystemTests
                 AddStars = false
             }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
             var x = LongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
 
@@ -198,7 +198,7 @@ namespace UnitTests.Tests.SubSystemTests
                     AddStars = false
             }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
             var x = LongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
 
@@ -275,7 +275,7 @@ namespace UnitTests.Tests.SubSystemTests
                                                     }
             }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
             Region Region = Regions.Get(this.Game.Map, new Coordinate(0, 0));
             int starCount = Region.GetStarCount();
@@ -299,7 +299,7 @@ namespace UnitTests.Tests.SubSystemTests
                                                     }
             }, this.Game.Interact, this.Game.Config);
 
-            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership, this.Game);
+            _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
             int starbaseCount;
             int starCount;

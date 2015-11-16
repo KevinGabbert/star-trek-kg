@@ -44,7 +44,7 @@ namespace StarTrek_KG.Subsystem
                                                     "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
-        public Debug(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
+        public Debug(Ship shipConnectedTo, IGame game): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Debug; //this is required if you want this system to be able to be looked up
             this.Damage = 0;
@@ -52,59 +52,63 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.Game.Interact.Output.Queue.Clear();
+            this.Prompt.Output.Queue.Clear();
 
             switch (command.ToLower())
             {
                 case "dsrec":
                     //this.PrintGalacticRecord(this.Map.Regions); 
-                    this.Game.Interact.Line("full galactic record with ship position as colored text, baddies as red");
-                    this.Game.Interact.Line("Not Implemented Yet");
+                    this.Prompt.Line("full galactic record with ship position as colored text, baddies as red");
+                    this.Prompt.Line("Not Implemented Yet");
                     break;
 
                 case "dsnav":
                     //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
                     //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
-                    this.Game.Interact.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
-                    this.Game.Interact.Line("Not Implemented Yet");
+                    this.Prompt.Line("Nav Command prompt, then outputs visual of NAV Track in an SRS window");
+                    this.Prompt.Line("Not Implemented Yet");
                     break;
 
                 case "dstor":
                     //Torpedoes.For(this.ShipConnectedTo).Controls(this.Map);
                     //ShortRangeScan.For(this.ShipConnectedTo).Controls(this.Map);
-                    this.Game.Interact.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
-                    this.Game.Interact.Line("Not Implemented Yet");
+                    this.Prompt.Line("Torpedo Command prompt, then outputs visual of Torpedo Track in an SRS window");
+                    this.Prompt.Line("Not Implemented Yet");
                     break;
 
                 case "dqnav":
                     //Navigation.For(this.ShipConnectedTo).Controls(this.Map);
                     //this.PrintGalacticRecord(WithNavTrack); 
-                    this.Game.Interact.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
-                    this.Game.Interact.Line("Not Implemented Yet");
+                    this.Prompt.Line("Nav Command prompt, then outputs visual of NAV Track in a Galactic Map window");
+                    this.Prompt.Line("Not Implemented Yet");
                     break;
 
                 case "dibd":
 
                     //todo: newly appeared ship needs to NOT fire inbetween turns!
 
-                    var testShipNames = this.Game.Config.FactionShips(FactionName.TestFaction).ToList().Shuffle();
+                    var testShipNames = this.ShipConnectedTo.Game.Config.FactionShips(FactionName.TestFaction).ToList().Shuffle();
 
                     var RegionX = Coordinate.GetRandom();
                     var RegionY = Coordinate.GetRandom();
 
                     var randomSector = new Sector(new LocationDef(RegionX, RegionY));
 
-                    this.Game.Map.Config = this.Game.Config;
+                    this.ShipConnectedTo.Game.Map.Config = this.ShipConnectedTo.Game.Config;
 
-                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.Game.Map, this.Game);
+                    var hostileShip = new Ship(FactionName.Klingon, testShipNames[0], randomSector, this.ShipConnectedTo.Game.Map, this.ShipConnectedTo.Game);
                     Shields.For(hostileShip).Energy = Utility.Utility.Random.Next(100, 200); //todo: resource those numbers out
 
-                    this.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
+                    this.ShipConnectedTo.Game.Map.Regions.GetActive().AddShip(hostileShip, hostileShip.Sector);
 
                     //todo: if there not enough names set up for opposing ships things could break, or ships will have duplicate names
-                    this.Game.Interact.Line("Hostile Ship: \"" + hostileShip.Name + "\" just warped into sector [" + randomSector.X + "," + randomSector.Y + "]");
-                    this.Game.Interact.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
+                    this.Prompt.Line(
+                        $"Hostile Ship: \"{hostileShip.Name}\" just warped into sector [{randomSector.X},{randomSector.Y}]");
+
+                    this.Prompt.Line(
+                        $"Scanners indicate {hostileShip.Name}'s Energy: {hostileShip.Energy} Shields: {Shields.For(hostileShip).Energy} ");
                     break;
+
                 case "disb":
  
                     //var RegionX = Coordinate.GetRandom();
@@ -116,7 +120,7 @@ namespace StarTrek_KG.Subsystem
 
                     //var starbase = new Starbase("starbaseAlpha", this.Game.Map, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
 
-                    var activeRegion = this.Game.Map.Regions.GetActive();
+                    var activeRegion = this.ShipConnectedTo.Game.Map.Regions.GetActive();
 
                     //activeRegion[randomSector].Item = SectorItem.Starbase;
                     //activeRegion.AddShip(starbase, starbase.Sector);
@@ -130,32 +134,33 @@ namespace StarTrek_KG.Subsystem
                     //this.Game.Write.Line("Scanners indicate " + hostileShip.Name + "'s Energy: " + hostileShip.Energy + " Shields: " + Shields.For(hostileShip).Energy + " ");
                     break;
                 case "dist":
-                    var sectorWithNewStar = this.Game.Map.Regions.GetActive().AddStar(this.Game.Map.Regions.GetActive());
-                    this.Game.Interact.Line("A star has just formed spontaneously at: " + "[" + sectorWithNewStar.X + "," + sectorWithNewStar.Y + "]");
-                    this.Game.Interact.Line("Stellar Cartography has named it: " + ((Star)sectorWithNewStar.Object).Name);
+                    var sectorWithNewStar = this.ShipConnectedTo.Game.Map.Regions.GetActive().AddStar(this.ShipConnectedTo.Game.Map.Regions.GetActive());
+                    this.Prompt.Line("A star has just formed spontaneously at: " +
+                                $"[{sectorWithNewStar.X},{sectorWithNewStar.Y}]");
+                    this.Prompt.Line($"Stellar Cartography has named it: {((Star) sectorWithNewStar.Object).Name}");
                     break;
 
                 case "dbgm":
                     DEFAULTS.DEBUG_MODE = !DEFAULTS.DEBUG_MODE;
-                    this.Game.Interact.Line("Debug Mode set to: " + DEFAULTS.DEBUG_MODE + ".  This will clear on app restart.");
+                    this.Prompt.Line($"Debug Mode set to: {DEFAULTS.DEBUG_MODE}.  This will clear on app restart.");
                     break;
 
                 case "dlrs":
                     LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Regions(DEFAULTS.DEBUG_MODE);
-                    this.Game.Interact.Line( $"All Regions set to: {DEFAULTS.DEBUG_MODE}.  (set debugmode to true to make this scan all.)");
+                    this.Prompt.Line( $"All Regions set to: {DEFAULTS.DEBUG_MODE}.  (set debugmode to true to make this scan all.)");
                     break;
 
                 default:
-                    this.Game.Interact.Line(">> exiting Debug Mode..");
+                    this.Prompt.Line(">> exiting Debug Mode..");
                     break;
             }
 
-            return this.Game.Interact.Output.Queue.ToList();
+            return this.Prompt.Output.Queue.ToList();
         }
 
         public static Debug For(IShip ship)
         {
-            return (Debug)SubSystem_Base.For(ship, SubsystemType.Debug);
+            return (Debug)For(ship, SubsystemType.Debug);
         }
     }
 }

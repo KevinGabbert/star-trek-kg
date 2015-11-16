@@ -24,18 +24,18 @@ namespace StarTrek_KG.Subsystem
 
             this.AddRange(new List<ISubsystem>(){
                                      new Shields(shipConnectedTo),
-                                     new Warp(shipConnectedTo, game),
-                                     new Impulse(shipConnectedTo, game),
+                                     new ImmediateRangeScan(shipConnectedTo),
+                                     new ShortRangeScan(shipConnectedTo),
+                                     new LongRangeScan(shipConnectedTo),
+                                     new CombinedRangeScan(shipConnectedTo),
+                                     new Warp(shipConnectedTo),
+                                     new Impulse(shipConnectedTo),
                                      new Debug(shipConnectedTo, game),
-                                     new Computer(shipConnectedTo, game),
-                                     new Navigation(shipConnectedTo, game),
-                                     new ImmediateRangeScan(shipConnectedTo, game),
-                                     new ShortRangeScan(shipConnectedTo, game),
-                                     new LongRangeScan(shipConnectedTo, game),
-                                     new CombinedRangeScan(shipConnectedTo, game),
-                                     new Torpedoes(shipConnectedTo, game),
-                                     new Phasers(shipConnectedTo, game),
-                                     new DamageControl(shipConnectedTo, game)//TODO: get game ref from shipCOnnectedTo
+                                     new Computer(shipConnectedTo),
+                                     new Navigation(shipConnectedTo),
+                                     new Torpedoes(shipConnectedTo),
+                                     new Phasers(shipConnectedTo),
+                                     new DamageControl(shipConnectedTo)//TODO: get game ref from shipCOnnectedTo
                                   });
         }
 

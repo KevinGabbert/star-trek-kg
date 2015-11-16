@@ -10,16 +10,16 @@ namespace StarTrek_KG.Subsystem
 {
     public class ImmediateRangeScan : SubSystem_Base
     {
-        public ImmediateRangeScan(Ship shipConnectedTo, IGame game): base(shipConnectedTo, game)
+        public ImmediateRangeScan(Ship shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.ImmediateRangeScan;
         }
 
         public IEnumerable<string> Controls()
         {
-            this.Game.Interact.Output.Queue.Clear();
+            this.Prompt.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.Game.Interact.Output.Queue.ToList();
+            if (this.Damaged()) return this.Prompt.Output.Queue.ToList();
 
             //todo: refactor this pattern with LRS
 
@@ -28,17 +28,17 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var line in renderedResults)
             {
-                this.Game.Interact.SingleLine(line);
+                this.Prompt.SingleLine(line);
             }
 
-            return this.Game.Interact.Output.Queue.ToList();
+            return this.Prompt.Output.Queue.ToList();
         }
 
         private IEnumerable<string> RunFullIRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
-            IEnumerable<IScanResult> irsData = shipLocation.Region.GetIRSFullData(shipLocation, this.Game);
-            IEnumerable<string> renderedData = this.Game.Interact.RenderScanWithNames(ScanRenderType.DoubleSingleLine, "*** Immediate Range Scan ***", irsData.ToList(), this.Game);
+            IEnumerable<IScanResult> irsData = shipLocation.Region.GetIRSFullData(shipLocation, this.ShipConnectedTo.Game);
+            IEnumerable<string> renderedData = this.Prompt.RenderScanWithNames(ScanRenderType.DoubleSingleLine, "*** Immediate Range Scan ***", irsData.ToList(), this.ShipConnectedTo.Game);
 
             return renderedData;
         }
@@ -67,7 +67,7 @@ namespace StarTrek_KG.Subsystem
 
             //todo: refactor this with region.GetIRSFullData() inner loop
 
-            var outOfBounds = this.Game.Map.OutOfBounds(locationToScan.Region);
+            var outOfBounds = this.ShipConnectedTo.Game.Map.OutOfBounds(locationToScan.Region);
 
             ////todo: breaks here when regionX or regionY is 8
 
@@ -76,7 +76,7 @@ namespace StarTrek_KG.Subsystem
             var shipRegion = this.ShipConnectedTo.GetRegion();
 
             //locationToScan.Region is divined to the new one when crossing barrier
-            IRSResult divinedResult = shipRegion.GetSectorInfo(locationToScan.Region, locationToScan.Sector, outOfBounds, this.Game);
+            IRSResult divinedResult = shipRegion.GetSectorInfo(locationToScan.Region, locationToScan.Sector, outOfBounds, this.ShipConnectedTo.Game);
 
             return divinedResult;
         }
