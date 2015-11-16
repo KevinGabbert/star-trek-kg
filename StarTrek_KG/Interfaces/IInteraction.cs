@@ -56,7 +56,7 @@ namespace StarTrek_KG.Interfaces
         void CreateCommandPanel();
         List<string> Panel(string panelHead, IEnumerable<string> strings);
         //string GetPanelHead(string shipName);
-        List<string> ReadAndOutput(Ship playerShip, string mapText, IGame game, string userInput = null);
+        List<string> ReadAndOutput(IShip playerShip, string mapText, string userInput = null);
 
         void ResetPrompt();
         bool PromptUser(SubsystemType promptSubsystem, string promptDisplay, string promptMessage, out string value, Queue<string> queueToWriteTo, int subPromptLevel = 0);
@@ -81,7 +81,7 @@ namespace StarTrek_KG.Interfaces
         string ShipHitMessage(IShip attacker, int attackingEnergy);
         string MisfireMessage(IShip attacker);
 
-        void PrintMissionResult(Ship ship, bool starbasesAreHostile, int starbasesLeft);
+        void PrintMissionResult(IShip ship, bool starbasesAreHostile, int starbasesLeft);
         void PrintMission();
     }
 }

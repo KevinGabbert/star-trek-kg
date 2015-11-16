@@ -15,7 +15,7 @@ namespace StarTrek_KG.Subsystem
         //Regions
         //Utility
 
-        public Phasers(Ship shipConnectedTo): base(shipConnectedTo)
+        public Phasers(IShip shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Phasers;
             this.ShipConnectedTo = shipConnectedTo;

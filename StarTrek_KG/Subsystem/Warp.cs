@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using StarTrek_KG.Actors;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -7,7 +6,7 @@ namespace StarTrek_KG.Subsystem
 {
     class Warp : SubSystem_Base, IInteract
     {
-        public Warp(Ship shipConnectedTo) : base(shipConnectedTo)
+        public Warp(IShip shipConnectedTo) : base(shipConnectedTo)
         {
         }
 

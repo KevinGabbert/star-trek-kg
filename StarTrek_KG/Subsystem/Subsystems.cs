@@ -8,7 +8,7 @@ namespace StarTrek_KG.Subsystem
 {
     public class Subsystems: List<ISubsystem>
     {
-        public Subsystems(Ship shipConnectedTo)
+        public Subsystems(IShip shipConnectedTo)
         {
             this.Add(new Shields(shipConnectedTo));
             this.Add(new ImmediateRangeScan(shipConnectedTo));

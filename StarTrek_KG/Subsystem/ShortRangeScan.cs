@@ -10,7 +10,7 @@ namespace StarTrek_KG.Subsystem
 {
     public class ShortRangeScan : SubSystem_Base
     {
-        public ShortRangeScan(Ship shipConnectedTo) : base(shipConnectedTo)
+        public ShortRangeScan(IShip shipConnectedTo) : base(shipConnectedTo)
         {
             this.Type = SubsystemType.ShortRangeScan;
         }

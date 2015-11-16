@@ -18,7 +18,7 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Torpedoes(Ship shipConnectedTo): base(shipConnectedTo)
+        public Torpedoes(IShip shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Torpedoes; //for lookup
         }

@@ -21,5 +21,7 @@ namespace StarTrek_KG.Interfaces
         void UpdateDivinedSectors();
         void Scavenge(ScavengeType scavengeType);
         void RepairEverything();
+        string GetConditionAndSetIcon();
+        bool AtLowEnergyLevel();
     }
 }

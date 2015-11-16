@@ -8,7 +8,7 @@ namespace StarTrek_KG.Subsystem
     public class Disruptors : SubSystem_Base, IWeapon
     {
         //this.Initialize();
-        public Disruptors(Ship shipConnectedTo, IGame game): base(shipConnectedTo)
+        public Disruptors(IShip shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Disruptors;
         }

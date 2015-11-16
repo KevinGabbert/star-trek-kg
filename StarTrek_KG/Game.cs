@@ -147,7 +147,7 @@ namespace StarTrek_KG
             //*****
 
             //this updates the shield subsystems reference to game
-            retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, this, command);
+            retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, command);
 
             //todo:
             //problem: shields promptlevel has been updated, but the game's promptLevel has not.

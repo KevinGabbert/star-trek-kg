@@ -5,6 +5,7 @@ using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
@@ -54,9 +55,9 @@ namespace UnitTests.Tests.HostileTests
             //todo:  This test needs to be tuned to proper gameplay
             _setup.SetupMapWith1Hostile();
 
-            Ship badGuy = ((Ship) _setup.TestMap.Regions.GetHostiles().Single());
+            IShip badGuy = ( _setup.TestMap.Regions.GetHostiles().Single());
             badGuy.Energy = 2000;
-            badGuy.Subsystems.Add(new Disruptors(badGuy, badGuy.Map.Game) { Energy = 500});
+            badGuy.Subsystems.Add(new Disruptors(badGuy) { Energy = 500});
             Disruptors disruptorsForBadGuy = (Disruptors)badGuy.Subsystems.Single(s => s.Type == SubsystemType.Disruptors);
 
             Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");

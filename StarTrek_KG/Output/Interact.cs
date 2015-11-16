@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using StarTrek_KG.Actors;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Constants;
@@ -224,10 +222,10 @@ namespace StarTrek_KG.Output
             }
         }
 
-        public void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel)
-        {
-            this.Output.Write("OutputConditionAndWarnings not implemented."); //todo: implement this.
-        }
+        //public void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel)
+        //{
+        //    this.Output.Write("OutputConditionAndWarnings not implemented."); //todo: implement this.
+        //}
 
         public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
         {
@@ -541,7 +539,7 @@ namespace StarTrek_KG.Output
         /// <param name="mapText"></param>
         /// <param name="game"></param>
         /// <param name="userInput"></param>
-        public List<string> ReadAndOutput(Ship playerShip, string mapText, IGame game, string userInput = null)
+        public List<string> ReadAndOutput(IShip playerShip, string mapText, string userInput = null)
         {
             this.Output.Write(mapText);
 
@@ -1213,7 +1211,7 @@ namespace StarTrek_KG.Output
             return string.Format(misfireBy + attackerName + misfireAtSector, attackerSector.X, attackerSector.Y);
         }
 
-        public void OutputConditionAndWarnings(Ship ship, int shieldsDownLevel)
+        public void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel)
         {
             ship.GetConditionAndSetIcon();
 
@@ -1249,7 +1247,7 @@ namespace StarTrek_KG.Output
             return longestName;
         }
 
-        public void PrintMissionResult(Ship ship, bool starbasesAreHostile, int starbasesLeft)
+        public void PrintMissionResult(IShip ship, bool starbasesAreHostile, int starbasesLeft)
         {
             var commandResult = string.Empty;
 

@@ -19,7 +19,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public static List<string> SHIELD_PANEL = new List<string>();
 
-        public Shields(Ship shipConnectedTo): base(shipConnectedTo)
+        public Shields(IShip shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Shields;
 
@@ -45,8 +45,6 @@ namespace StarTrek_KG.Subsystem
         public override List<string> Controls(string command)
         {
             base._myPanel = Shields.SHIELD_PANEL;
-
-            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             //now we know that the shield Panel command has been retrieved.
             if (!this.Damaged())

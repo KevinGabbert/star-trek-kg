@@ -24,7 +24,7 @@ namespace StarTrek_KG.Subsystem
 
         #endregion
 
-        public Navigation(Ship shipConnectedTo) : base(shipConnectedTo)
+        public Navigation(IShip shipConnectedTo) : base(shipConnectedTo)
         {
             this.Type = SubsystemType.Navigation;
 

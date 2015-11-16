@@ -26,7 +26,7 @@ namespace StarTrek_KG.Actors
         /// <param name="ship"> </param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        public bool EnergySubtracted(Ship ship, ref int distance)
+        public bool EnergySubtracted(IShip ship, ref int distance)
         {
             bool returnVal;
 

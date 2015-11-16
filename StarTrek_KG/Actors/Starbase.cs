@@ -124,6 +124,16 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
+        public string GetConditionAndSetIcon()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AtLowEnergyLevel()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public Type Type()
         {

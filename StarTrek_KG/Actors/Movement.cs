@@ -25,7 +25,7 @@ namespace StarTrek_KG.Actors
 
         private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil"; //todo: resource this.
 
-        public Movement(Ship shipConnectedTo)
+        public Movement(IShip shipConnectedTo)
         {
             base.ShipConnectedTo = shipConnectedTo;
             this.SystemPrompt = shipConnectedTo.Map.Game.Interact;
