@@ -41,7 +41,7 @@ namespace StarTrek_KG.Subsystem
             this.MaxWarpFactor = (int) (0.2 + Utility.Utility.Random.Next(9));
 
                 //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
-            this.ShipConnectedTo.Map.Game.Interact.Line(string.Format(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
+            this.ShipConnectedTo.OutputLine(string.Format(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
                 this.MaxWarpFactor));
         }
 
@@ -81,16 +81,16 @@ namespace StarTrek_KG.Subsystem
                 return this.ShipConnectedTo.OutputQueue();
             }
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("");
-            this.ShipConnectedTo.Map.Game.Interact.Line("Objects in Region:");
+            this.ShipConnectedTo.OutputLine("");
+            this.ShipConnectedTo.OutputLine("Objects in Region:");
 
             Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
             this.ShipConnectedTo.Map.Game.Interact.PromptUserConsole("Enter number of Object to travel to: ", out userReply);
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("");
-            this.ShipConnectedTo.Map.Game.Interact.Line("Navigate to Object is not yet supported.");
+            this.ShipConnectedTo.OutputLine("");
+            this.ShipConnectedTo.OutputLine("Navigate to Object is not yet supported.");
 
             //this.NavigateToObject();
             return this.ShipConnectedTo.OutputQueue();
@@ -103,6 +103,7 @@ namespace StarTrek_KG.Subsystem
             string distance;
             NavDirection direction;
 
+            //todo: do like SHE
             if (this.Movement.PromptAndCheckCourse(out direction))
             {
                 return this.ShipConnectedTo.OutputQueue();
@@ -257,14 +258,14 @@ namespace StarTrek_KG.Subsystem
             string RegionX;
             string RegionY;
 
-            this.ShipConnectedTo.Map.Game.Interact.Line(string.Format("Your Ship" + config.GetSetting<string>("LocatedInRegion"),
+            this.ShipConnectedTo.OutputLine(string.Format("Your Ship" + config.GetSetting<string>("LocatedInRegion"),
                 thisShip.Region.X, thisShip.Region.Y));
 
             if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionX"), out RegionX, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 1)
                 || int.Parse(RegionX) < DEFAULTS.REGION_MIN + 1
                 || int.Parse(RegionX) > DEFAULTS.REGION_MAX)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("InvalidXCoordinate"));
+                this.ShipConnectedTo.OutputLine(config.GetSetting<string>("InvalidXCoordinate"));
                 return;
             }
 
@@ -272,21 +273,21 @@ namespace StarTrek_KG.Subsystem
                 || int.Parse(RegionY) < DEFAULTS.REGION_MIN + 1
                 || int.Parse(RegionY) > DEFAULTS.REGION_MAX)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("InvalidYCoordinate"));
+                this.ShipConnectedTo.OutputLine(config.GetSetting<string>("InvalidYCoordinate"));
                 return;
             }
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.OutputLine("");
             var qx = int.Parse(RegionX) - 1;
             var qy = int.Parse(RegionY) - 1;
             if (qx == thisShip.Region.X && qy == thisShip.Region.Y)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
+                this.ShipConnectedTo.OutputLine(config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 
-            this.ShipConnectedTo.Map.Game.Interact.Line($"Direction: {Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy):#.##}");
-            this.ShipConnectedTo.Map.Game.Interact.Line($"Distance:  {Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy):##.##}");
+            this.ShipConnectedTo.OutputLine($"Direction: {Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy):#.##}");
+            this.ShipConnectedTo.OutputLine($"Distance:  {Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy):##.##}");
         }
 
         public void StarbaseCalculator(IShip shipConnectedTo)
@@ -306,16 +307,16 @@ namespace StarTrek_KG.Subsystem
             {
                 foreach (var starbase in starbasesInSector)
                 {
-                    this.ShipConnectedTo.Map.Game.Interact.Line("-----------------");
-                    this.ShipConnectedTo.Map.Game.Interact.Line($"Starbase in sector [{starbase.X + 1},{starbase.Y + 1}].");
+                    this.ShipConnectedTo.OutputLine("-----------------");
+                    this.ShipConnectedTo.OutputLine($"Starbase in sector [{starbase.X + 1},{starbase.Y + 1}].");
                     
-                    this.ShipConnectedTo.Map.Game.Interact.Line($"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
-                    this.ShipConnectedTo.Map.Game.Interact.Line($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.SECTOR_MAX:##.##}");
+                    this.ShipConnectedTo.OutputLine($"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
+                    this.ShipConnectedTo.OutputLine($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.SECTOR_MAX:##.##}");
                 }
             }
             else
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("There are no starbases in this Region.");
+                this.ShipConnectedTo.OutputLine("There are no starbases in this Region.");
             }
         }
 

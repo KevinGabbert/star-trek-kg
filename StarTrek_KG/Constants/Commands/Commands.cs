@@ -1,11 +1,8 @@
 ﻿namespace StarTrek_KG.Constants.Commands
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public static class Commands
     {
-        //TODO: eventually make this all data driven.  (Like done in Shields subsystem)
+        //TODO: eventually make this all data driven from the config file.  (Like done in Shields subsystem)
 
         public static class Navigation
         {

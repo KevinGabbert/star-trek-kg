@@ -230,7 +230,7 @@ namespace StarTrek_KG.Actors
                     bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
                     if (nebulaEncountered)
                     {
-                        this.ShipConnectedTo.Map.Game.Interact.Line(this.NEBULA_ENCOUNTERED);
+                        this.ShipConnectedTo.OutputLine(this.NEBULA_ENCOUNTERED);
                         break;
                     }
                 }
@@ -322,7 +322,7 @@ namespace StarTrek_KG.Actors
 
             if (scanResult.GalacticBarrier)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("All Stop. Cannot cross Galactic Barrier.");
+                this.ShipConnectedTo.OutputLine("All Stop. Cannot cross Galactic Barrier.");
                 stopNavigation = true;
             }
             else
@@ -332,7 +332,7 @@ namespace StarTrek_KG.Actors
 
                 if (obstacleEncountered)
                 {
-                    this.ShipConnectedTo.Map.Game.Interact.Line("All Stop.");
+                    this.ShipConnectedTo.OutputLine("All Stop.");
                     stopNavigation = true;
                 }
 

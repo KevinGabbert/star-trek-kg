@@ -35,12 +35,12 @@ namespace StarTrek_KG.Subsystem
 
         private void OutputDamagedMessage()
         {
-            this.ShipConnectedTo.Map.Game.Interact.Line($"{this.Type} Damaged.");
+            this.ShipConnectedTo.OutputLine($"{this.Type} Damaged.");
         }
 
         private void OutputRepairedMessage()
         {
-            this.ShipConnectedTo.Map.Game.Interact.Line($"{this.Type} Repaired.");
+            this.ShipConnectedTo.OutputLine($"{this.Type} Repaired.");
         }
 
         //public virtual void OutputMalfunctioningMessage()

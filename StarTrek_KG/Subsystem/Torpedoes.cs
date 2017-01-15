@@ -72,7 +72,7 @@ namespace StarTrek_KG.Subsystem
             IGame game = this.ShipConnectedTo.Map.Game;
             if (this.Count < 1)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
+                this.ShipConnectedTo.OutputLine("Cannot fire.  Torpedo Room reports no Torpedoes to fire.");
                 return;
             }
 
@@ -86,7 +86,7 @@ namespace StarTrek_KG.Subsystem
             //var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
             //var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("Photon torpedo fired...");
+            this.ShipConnectedTo.OutputLine("Photon torpedo fired...");
             this.Count--;
 
             //TODO: WRITE SOME TORPEDO TESTS!
@@ -119,7 +119,7 @@ namespace StarTrek_KG.Subsystem
             //    currentLocation.IncrementBy(torpedoVector);
             //}
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("Photon torpedo failed to hit anything.");
+            this.ShipConnectedTo.OutputLine("Photon torpedo failed to hit anything.");
         }
 
         //private bool HitSomething(VectorCoordinate currentLocation, Coordinate lastPosition, Location newLocation)
@@ -290,7 +290,7 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Count == 0)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("Photon torpedoes exhausted.");
+                this.ShipConnectedTo.OutputLine("Photon torpedoes exhausted.");
                 return true;
             }
             return false;
@@ -300,11 +300,11 @@ namespace StarTrek_KG.Subsystem
         {
             if (this.Damaged())
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("Cannot calculate while Torpedo subsystem is damaged.");
+                this.ShipConnectedTo.OutputLine("Cannot calculate while Torpedo subsystem is damaged.");
                 return;
             }
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.OutputLine("");
 
             var thisRegion = this.ShipConnectedTo.GetRegion();
             var thisRegionHostiles = thisRegion.GetHostiles();
@@ -320,8 +320,8 @@ namespace StarTrek_KG.Subsystem
 
             if (thisRegionHostiles.Count == 0)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("There are no Hostile ships in this Region.");
-                this.ShipConnectedTo.Map.Game.Interact.Line("");
+                this.ShipConnectedTo.OutputLine("There are no Hostile ships in this Region.");
+                this.ShipConnectedTo.OutputLine("");
                 return;
             }
 
@@ -335,7 +335,7 @@ namespace StarTrek_KG.Subsystem
 
                 direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);
 
-                this.ShipConnectedTo.Map.Game.Interact.Line($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
+                this.ShipConnectedTo.OutputLine($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
             }
         }
 
@@ -351,17 +351,17 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("");
-            this.ShipConnectedTo.Map.Game.Interact.Line("Objects to Target:");
+            this.ShipConnectedTo.OutputLine("");
+            this.ShipConnectedTo.OutputLine("Objects to Target:");
 
             Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply = null;
-            this.ShipConnectedTo.Map.Game.Interact.Line("");
+            this.ShipConnectedTo.OutputLine("");
             this.ShipConnectedTo.Map.Game.Interact.PromptUserConsole("Enter number to target: ", out userReply);
 
-            this.ShipConnectedTo.Map.Game.Interact.Line("");
-            this.ShipConnectedTo.Map.Game.Interact.Line("Target Object is not yet supported.");
+            this.ShipConnectedTo.OutputLine("");
+            this.ShipConnectedTo.OutputLine("Target Object is not yet supported.");
         }
     }
 }

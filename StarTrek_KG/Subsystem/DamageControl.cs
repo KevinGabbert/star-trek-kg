@@ -48,7 +48,7 @@ namespace StarTrek_KG.Subsystem
 
             if (!subsystemsFound.Any())
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("invalid or no fix required.");
+                this.ShipConnectedTo.OutputLine("invalid or no fix required.");
                 return;
             }
 
@@ -60,11 +60,11 @@ namespace StarTrek_KG.Subsystem
             {
                 ship.Energy -= 1000;  //todo: resource this out.
                 subsystemToFix.For(ship).FullRepair();
-                this.ShipConnectedTo.Map.Game.Interact.Line($"Ship Energy now at: {ship.Energy}");
+                this.ShipConnectedTo.OutputLine($"Ship Energy now at: {ship.Energy}");
             }
             else
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
+                this.ShipConnectedTo.OutputLine("Not Enough Energy for Emergency Fix of " + subsystemToFix.Type);
             }
         }
 

@@ -123,7 +123,7 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged())
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("Unable to List Objects in Region");
+                this.ShipConnectedTo.OutputLine("Unable to List Objects in Region");
                 return list;
             }
 
@@ -146,7 +146,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line("No Sectors with Objects found (this is an error)");
+                this.ShipConnectedTo.OutputLine("No Sectors with Objects found (this is an error)");
             }
 
             return list;
@@ -154,11 +154,11 @@ namespace StarTrek_KG.Subsystem
 
         private void TranslateLatestTaunt()
         {
-            this.ShipConnectedTo.Map.Game.Interact.Line("Comms was able to translate the latest transmissions: ");
+            this.ShipConnectedTo.OutputLine("Comms was able to translate the latest transmissions: ");
 
             foreach (FactionThreat taunt in this.ShipConnectedTo.Map.Game.LatestTaunts)
             {
-                this.ShipConnectedTo.Map.Game.Interact.Line(taunt.Translation == "" ? "No Translation required." : taunt.Translation);
+                this.ShipConnectedTo.OutputLine(taunt.Translation == "" ? "No Translation required." : taunt.Translation);
             }
         }
 
