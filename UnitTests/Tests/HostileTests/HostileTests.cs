@@ -603,8 +603,6 @@ namespace UnitTests.Tests.HostileTests
 
         #region OutOfBounds
 
-        //Fix this.
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile()
         {
@@ -614,20 +612,25 @@ namespace UnitTests.Tests.HostileTests
 
             //Methinks that the navigation needs to be tested completely before this can be fixed
 
-            _setup.TestMap = (new Map(new SetupOptions
+
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
         }
 
-        [ExpectedException(typeof(GameConfigException))]
+        //[ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile2()
         {
@@ -644,28 +647,30 @@ namespace UnitTests.Tests.HostileTests
             }, this.Game.Interact, this.Game.Config, this.Game));
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile3()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                                         {
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.PlayerShip),
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 7)), SectorItem.HostileShip)
                                         }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+            }, this.Game.Interact, this.Game.Config, this.Game);
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile4()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
@@ -676,13 +681,16 @@ namespace UnitTests.Tests.HostileTests
                                             new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)), SectorItem.HostileShip)
                                         }
             }, this.Game.Interact, this.Game.Config, this.Game));
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile5()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
@@ -693,13 +701,16 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Interact, this.Game.Config, this.Game));
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile6()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
@@ -710,13 +721,16 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Interact, this.Game.Config, this.Game));
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile7()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
@@ -727,13 +741,16 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Interact, this.Game.Config, this.Game));
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile8()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
@@ -744,13 +761,17 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Interact, this.Game.Config, this.Game));
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
+
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile9()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = (new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
@@ -761,6 +782,10 @@ namespace UnitTests.Tests.HostileTests
                                 new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)), SectorItem.HostileShip)
                             }
             }, this.Game.Interact, this.Game.Config, this.Game));
+
+            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
+
+            _setup.TestMap = newMap;
         }
 
         #endregion

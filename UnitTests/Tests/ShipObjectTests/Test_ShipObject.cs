@@ -112,21 +112,21 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockWrite.Verify(i => i.ConfigText("NoDamage"), Times.Exactly(1));
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void Test_AbsorbHit_SubsystemDamaged()
         {
 
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void Test_AbsorbHit_ShipDEstroyed_NoEnergy()
         {
 
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void Test_AbsorbHit_ShipDestroyed_AllSubsystemsDestroyed()
         {

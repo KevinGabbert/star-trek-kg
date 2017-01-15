@@ -20,7 +20,7 @@ namespace UnitTests.ShipTests.ShipObjectTests
             _mockSettings = new Mock<IStarTrekKGSettings>();
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void Basic_Instantiation_Verifying_Subsystems()
         {

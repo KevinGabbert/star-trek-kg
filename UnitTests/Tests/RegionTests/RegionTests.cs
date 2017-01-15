@@ -106,7 +106,7 @@ namespace UnitTests.ShipTests.RegionTests
         //todo: call InitializeSectors() and put in duplicate sectors
         //todo: test AddSector() item XY mismatch
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void VerifyNumberingSystem()
         {

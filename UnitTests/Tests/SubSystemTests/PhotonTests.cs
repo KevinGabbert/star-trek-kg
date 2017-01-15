@@ -76,7 +76,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(0, _photonsToTest.Count);
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ShootHostileVerifyingReturnFire()
         {
@@ -101,7 +101,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(0, noMoreHostile.Count);
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ShootHostileWithNoReturnFire()
         {

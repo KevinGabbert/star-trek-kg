@@ -167,7 +167,7 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(_startingRegion.Y, playershipRegion.Y, "(c)startingRegionY");
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void InvalidCourseCheck()
         {
@@ -638,7 +638,7 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(_startingSectorY, _testShip.Sector.Y, "this.Game.Map.Playership.Sector.Y");
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void MoveRegion_AllDistances()
         {
@@ -662,7 +662,7 @@ namespace UnitTests.ShipTests.MovementTests
 
 #endregion
 
-        [Ignore]// not working yet
+        [Ignore("")]// not working yet
         [Test]
         public void TravelAlongCourse_BugVerification()
         {

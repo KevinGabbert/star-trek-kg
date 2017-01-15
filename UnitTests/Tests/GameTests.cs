@@ -41,7 +41,7 @@ namespace UnitTests.ShipTests
         /// <summary>
         /// Tests code in context with surrounding code
         /// </summary>
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void MoveGameTimeForward3()
         {

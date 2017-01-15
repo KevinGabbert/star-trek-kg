@@ -56,7 +56,7 @@ namespace UnitTests.ShipTests.MapTests
             this.VerifyInitializeSettings();
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void CreateTooManyStars()
         {
@@ -79,7 +79,7 @@ namespace UnitTests.ShipTests.MapTests
             ////todo: Assert that no baddies or friendlies are set up.
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void PopulateWithHostilesAndStarbases()
         {
@@ -104,7 +104,7 @@ namespace UnitTests.ShipTests.MapTests
             this.VerifyGlobalInfoSettings();
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void VerifyCommandLineText()
         {
@@ -136,7 +136,7 @@ namespace UnitTests.ShipTests.MapTests
         /// <summary>
         /// this is really very similar to GenerateEmptySectors.  Just a different path.
         /// </summary>
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void Generate_WithNoObjects()
         {
@@ -168,7 +168,7 @@ namespace UnitTests.ShipTests.MapTests
             Assert.AreEqual(64, _setup.TestMap.Regions.GetActive().Sectors.Count);
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void Generate_WithPlayerShip()
         {
@@ -191,7 +191,7 @@ namespace UnitTests.ShipTests.MapTests
             Assert.Greater(_setup.TestMap.Regions.GetActive().GetHostiles().Count, -1); 
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void Generate_WithHostiles()
         {
@@ -234,23 +234,24 @@ namespace UnitTests.ShipTests.MapTests
             this.VerifyAllEmpty();
         }
 
-        [ExpectedException(typeof(GameConfigException))]
         [Test]
         public void EmptyActive()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 SectorDefs = new SectorDefs()
-            }, this.Game.Interact, this.Game.Config, this.Game));
+            }, this.Game.Interact, this.Game.Config, this.Game);
+
+            _setup.TestMap = newMap;
 
             _setup.TestMap.Regions.ClearActive();
 
-            _setup.TestMap.Regions.GetActive();
+            Assert.That(() => _setup.TestMap.Regions.GetActive(), Throws.TypeOf<GameConfigException>(), "No Region has been set Active - This would happen if there are no friendlies on the map.");
         }
 
-        [Ignore] //should be: CreateSectorObjects
+        [Ignore("")] //should be: CreateSectorObjects
         [Test]
         public void CreateSectorItems()
         {
@@ -266,7 +267,7 @@ namespace UnitTests.ShipTests.MapTests
             Assert.AreEqual(64, _setup.TestMap.Regions.GetActive().Sectors.Count);   
         }
         
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ReadSector()
         {
@@ -277,7 +278,7 @@ namespace UnitTests.ShipTests.MapTests
         //IsDockingLocation
             //has its own test fixture
 
-        [Ignore] //todo: fix this.
+        [Ignore("")] //todo: fix this.
         [Test]
         public void IsSectorRegionEmpty()
         {
@@ -471,7 +472,7 @@ namespace UnitTests.ShipTests.MapTests
             Assert.AreEqual(6.0, Utility.ComputeDirection(2, 0, 1, 1));
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void StarbaseCalculator()
         {

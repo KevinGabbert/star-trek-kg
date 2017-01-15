@@ -46,7 +46,7 @@ namespace UnitTests.Tests.SubSystemTests
             this.Game.Map = null;
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void GetStarInfoFromScannerFailsWithRepeatOnly()
         {
@@ -177,7 +177,7 @@ namespace UnitTests.Tests.SubSystemTests
             Assert.AreEqual(2, x.Hostiles);
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void GetStarbaseInfoFromScanner()
         {
@@ -235,7 +235,7 @@ namespace UnitTests.Tests.SubSystemTests
             Assert.AreEqual(5, x.Starbases);
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void GetMapInfoForScanner()
         {

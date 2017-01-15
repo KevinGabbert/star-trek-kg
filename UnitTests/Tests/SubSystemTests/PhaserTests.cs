@@ -235,7 +235,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[22].Item);
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void FirePhasersFromConsole()
         {

@@ -37,14 +37,14 @@ namespace UnitTests.ShipTests.SubSystemTests
             //"Shields are Damaged. DamageLevel: {this.Damage}"
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ControlsADD()
         {
             _setup.TestShields.Controls("add"); 
         }
 
-        //[Ignore]
+        //[Ignore("")]
         //[Test]
         //public void ControlsSUB()
         //{
@@ -61,7 +61,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         //    Assert.AreEqual(1, mockedShields.Object.Energy);
         //}
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ControlsInvalid()
         {

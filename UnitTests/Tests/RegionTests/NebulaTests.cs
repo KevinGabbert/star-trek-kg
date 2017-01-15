@@ -93,7 +93,7 @@ namespace UnitTests.ShipTests.RegionTests
             //mockedWrite.Verify(s => s.SingleLine("Long Range Scan inoperative while in Nebula."), Times.Exactly(1));
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void LRSOutputWithNNN()
         {

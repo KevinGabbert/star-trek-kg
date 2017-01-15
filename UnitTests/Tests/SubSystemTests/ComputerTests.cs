@@ -46,7 +46,7 @@ namespace UnitTests.Tests.SubSystemTests
             _setup.TestComputer.Controls("bas");
         }
 
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ControlsNAV()
         {

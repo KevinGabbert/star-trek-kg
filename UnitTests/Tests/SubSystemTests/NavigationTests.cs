@@ -29,7 +29,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         }
 
         //For this test to work, InvalidCourseCheck needs to be mocked
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ControlsDamaged()
         {
@@ -42,7 +42,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         /// <summary>
         /// TODO: For this test to pass, a course needs to be set (user is prompted)
         /// </summary>
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void WarpDriveDamaged()
         {
@@ -55,7 +55,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         }
 
         //For this test to work, InvalidCourseCheck needs to be mocked
-        [Ignore]
+        [Ignore("")]
         [Test]
         public void ControlsInvalid()
         {
