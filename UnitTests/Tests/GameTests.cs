@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
-using StarTrek_KG;
+﻿using NUnit.Framework;
 using StarTrek_KG.Playfield;
 
 namespace UnitTests.ShipTests

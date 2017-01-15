@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using StarTrek_KG.Actors;
 using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -8,7 +7,6 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
-using static StarTrek_KG.Subsystem.SubSystem_Base;
 
 namespace StarTrek_KG.Subsystem
 {

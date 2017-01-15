@@ -1,5 +1,4 @@
-﻿using StarTrek_KG.Actors;
-using StarTrek_KG.Interfaces;
+﻿using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 

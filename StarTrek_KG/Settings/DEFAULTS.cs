@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace StarTrek_KG.Settings
+﻿namespace StarTrek_KG.Settings
 {
     //todo: resource all these out
     public static class DEFAULTS

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Output;
 using StarTrek_KG.Types;

@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Moq;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
-using StarTrek_KG.Interfaces;
-using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
