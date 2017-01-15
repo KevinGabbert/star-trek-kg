@@ -338,6 +338,11 @@ namespace StarTrek_KG.Actors
             return this.Map.Game.Interact.Subscriber.PromptInfo.SubCommand;
         }
 
+        public void ResetPrompt()
+        {
+            this.Map.Game.Interact.ResetPrompt();
+        }
+
         public void OutputLine(string textToOutput)
         {
             this.Map.Game.Interact.Line(textToOutput);

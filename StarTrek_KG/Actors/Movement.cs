@@ -4,9 +4,11 @@ using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Actors
 {
@@ -396,6 +398,8 @@ namespace StarTrek_KG.Actors
             List<int> availableDirections = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 
             bool userEnteredCourse = this.ShipConnectedTo.Map.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()} Enter Course: ", out userDirection);
+            //userDirection = userEnteredCourse
+
 
             if (userEnteredCourse)
             {
@@ -424,6 +428,25 @@ namespace StarTrek_KG.Actors
 
             return false;
         }
+
+        //public void GetValueFromUser(string subCommand)
+        //{
+        //    PromptInfo promptInfo = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo;
+
+        //    if (promptInfo.Level == 1)
+        //    {
+        //        string transfer;
+        //        this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Impulse,
+        //                                                           "Impulse-> Enter Course-> ",
+        //                                                           $"{this.SystemPrompt.RenderCourse()} Enter Course: ", //todo: resource this
+        //                                                           out transfer,
+        //                                                           this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
+
+        //                                                           subPromptLevel: 2);
+        //    }
+
+        //    promptInfo.SubCommand = subCommand;
+        //}
 
         ////This prompt needs to be exposed to the user as an event
         //public bool PromptAndCheckCourse(out int direction)

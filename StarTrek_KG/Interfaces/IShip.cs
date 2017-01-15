@@ -6,7 +6,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Interfaces
 {
-    public interface IShip: ISectorObject
+    public interface IShip: ISectorObject, IShipUI
     {
         IMap Map { get; set; }
         FactionName Faction { get; set; }
@@ -24,10 +24,5 @@ namespace StarTrek_KG.Interfaces
         void RepairEverything();
         string GetConditionAndSetIcon();
         bool AtLowEnergyLevel();
-
-        string GetSubCommand();
-        void OutputLine(string textToOutput);
-        void ClearOutputQueue();
-        List<string> OutputQueue();
     }
 }

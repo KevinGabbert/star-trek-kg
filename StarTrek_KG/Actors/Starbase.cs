@@ -140,6 +140,11 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
+        public void ResetPrompt()
+        {
+            throw new NotImplementedException();
+        }
+
         public void OutputLine(string textToOutput)
         {
             throw new NotImplementedException();
@@ -161,7 +166,7 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
-        List<string> IShip.OutputQueue()
+        List<string> IShipUI.OutputQueue()
         {
             throw new NotImplementedException();
         }

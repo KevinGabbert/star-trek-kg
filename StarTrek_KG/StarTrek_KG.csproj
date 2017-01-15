@@ -86,6 +86,7 @@
     <Compile Include="Interfaces\IInteract.cs" />
     <Compile Include="Interfaces\IOutputMethod.cs" />
     <Compile Include="Interfaces\IQueue.cs" />
+    <Compile Include="Interfaces\IShipUI.cs" />
     <Compile Include="Output\Prompt.cs" />
     <Compile Include="Output\Subscriber.cs" />
     <Compile Include="Subsystem\Impulse.cs" />
