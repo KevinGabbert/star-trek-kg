@@ -745,8 +745,6 @@ namespace StarTrek_KG.Output
             else if (menuCommand == Menu.imp.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Impulse;
-                //retVal = Navigation.For(playerShip).Controls("");
-
                 retVal = this.ImpulseMenu(playerShip).ToList();
             }
             else if (menuCommand == Menu.irs.ToString())

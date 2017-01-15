@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.TypeSafeEnums;
@@ -50,23 +52,22 @@ namespace StarTrek_KG.Subsystem
         {
             this.ShipConnectedTo.ClearOutputQueue();
 
-            switch (command)
+            SubsystemType x = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubSystem;
+
+            //todo: what to do if is numeric.  How do we know what subsystem we are in?
+
+            if (x == SubsystemType.Warp)
             {
-                case Commands.Navigation.Warp:
-                    this.WarpControls();
-                    break;
-
-                case Commands.Navigation.Impulse:
-                    if (command.IsNumeric())
-                    {
-                        this.SublightControls(command);
-                    }
-                    break;
-
-                case Commands.Navigation.NavigateToObject:
-                    this.NavigateToObject();
-                    break;
+                this.WarpControls();
             }
+            else if (x == SubsystemType.Impulse)
+            {
+                this.SublightControls(command);
+            }
+            //else if (x == Commands.Navigation.NavigateToObject)
+            //{
+            //    this.NavigateToObject();
+            //}
 
             //todo: upon arriving in Region, all damaged controls need to be enumerated
             this.ShipConnectedTo.Map.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
@@ -106,18 +107,23 @@ namespace StarTrek_KG.Subsystem
 
             if (!base.Damaged())
             {
+                //todo: do like SHE
+                NavDirection direction;
+
                 if (base.NotRecognized(command))
                 {
                     this.ShipConnectedTo.OutputLine("Navigation command not recognized."); //todo: resource this
                 }
                 else
                 {
-                    //expecting a numeric value at this point
+                    //expecting a numeric value at this point.
+                    if (command.IsNumeric())
+                    {
+                        direction = (NavDirection) Convert.ToInt32(command);
+                    }
                 }
 
 
-                //todo: do like SHE
-                NavDirection direction;
                 if (this.Movement.PromptAndCheckCourse(out direction))
                 {
                     return this.ShipConnectedTo.OutputQueue();
