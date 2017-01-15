@@ -46,9 +46,9 @@ namespace StarTrek_KG.Subsystem
             base._myPanel = Shields.SHIELD_PANEL;
 
             //now we know that the shield Panel command has been retrieved.
-            if (!this.Damaged())
+            if (!base.Damaged())
             {
-                if (this.NotRecognized(command))
+                if (base.NotRecognized(command))
                 {
                     this.ShipConnectedTo.OutputLine("Shield command not recognized."); //todo: resource this
                 }
@@ -116,7 +116,7 @@ namespace StarTrek_KG.Subsystem
                 if (this.Energy < 1)
                 {
                     this.ShipConnectedTo.OutputLine("Shields are currently DOWN. Cannot subtract energy. \r\n Exiting Panel."); //todo: resource this
-                    this.ShipConnectedTo.Map.Game.Interact.ResetPrompt();
+                    this.ShipConnectedTo.ResetPrompt();
                 }
                 else
                 {
@@ -239,7 +239,7 @@ namespace StarTrek_KG.Subsystem
                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
                                        out transfer,
                                        this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
-                                     
+
                                        subPromptLevel: 2);
             }
 
