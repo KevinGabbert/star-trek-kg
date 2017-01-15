@@ -9,7 +9,7 @@
   <title>Star Trek KG</title>
   <meta name="Description" content="Star Trek KG"/>
 
-  <script src="Scripts/jquery-2.2.4.min.js"></script>
+  <script src="Scripts/jquery-3.1.1.min.js"></script>
   <script src="Scripts/jquery.mousewheel-min.js"></script>
 
   <script src="Scripts/jquery.terminal-0.11.23.js"></script>
