@@ -333,6 +333,16 @@ namespace StarTrek_KG.Actors
             return this.Energy < this.Config.GetSetting<int>("LowEnergyLevel");
         }
 
+        public void ClearOutputQueue()
+        {
+            this.Map.Game.Interact.Output.Queue.Clear();
+        }
+
+        public List<string> OutputQueue()
+        {
+            return this.Map.Game.Interact.Output.Queue.ToList();
+        }
+
         public string GetConditionAndSetIcon()
         {
             var currentRegion = this.GetRegion();

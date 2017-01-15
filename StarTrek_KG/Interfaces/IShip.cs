@@ -1,4 +1,5 @@
-﻿using StarTrek_KG.Enums;
+﻿using System.Collections.Generic;
+using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
@@ -23,5 +24,8 @@ namespace StarTrek_KG.Interfaces
         void RepairEverything();
         string GetConditionAndSetIcon();
         bool AtLowEnergyLevel();
+
+        void ClearOutputQueue();
+        List<string> OutputQueue();
     }
 }

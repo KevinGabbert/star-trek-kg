@@ -70,7 +70,7 @@ namespace StarTrek_KG.Subsystem
                 this.ShipConnectedTo.Map.Game.Interact.Line("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
             }
 
-            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         private bool SubtractingFrom(string command)

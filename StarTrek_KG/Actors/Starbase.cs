@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -134,12 +135,26 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
+        public void ClearOutputQueue()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Queue<string> OutputQueue()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public Type Type()
         {
             throw new NotImplementedException();
         }
 
+        List<string> IShip.OutputQueue()
+        {
+            throw new NotImplementedException();
+        }
 
         Type ISectorObject.Type
         {

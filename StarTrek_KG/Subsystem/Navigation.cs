@@ -69,7 +69,7 @@ namespace StarTrek_KG.Subsystem
 
             ShipConnectedTo.UpdateDivinedSectors();
 
-            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         private List<string> NavigateToObject()
@@ -78,7 +78,7 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged()) //todo: change this to Impulse.For(  when navigation object is removed
             {
-                return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+                return this.ShipConnectedTo.OutputQueue();
             }
 
             this.ShipConnectedTo.Map.Game.Interact.Line("");
@@ -93,29 +93,29 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo.Map.Game.Interact.Line("Navigate to Object is not yet supported.");
 
             //this.NavigateToObject();
-            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         private List<string> SublightControls()
         {
-            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
+            this.ShipConnectedTo.ClearOutputQueue();
 
             string distance;
             NavDirection direction;
 
             if (this.Movement.PromptAndCheckCourse(out direction))
             {
-                return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+                return this.ShipConnectedTo.OutputQueue();
             }
 
-            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.ShipConnectedTo.OutputQueue();
 
             int lastRegionY;
             int lastRegionX;
 
             if (!Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.ShipConnectedTo.Map))
             {
-                return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+                return this.ShipConnectedTo.OutputQueue();
             }
 
             this.RepairOrTakeDamage(lastRegionX, lastRegionY);
@@ -130,7 +130,7 @@ namespace StarTrek_KG.Subsystem
                 crs.Controls();
             }
 
-            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         /// <summary>

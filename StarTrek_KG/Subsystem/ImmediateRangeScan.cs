@@ -18,7 +18,7 @@ namespace StarTrek_KG.Subsystem
         {
             this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
-            if (this.Damaged()) return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            if (this.Damaged()) return this.ShipConnectedTo.OutputQueue();
 
             //todo: refactor this pattern with LRS
 
@@ -30,7 +30,7 @@ namespace StarTrek_KG.Subsystem
                 this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
             }
 
-            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         private IEnumerable<string> RunFullIRSScan(Location shipLocation)

@@ -21,7 +21,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
+            this.ShipConnectedTo.ClearOutputQueue();
 
             if (command == Commands.DamageControl.FixSubsystem)
             {
@@ -31,7 +31,7 @@ namespace StarTrek_KG.Subsystem
                 this.EmergencyFix(SubsystemType.GetFromAbbreviation(subsystemToFix));
             }
 
-            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         private string ShowSubsystemsToFix()

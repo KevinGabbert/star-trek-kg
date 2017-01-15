@@ -155,7 +155,7 @@ namespace StarTrek_KG.Subsystem
                     break;
             }
 
-            return this.ShipConnectedTo.Map.Game.Interact.Output.Queue.ToList();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         public static Debug For(IShip ship)
