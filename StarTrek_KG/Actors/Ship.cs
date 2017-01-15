@@ -333,6 +333,11 @@ namespace StarTrek_KG.Actors
             return this.Energy < this.Config.GetSetting<int>("LowEnergyLevel");
         }
 
+        public string GetSubCommand()
+        {
+            return this.Map.Game.Interact.Subscriber.PromptInfo.SubCommand;
+        }
+
         public void OutputLine(string textToOutput)
         {
             this.Map.Game.Interact.Line(textToOutput);

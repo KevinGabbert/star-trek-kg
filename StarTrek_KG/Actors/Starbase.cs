@@ -135,6 +135,11 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
+        public string GetSubCommand()
+        {
+            throw new NotImplementedException();
+        }
+
         public void OutputLine(string textToOutput)
         {
             throw new NotImplementedException();

@@ -75,11 +75,11 @@ namespace StarTrek_KG.Subsystem
 
         private bool SubtractingFrom(string command)
         {
-            return (command == "sub") || (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubCommand == "sub");
+            return (command == "sub") || (this.ShipConnectedTo.GetSubCommand() == "sub");
         }
         private bool AddingTo(string command)
         {
-            return (command == "add") || (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubCommand == "add");
+            return (command == "add") || (this.ShipConnectedTo.GetSubCommand() == "add");
         }
 
         private void AddOrGetValue(string command)
@@ -229,7 +229,6 @@ namespace StarTrek_KG.Subsystem
         //Interface
         public void GetValueFromUser(string subCommand)
         {
-            //PromptInfo promptInfo = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo;
             PromptInfo promptInfo = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo;
 
             if (promptInfo.Level == 1)

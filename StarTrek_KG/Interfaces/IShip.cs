@@ -25,6 +25,7 @@ namespace StarTrek_KG.Interfaces
         string GetConditionAndSetIcon();
         bool AtLowEnergyLevel();
 
+        string GetSubCommand();
         void OutputLine(string textToOutput);
         void ClearOutputQueue();
         List<string> OutputQueue();
