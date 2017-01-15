@@ -824,7 +824,7 @@ namespace StarTrek_KG.Playfield
                 throw new ArgumentException();
             }
 
-            locationToGet.Region = Regions.Get(map, new Coordinate(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y));
+            locationToGet.Region = map.Regions[new Coordinate(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y)];
 
             if (locationToGet.Region.Type != RegionType.GalacticBarrier)
             {

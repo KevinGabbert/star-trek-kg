@@ -81,7 +81,7 @@ namespace StarTrek_KG.Subsystem
             double angle = Utility.Utility.ComputeAngle(direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
-            Region Region = Regions.Get(game.Map, torpedoStartingLocation.Region);
+            Region Region = game.Map.Regions[torpedoStartingLocation.Region];
 
             //var currentLocation = new VectorCoordinate(torpedoStartingLocation.Sector);
             //var torpedoVector = new VectorCoordinate(Math.Cos(angle)/20, Math.Sin(angle)/20);

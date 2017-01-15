@@ -233,7 +233,7 @@ namespace StarTrek_KG.Output
             IGame game = shipConnectedTo.Map.Game;
 
             var location = shipConnectedTo.GetLocation();
-            Region region = Regions.Get(game.Map, location.Region);
+            Region region = game.Map.Regions[location.Region];
             var shieldsAutoRaised = Shields.For(shipConnectedTo).AutoRaiseShieldsIfNeeded(region);
             var printSector = (new Render(this, game.Config));
 

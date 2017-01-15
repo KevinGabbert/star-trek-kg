@@ -256,8 +256,8 @@ namespace UnitTests.Tests.SubSystemTests
             Assert.IsTrue(_setup.TestLongRangeScan.Damaged());
         }
 
-
-        private void CheckStarsInRegion()
+        [Test]
+        public void CheckStarsInRegion()
         {
             this.Game.Map = new Map(new SetupOptions
             {
@@ -277,7 +277,7 @@ namespace UnitTests.Tests.SubSystemTests
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
-            Region Region = Regions.Get(this.Game.Map, new Coordinate(0, 0));
+            Region Region = this.Game.Map.Regions[0, 0];
             int starCount = Region.GetStarCount();
             Assert.AreEqual(2, starCount);
         }

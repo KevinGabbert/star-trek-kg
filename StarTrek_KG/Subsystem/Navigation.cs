@@ -222,15 +222,15 @@ namespace StarTrek_KG.Subsystem
             Location thisShip = this.ShipConnectedTo.GetLocation();
             IGame game = this.ShipConnectedTo.Map.Game;
 
-            var currentRegion = Regions.Get(map, thisShip.Region);
+            Region currentRegion = map.Regions[thisShip.Region];
 
-            var hostiles = currentRegion.GetHostiles();
-            var baddiesHangingAround = hostiles.Count > 0;
+            List<IShip> hostiles = currentRegion.GetHostiles();
+            bool baddiesHangingAround = hostiles.Count > 0;
 
-            var hostileFedsInRegion = hostiles.Any(h => h.Faction == FactionName.Federation);
+            bool hostileFedsInRegion = hostiles.Any(h => h.Faction == FactionName.Federation);
                 //todo: Cheap.  Use a property for this.
 
-            var stillInSameRegion = lastRegionX == thisShip.Region.X && lastRegionY == thisShip.Region.Y;
+            bool stillInSameRegion = lastRegionX == thisShip.Region.X && lastRegionY == thisShip.Region.Y;
 
             if ((baddiesHangingAround && stillInSameRegion) ||
                 hostileFedsInRegion ||

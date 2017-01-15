@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using StarTrek_KG.Constants;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
-using StarTrek_KG.Settings;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Playfield
 {
     public class Regions: List<Region>
     {
+        public Region this[int x, int y] => this.Get(new Coordinate(x, y));
+        public Region this[Coordinate region] => this.Get(region);
+
         #region Properties
 
-            private IMap Map { get; set; }
+        private IMap Map { get; set; }
             private IInteraction Write { get; set; }
 
             /// <summary>
@@ -45,11 +46,19 @@ namespace StarTrek_KG.Playfield
             return gotRegion == null;
         }
 
-        public static Region Get(IMap map, Coordinate region)
-        {
-            IEnumerable<Region> i = map.Regions.Where(q => q.X == region.X && q.Y == region.Y);
+        ////todo: this should go away
+        //public static Region Get(IMap map, Coordinate region)
+        //{
+        //    IEnumerable<Region> i = map.Regions.Where(q => q.X == region.X && q.Y == region.Y);
 
-            return i.DefaultIfEmpty(new Region(map, region.X, region.Y, RegionType.GalacticBarrier)).Single();
+        //    return i.DefaultIfEmpty(new Region(map, region.X, region.Y, RegionType.GalacticBarrier)).Single();
+        //}
+
+        public Region Get(Coordinate region)
+        {
+            IEnumerable<Region> i = this.Map.Regions.Where(q => q.X == region.X && q.Y == region.Y);
+
+            return i.DefaultIfEmpty(new Region(this.Map, region.X, region.Y, RegionType.GalacticBarrier)).Single();
         }
 
         public Region Get(string name)
@@ -234,7 +243,7 @@ namespace StarTrek_KG.Playfield
 
             Region newRegion = new Region(new Coordinate(newRegionX, newRegionY));
 
-            var returnVal = !newRegion.Invalid() ? Regions.Get(map, newRegion) : null;
+            var returnVal = !newRegion.Invalid() ? map.Regions[newRegion] : null;
             return returnVal;
         }
 
@@ -341,7 +350,7 @@ namespace StarTrek_KG.Playfield
         internal static bool IsNebula(IMap map, Coordinate coordinate)
         {
             //todo: make an app.config setting to turn this feature off if people whine.
-            return (Regions.Get(map, coordinate).Type == RegionType.Nebulae);
+            return map.Regions[coordinate].Type == RegionType.Nebulae;
         }
     }
 }

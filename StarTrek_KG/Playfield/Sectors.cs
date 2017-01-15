@@ -8,6 +8,7 @@ namespace StarTrek_KG.Playfield
     public class Sectors: List<Sector>
     {
         public Sector this[int x, int y] => this.Get(new Coordinate(x, y));
+        public Sector this[Coordinate sector] => this.Get(sector);
 
         public Sector Get(ICoordinate coordinate)
         {

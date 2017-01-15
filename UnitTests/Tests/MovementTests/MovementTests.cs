@@ -729,7 +729,7 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.IsInstanceOf<Sector>(found);
 
             //starting location is empty
-            Region startingRegionT = Regions.Get(this.Game.Map, _startingRegion);
+            Region startingRegionT = this.Game.Map.Regions[_startingRegion];
             Assert.AreEqual(SectorItem.Empty, startingRegionT.Sectors[_startingSectorX, _startingSectorY].Item);
 
             //We moved from our original Region, right?

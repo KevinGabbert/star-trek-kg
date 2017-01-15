@@ -225,7 +225,7 @@ namespace StarTrek_KG.Actors
                 else
                 {
                     //set ship location to the new location
-                    newRegion = Regions.Get(this.ShipConnectedTo.Map, new Coordinate(futureShipRegionX, futureShipRegionY));
+                    newRegion = this.ShipConnectedTo.Map.Regions[new Coordinate(futureShipRegionX, futureShipRegionY)];
 
                     bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
                     if (nebulaEncountered)
