@@ -228,8 +228,13 @@ namespace StarTrek_KG.Subsystem
 
             if (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level == 1 && command != "")
             {
-                var search = $"{command}  = "; //todo: modify to use MenuItem "divider" in web.config  -  <MenuItem promptLevel="1" name="ship" description="Exit back to the Ship Panel" ordinalPosition ="1" divider=" = "></MenuItem>
-                retVal = this._myPanel.Any(p => p.Contains(search)); 
+                var search = $"{command}  = ";
+                //todo: modify to use MenuItem "divider" in web.config  -  <MenuItem promptLevel="1" name="ship" description="Exit back to the Ship Panel" ordinalPosition ="1" divider=" = "></MenuItem>
+
+                if (this._myPanel != null)
+                {
+                    retVal = this._myPanel.Any(p => p.Contains(search));
+                }
             }
 
             return retVal;

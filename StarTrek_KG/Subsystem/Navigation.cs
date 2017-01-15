@@ -108,9 +108,9 @@ namespace StarTrek_KG.Subsystem
             if (!base.Damaged())
             {
                 //todo: do like SHE
-                NavDirection direction;
+                NavDirection direction = 0;
 
-                if (base.NotRecognized(command))
+                if (!command.IsNumeric() || base.NotRecognized(command))
                 {
                     this.ShipConnectedTo.OutputLine("Navigation command not recognized."); //todo: resource this
                 }
@@ -123,11 +123,14 @@ namespace StarTrek_KG.Subsystem
                     }
                 }
 
+                //todo: verify course
 
-                if (this.Movement.PromptAndCheckCourse(out direction))
-                {
-                    return this.ShipConnectedTo.OutputQueue();
-                }
+                //prompt needs to reset, then do a CRS, SRS, or just return a message to say that you have traveled.
+
+                //if (this.Movement.PromptAndCheckCourse(out direction))
+                //{
+                //    return this.ShipConnectedTo.OutputQueue();
+                //}
 
                 string distance;
                 if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance))
@@ -155,6 +158,8 @@ namespace StarTrek_KG.Subsystem
                     crs.Controls();
                 }
             }
+
+            this.ShipConnectedTo.ResetPrompt();
 
             return this.ShipConnectedTo.OutputQueue();
         }
