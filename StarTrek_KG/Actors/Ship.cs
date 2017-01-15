@@ -358,6 +358,11 @@ namespace StarTrek_KG.Actors
             return this.Map.Game.Interact.Output.Queue.ToList();
         }
 
+        public Queue<string> Queue()
+        {
+            return this.Map.Game.Interact.Output.Queue;
+        }
+
         public string GetConditionAndSetIcon()
         {
             var currentRegion = this.GetRegion();

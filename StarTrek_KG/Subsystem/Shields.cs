@@ -239,7 +239,6 @@ namespace StarTrek_KG.Subsystem
                                        $"Enter amount of energy (1--{this.MaxTransfer}) ", //todo: resource this
                                        out transfer,
                                        this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
-
                                        subPromptLevel: 2);
             }
 

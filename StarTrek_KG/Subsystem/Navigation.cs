@@ -3,6 +3,7 @@ using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -10,7 +11,7 @@ using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Subsystem
 {
-    public class Navigation : SubSystem_Base
+    public class Navigation : SubSystem_Base, IInteract
     {
         #region Properties
 
@@ -47,7 +48,7 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
+            this.ShipConnectedTo.ClearOutputQueue();
 
             switch (command)
             {
@@ -56,7 +57,10 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case Commands.Navigation.Impulse:
-                    this.SublightControls();
+                    if (command.IsNumeric())
+                    {
+                        this.SublightControls(command);
+                    }
                     break;
 
                 case Commands.Navigation.NavigateToObject:
@@ -96,39 +100,54 @@ namespace StarTrek_KG.Subsystem
             return this.ShipConnectedTo.OutputQueue();
         }
 
-        private List<string> SublightControls()
+        private List<string> SublightControls(string command)
         {
             this.ShipConnectedTo.ClearOutputQueue();
 
-            string distance;
-            NavDirection direction;
-
-            //todo: do like SHE
-            if (this.Movement.PromptAndCheckCourse(out direction))
+            if (!base.Damaged())
             {
-                return this.ShipConnectedTo.OutputQueue();
-            }
+                if (base.NotRecognized(command))
+                {
+                    this.ShipConnectedTo.OutputLine("Navigation command not recognized."); //todo: resource this
+                }
+                else
+                {
+                    //expecting a numeric value at this point
+                }
 
-            if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance)) return this.ShipConnectedTo.OutputQueue();
 
-            int lastRegionY;
-            int lastRegionX;
+                //todo: do like SHE
+                NavDirection direction;
+                if (this.Movement.PromptAndCheckCourse(out direction))
+                {
+                    return this.ShipConnectedTo.OutputQueue();
+                }
 
-            if (!Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX, this.ShipConnectedTo.Map))
-            {
-                return this.ShipConnectedTo.OutputQueue();
-            }
+                string distance;
+                if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance))
+                    return this.ShipConnectedTo.OutputQueue();
 
-            this.RepairOrTakeDamage(lastRegionX, lastRegionY);
+                int lastRegionY;
+                int lastRegionX;
 
-            var crs = CombinedRangeScan.For(this.ShipConnectedTo);
-            if (crs.Damaged())
-            {
-                ShortRangeScan.For(this.ShipConnectedTo).Controls();
-            }
-            else
-            {
-                crs.Controls();
+                if (
+                    !Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX,
+                        this.ShipConnectedTo.Map))
+                {
+                    return this.ShipConnectedTo.OutputQueue();
+                }
+
+                this.RepairOrTakeDamage(lastRegionX, lastRegionY);
+
+                var crs = CombinedRangeScan.For(this.ShipConnectedTo);
+                if (crs.Damaged())
+                {
+                    ShortRangeScan.For(this.ShipConnectedTo).Controls();
+                }
+                else
+                {
+                    crs.Controls();
+                }
             }
 
             return this.ShipConnectedTo.OutputQueue();
@@ -323,6 +342,11 @@ namespace StarTrek_KG.Subsystem
         public static Navigation For(IShip ship)
         {
             return (Navigation) SubSystem_Base.For(ship, SubsystemType.Navigation);
+        }
+
+        public void GetValueFromUser(string subCommand)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

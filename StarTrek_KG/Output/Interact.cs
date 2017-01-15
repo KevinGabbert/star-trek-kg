@@ -729,7 +729,7 @@ namespace StarTrek_KG.Output
         {
             List<string> retVal = new List<string>();
 
-            if (menuCommand == Menu.nto.ToString() || menuCommand == Menu.wrp.ToString() || menuCommand == Menu.imp.ToString())
+            if (menuCommand == Menu.nto.ToString() || menuCommand == Menu.wrp.ToString()) //|| menuCommand == Menu.imp.ToString()
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Navigation;
 
@@ -742,11 +742,13 @@ namespace StarTrek_KG.Output
             //    this.Subscriber.PromptInfo.SubSystem = SubsystemType.Warp;
             //    retVal = Warp.For(playerShip).Controls(menuCommand).ToList();
             //}
-            //else if (menuCommand == Menu.imp.ToString())
-            //{
-            //    this.Subscriber.PromptInfo.SubSystem = SubsystemType.Impulse;
-            //    retVal = Impulse.For(playerShip).Controls(menuCommand);
-            //}
+            else if (menuCommand == Menu.imp.ToString())
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.Impulse;
+                //retVal = Navigation.For(playerShip).Controls("");
+
+                retVal = this.ImpulseMenu(playerShip).ToList();
+            }
             else if (menuCommand == Menu.irs.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.ImmediateRangeScan;
@@ -850,7 +852,7 @@ namespace StarTrek_KG.Output
                 return null;
             }
 
-            return retVal.ToList();
+            return retVal?.ToList();
         }
 
         private IEnumerable<string> DebugMenu(IShip playerShip)
@@ -923,10 +925,9 @@ namespace StarTrek_KG.Output
 
             try
             {
-                IEnumerable<MenuItemDef> menuItems =
-                    this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+                var menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
 
-                this.OutputMenu(menuItems, currentShieldEnergy);
+                this.OutputShieldMenu(menuItems, currentShieldEnergy);
             }
             catch
             {
@@ -946,7 +947,44 @@ namespace StarTrek_KG.Output
             return this.Output.Queue;
         }
 
-        private void OutputMenu(IEnumerable<MenuItemDef> menuItems, int currentShieldEnergy)
+        private IEnumerable<string> ImpulseMenu(IShip playerShip, string impulsePanelCommand = "") //config, output
+        {
+            //todo: pass in dependencies and refactor to shield object
+            //pass in config, output, subscriber, promptUser, outputstrings
+
+            //if (Impulse.For(playerShip).Damaged()) return this.Output.Queue.ToList();
+
+            //todo: this should be a list of directions?
+            Impulse.PANEL = new List<string>
+            {
+                Environment.NewLine,
+                "panel1",
+                "panel2"
+            };
+
+            try
+            {
+                //var menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+
+                //this.OutputMenu(menuItems);
+            }
+            catch
+            {
+                //todo: fix error
+            }
+
+            string impulsePromptReply;
+
+            //todo: this needs to be divined?
+            this.PromptUser(SubsystemType.Impulse, $"{this.Subscriber.PromptInfo.DefaultPrompt}Impulse Control -> ",
+                null, out impulsePromptReply, this.Output.Queue, 1);
+
+            Navigation.For(playerShip).Controls(impulsePanelCommand);
+
+            return this.Output.Queue;
+        }
+
+        private void OutputShieldMenu(IEnumerable<MenuItemDef> menuItems, int currentShieldEnergy)
         {
             //todo: resource out header
             //todo: *DOWN* feature should be a upgrade functionality

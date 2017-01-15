@@ -160,6 +160,11 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
+        public Queue<string> Queue()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public Type Type()
         {
