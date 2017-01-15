@@ -38,7 +38,7 @@ namespace StarTrek_KG.Subsystem
 
         private void DivineMaxWarpFactor()
         {
-            this.MaxWarpFactor = (int) (0.2 + (Utility.Utility.Random).Next(9));
+            this.MaxWarpFactor = (int) (0.2 + Utility.Utility.Random.Next(9));
 
                 //todo: Come up with a better system than this.. perhaps each turn allow *repairs* to increase the MaxWarpFactor
             this.ShipConnectedTo.Map.Game.Interact.Line(string.Format(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("MaxWarpFactorMessage"),
@@ -258,10 +258,10 @@ namespace StarTrek_KG.Subsystem
             string RegionY;
 
             this.ShipConnectedTo.Map.Game.Interact.Line(string.Format("Your Ship" + config.GetSetting<string>("LocatedInRegion"),
-                (thisShip.Region.X), (thisShip.Region.Y)));
+                thisShip.Region.X, thisShip.Region.Y));
 
             if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionX"), out RegionX, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 1)
-                || int.Parse(RegionX) < (DEFAULTS.REGION_MIN + 1)
+                || int.Parse(RegionX) < DEFAULTS.REGION_MIN + 1
                 || int.Parse(RegionX) > DEFAULTS.REGION_MAX)
             {
                 this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("InvalidXCoordinate"));
@@ -269,7 +269,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionY"), out RegionY, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 2)
-                || int.Parse(RegionY) < (DEFAULTS.REGION_MIN + 1)
+                || int.Parse(RegionY) < DEFAULTS.REGION_MIN + 1
                 || int.Parse(RegionY) > DEFAULTS.REGION_MAX)
             {
                 this.ShipConnectedTo.Map.Game.Interact.Line(config.GetSetting<string>("InvalidYCoordinate"));
@@ -307,7 +307,7 @@ namespace StarTrek_KG.Subsystem
                 foreach (var starbase in starbasesInSector)
                 {
                     this.ShipConnectedTo.Map.Game.Interact.Line("-----------------");
-                    this.ShipConnectedTo.Map.Game.Interact.Line($"Starbase in sector [{(starbase.X + 1)},{(starbase.Y + 1)}].");
+                    this.ShipConnectedTo.Map.Game.Interact.Line($"Starbase in sector [{starbase.X + 1},{starbase.Y + 1}].");
                     
                     this.ShipConnectedTo.Map.Game.Interact.Line($"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
                     this.ShipConnectedTo.Map.Game.Interact.Line($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.SECTOR_MAX:##.##}");

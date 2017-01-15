@@ -88,14 +88,14 @@ namespace StarTrek_KG
                 //These constants need to be localized to Game:
                 this.GetConstants();
 
-                this.PrintSector = (new Render(this.Interact, this.Config));
+                this.PrintSector = new Render(this.Interact, this.Config);
 
-                var startConfig = (new SetupOptions
+                var startConfig = new SetupOptions
                 {
                     Initialize = true,
                     AddNebulae = true,
                     SectorDefs = this.SectorSetup()
-                });
+                };
 
                 this.InitMap(startConfig, this);
 
@@ -694,7 +694,7 @@ namespace StarTrek_KG
 
         private bool StarbaseEmergencyMessageAttempt()
         {
-            return (Utility.Utility.Random.Next(2) == 1);
+            return Utility.Utility.Random.Next(2) == 1;
         }
 
         #endregion
@@ -795,10 +795,10 @@ namespace StarTrek_KG
 
             if (this.PlayerNowEnemyToFederation)
             {
-                this.GameOver = (this.Map.timeRemaining < 1 ||
-                                 starbasesLeft < 1 ||
-                                 this.Map.Playership.Destroyed ||
-                                 this.Map.Playership.Energy < 1);
+                this.GameOver = this.Map.timeRemaining < 1 ||
+                                starbasesLeft < 1 ||
+                                this.Map.Playership.Destroyed ||
+                                this.Map.Playership.Energy < 1;
             }
             else
             {

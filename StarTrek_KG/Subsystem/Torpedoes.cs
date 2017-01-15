@@ -39,7 +39,7 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged() || 
                 this.Exhausted() || 
-                (new Regions(game.Map, prompt)).NoHostiles(game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return prompt.Output.Queue.ToList();
+                new Regions(game.Map, prompt).NoHostiles(game.Map.Regions.GetHostiles(), out hostileCheckOutput)) return prompt.Output.Queue.ToList();
 
             prompt.Output.Write(hostileCheckOutput);
 
@@ -266,7 +266,7 @@ namespace StarTrek_KG.Subsystem
 
                 case SectorItem.Star:
 
-                    var star = ((Star) qLocation.Object);
+                    var star = (Star) qLocation.Object;
 
                     var starName = "UNKNOWN";
 
@@ -329,8 +329,8 @@ namespace StarTrek_KG.Subsystem
 
             foreach (var ship in thisRegionHostiles)
             {
-                string shipSectorX = (ship.Sector.X).ToString();
-                string shipSectorY = (ship.Sector.Y).ToString();
+                string shipSectorX = ship.Sector.X.ToString();
+                string shipSectorY = ship.Sector.Y.ToString();
                 string direction = $"{Utility.Utility.ComputeDirection(location.Sector.X, location.Sector.Y, ship.Sector.X, ship.Sector.Y):#.##}";
 
                 direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);

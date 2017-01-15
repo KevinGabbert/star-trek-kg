@@ -26,7 +26,7 @@ namespace UnitTests.Tests.HostileTests
             //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
             _setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount"); 
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, new StarTrekKGSettings().GetSetting<int>("energy"), "Ship energy not at expected amount"); 
 
             //raise shields
             Shields.For(_setup.TestMap.Playership).SetEnergy(2500); //hopefully a single hit wont be harder than this!
@@ -34,13 +34,13 @@ namespace UnitTests.Tests.HostileTests
 
             //Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, new StarTrekKGSettings().GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            (new Game((new StarTrekKGSettings()))).ALLHostilesAttack(_setup.TestMap);
+            new Game(new StarTrekKGSettings()).ALLHostilesAttack(_setup.TestMap);
 
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
             Assert.Less(Shields.For(_setup.TestMap.Playership).Energy, 2500);
-            Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "expected no change to ship energy. Ship should have been protected by shields."); 
+            Assert.AreEqual(new StarTrekKGSettings().GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "expected no change to ship energy. Ship should have been protected by shields."); 
     
             //Assert that ship has taken 2 hits.
             //todo: use a mock to determine that Ship.AbsorbHitFrom() was called twice.
@@ -55,12 +55,12 @@ namespace UnitTests.Tests.HostileTests
             //todo:  This test needs to be tuned to proper gameplay
             _setup.SetupMapWith1Hostile();
 
-            IShip badGuy = ( _setup.TestMap.Regions.GetHostiles().Single());
+            IShip badGuy = _setup.TestMap.Regions.GetHostiles().Single();
             badGuy.Energy = 2000;
             badGuy.Subsystems.Add(new Disruptors(badGuy) { Energy = 500});
             Disruptors disruptorsForBadGuy = (Disruptors)badGuy.Subsystems.Single(s => s.Type == SubsystemType.Disruptors);
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, new StarTrekKGSettings().GetSetting<int>("energy"), "Ship energy not at expected amount");
 
             Shields.For(_setup.TestMap.Playership).SetEnergy(0);
 
@@ -69,7 +69,7 @@ namespace UnitTests.Tests.HostileTests
             const int expectedHitsTilldestruction = 12;
             for (int i = 0; i < 100; i++)
             {
-                var testGame = (new Game((new StarTrekKGSettings())));
+                var testGame = new Game(new StarTrekKGSettings());
 
                 TakeShots(testGame, expectedHitsTilldestruction);
 
@@ -143,7 +143,7 @@ namespace UnitTests.Tests.HostileTests
         {
             _setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual((new StarTrekKGSettings()).GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
+            Assert.AreEqual(new StarTrekKGSettings().GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
         }
 
         [Ignore("This is a long running test intended to suss out a problem (which is now fixed)")]
@@ -167,9 +167,9 @@ namespace UnitTests.Tests.HostileTests
         {
             _setup.SetupMapWith2Hostiles();
 
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"), "Ship energy not at expected amount");
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, new StarTrekKGSettings().GetSetting<int>("energy"), "Ship energy not at expected amount");
 
-            (new Game((new StarTrekKGSettings()))).ALLHostilesAttack(_setup.TestMap);
+            new Game(new StarTrekKGSettings()).ALLHostilesAttack(_setup.TestMap);
 
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
 
@@ -202,20 +202,20 @@ namespace UnitTests.Tests.HostileTests
             //Ship has taken no damage.
             Assert.IsFalse(_setup.TestMap.Playership.Destroyed);
             Assert.AreEqual(Shields.For(_setup.TestMap.Playership).Energy, 0); //never even needed to raise shields!
-            Assert.AreEqual(_setup.TestMap.Playership.Energy, (new StarTrekKGSettings()).GetSetting<int>("energy"));      
+            Assert.AreEqual(_setup.TestMap.Playership.Energy, new StarTrekKGSettings().GetSetting<int>("energy"));      
         }
 
         [Test]
         public void MapWith0Friendlies()
         {
-            var game = (new Game((new StarTrekKGSettings()))); //this can make tests break so I throw it in for a check..
+            var game = new Game(new StarTrekKGSettings()); //this can make tests break so I throw it in for a check..
 
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 SectorDefs = new SectorDefs(),
                 AddStars = false
-            }, this.Game.Interact, this.Game.Config, this.Game));
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -234,16 +234,16 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapWith1Friendly()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 
                 
                 SectorDefs = new SectorDefs
-                                            {
-                                                new SectorDef(SectorItem.PlayerShip)
-                                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(SectorItem.PlayerShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -266,13 +266,13 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapWith1Hostile()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 
                 
                 SectorDefs = new SectorDefs()
-            }, this.Game.Interact, this.Game.Config, this.Game));
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
 
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
@@ -295,16 +295,16 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapWith1HostileAlternate()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                                            {
-                                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip)
-                                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             var hostiles = _setup.TestMap.Regions.GetHostiles();
             Assert.AreEqual(1, hostiles.Count);
@@ -320,12 +320,12 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void Remove1Hostile()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
             {
                 AddNebulae = false,
                 Initialize = true,
                 SectorDefs = new SectorDefs()
-            }, this.Game.Interact, this.Game.Config, this.Game));
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
 
@@ -359,29 +359,29 @@ namespace UnitTests.Tests.HostileTests
 
         private void TestMap3Scenario()
         {
-            var x = new Game((new StarTrekKGSettings()));
+            var x = new Game(new StarTrekKGSettings());
 
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
+            {
+                Initialize = true,
+                AddNebulae = false,
+                SectorDefs = new SectorDefs
                 {
-                    Initialize = true,
-                    AddNebulae = false,
-                    SectorDefs = new SectorDefs
-                                        {
-                                            new SectorDef(
-                                                new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
-                                                SectorItem.PlayerShip),
-                                            new SectorDef(
-                                                new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)),
-                                                SectorItem.HostileShip),
-                                            new SectorDef(
-                                                new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)),
-                                                SectorItem.HostileShip),
-                                            new SectorDef(
-                                                new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)),
-                                                SectorItem.HostileShip)
-                                        },
-                    AddStars = false
-                }, this.Game.Interact, this.Game.Config, this.Game));
+                    new SectorDef(
+                        new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(
+                        new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)),
+                        SectorItem.HostileShip),
+                    new SectorDef(
+                        new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)),
+                        SectorItem.HostileShip),
+                    new SectorDef(
+                        new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)),
+                        SectorItem.HostileShip)
+                },
+                AddStars = false
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -417,9 +417,9 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder()
         {
-            var x = (new Game((new StarTrekKGSettings())));
+            var x = new Game(new StarTrekKGSettings());
 
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
@@ -432,7 +432,7 @@ namespace UnitTests.Tests.HostileTests
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
                 },
                 AddStars = false
-            }, this.Game.Interact, this.Game.Config, this.Game));
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
 
@@ -470,11 +470,11 @@ namespace UnitTests.Tests.HostileTests
             //fails intermittently..
             //**This test has an interesting error in it..
 
-            var game = new Game((new StarTrekKGSettings()));
+            var game = new Game(new StarTrekKGSettings());
 
             Assert.IsInstanceOf<Map>(game.Map);
 
-            (new StarTrekKGSettings()).Get = null;
+            new StarTrekKGSettings().Get = null;
 
             _setup.TestMap = this.SetUp3Hostiles();
 
@@ -506,20 +506,20 @@ namespace UnitTests.Tests.HostileTests
 
         private Map SetUp3Hostiles()
         {
-            return (new Map(new SetupOptions
-                                {
-                                    Initialize = true,
-                                    AddNebulae = false,
+            return new Map(new SetupOptions
+            {
+                Initialize = true,
+                AddNebulae = false,
                                     
-                                    SectorDefs = new SectorDefs
-                                                     {
-                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.PlayerShip),
-                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip),
-                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.HostileShip),
-                                                         new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
-                                                     },
-                                    AddStars = false
-                                }, this.Game.Interact, this.Game.Config, this.Game));
+                SectorDefs = new SectorDefs
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.HostileShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
+                },
+                AddStars = false
+            }, this.Game.Interact, this.Game.Config, this.Game);
         }
 
         /// <summary>
@@ -528,7 +528,7 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapWith3HostilesTheConfigWayAddedInDescendingOrder3()
         {
-            var x = (new Game((new StarTrekKGSettings())));
+            var x = new Game(new StarTrekKGSettings());
 
             _setup.TestMap = this.SetUp3Hostiles();
 
@@ -568,16 +568,16 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapWith2HostilesAnotherWay()
         {
-            _setup.TestMap = (new Map(new SetupOptions
-                                   {
-                                       Initialize = true,
-                                       AddNebulae = false,
+            _setup.TestMap = new Map(new SetupOptions
+            {
+                Initialize = true,
+                AddNebulae = false,
                                        
-                                       SectorDefs = new SectorDefs
-                                            {
-                                                new SectorDef(SectorItem.PlayerShip)
-                                            }
-                                   }, this.Game.Interact, this.Game.Config, this.Game));
+                SectorDefs = new SectorDefs
+                {
+                    new SectorDef(SectorItem.PlayerShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             var activeRegion = _setup.TestMap.Regions.GetActive();
             //var activeRegion = activeRegion;
@@ -634,17 +634,17 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile2()
         {
-            _setup.TestMap = (new Map(new SetupOptions
+            _setup.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                                        {
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 7)), SectorItem.HostileShip)
-                                        }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 7)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
         }
 
         [Test]
@@ -670,17 +670,17 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile4()
         {
-            Map newMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                                        {
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)), SectorItem.HostileShip)
-                                        }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
 
@@ -690,17 +690,17 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile5()
         {
-            Map newMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
 
@@ -710,17 +710,17 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile6()
         {
-            Map newMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.PlayerShip),
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
 
@@ -730,17 +730,17 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile7()
         {
-            Map newMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                                new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)), SectorItem.HostileShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
 
@@ -750,17 +750,17 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile8()
         {
-            Map newMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
 
@@ -771,17 +771,17 @@ namespace UnitTests.Tests.HostileTests
         [Test]
         public void MapCreateOutOfBoundsHostile9()
         {
-            Map newMap = (new Map(new SetupOptions
+            Map newMap = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                                new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)), SectorItem.HostileShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)), SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
 

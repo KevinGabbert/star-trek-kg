@@ -138,8 +138,8 @@ namespace StarTrek_KG.Subsystem
                 {
                     string objectName = sector.Object != null ? sector.Object.Name : "Unknown";
 
-                    this.ShipConnectedTo.Map.Game.Interact.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, (sector.X + 1),
-                        (sector.Y + 1)));
+                    this.ShipConnectedTo.Map.Game.Interact.SingleLine(string.Format(objectNumber + ": {0}  [{1},{2}].", objectName, sector.X + 1,
+                        sector.Y + 1));
 
                     list.Add(new KeyValuePair<int, Sector>(objectNumber, sector));
 

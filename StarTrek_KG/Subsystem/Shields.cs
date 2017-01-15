@@ -132,7 +132,7 @@ namespace StarTrek_KG.Subsystem
 
         private void TransferAndReset(string command, bool adding)
         {
-            if ((!string.IsNullOrWhiteSpace(command)) && command.All(char.IsDigit))
+            if (!string.IsNullOrWhiteSpace(command) && command.All(char.IsDigit))
             {
                 int energyToTransfer = Convert.ToInt32(command);
                 this.DoTheTransfer(energyToTransfer, adding);
@@ -161,14 +161,14 @@ namespace StarTrek_KG.Subsystem
             {
                 if (transfer > 0)
                 {
-                    if (adding && (this.ShipConnectedTo.Energy - transfer) < 1)
+                    if (adding && this.ShipConnectedTo.Energy - transfer < 1)
                     {
                         this.ShipConnectedTo.Map.Game.Interact.Line("Energy to transfer to shields cannot exceed Ship energy reserves. No Change");
                         return;
                     }
 
-                    var maxEnergy = (Convert.ToInt32(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("SHIELDS_MAX")));
-                    var totalEnergy = (this.Energy + transfer);
+                    var maxEnergy = Convert.ToInt32(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("SHIELDS_MAX"));
+                    var totalEnergy = this.Energy + transfer;
 
                     if (adding && (totalEnergy > maxEnergy))
                     {

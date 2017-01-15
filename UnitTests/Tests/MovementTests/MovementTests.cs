@@ -62,21 +62,21 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void reset()
         {
-            this.Game.Map = (new Map(new SetupOptions
-                                         {
+            this.Game.Map = new Map(new SetupOptions
+            {
 
-                                             Initialize = true,
-                                             AddNebulae = false,
-                                             SectorDefs = new SectorDefs
-                                                              {
-                                                                  new SectorDef(
-                                                                      new LocationDef(new Coordinate(4, 4),
-                                                                                      new Coordinate(4, 4)),
-                                                                      SectorItem.PlayerShip),
-                                                                  //todo: this needs to be in a random spot
-                                                              },
-                                             AddStars = false
-                                         }, this.Game.Interact, this.Game.Config, this.Game));
+                Initialize = true,
+                AddNebulae = false,
+                SectorDefs = new SectorDefs
+                {
+                    new SectorDef(
+                        new LocationDef(new Coordinate(4, 4),
+                            new Coordinate(4, 4)),
+                        SectorItem.PlayerShip),
+                    //todo: this needs to be in a random spot
+                },
+                AddStars = false
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             _testMovement = new Movement(this.Game.Map.Playership) {BlockedByObstacle = false};
             _testShip = this.Game.Map.Playership; //synctactic sugar
@@ -669,7 +669,7 @@ namespace UnitTests.ShipTests.MovementTests
 
         private void Move_Region(string direction, int distance)
         {
-            _testMovement.Execute(MovementType.Warp, (NavDirection)(Convert.ToInt32(direction)), distance, out _lastRegionX, out _lastRegionY);
+            _testMovement.Execute(MovementType.Warp, (NavDirection)Convert.ToInt32(direction), distance, out _lastRegionX, out _lastRegionY);
         }
 
         //todo: this needs to be refactored into a ship setup testfixture or something.
@@ -742,7 +742,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             //is ship in expected location in new Region?
             ////indirectly..
-            int found2 = (playershipRegion.Sectors.Where(s => s.Item == SectorItem.PlayerShip)).Count();
+            int found2 = playershipRegion.Sectors.Where(s => s.Item == SectorItem.PlayerShip).Count();
             Assert.AreEqual(1, found2, "expected to find 1 friendly, not " + found2 + ".   ");
 
             //directly
@@ -776,7 +776,7 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[_startingSectorX, _startingSectorY].Item);
 
             //indirectly..
-            var found = (this.Game.Map.Regions.GetActive().Sectors.Where(s => s.Item == SectorItem.PlayerShip)).Count();
+            var found = this.Game.Map.Regions.GetActive().Sectors.Where(s => s.Item == SectorItem.PlayerShip).Count();
             Assert.AreEqual(1, found, "expected to find 1 friendly, not " + found + ".   ");
 
             //Look up sector by playership's coordinates. see if a friendly is there.

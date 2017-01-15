@@ -106,7 +106,7 @@ namespace StarTrek_KG.Playfield
         public void Create(IMap map, Stack<string> RegionNames, Stack<string> baddieNames,
             FactionName stockBaddieFaction, out int nameIndex, bool addStars = true, bool makeNebulae = false)
         {
-            nameIndex = (Utility.Utility.Random).Next(baddieNames.Count);
+            nameIndex = Utility.Utility.Random.Next(baddieNames.Count);
 
             this.Map = map;
             this.InitializeSectors(this, new List<Sector>(), baddieNames, stockBaddieFaction, addStars, makeNebulae);
@@ -121,7 +121,7 @@ namespace StarTrek_KG.Playfield
             Coordinate RegionXY, out int nameIndex, IEnumerable<Sector> itemsToPopulate, bool addStars = true,
             bool isNebulae = false)
         {
-            nameIndex = (Utility.Utility.Random).Next(RegionNames.Count);
+            nameIndex = Utility.Utility.Random.Next(RegionNames.Count);
 
             this.Name = RegionNames.Pop();
 
@@ -161,7 +161,7 @@ namespace StarTrek_KG.Playfield
             if (addStars)
             {
                 //Randomly throw stars in
-                this.AddStars(Region, (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX));
+                this.AddStars(Region, Utility.Utility.Random.Next(DEFAULTS.SECTOR_MAX));
             }
 
             if (makeNebulae)
@@ -213,8 +213,8 @@ namespace StarTrek_KG.Playfield
 
             while (totalStarsInRegion > 0)
             {
-                var x = (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX);
-                var y = (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX);
+                var x = Utility.Utility.Random.Next(DEFAULTS.SECTOR_MAX);
+                var y = Utility.Utility.Random.Next(DEFAULTS.SECTOR_MAX);
 
                 //todo: just pass in coordinate and get its item
                 var sector = Region.Sectors.Single(s => s.X == x && s.Y == y);
@@ -452,19 +452,19 @@ namespace StarTrek_KG.Playfield
 
                 if (this.Sectors != null)
                 {
-                    IEnumerable<IShip> hostiles = (from sector in this.Sectors
+                    IEnumerable<IShip> hostiles = from sector in this.Sectors
 
-                                                    let objectToExamine = sector.Object
+                        let objectToExamine = sector.Object
                                                     
-                                                    where objectToExamine != null
-                                                    where objectToExamine.Type.Name == OBJECT_TYPE.SHIP
+                        where objectToExamine != null
+                        where objectToExamine.Type.Name == OBJECT_TYPE.SHIP
 
-                                                    let shipToGet = (IShip)objectToExamine
+                        let shipToGet = (IShip)objectToExamine
 
-                                                    where !shipToGet.Destroyed
-                                                    where shipToGet.Allegiance == Allegiance.BadGuy
+                        where !shipToGet.Destroyed
+                        where shipToGet.Allegiance == Allegiance.BadGuy
 
-                                                    select shipToGet);
+                        select shipToGet;
                     badGuys.AddRange(hostiles);
                 }
                 else
@@ -486,17 +486,17 @@ namespace StarTrek_KG.Playfield
         {
             if (this.Sectors != null)
             {
-                IEnumerable<Sector> sectorsWithHostiles = (from sector in this.Sectors
+                IEnumerable<Sector> sectorsWithHostiles = from sector in this.Sectors
 
-                                                           let sectorObject = sector.Object
+                    let sectorObject = sector.Object
 
-                                                           where sectorObject != null
-                                                           where sectorObject.Type.Name == OBJECT_TYPE.SHIP
+                    where sectorObject != null
+                    where sectorObject.Type.Name == OBJECT_TYPE.SHIP
 
-                                                           let possibleShipToDelete = (IShip)sectorObject
+                    let possibleShipToDelete = (IShip)sectorObject
 
-                                                           where possibleShipToDelete.Allegiance == Allegiance.BadGuy
-                                                           select sector);
+                    where possibleShipToDelete.Allegiance == Allegiance.BadGuy
+                    select sector;
 
                 foreach (Sector sector in sectorsWithHostiles)
                 {
@@ -547,7 +547,7 @@ namespace StarTrek_KG.Playfield
 
         public bool IsNebulae()
         {
-            return (this.Type == RegionType.Nebulae);
+            return this.Type == RegionType.Nebulae;
         }
 
         //todo: refactor these functions with LRS
@@ -759,7 +759,7 @@ namespace StarTrek_KG.Playfield
                 divinedRegionX = min;
             }
 
-            if ((regionX > max))
+            if (regionX > max)
             {
                 divinedRegionX = max;
             }
@@ -774,7 +774,7 @@ namespace StarTrek_KG.Playfield
                 divinedRegionY = min;
             }
 
-            if ((regionY > max))
+            if (regionY > max)
             {
                 divinedRegionY = max;
             }

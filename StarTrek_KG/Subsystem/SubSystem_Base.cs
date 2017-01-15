@@ -108,7 +108,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public void TakeDamage()
         {
-            this.Damage = 1 + (Utility.Utility.Random).Next(this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("DamageSeed"));
+            this.Damage = 1 + Utility.Utility.Random.Next(this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("DamageSeed"));
 
             //todo: if number is small, then this.OutputMalfunctioningMessage.. else...
             this.OutputDamagedMessage();
@@ -240,12 +240,12 @@ namespace StarTrek_KG.Subsystem
 
         public int GetNext(int seed)
         {
-            return (Utility.Utility.Random).Next(seed);
+            return Utility.Utility.Random.Next(seed);
         }
 
         public bool NotRecognized(string command)
         {
-            bool recognized = (this.InFirstLevelMenu(command));
+            bool recognized = this.InFirstLevelMenu(command);
             return !recognized;
         }
     }

@@ -186,7 +186,7 @@ namespace StarTrek_KG.Actors
             //seem like a lot? well.. you are taking on the ENTIRE FEDERATION!  You will need it!
 
             var scavengedText = "";
-            var foundPhotons = (photonsScavenged > 0);
+            var foundPhotons = photonsScavenged > 0;
 
             if (foundPhotons)
             {
@@ -233,7 +233,7 @@ namespace StarTrek_KG.Actors
                 this.Map.Write.Line(message);
             }
 
-            bool shieldsWorking = (this.GetRegion().Type != RegionType.Nebulae);
+            bool shieldsWorking = this.GetRegion().Type != RegionType.Nebulae;
 
             if (!shieldsWorking)
             {
@@ -330,7 +330,7 @@ namespace StarTrek_KG.Actors
 
         public bool AtLowEnergyLevel()
         {
-            return (this.Energy < this.Config.GetSetting<int>("LowEnergyLevel"));
+            return this.Energy < this.Config.GetSetting<int>("LowEnergyLevel");
         }
 
         public string GetConditionAndSetIcon()

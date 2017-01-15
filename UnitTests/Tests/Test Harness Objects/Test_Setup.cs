@@ -69,26 +69,26 @@ namespace UnitTests.ShipTests
 
         public void SetupMapWith1Friendly()
         {
-            this.TestMap = (new Map(new SetupOptions
-                                        {
-                                            AddNebulae = false,
-                                            AddStars = false,
-                                            Initialize = true,
-                                            SectorDefs = new SectorDefs
-                                                             {
-                                                                 new SectorDef(
-                                                                     new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)),
-                                                                     SectorItem.PlayerShip),
-                                                                 //todo: this needs to be in a random spo
-                                                             }
-                                        }, this.Game.Interact, this.Game.Config, this.Game));
+            this.TestMap = new Map(new SetupOptions
+            {
+                AddNebulae = false,
+                AddStars = false,
+                Initialize = true,
+                SectorDefs = new SectorDefs
+                {
+                    new SectorDef(
+                        new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)),
+                        SectorItem.PlayerShip),
+                    //todo: this needs to be in a random spo
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             this.VerifyMap();
         }
 
         public void SetupEmptyMap()
         {
-            this.TestMap = (new Map(new SetupOptions
+            this.TestMap = new Map(new SetupOptions
             {
                 AddNebulae = false,
                 AddStars = false,
@@ -99,7 +99,7 @@ namespace UnitTests.ShipTests
                         new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.Empty),
                     //todo: this needs to be in a random spo
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             this.VerifyMap();
         }
@@ -204,17 +204,17 @@ namespace UnitTests.ShipTests
 
         public void SetupMapWithStarbase()
         {
-            this.TestMap = (new Map(new SetupOptions
+            this.TestMap = new Map(new SetupOptions
             {
                 AddStars = false,
                 Initialize = true,
 
                 SectorDefs = new SectorDefs
-                                    {
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
-                                        new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
-                                    }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)), SectorItem.Starbase)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
@@ -250,7 +250,7 @@ namespace UnitTests.ShipTests
             DEFAULTS.REGION_MIN = 0;
             DEFAULTS.REGION_MAX = 0;
 
-            this.Game = new Game((new StarTrekKGSettings()), false);
+            this.Game = new Game(new StarTrekKGSettings(), false);
             this.Config = Game.Config;
 
             TestRunner.GetTestConstants();

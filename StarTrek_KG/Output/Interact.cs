@@ -235,10 +235,10 @@ namespace StarTrek_KG.Output
             var location = shipConnectedTo.GetLocation();
             Region region = game.Map.Regions[location.Region];
             var shieldsAutoRaised = Shields.For(shipConnectedTo).AutoRaiseShieldsIfNeeded(region);
-            var printSector = (new Render(this, game.Config));
+            var printSector = new Render(this, game.Config);
 
             int totalHostiles = game.Map.Regions.GetHostileCount();
-            var isNebula = (region.Type == RegionType.Nebulae);
+            var isNebula = region.Type == RegionType.Nebulae;
             string regionDisplayName = region.Name;
             var sectorScanStringBuilder = new StringBuilder();
 
@@ -398,7 +398,7 @@ namespace StarTrek_KG.Output
             var renderedResults = new List<string>
             {
                 "",
-                title.PadCenter(((cellLength + cellPadding)*3) + 5), //*3 because of borders, +5 to line it up better.   //todo resource this
+                title.PadCenter((cellLength + cellPadding)*3 + 5), //*3 because of borders, +5 to line it up better.   //todo resource this
                 topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight
             };
   

@@ -105,7 +105,7 @@ namespace StarTrek_KG.Output
 
             var srsLine = new StringBuilder(srsText);
 
-            srsLine.Remove(textMeasurement, srsLine.ToString().Length - (textMeasurement));
+            srsLine.Remove(textMeasurement, srsLine.ToString().Length - textMeasurement);
             srsLine.Insert(textMeasurement, rightSideText);
 
             this.Interact.SingleLine(srsLine.ToString());
@@ -116,7 +116,7 @@ namespace StarTrek_KG.Output
             int topBorderAreaMeasurement = topBorder.Length + 1;
             var regionLineBuilder = new StringBuilder($"Region: {RegionName}".PadRight(topBorderAreaMeasurement));
 
-            regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - (topBorderAreaMeasurement));
+            regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - topBorderAreaMeasurement);
 
             var RegionIndicator =
                 $" Coord: [{Convert.ToString(location.Region.X)},{Convert.ToString(location.Region.Y)}]  Sec: §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
@@ -155,7 +155,7 @@ namespace StarTrek_KG.Output
 
         private static string addLine(int row, IList<string> lrsResults, string retVal)
         {
-            if (lrsResults.Count > (row - 1))
+            if (lrsResults.Count > row - 1)
             {
                 retVal += lrsResults[row - 2];
             }
@@ -201,7 +201,7 @@ namespace StarTrek_KG.Output
 
                     case SectorItem.Star:
 
-                        bool canActuallySeeStar = (!isNebula) || (isNebula && (Utility.Utility.Random.Next(10) == 6)); //todo: resource this out
+                        bool canActuallySeeStar = !isNebula || (isNebula && (Utility.Utility.Random.Next(10) == 6)); //todo: resource this out
                         if (canActuallySeeStar)
                         {
                             sb.Append(DEFAULTS.STAR);
@@ -297,7 +297,7 @@ namespace StarTrek_KG.Output
         //todo: this function needs to be part of SRS
         private void SRSScanHostile(IRegion Region)
         {
-            this.Interact.Line(string.Format(this.Config.GetText("HostileDetected"), (Region.GetHostiles().Count == 1 ? "" : "s")));
+            this.Interact.Line(string.Format(this.Config.GetText("HostileDetected"), Region.GetHostiles().Count == 1 ? "" : "s"));
 
             bool inNebula = Region.Type == RegionType.Nebulae;
 

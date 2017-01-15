@@ -210,7 +210,7 @@ namespace UnitTests.Tests.SubSystemTests
         [Test(Description = "Fails when run with Fixture")]
         public void GetStarbaseInfoFromScanner2()
         {
-            var game = new Game((new StarTrekKGSettings()));
+            var game = new Game(new StarTrekKGSettings());
 
             this.Game.Map = new Map(new SetupOptions
             {

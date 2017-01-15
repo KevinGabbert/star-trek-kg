@@ -17,15 +17,15 @@ namespace UnitTests.ShipTests.MapTests
         {
             TestRunner.GetTestConstants();
 
-            _testMapNoObjects = (new Map(new SetupOptions
+            _testMapNoObjects = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
         }
 
@@ -78,15 +78,15 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void NotDockingLocation2()
         {
-            var map = (new Map(new SetupOptions
+            var map = new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
                 SectorDefs = new SectorDefs
-                            {
-                                new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.PlayerShip)
-                            }
-            }, this.Game.Interact, this.Game.Config, this.Game));
+                {
+                    new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.PlayerShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game);
 
             Assert.IsFalse(IsDockingLocation(map, 4, 4, 4, 4));
         }

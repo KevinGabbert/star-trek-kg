@@ -12,7 +12,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [SetUp]
         public void Setup()
         {
-            (new StarTrekKGSettings()).Get = (new StarTrekKGSettings()).GetConfig();
+            new StarTrekKGSettings().Get = new StarTrekKGSettings().GetConfig();
         }
 
         //[Test]
@@ -25,7 +25,7 @@ namespace UnitTests.ShipTests.AppSettingTests
         [Test]
         public void repairEnergy()
         {
-            Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("repairEnergy"));
+            Assert.AreEqual(2001, new StarTrekKGSettings().GetSetting<int>("repairEnergy"));
         }
 
         [Test]

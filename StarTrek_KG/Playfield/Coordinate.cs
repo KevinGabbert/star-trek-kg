@@ -47,16 +47,16 @@ namespace StarTrek_KG.Playfield
 
         public static Coordinate GetRandom()
         {
-            return new Coordinate((Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX),
-                                  (Utility.Utility.Random).Next(DEFAULTS.SECTOR_MAX));
+            return new Coordinate(Utility.Utility.Random.Next(DEFAULTS.SECTOR_MAX),
+                                  Utility.Utility.Random.Next(DEFAULTS.SECTOR_MAX));
         }
 
         private void CheckForOutOfBounds(int value)
         {
             //todo: we should not be hitting this in the game. User needs to be told that they hit the galactic barrier
             //todo: this might need to be moved somewhere else.  It can't be mocked like this.
-            var boundsHigh = (new StarTrekKGSettings()).GetSetting<int>("BoundsHigh");
-            var boundsLow = (new StarTrekKGSettings()).GetSetting<int>("BoundsLow");
+            var boundsHigh = new StarTrekKGSettings().GetSetting<int>("BoundsHigh");
+            var boundsLow = new StarTrekKGSettings().GetSetting<int>("BoundsLow");
 
             if ((value > boundsHigh) || 
                  value < boundsLow) 

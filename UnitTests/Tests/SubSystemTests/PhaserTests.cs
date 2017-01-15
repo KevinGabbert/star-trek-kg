@@ -32,7 +32,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
 
-            var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy"); ;
+            var startingEnergy = new StarTrekKGSettings().GetSetting<double>("energy");
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const int testBoltEnergy = 89;
@@ -51,7 +51,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2,1));
 
-            var startingEnergy = (new StarTrekKGSettings()).GetSetting<double>("energy");;
+            var startingEnergy = new StarTrekKGSettings().GetSetting<double>("energy");;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const int testBoltEnergy = 89;
@@ -72,7 +72,7 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             var ship = _setup.TestMap.Playership;
 
-            var startingEnergy = (new StarTrekKGSettings()).GetSetting<int>("energy");
+            var startingEnergy = new StarTrekKGSettings().GetSetting<int>("energy");
             Assert.AreEqual(startingEnergy, ship.Energy);
 
             const int testBoltEnergy = 4000;
@@ -96,7 +96,7 @@ namespace UnitTests.ShipTests.SubSystemTests
         {
             _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
 
-            var startingEnergy = (new StarTrekKGSettings()).GetSetting<int>("energy"); ;
+            var startingEnergy = new StarTrekKGSettings().GetSetting<int>("energy"); ;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const int testBoltEnergy = -1;
@@ -139,7 +139,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             badGuyShields.Energy = 50;
 
             //todo: verify firing ship's starting energy.
-            var startingEnergy = (new StarTrekKGSettings()).GetSetting<int>("energy");
+            var startingEnergy = new StarTrekKGSettings().GetSetting<int>("energy");
 
             var playershipBefore = _setup.TestMap.Playership;
 
@@ -202,7 +202,7 @@ namespace UnitTests.ShipTests.SubSystemTests
             badGuyShields.Energy = 50;
 
             //todo: verify firing ship's starting energy.
-            var startingEnergy = (new StarTrekKGSettings()).GetSetting<int>("energy");
+            var startingEnergy = new StarTrekKGSettings().GetSetting<int>("energy");
 
             var playershipBefore = _setup.TestMap.Playership;
 

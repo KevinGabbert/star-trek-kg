@@ -117,9 +117,9 @@ namespace StarTrek_KG.Utility
         {
             var angle = -(Math.PI * (direction - 1.0) / 4.0);
 
-            if ((Random).Next(3) == 0)
+            if (Random.Next(3) == 0)
             {
-                angle += ((1.0 - 2.0 * (Utility.Random).NextDouble()) * Math.PI * 2.0) * 0.03;
+                angle += (1.0 - 2.0 * Utility.Random.NextDouble()) * Math.PI * 2.0 * 0.03;
             }
 
             return angle;
@@ -135,8 +135,8 @@ namespace StarTrek_KG.Utility
         //todo: this needs to subtract energy from ship's beam weapon
         public static double ShootBeamWeapon(double energyToPowerWeapon, double distance, string deprecationRateConfigKey, string energyAdjustmentConfigKey, bool inNebula)
         {
-            var deprecationRate = (new StarTrekKGSettings()).GetSetting<double>(deprecationRateConfigKey);
-            var energyAdjustment = (new StarTrekKGSettings()).GetSetting<double>(energyAdjustmentConfigKey);
+            var deprecationRate = new StarTrekKGSettings().GetSetting<double>(deprecationRateConfigKey);
+            var energyAdjustment = new StarTrekKGSettings().GetSetting<double>(energyAdjustmentConfigKey);
 
             double actualDeprecationRate;
 
@@ -150,7 +150,7 @@ namespace StarTrek_KG.Utility
             }
 
             double deliveredEnergy = Utility.ComputeBeamWeaponIntensity(energyToPowerWeapon, energyAdjustment, distance, actualDeprecationRate);
-            double actualDeliveredEnergy = (deliveredEnergy < 0) ? 0 : deliveredEnergy;
+            double actualDeliveredEnergy = deliveredEnergy < 0 ? 0 : deliveredEnergy;
 
             return actualDeliveredEnergy;
         }

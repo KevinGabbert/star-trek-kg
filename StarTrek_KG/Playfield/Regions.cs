@@ -41,7 +41,7 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public bool IsGalacticBarrier(int regionX, int regionY)
         {
-           Region gotRegion = (this.Map?.Regions)?.FirstOrDefault(region => region.X == regionX && region.Y == regionY);
+           Region gotRegion = this.Map?.Regions?.FirstOrDefault(region => region.X == regionX && region.Y == regionY);
 
             return gotRegion == null;
         }
@@ -127,7 +127,7 @@ namespace StarTrek_KG.Playfield
 
             if (!hostiles.Any())
             {
-                outputLines = (new Interaction(this.Map.Config)).Line("There are no Hostile ships in this Region."); //todo: resource this
+                outputLines = new Interaction(this.Map.Config).Line("There are no Hostile ships in this Region."); //todo: resource this
                 return true;
             }
             return false;
@@ -255,7 +255,7 @@ namespace StarTrek_KG.Playfield
         {
             try
             {
-                Sector sectorWithShipToDelete = this.Select(region => (SectorsWithMatchingShips(shipName, region))
+                Sector sectorWithShipToDelete = this.Select(region => SectorsWithMatchingShips(shipName, region)
                                                     .SingleOrDefault()
                                                     ).SingleOrDefault(s => s != null);
 
@@ -315,7 +315,7 @@ namespace StarTrek_KG.Playfield
                 this.Map.AddACoupleHostileFederationShipsToExistingMap(); //todo: this needs to be configurable
             }
 
-            this.Write.Line(string.Format("{2} {3} [{0},{1}].", (shipToRemove.Sector.X), (shipToRemove.Sector.Y), shipToRemoveName, this.Map.Config.GetText("shipDestroyed")));
+            this.Write.Line(string.Format("{2} {3} [{0},{1}].", shipToRemove.Sector.X, shipToRemove.Sector.Y, shipToRemoveName, this.Map.Config.GetText("shipDestroyed")));
         }
 
         public bool NotFound(Coordinate coordinate)

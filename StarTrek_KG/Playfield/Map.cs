@@ -215,10 +215,10 @@ namespace StarTrek_KG.Playfield
         {
             //this.Hostiles = new Hostiles(); //todo: create an initial size the same as HostilesToSetUp
 
-            this.HostilesToSetUp = this.Config.GetSetting<int>("totalHostiles") + (Utility.Utility.Random).Next(6);
-            this.Stardate = this.Config.GetSetting<int>("stardate") + (Utility.Utility.Random).Next(50);
-            this.timeRemaining = this.Config.GetSetting<int>("timeRemaining") + (Utility.Utility.Random).Next(10);
-            this.starbases = this.Config.GetSetting<int>("starbases") + (Utility.Utility.Random).Next(3);
+            this.HostilesToSetUp = this.Config.GetSetting<int>("totalHostiles") + Utility.Utility.Random.Next(6);
+            this.Stardate = this.Config.GetSetting<int>("stardate") + Utility.Utility.Random.Next(50);
+            this.timeRemaining = this.Config.GetSetting<int>("timeRemaining") + Utility.Utility.Random.Next(10);
+            this.starbases = this.Config.GetSetting<int>("starbases") + Utility.Utility.Random.Next(3);
 
             this.Text = this.Config.GetSetting<string>("CommandPrompt");
 
@@ -572,7 +572,7 @@ namespace StarTrek_KG.Playfield
             var randomCoordinate = GetRandomCoordinate();
 
             ISector sector = Region.GetSector(randomCoordinate);
-            var sectorIsEmpty = (sector.Item == SectorItem.Empty);
+            var sectorIsEmpty = sector.Item == SectorItem.Empty;
 
             if (!sectorIsEmpty)
             {

@@ -79,7 +79,7 @@ namespace StarTrek_KG_Web.WebApp
 
         private List<string> StartGame(Game game, List<string> responseLines)
         {
-            if (game == null || (!game.Started))
+            if (game == null || !game.Started)
             {
                 HttpContext.Current.Session["game"] = null;
 
@@ -118,7 +118,7 @@ namespace StarTrek_KG_Web.WebApp
 
         private List<string> RunWeb(List<string> responseLines, out Game game)
         {
-            StarTrekKGSettings settingsForWholeGame = (new StarTrekKGSettings());
+            StarTrekKGSettings settingsForWholeGame = new StarTrekKGSettings();
   
             game = new Game(settingsForWholeGame); //todo: GET should set the app.config setting to true?
 
