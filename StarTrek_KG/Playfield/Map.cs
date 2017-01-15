@@ -128,7 +128,7 @@ namespace StarTrek_KG.Playfield
                 {
                     this.SetUpPlayerShip(playerShips.Single()); //todo: this will eventually change
 
-                    Sector sectorToPlaceShip = Sector.Get(this.Regions.GetActive().Sectors, this.Playership.Sector.X, this.Playership.Sector.Y);
+                    Sector sectorToPlaceShip = this.Regions.GetActive().Sectors[this.Playership.Sector.X, this.Playership.Sector.Y];
 
                     //This places our newly created ship into our newly created List of Regions.
                     sectorToPlaceShip.Item = SectorItem.PlayerShip;
@@ -475,8 +475,7 @@ namespace StarTrek_KG.Playfield
 
             var activeRegion = map.Regions.GetActive();
 
-            var newActiveSector = Sector.Get(activeRegion.Sectors, map.Playership.Sector.X, map.Playership.Sector.Y);
-            newActiveSector.Item = SectorItem.PlayerShip;
+            var newActiveSector = activeRegion.Sectors[map.Playership.Sector.X, map.Playership.Sector.Y].Item = SectorItem.PlayerShip;
         }
 
         /// <summary>

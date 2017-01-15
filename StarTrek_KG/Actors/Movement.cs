@@ -139,8 +139,8 @@ namespace StarTrek_KG.Actors
             try
             {
                 var mySector = this.ShipConnectedTo.Sector;
-                var currentItem = Sector.Get(activeSectors, sector.X, sector.Y).Item;
-                var currentObject = Sector.Get(activeSectors, sector.X, sector.Y).Object;
+                var currentItem = activeSectors[sector.X, sector.Y].Item;
+                var currentObject = activeSectors[sector.X, sector.Y].Object;
 
                 if (currentItem != SectorItem.Empty)
                 {
@@ -148,7 +148,7 @@ namespace StarTrek_KG.Actors
                     mySector.Y = lastSector.Y;
 
                     //todo: move this to XXX label.  run tests.  should work.
-                    Sector.Get(activeSectors, mySector.X, mySector.Y).Item = SectorItem.PlayerShip;
+                    activeSectors[mySector.X, mySector.Y].Item = SectorItem.PlayerShip;
 
                     this.IdentifyObstacle(sector, currentObject, currentItem);
 

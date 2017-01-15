@@ -513,7 +513,7 @@ namespace UnitTests.ShipTests.MapTests
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    Assert.AreEqual(SectorItem.Empty, Sector.Get(_setup.TestMap.Regions.GetActive().Sectors, i, j).Item);
+                    Assert.AreEqual(SectorItem.Empty, _setup.TestMap.Regions.GetActive().Sectors[i, j].Item);
                 }
             }
         }

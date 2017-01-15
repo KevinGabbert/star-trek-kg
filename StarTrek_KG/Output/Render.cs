@@ -166,7 +166,7 @@ namespace StarTrek_KG.Output
         {
             for (var column = 0; column < DEFAULTS.SECTOR_MAX; column++)
             {
-                Sector sector = Sector.Get(sectors, row, column);
+                Sector sector = sectors[row, column];
 
                 switch (sector.Item)
                 {

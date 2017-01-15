@@ -118,7 +118,7 @@ namespace UnitTests.ShipTests.MapTests
 
         private bool IsDockingLocation(Map map, int sectorX, int sectorY, int locationX, int locationY)
         {
-            Sector.Get(map.Regions.GetActive().Sectors, sectorX, sectorY).Item = SectorItem.Starbase;
+            map.Regions.GetActive().Sectors[sectorX, sectorY].Item = SectorItem.Starbase;
 
             var isDockingLocation = map.IsDockingLocation(locationX, locationY, _testMapNoObjects.Regions.GetActive().Sectors);
             return isDockingLocation;

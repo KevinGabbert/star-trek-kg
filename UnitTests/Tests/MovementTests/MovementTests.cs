@@ -177,13 +177,13 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitObstacle()
         {
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star;
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star;
 
             this.Move_Sector(NavDirection.Up, 7);
 
             Assert.IsTrue(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Empty;
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Empty;
         }
 
         [Test]
@@ -320,12 +320,10 @@ namespace UnitTests.ShipTests.MovementTests
             _startingSectorY = this.Game.Map.Playership.Sector.Y;
 
             //verify that the ship is where we think it is before we start
-            Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(this.Game.Map.Regions.GetActive().Sectors,
-                                                           this.Game.Map.Playership.Sector.X,
-                                                           this.Game.Map.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.PlayerShip, this.Game.Map.Regions.GetActive().Sectors[this.Game.Map.Playership.Sector.X,this.Game.Map.Playership.Sector.Y].Item);
             var sectorItem =
-                Sector.Get(_testMovement.ShipConnectedTo.Map.Regions.GetActive().Sectors, _testMovement.ShipConnectedTo.Map.Playership.Sector.X,
-                                                                       _testMovement.ShipConnectedTo.Map.Playership.Sector.Y).Item;
+                _testMovement.ShipConnectedTo.Map.Regions.GetActive().Sectors[_testMovement.ShipConnectedTo.Map.Playership.Sector.X,
+                                                                       _testMovement.ShipConnectedTo.Map.Playership.Sector.Y].Item;
             Assert.AreEqual(SectorItem.PlayerShip, sectorItem);
 
             _testMovement.Execute(MovementType.Impulse, direction, distance, out _lastRegionX, out _lastRegionY);
@@ -342,21 +340,21 @@ namespace UnitTests.ShipTests.MovementTests
         public void MoveRegion_MissObstacleSouth()
         {
             //This is the star that would be hit without fix
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
-
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
+                                                          
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
 
             this.Move_Region("7", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
             //revert for next test
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Empty;
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Empty;
         }
 
         [Test]
@@ -365,15 +363,14 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[4, 5].Item = SectorItem.Star; //to the east
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
 
             this.Move_Region("3", 1 * 8);
 
@@ -386,15 +383,14 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[4, 5].Item = SectorItem.Star; //to the east
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
 
             this.Move_Region("5", 1 * 8);
 
@@ -407,15 +403,14 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[4, 5].Item = SectorItem.Star; //to the east
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
 
             this.Move_Region("1", 1 * 8);
 
@@ -428,15 +423,14 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the star that would be hit without fix
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[4, 5].Item = SectorItem.Star; //to the east
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
 
             this.Move_Region("6", 1 * 8);
 
@@ -449,15 +443,14 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //strange.  Going this direction, you actually don't get the "obstacle error" verified by the other "missobstacle" tests
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest           
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[4, 5].Item = SectorItem.Star; //to the east
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
 
             this.Move_Region("4", 1 * 8);
 
@@ -470,15 +463,14 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //This is the obstacle that gets hit
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
-
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[4, 5].Item = SectorItem.Star; //to the east
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
 
             this.Move_Region("2", 1 * 8);
 
@@ -491,15 +483,14 @@ namespace UnitTests.ShipTests.MovementTests
             //friendly ship is on 4,4
 
             //strange.  Going this direction, you actually don't get the "obstacle error" verified by the other "missobstacle" tests
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 5).Item = SectorItem.Star; //southeast
-
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 3).Item = SectorItem.Star; //northwest
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 3).Item = SectorItem.Star; //southwest       
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 5).Item = SectorItem.Star; //northeast
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 3, 4).Item = SectorItem.Star; //to the North
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 5).Item = SectorItem.Star; //to the east
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 4, 3).Item = SectorItem.Star; //to the west
-            Sector.Get(this.Game.Map.Regions.GetActive().Sectors, 5, 4).Item = SectorItem.Star; //to the south
+            this.Game.Map.Regions.GetActive().Sectors[5, 5].Item = SectorItem.Star; //southeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 3].Item = SectorItem.Star; //northwest
+            this.Game.Map.Regions.GetActive().Sectors[5, 3].Item = SectorItem.Star; //southwest       
+            this.Game.Map.Regions.GetActive().Sectors[3, 5].Item = SectorItem.Star; //northeast
+            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star; //to the North
+            this.Game.Map.Regions.GetActive().Sectors[4, 5].Item = SectorItem.Star; //to the east
+            this.Game.Map.Regions.GetActive().Sectors[4, 3].Item = SectorItem.Star; //to the west
+            this.Game.Map.Regions.GetActive().Sectors[5, 4].Item = SectorItem.Star; //to the south
 
             this.Move_Region("8", 1 * 8);
 
@@ -731,15 +722,15 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.IsInstanceOf<Region>(playershipRegion);
 
             //ship is in active sector
-            Sector found = Sector.Get(activeRegion.Sectors,
+            Sector found = activeRegion.Sectors[
                                     this.Game.Map.Playership.Sector.X,
-                                    this.Game.Map.Playership.Sector.Y);
+                                    this.Game.Map.Playership.Sector.Y];
 
             Assert.IsInstanceOf<Sector>(found);
 
             //starting location is empty
             Region startingRegionT = Regions.Get(this.Game.Map, _startingRegion);
-            Assert.AreEqual(SectorItem.Empty, Sector.Get(startingRegionT.Sectors, _startingSectorX, _startingSectorY).Item);
+            Assert.AreEqual(SectorItem.Empty, startingRegionT.Sectors[_startingSectorX, _startingSectorY].Item);
 
             //We moved from our original Region, right?
             Assert.AreNotEqual(startingRegionT.X.ToString() + startingRegionT.Y, activeRegion.X +
@@ -747,8 +738,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             //Friendly was set in new location
             //Playership current sector has the ship set in it 
-            Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(playershipRegion.Sectors, 
-                                                            this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.PlayerShip, playershipRegion.Sectors[this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y].Item);
 
             //is ship in expected location in new Region?
             ////indirectly..
@@ -783,7 +773,7 @@ namespace UnitTests.ShipTests.MovementTests
 
             //todo: this needs to be be flipped back. flip the increment variable in the test instead
             //originating sector is empty
-            Assert.AreEqual(SectorItem.Empty, Sector.Get(activeRegion.Sectors, _startingSectorX, _startingSectorY).Item);
+            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[_startingSectorX, _startingSectorY].Item);
 
             //indirectly..
             var found = (this.Game.Map.Regions.GetActive().Sectors.Where(s => s.Item == SectorItem.PlayerShip)).Count();
@@ -793,7 +783,7 @@ namespace UnitTests.ShipTests.MovementTests
             Assert.AreEqual(SectorItem.PlayerShip, activeRegion.Sectors.Single(s => s.X == this.Game.Map.Playership.Sector.X &&
                                                                                 s.Y == this.Game.Map.Playership.Sector.Y).Item);
             //same thing.  uses sector.Get functionality to check.
-            Assert.AreEqual(SectorItem.PlayerShip, Sector.Get(activeRegion.Sectors, this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y).Item);
+            Assert.AreEqual(SectorItem.PlayerShip, activeRegion.Sectors[this.Game.Map.Playership.Sector.X, this.Game.Map.Playership.Sector.Y].Item);
 
             Assert.AreEqual(_startingRegion.X, _lastRegionX, "(c)startingRegionX");
             Assert.AreEqual(_startingRegion.Y, _lastRegionY, "(c)startingRegionY");
@@ -808,7 +798,7 @@ namespace UnitTests.ShipTests.MovementTests
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    Sector.Get(activeRegion.Sectors, i, j).Item = SectorItem.Empty;
+                    activeRegion.Sectors[i, j].Item = SectorItem.Empty;
                 }
             }
         }
