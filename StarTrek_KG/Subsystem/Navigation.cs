@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
-using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
@@ -15,10 +14,13 @@ namespace StarTrek_KG.Subsystem
 {
     public class Navigation : SubSystem_Base, IInteract
     {
+        private NavDirection _movementDirection;
+
         #region Properties
 
         public bool Docked { get; set; } //todo: move this to ship
         public int MaxWarpFactor { get; set; }
+        public int MaxDistance { get; set; } = 1;
 
         private WarpActor Warp { get;}
         private ImpulseActor Impulse { get; }
@@ -108,8 +110,6 @@ namespace StarTrek_KG.Subsystem
             if (!base.Damaged())
             {
                 //todo: do like SHE
-                NavDirection direction = 0;
-
                 if (!command.IsNumeric() || base.NotRecognized(command))
                 {
                     this.ShipConnectedTo.OutputLine("Navigation command not recognized."); //todo: resource this
@@ -119,47 +119,52 @@ namespace StarTrek_KG.Subsystem
                     //expecting a numeric value at this point.
                     if (command.IsNumeric())
                     {
-                        direction = (NavDirection) Convert.ToInt32(command);
+                        if (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level == 1)
+                        {
+                            //todo: verify course is valid
+                            this._movementDirection = (NavDirection) Convert.ToInt32(command);
+
+                            //(this.Movement.PromptAndCheckCourse(out direction))
+
+                            this.GetValueFromUser("distance");
+                        }
+                        else if (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level == 2)
+                        {
+                            //todo:
+
+                            //if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance))
+                            //    return this.ShipConnectedTo.OutputQueue();
+
+                            int lastRegionY;
+                            int lastRegionX;
+
+                            //command should be distance here
+
+                            if (!Impulse.Engage(this._movementDirection, int.Parse(command), out lastRegionY,
+                                out lastRegionX, this.ShipConnectedTo.Map))
+                            {
+                                return this.ShipConnectedTo.OutputQueue();
+                            }
+
+                            this.RepairOrTakeDamage(lastRegionX, lastRegionY);
+
+                            var crs = CombinedRangeScan.For(this.ShipConnectedTo);
+                            if (crs.Damaged())
+                            {
+                                ShortRangeScan.For(this.ShipConnectedTo).Controls();
+                            }
+                            else
+                            {
+                                crs.Controls();
+                            }
+
+                            this.ShipConnectedTo.ResetPrompt();
+                        }
                     }
                 }
 
-                //todo: verify course
-
                 //prompt needs to reset, then do a CRS, SRS, or just return a message to say that you have traveled.
-
-                //if (this.Movement.PromptAndCheckCourse(out direction))
-                //{
-                //    return this.ShipConnectedTo.OutputQueue();
-                //}
-
-                string distance;
-                if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance))
-                    return this.ShipConnectedTo.OutputQueue();
-
-                int lastRegionY;
-                int lastRegionX;
-
-                if (
-                    !Impulse.Engage(direction, int.Parse(distance), out lastRegionY, out lastRegionX,
-                        this.ShipConnectedTo.Map))
-                {
-                    return this.ShipConnectedTo.OutputQueue();
-                }
-
-                this.RepairOrTakeDamage(lastRegionX, lastRegionY);
-
-                var crs = CombinedRangeScan.For(this.ShipConnectedTo);
-                if (crs.Damaged())
-                {
-                    ShortRangeScan.For(this.ShipConnectedTo).Controls();
-                }
-                else
-                {
-                    crs.Controls();
-                }
             }
-
-            this.ShipConnectedTo.ResetPrompt();
 
             return this.ShipConnectedTo.OutputQueue();
         }
@@ -355,9 +360,23 @@ namespace StarTrek_KG.Subsystem
             return (Navigation) SubSystem_Base.For(ship, SubsystemType.Navigation);
         }
 
+        //Interface
         public void GetValueFromUser(string subCommand)
         {
-            throw new System.NotImplementedException();
+            PromptInfo promptInfo = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo;
+
+            if (promptInfo.Level == 1)
+            {
+                string transfer;
+                this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Impulse,
+                                                                   "Impulse Control-> Distance-> ",
+                                                                   $"Enter distance to travel (1--{this.MaxDistance}) ", //todo: resource this
+                                                                   out transfer,
+                                                                   this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
+                                                                   subPromptLevel: 2);
+            }
+
+            promptInfo.SubCommand = subCommand;
         }
     }
 }

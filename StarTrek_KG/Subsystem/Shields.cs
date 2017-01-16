@@ -18,6 +18,8 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         public static List<string> SHIELD_PANEL = new List<string>();
 
+        public int MaxTransfer { get; set; } 
+
         public Shields(IShip shipConnectedTo): base(shipConnectedTo)
         {
             this.Type = SubsystemType.Shields;

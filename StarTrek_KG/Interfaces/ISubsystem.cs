@@ -12,7 +12,6 @@ namespace StarTrek_KG.Interfaces
         IShip ShipConnectedTo { get; set; }
 
         int Damage { get; set; }
-        int MaxTransfer { get; set; }
         int Energy { get; set; }
 
         ISubsystem For(IShip ship);

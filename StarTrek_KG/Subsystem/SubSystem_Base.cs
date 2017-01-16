@@ -18,7 +18,6 @@ namespace StarTrek_KG.Subsystem
         #region Properties
 
             public int Damage { get; set; }
-            public int MaxTransfer { get; set; }
             public SubsystemType Type { get; set; }
 
         #endregion
