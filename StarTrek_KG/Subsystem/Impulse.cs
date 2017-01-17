@@ -9,7 +9,7 @@ namespace StarTrek_KG.Subsystem
     /// </summary>
     public class Impulse : SubSystem_Base, IInteract
     {
-        public static List<string> PANEL = new List<string>();
+        public static List<string> IMPULSE_PANEL = new List<string>();
         public Impulse(IShip shipConnectedTo) : base(shipConnectedTo)
         {
             this.Type = SubsystemType.Impulse;

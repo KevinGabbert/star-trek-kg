@@ -52,20 +52,20 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            this.ShipConnectedTo.ClearOutputQueue();
+            //this.ShipConnectedTo.ClearOutputQueue();
 
-            SubsystemType x = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubSystem;
+            SubsystemType currentSelectedSubsystem = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubSystem;
 
-            //todo: what to do if is numeric.  How do we know what subsystem we are in?
-
-            if (x == SubsystemType.Warp)
+            if (currentSelectedSubsystem == SubsystemType.Warp)
             {
                 this.WarpControls();
             }
-            else if (x == SubsystemType.Impulse)
+            else if (currentSelectedSubsystem == SubsystemType.Impulse)
             {
                 this.SublightControls(command);
             }
+
+            //todo:
             //else if (x == Commands.Navigation.NavigateToObject)
             //{
             //    this.NavigateToObject();
@@ -105,31 +105,25 @@ namespace StarTrek_KG.Subsystem
 
         private List<string> SublightControls(string command)
         {
-            this.ShipConnectedTo.ClearOutputQueue();
+            //this.ShipConnectedTo.ClearOutputQueue();
 
             if (!base.Damaged())
             {
-                //todo: do like SHE
-                if (!command.IsNumeric() || base.NotRecognized(command))
+
+                //expecting a numeric value at this point.
+                if (command.IsNumeric())
                 {
-                    this.ShipConnectedTo.OutputLine("Navigation command not recognized."); //todo: resource this
-                }
-                else
-                {
-                    //expecting a numeric value at this point.
-                    if (command.IsNumeric())
+                    switch (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level)
                     {
-                        if (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level == 1)
-                        {
+                        case 1:
                             //todo: verify course is valid
                             this._movementDirection = (NavDirection) Convert.ToInt32(command);
 
                             //(this.Movement.PromptAndCheckCourse(out direction))
 
                             this.GetValueFromUser("distance");
-                        }
-                        else if (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level == 2)
-                        {
+                            break;
+                        case 2:
                             //todo:
 
                             //if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance))
@@ -159,7 +153,7 @@ namespace StarTrek_KG.Subsystem
                             }
 
                             this.ShipConnectedTo.ResetPrompt();
-                        }
+                            break;
                     }
                 }
 

@@ -609,13 +609,24 @@ namespace StarTrek_KG.Playfield
 
         public bool OutOfBounds(Region region)
         {
-            var inTheNegative = region.X < 0 || region.Y < 0;
-            var maxxed = region.X == DEFAULTS.REGION_MAX || region.Y == DEFAULTS.REGION_MAX;
+            bool result;
 
-            var yOnMap = region.Y >= 0 && region.Y < DEFAULTS.REGION_MAX;
-            var xOnMap = region.X >= 0 && region.X < DEFAULTS.REGION_MAX;
+            if (region != null)
+            {
+                bool inTheNegative = region.X < 0 || region.Y < 0;
+                bool maxxed = region.X == DEFAULTS.REGION_MAX || region.Y == DEFAULTS.REGION_MAX;
 
-            return (inTheNegative || maxxed) && !(yOnMap && xOnMap);
+                bool yOnMap = region.Y >= 0 && region.Y < DEFAULTS.REGION_MAX;
+                bool xOnMap = region.X >= 0 && region.X < DEFAULTS.REGION_MAX;
+
+                result = (inTheNegative || maxxed) && !(yOnMap && xOnMap);
+            }
+            else
+            {
+                result = true;
+            }
+
+            return result;
         }
 
         public string GetConfigText(string textToGet)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -66,7 +67,16 @@ namespace StarTrek_KG.Subsystem
 
             //todo: refactor this with region.GetIRSFullData() inner loop
 
-            var outOfBounds = this.ShipConnectedTo.Map.OutOfBounds(locationToScan.Region);
+            bool outOfBounds;
+
+            if (locationToScan.Region != null)
+            {
+                outOfBounds = this.ShipConnectedTo.Map.OutOfBounds(locationToScan.Region);
+            }
+            else
+            {
+                throw new NotImplementedException("This should not happen");
+            }
 
             ////todo: breaks here when regionX or regionY is 8
 

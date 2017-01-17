@@ -947,24 +947,18 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> ImpulseMenu(IShip playerShip, string impulsePanelCommand = "") //config, output
         {
-            //todo: pass in dependencies and refactor to shield object
+            //todo: pass in dependencies and refactor to impulse object
             //pass in config, output, subscriber, promptUser, outputstrings
 
             //if (Impulse.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
-            //todo: this should be a list of directions?
-            Impulse.PANEL = new List<string>
-            {
-                Environment.NewLine,
-                "panel1",
-                "panel2"
-            };
+            Impulse.IMPULSE_PANEL = new List<string>{ Environment.NewLine };
 
             try
             {
-                //var menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+                var menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
 
-                //this.OutputMenu(menuItems);
+                this.OutputImpulseMenu(menuItems);
             }
             catch
             {
@@ -974,12 +968,44 @@ namespace StarTrek_KG.Output
             string impulsePromptReply;
 
             //todo: this needs to be divined?
-            this.PromptUser(SubsystemType.Impulse, $"{this.Subscriber.PromptInfo.DefaultPrompt}Impulse Control -> ",
-                null, out impulsePromptReply, this.Output.Queue, 1);
+            this.PromptUser(SubsystemType.Impulse, 
+                            $"{this.Subscriber.PromptInfo.DefaultPrompt}Impulse Control -> Enter Direction ->",
+                            null, 
+                            out impulsePromptReply, 
+                            this.Output.Queue, 
+                            1);
 
             Navigation.For(playerShip).Controls(impulsePanelCommand);
 
             return this.Output.Queue;
+        }
+
+        private void OutputImpulseMenu(IEnumerable<MenuItemDef> menuItems)
+        {
+            //todo: resource out header
+            var menuItemDefs = menuItems as IList<MenuItemDef> ?? menuItems.ToList();
+
+            //todo:add header from config file.
+
+            // ReSharper disable once UseStringInterpolation //todo: resource this
+            Impulse.IMPULSE_PANEL.Add($"─── Impulse Status: ── <Not Implemented Yet> ──");
+
+            Impulse.IMPULSE_PANEL.Add(Environment.NewLine);
+            Impulse.IMPULSE_PANEL.Add(@"      4   5   6");
+            Impulse.IMPULSE_PANEL.Add(@"        \ ↑ /");
+            Impulse.IMPULSE_PANEL.Add(@"     3 ← <*> → 7");
+            Impulse.IMPULSE_PANEL.Add(@"        / ↓ \");
+            Impulse.IMPULSE_PANEL.Add(@"      2   1   8");
+            Impulse.IMPULSE_PANEL.Add(Environment.NewLine);
+
+            foreach (MenuItemDef menuItem in menuItemDefs)
+            {
+                Impulse.IMPULSE_PANEL.Add($"{menuItem.name} {menuItem.divider} {menuItem.description}");
+            }
+
+            Interaction.AddShipPanelOption(menuItemDefs, Impulse.IMPULSE_PANEL);
+
+            this.OutputStrings(Impulse.IMPULSE_PANEL);
         }
 
         private void OutputShieldMenu(IEnumerable<MenuItemDef> menuItems, int currentShieldEnergy)
