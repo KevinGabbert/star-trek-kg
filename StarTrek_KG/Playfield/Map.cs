@@ -501,7 +501,20 @@ namespace StarTrek_KG.Playfield
         {
             //todo: divine where ship should be with old region and newlocation with negative numbers
 
-            var foundSector = newLocation.Region.Sectors.Single(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y);
+            IEnumerable<Sector> matchingSectors = newLocation.Region.Sectors.Where(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y);
+
+            Sector foundSector;
+
+            if (matchingSectors.Any())
+            {
+                foundSector = matchingSectors.Single();
+            }
+            else
+            {
+                //todo: if sector not found then this is a bug.
+                throw new ArgumentException("");
+            }
+
             return foundSector;
         }
 
@@ -510,9 +523,9 @@ namespace StarTrek_KG.Playfield
             var federationShipNames = this.Config.FactionShips(FactionName.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
-            foreach (var Region in this.Regions)
+            foreach (var region in this.Regions)
             {
-                var added = AddHostileFedToEmptyRegion(Region, federaleNames);
+                bool added = this.AddHostileFedToEmptyRegion(region, federaleNames);
                 if (added) break; //we found an empty Region to dump new fed ships into..
             }
         }
