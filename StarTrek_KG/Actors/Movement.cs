@@ -167,15 +167,21 @@ namespace StarTrek_KG.Actors
 
         private void IdentifyObstacle(ICoordinate sector, ISectorObject currentObject, SectorItem currentItem)
         {
+            //todo: this will go away when ".item" is removed
+            if (currentObject == null)
+            {
+                throw new ArgumentException("SectorObject not set.");
+            }
+
             switch (currentItem)
             {
                 case SectorItem.Star:
-                    var star = currentObject;
+                    ISectorObject star = currentObject;
                     this.SystemPrompt.Line($"Stellar body {star?.Name?.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
                 case SectorItem.HostileShip:
-                    var hostile = currentObject;
+                    ISectorObject hostile = currentObject;
                     this.SystemPrompt.Line($"Ship {hostile?.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
