@@ -185,9 +185,14 @@ namespace UnitTests.ShipTests.MovementTests
 
             Assert.AreEqual(activeRegion.Name, shipRegion.Name);
 
-            this.Game.Map.Regions[activeRegion.Name].Sectors[4, 2].Item = SectorItem.Star;
+            var _testSector = this.Game.Map.Regions[activeRegion.Name].Sectors[4, 2];
 
-            //todo: Star is not there at SublightObstacleCheck
+            //todo: simplify the setting of an object - get rid of "item"
+            _testSector.Item = SectorItem.Star;
+            _testSector.Object = new Star()
+            {
+                Designation = "Fred"
+            };
 
             this.Move_Sector(NavDirection.Up, 3);
 

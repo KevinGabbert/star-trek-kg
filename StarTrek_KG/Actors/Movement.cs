@@ -40,7 +40,7 @@ namespace StarTrek_KG.Actors
 
             //var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
 
-            Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty;//Clear Old Sector
+            Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty; //Clear Old Sector
 
             IGame game = this.ShipConnectedTo.Map.Game;
 
@@ -171,12 +171,12 @@ namespace StarTrek_KG.Actors
             {
                 case SectorItem.Star:
                     var star = currentObject;
-                    this.SystemPrompt.Line($"Stellar body {star.Name.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.SystemPrompt.Line($"Stellar body {star?.Name?.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
                 case SectorItem.HostileShip:
                     var hostile = currentObject;
-                    this.SystemPrompt.Line($"Ship {hostile.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.SystemPrompt.Line($"Ship {hostile?.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
 
 
@@ -335,8 +335,10 @@ namespace StarTrek_KG.Actors
                     this.ShipConnectedTo.OutputLine("All Stop.");
                     stopNavigation = true;
                 }
-
-                stopNavigation = false;
+                else
+                {
+                    stopNavigation = false;
+                }
 
                 //bool nebulaEncountered = Sectors.IsNebula(ShipConnectedTo.Map, new Coordinate(Convert.ToInt32(currentSX), Convert.ToInt32(currentSY)));
                 //if (nebulaEncountered)
