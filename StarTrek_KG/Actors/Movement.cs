@@ -98,7 +98,7 @@ namespace StarTrek_KG.Actors
 
         private void TravelThroughSectors(int distance, NavDirection impulseTravelDirection, IShip travellingShip)
         {
-            var currentRegion = travellingShip.GetRegion();
+            Region currentRegion = travellingShip.GetRegion();
 
             int currentSectorX = travellingShip.Sector.X;
             int currentSectorY = travellingShip.Sector.Y;
@@ -138,9 +138,9 @@ namespace StarTrek_KG.Actors
             //todo:  I think I destroyed a star and appeared in its place when navigating to a new Region.  (That or LRS is broken, or maybe it is working fine!)
             try
             {
-                var mySector = this.ShipConnectedTo.Sector;
-                var currentItem = activeSectors[sector.X, sector.Y].Item;
-                var currentObject = activeSectors[sector.X, sector.Y].Object;
+                ISector mySector = this.ShipConnectedTo.Sector;
+                SectorItem currentItem = activeSectors[sector.X, sector.Y].Item;
+                ISectorObject currentObject = activeSectors[sector.X, sector.Y].Object;
 
                 if (currentItem != SectorItem.Empty)
                 {

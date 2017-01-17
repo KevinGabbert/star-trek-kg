@@ -177,9 +177,19 @@ namespace UnitTests.ShipTests.MovementTests
         [Test]
         public void HitObstacle()
         {
-            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Star;
+            Assert.AreEqual(4, _testShip.Sector.X);
+            Assert.AreEqual(4, _testShip.Sector.Y);
 
-            this.Move_Sector(NavDirection.Up, 7);
+            Region activeRegion = this.Game.Map.Regions.GetActive();
+            Region shipRegion = _testShip.GetRegion();
+
+            Assert.AreEqual(activeRegion.Name, shipRegion.Name);
+
+            this.Game.Map.Regions[activeRegion.Name].Sectors[4, 2].Item = SectorItem.Star;
+
+            //todo: Star is not there at SublightObstacleCheck
+
+            this.Move_Sector(NavDirection.Up, 3);
 
             Assert.IsTrue(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 

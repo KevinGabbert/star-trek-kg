@@ -15,6 +15,7 @@ namespace StarTrek_KG.Playfield
     {
         public Region this[int x, int y] => this.Get(new Coordinate(x, y));
         public Region this[Coordinate region] => this.Get(region);
+        public Region this[string regionName] => this.Get(regionName);
 
         #region Properties
 
