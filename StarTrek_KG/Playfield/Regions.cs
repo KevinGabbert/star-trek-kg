@@ -39,10 +39,11 @@ namespace StarTrek_KG.Playfield
         /// </summary>
         /// <param name="regionX"></param>
         /// <param name="regionY"></param>
+        /// <param name="regionToGet"></param>
         /// <returns></returns>
-        public bool IsGalacticBarrier(int regionX, int regionY)
+        public bool IsGalacticBarrier(Coordinate regionToGet)
         {
-           Region gotRegion = this.Map?.Regions?.FirstOrDefault(region => region.X == regionX && region.Y == regionY);
+           Region gotRegion = this.Map?.Regions?.FirstOrDefault(region => region.X == regionToGet.X && region.Y == regionToGet.Y);
 
             return gotRegion == null;
         }

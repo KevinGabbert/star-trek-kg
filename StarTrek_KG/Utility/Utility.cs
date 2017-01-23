@@ -33,7 +33,7 @@ namespace StarTrek_KG.Utility
         {
             Random = new Random(Guid.NewGuid().GetHashCode());
 
-            var rng = StarTrek_KG.Utility.Utility.Random;
+            var rng = Utility.Random;
             int n = list.Count;
             while (n > 1)
             {

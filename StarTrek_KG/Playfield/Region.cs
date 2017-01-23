@@ -247,11 +247,11 @@ namespace StarTrek_KG.Playfield
 
                                 if (Region.Name == null) //todo: why do we have null Region names???
                                 {
-                                    Region.Name = "UNKNOWN Region " + newNameLetter + " " + counter;
+                                    Region.Name = $"UNKNOWN Region {newNameLetter} {counter}";
                                         //todo: this could get dupes
                                 }
 
-                                currentStarName = Region.Name.ToUpper() + " " + newNameLetter;
+                                currentStarName = $"{Region.Name.ToUpper()} {newNameLetter}";
 
                                 newStar.Name = currentStarName;
                                 newStar.Designation = newNameLetter;
@@ -265,7 +265,7 @@ namespace StarTrek_KG.Playfield
                             //Assuming we are using the greek alphabet for star names, we don't want to create a lockup.
                             if (counter > 25)
                             {
-                                this.Map.Write.Line("Too Many Stars.  Sorry.  Not gonna create more.");
+                                this.Map.Write.Line("Star Creation limit reached.");
                                 foundStarName = true;
                             }
                         }

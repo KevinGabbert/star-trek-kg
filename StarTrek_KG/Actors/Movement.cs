@@ -38,8 +38,6 @@ namespace StarTrek_KG.Actors
             lastRegionY = playershipRegion.Y;
             lastRegionX = playershipRegion.X;
 
-            //var lastSector = new Coordinate(playerShipSector.X, playerShipSector.Y);
-
             Sector.GetFrom(this.ShipConnectedTo).Item = SectorItem.Empty; //Clear Old Sector
 
             IGame game = this.ShipConnectedTo.Map.Game;
@@ -59,7 +57,7 @@ namespace StarTrek_KG.Actors
                     {
                         newLocation.SetActive();
                         game.Map.SetPlayershipInActiveSector(game.Map); //sets friendly in Active Region 
-                        game.MoveTimeForward(game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
+                        game.MoveTimeForward(game.Map, playershipRegion, newLocation);
                     }
 
                     break;
@@ -100,15 +98,16 @@ namespace StarTrek_KG.Actors
         {
             Region currentRegion = travellingShip.GetRegion();
 
-            int currentSectorX = travellingShip.Sector.X;
-            int currentSectorY = travellingShip.Sector.Y;
-
             for (int sector = 0; sector < distance; sector++)
             {
-                this.GetNewCoordinate(impulseTravelDirection, ref currentSectorX, ref currentSectorY);
+                Coordinate newCoordinate = this.GetNewCoordinate(impulseTravelDirection, (Coordinate)travellingShip.Sector);
 
                 bool stopNavigation;
-                Location newLocation = this.GetNewLocation(impulseTravelDirection, travellingShip, currentRegion, new Coordinate(currentSectorX, currentSectorY), out stopNavigation);
+                Location newLocation = this.GetNewLocation(impulseTravelDirection, 
+                                                           travellingShip, 
+                                                           currentRegion,
+                                                           newCoordinate, 
+                                                           out stopNavigation);
 
                 if (stopNavigation)
                 {
@@ -206,20 +205,18 @@ namespace StarTrek_KG.Actors
             Region newRegion = currentRegion;
 
             //todo: get rid of this double-stuff. I'm only doing this so that IsGalacticBarrier can be used by both Region and Sector Navigation.
-            int futureShipRegionX = currentRegion.X;
-            int futureShipRegionY = currentRegion.Y;
-
             Regions regions = this.ShipConnectedTo.Map.Regions;
 
             for (int i = 0; i < distance; i++)
             {
-                this.GetNewCoordinate(warpDirection, ref futureShipRegionX, ref futureShipRegionY);
+                Region futureShipRegion = this.GetNewCoordinate(warpDirection, currentRegion).ToRegion();
+                currentRegion = futureShipRegion;
 
                 //todo: refactor this with sector stuff
 
                 //todo: check if Region is nebula or out of bounds
 
-                bool barrierHit = regions.IsGalacticBarrier(futureShipRegionX, futureShipRegionY);  //XY will be set to safe value in here
+                bool barrierHit = regions.IsGalacticBarrier(futureShipRegion);  //XY will be set to safe value in here
                 this.BlockedByGalacticBarrier = barrierHit;
 
                 if (barrierHit)
@@ -231,7 +228,7 @@ namespace StarTrek_KG.Actors
                 else
                 {
                     //set ship location to the new location
-                    newRegion = this.ShipConnectedTo.Map.Regions[new Coordinate(futureShipRegionX, futureShipRegionY)];
+                    newRegion = this.ShipConnectedTo.Map.Regions[futureShipRegion];
 
                     bool nebulaEncountered = Regions.IsNebula(this.ShipConnectedTo.Map, newRegion);
                     if (nebulaEncountered)
@@ -257,8 +254,11 @@ namespace StarTrek_KG.Actors
 
         #endregion
 
-        private void GetNewCoordinate(NavDirection travelDirection, ref int currentCoordinateX, ref int currentCoordinateY)
+        private Coordinate GetNewCoordinate(NavDirection travelDirection, Coordinate currentCoordinate)
         {
+            int currentCoordinateX = currentCoordinate.X;
+            int currentCoordinateY = currentCoordinate.Y;
+
             switch (travelDirection)
             {
                 case NavDirection.Left:
@@ -300,6 +300,8 @@ namespace StarTrek_KG.Actors
                 default:
                     throw new ArgumentException("NavDirection not supported.");
             }
+
+            return new Coordinate(currentCoordinateX, currentCoordinateY);
         }
 
         private Location GetNewLocation(NavDirection impulseTravelDirection, ISectorObject travellingShip, Region currentRegion, ICoordinate newCoordinate, out bool stopNavigation)

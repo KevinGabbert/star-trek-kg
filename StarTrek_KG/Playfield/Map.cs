@@ -490,7 +490,7 @@ namespace StarTrek_KG.Playfield
 
             newLocation.Region.SetActive();
 
-            var foundSector = this.LookupSector(shipToSet.GetRegion(), newLocation);
+            Sector foundSector = this.LookupSector(shipToSet.GetRegion(), newLocation);
             foundSector.Item = SectorItem.PlayerShip;
 
             shipToSet.Coordinate = newLocation.Region;
@@ -512,7 +512,7 @@ namespace StarTrek_KG.Playfield
             else
             {
                 //todo: if sector not found then this is a bug.
-                throw new ArgumentException("");
+                throw new ArgumentException($"Sector {newLocation.Sector.X}, {newLocation.Sector.Y}");
             }
 
             return foundSector;

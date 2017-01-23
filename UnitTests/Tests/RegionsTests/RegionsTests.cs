@@ -20,10 +20,10 @@ namespace UnitTests.Tests.RegionsTests
 
             Assert.IsNotNull(galaxy);
 
-            Assert.IsFalse(galaxy.IsGalacticBarrier(1, 2));
-            Assert.IsFalse(galaxy.IsGalacticBarrier(0, 0));
-            Assert.IsTrue(galaxy.IsGalacticBarrier(9, 9));
-            Assert.IsTrue(galaxy.IsGalacticBarrier(99, 99));
+            Assert.IsFalse(galaxy.IsGalacticBarrier(new Coordinate(1, 2)));
+            Assert.IsFalse(galaxy.IsGalacticBarrier(new Coordinate(0, 0)));
+            Assert.IsTrue(galaxy.IsGalacticBarrier(new Coordinate(9, 9)));
+            Assert.IsTrue(galaxy.IsGalacticBarrier(new Coordinate(99, 99)));
         }
     }
 }

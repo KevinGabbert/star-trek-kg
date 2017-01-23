@@ -69,7 +69,7 @@ namespace StarTrek_KG.Subsystem
             }
             else
             {
-                this.ShipConnectedTo.OutputLine("Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
+                this.ShipConnectedTo.OutputLine($"Shields are Damaged. DamageLevel: {this.Damage}"); //todo: resource this
             }
 
             return this.ShipConnectedTo.OutputQueue();
