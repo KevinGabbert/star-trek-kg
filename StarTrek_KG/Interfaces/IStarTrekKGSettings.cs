@@ -43,7 +43,7 @@ namespace StarTrek_KG.Interfaces
         /// </summary>
         /// <param name="faction"></param>
         /// <returns></returns>
-        List<string> FactionShips(FactionName faction);
+        List<string> ShipNames(FactionName faction);
 
         /// <summary>
         /// Threats look like this in the app.config: <FactionThreat severity="normal" value="wej 'avwI' yInISQo'!" translation="Do not let your guard down!"/>

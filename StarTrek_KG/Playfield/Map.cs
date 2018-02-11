@@ -85,7 +85,7 @@ namespace StarTrek_KG.Playfield
 
             var names = new Stack<string>(RegionNames.Shuffle());
 
-            var baddieShipNames = this.Config.FactionShips(this.DefaultHostile);
+            var baddieShipNames = this.Config.ShipNames(this.DefaultHostile);
 
             this.Write.DebugLine("Got Baddies");
 
@@ -501,15 +501,16 @@ namespace StarTrek_KG.Playfield
         {
             //todo: divine where ship should be with old region and newlocation with negative numbers
 
-            IEnumerable<Sector> matchingSectors = newLocation.Region.Sectors.Where(s => s.X == newLocation.Sector.X && s.Y == newLocation.Sector.Y);
-
+            IEnumerable<Sector> matchingSectors = newLocation.Region.Sectors
+                                                  .Where(s => s.X == newLocation.Sector.X && 
+                                                              s.Y == newLocation.Sector.Y);
             Sector foundSector;
 
-            if (matchingSectors.Any())
+            try
             {
                 foundSector = matchingSectors.Single();
             }
-            else
+            catch (Exception ex)
             {
                 //todo: if sector not found then this is a bug.
                 throw new ArgumentException($"Sector {newLocation.Sector.X}, {newLocation.Sector.Y}");
@@ -520,7 +521,7 @@ namespace StarTrek_KG.Playfield
 
         public void AddACoupleHostileFederationShipsToExistingMap()
         {
-            var federationShipNames = this.Config.FactionShips(FactionName.Federation);
+            List<string> federationShipNames = this.Config.ShipNames(FactionName.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
             foreach (var region in this.Regions)
@@ -553,7 +554,7 @@ namespace StarTrek_KG.Playfield
         /// </summary>
         public void AddHostileFederationShipsToExistingMap()
         {
-            var federationShipNames = this.Config.FactionShips(FactionName.Federation);
+            var federationShipNames = this.Config.ShipNames(FactionName.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
             foreach (var Region in this.Regions)

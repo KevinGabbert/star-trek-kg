@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -14,13 +13,16 @@ namespace UnitTests.ShipTests.RegionTests
         [SetUp]
         public void Setup()
         {
-            base._testRegion = new Region(this.Game.Map);
+            base._testRegion =
+                new Region(this.Game.Map)
+                {
+                    Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game),
+                    Name = "Setup",
+                    Scanned = false,
+                    X = 0,
+                    Y = 0
+                };
 
-            base._testRegion.Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game);
-            base._testRegion.Name = "Setup";
-            base._testRegion.Scanned = false;
-            base._testRegion.X = 0;
-            base._testRegion.Y = 0;
         }
     
         [Test]
@@ -37,7 +39,7 @@ namespace UnitTests.ShipTests.RegionTests
         [Test]
         public void NewWithMap()
         {
-            var baddieNames = new Stack<string>(new StarTrekKGSettings().FactionShips(FactionName.Klingon));
+            var baddieNames = new Stack<string>(new StarTrekKGSettings().ShipNames(FactionName.Klingon));
 
             _setup.SetupMapWith1Friendly();
 
@@ -64,7 +66,7 @@ namespace UnitTests.ShipTests.RegionTests
         {
             var name = new List<string>();
             var systemNames = new StarTrekKGSettings().GetStarSystems();
-            var klingonShipNames = new StarTrekKGSettings().FactionShips(FactionName.Klingon);
+            var klingonShipNames = new StarTrekKGSettings().ShipNames(FactionName.Klingon);
             name.Add(systemNames[0]);
 
             var names = new Stack<string>(name);

@@ -87,7 +87,7 @@ namespace StarTrek_KG.Subsystem
 
                     //todo: newly appeared ship needs to NOT fire inbetween turns!
 
-                    var testShipNames = this.ShipConnectedTo.Map.Game.Config.FactionShips(FactionName.TestFaction).ToList().Shuffle();
+                    var testShipNames = this.ShipConnectedTo.Map.Game.Config.ShipNames(FactionName.TestFaction).ToList().Shuffle();
 
                     var RegionX = Coordinate.GetRandom();
                     var RegionY = Coordinate.GetRandom();

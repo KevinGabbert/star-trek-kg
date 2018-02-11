@@ -67,7 +67,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void InitializeRegions()
         {
-            var klingonShipNames = new StarTrekKGSettings().FactionShips(FactionName.Klingon);
+            var klingonShipNames = new StarTrekKGSettings().ShipNames(FactionName.Klingon);
             var systemNames = new StarTrekKGSettings().GetStarSystems();
             _setup.TestMap.InitializeRegionsWithBaddies(new Stack<string>(systemNames),
                                          new Stack<string>(klingonShipNames), null, 
@@ -83,7 +83,7 @@ namespace UnitTests.ShipTests.MapTests
         [Test]
         public void PopulateWithHostilesAndStarbases()
         {
-            var klingonShipNames = new StarTrekKGSettings().FactionShips(FactionName.Klingon);
+            var klingonShipNames = new StarTrekKGSettings().ShipNames(FactionName.Klingon);
             var systemNames = new StarTrekKGSettings().GetStarSystems();
 
             _setup.TestMap.InitializeRegionsWithBaddies(new Stack<string>(systemNames),

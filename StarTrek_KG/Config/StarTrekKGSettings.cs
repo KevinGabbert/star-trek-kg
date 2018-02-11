@@ -79,7 +79,7 @@ namespace StarTrek_KG.Config
         #region Helper Methods
 
         #region Factions
-        public List<string> FactionShips(FactionName faction) //todo: this is called multiple times, do we need to reload file?
+        public List<string> ShipNames(FactionName faction) //todo: this is called multiple times, do we need to reload file?
         {
             this.Reset();
 

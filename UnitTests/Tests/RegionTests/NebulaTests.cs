@@ -50,7 +50,7 @@ namespace UnitTests.ShipTests.RegionTests
         [Test]
         public void NewWithMap()
         {
-            var baddieNames = new Stack<string>(new StarTrekKGSettings().FactionShips(FactionName.Klingon));
+            var baddieNames = new Stack<string>(new StarTrekKGSettings().ShipNames(FactionName.Klingon));
             var RegionNames = new Stack<string>(new StarTrekKGSettings().GetStarSystems());
 
             _setup.SetupMapWith1Friendly();
