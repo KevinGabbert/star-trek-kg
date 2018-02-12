@@ -76,6 +76,9 @@
     <Compile Include="Tests\MapTests\DockingLocationTests.cs" />
     <Compile Include="Tests\MapTests\MapTests.cs" />
     <Compile Include="Tests\MovementTests\MovementTests.cs" />
+    <Compile Include="Tests\MovementTests\Movement_Base.cs" />
+    <Compile Include="Tests\MovementTests\MoveRegionTests.cs" />
+    <Compile Include="Tests\MovementTests\MoveSectorTests.cs" />
     <Compile Include="Tests\OutputTests.cs" />
     <Compile Include="Tests\RegionsTests\RegionsTests.cs" />
     <Compile Include="Tests\RegionTests\NebulaTests.cs" />

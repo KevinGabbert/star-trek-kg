@@ -3,7 +3,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 
-namespace UnitTests.ShipTests.MapTests
+namespace UnitTests.Tests.MapTests
 {
     [TestFixture]
     public class DockingLocationTests: TestClass_Base

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Settings;
 
-namespace UnitTests.ShipTests.StarbaseTests
+namespace UnitTests.Tests.StarbaseTests
 {
     public class Starbase_Tests : TestClass_Base
     {

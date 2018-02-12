@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Playfield;
-using UnitTests.ShipTests.RegionTests;
+using UnitTests.Tests.RegionTests;
 
 namespace UnitTests.Tests.RegionsTests
 {

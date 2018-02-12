@@ -2,7 +2,7 @@
 using StarTrek_KG.Config;
 using StarTrek_KG.TypeSafeEnums;
 
-namespace UnitTests.ShipTests.AppSettingTests
+namespace UnitTests.Tests.AppSettingTests
 {
     /// <summary>
     /// This fixture ensures we catch when a new setting is added during development.

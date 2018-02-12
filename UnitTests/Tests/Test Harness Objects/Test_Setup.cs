@@ -10,7 +10,7 @@ using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
 
-namespace UnitTests.ShipTests
+namespace UnitTests.Tests
 {
     public class Test_Setup: IConfig
     {

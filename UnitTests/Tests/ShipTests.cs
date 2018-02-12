@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Config;
 
-namespace UnitTests.ShipTests
+namespace UnitTests.Tests
 {
     [TestFixture]
     public class ShipTests

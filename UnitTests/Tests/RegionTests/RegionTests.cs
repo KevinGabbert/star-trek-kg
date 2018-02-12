@@ -5,7 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 
-namespace UnitTests.ShipTests.RegionTests
+namespace UnitTests.Tests.RegionTests
 {
     [TestFixture]
     public class RegionTests: RegionTests_Base

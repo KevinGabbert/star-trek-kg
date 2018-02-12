@@ -2,7 +2,7 @@
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Playfield;
 
-namespace UnitTests.ShipTests.RegionTests
+namespace UnitTests.Tests.RegionTests
 {
     public class RegionTests_Base: TestClass_Base
     {

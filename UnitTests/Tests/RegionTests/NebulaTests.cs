@@ -8,22 +8,25 @@ using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
-namespace UnitTests.ShipTests.RegionTests
+namespace UnitTests.Tests.RegionTests
 {
     public class NebulaTests: RegionTests_Base
     {
         [SetUp]
         public void Setup()
         {
-            _testRegion = new Region(this.Game.Map);
+            _testRegion =
+                new Region(this.Game.Map)
+                {
+                    Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game),
+                    Name = "Setup",
+                    Scanned = false,
+                    Type = RegionType.Nebulae,
+                    X = 0,
+                    Y = 0
+                };
 
-            _testRegion.Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game);
-            _testRegion.Name = "Setup";
-            _testRegion.Scanned = false;
-            _testRegion.Type = RegionType.Nebulae;
 
-            _testRegion.X = 0;
-            _testRegion.Y = 0;
         }
 
         //todo: These are going to require that output is read

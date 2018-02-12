@@ -3,7 +3,7 @@ using NUnit.Framework;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
-namespace UnitTests.ShipTests.ShipObjectTests
+namespace UnitTests.Tests.ShipObjectTests
 {
     [TestFixture]
     public class SubsystemSetup

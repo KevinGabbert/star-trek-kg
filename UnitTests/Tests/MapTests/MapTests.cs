@@ -11,7 +11,7 @@ using StarTrek_KG.Settings;
 using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Utility;
 
-namespace UnitTests.ShipTests.MapTests
+namespace UnitTests.Tests.MapTests
 {
     [TestFixture]
     public class MapTests: TestClass_Base

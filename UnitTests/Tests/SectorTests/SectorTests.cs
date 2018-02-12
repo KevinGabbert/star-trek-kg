@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace UnitTests.ShipTests.SectorTests
+namespace UnitTests.Tests.SectorTests
 {
     [TestFixture]
     public class SectorTests

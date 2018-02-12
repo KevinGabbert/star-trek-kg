@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Subsystem;
-using UnitTests.ShipTests;
 
 namespace UnitTests.Tests.SubSystemTests
 {

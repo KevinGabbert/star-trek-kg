@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -6,7 +7,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 
-namespace UnitTests.ShipTests.SubSystemTests
+namespace UnitTests.Tests.SubSystemTests
 {
     [TestFixture]
     public class PhaserTests: TestClass_Base
@@ -139,9 +140,9 @@ namespace UnitTests.ShipTests.SubSystemTests
             badGuyShields.Energy = 50;
 
             //todo: verify firing ship's starting energy.
-            var startingEnergy = new StarTrekKGSettings().GetSetting<int>("energy");
+            int startingEnergy = new StarTrekKGSettings().GetSetting<int>("energy");
 
-            var playershipBefore = _setup.TestMap.Playership;
+            Ship playershipBefore = _setup.TestMap.Playership;
 
             Assert.AreEqual(startingEnergy, playershipBefore.Energy);
 
@@ -267,10 +268,11 @@ namespace UnitTests.ShipTests.SubSystemTests
 
             //var attackingEnergy = (int)StarTrek_KG.Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula); 
 
-            var firingShipEnergy = firingShip.Energy;
+            int firingShipEnergy = firingShip.Energy;
             
-            Assert.AreEqual(firingShipEnergy, expectedFiringShipAfterEnergy, " Firing Ship: " + firingShip.Name + " expected energy: " + expectedFiringShipAfterEnergy + ". but was " + firingShipEnergy);
-
+            Assert.AreEqual(firingShipEnergy, expectedFiringShipAfterEnergy, $" Firing Ship: {firingShip.Name} " +
+                                                                             $"expected energy: {expectedFiringShipAfterEnergy}. " +
+                                                                             $"but was {firingShipEnergy}");
             //todo: verify that firing ship was not hit.
             Assert.Greater(Shields.For(firingShip).Energy, -1);
         } 

@@ -3,7 +3,7 @@ using NUnit.Framework;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Settings;
 
-namespace UnitTests.ShipTests.SubSystemTests
+namespace UnitTests.Tests.SubSystemTests
 {
     class Subsystem_Base_Tests
     {

@@ -4,7 +4,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 
-namespace UnitTests.ShipTests.StarbaseTests
+namespace UnitTests.Tests.StarbaseTests
 {
     public class DockingTests: TestClass_Base
     {

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Playfield;
 
-namespace UnitTests.ShipTests
+namespace UnitTests.Tests
 {
     public class GameTests: TestClass_Base
     {

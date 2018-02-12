@@ -8,7 +8,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
 
-namespace UnitTests.ShipTests.ShipObjectTests
+namespace UnitTests.Tests.ShipObjectTests
 {
     [TestFixture]
     public class Test_ShipObject

@@ -1,7 +1,7 @@
 ﻿
 using NUnit.Framework;
 
-namespace UnitTests.ShipTests
+namespace UnitTests.Tests
 {
     [TestFixture]
     public class OutputTests

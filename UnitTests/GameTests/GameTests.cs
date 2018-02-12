@@ -2,7 +2,7 @@
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Playfield;
-using UnitTests.ShipTests;
+using UnitTests.Tests;
 
 namespace UnitTests.GameTests
 {

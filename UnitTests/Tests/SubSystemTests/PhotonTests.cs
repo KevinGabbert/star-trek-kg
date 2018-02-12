@@ -6,7 +6,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 
-namespace UnitTests.ShipTests.SubSystemTests
+namespace UnitTests.Tests.SubSystemTests
 {
     [TestFixture]
     public class PhotonTests : TestClass_Base

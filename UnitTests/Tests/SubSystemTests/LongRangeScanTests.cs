@@ -6,7 +6,6 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
-using UnitTests.ShipTests;
 
 namespace UnitTests.Tests.SubSystemTests
 {
