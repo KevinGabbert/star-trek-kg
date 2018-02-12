@@ -29,7 +29,6 @@ namespace UnitTests.GameTests
             //_testRegion = _setup.TestMap.Playership.GetRegion();
 
             Game.EnemiesWillNowTaunt();
-
         }
 
         [Test]
