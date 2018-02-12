@@ -1,5 +1,5 @@
 ﻿
-namespace UnitTests.Actors.TelnetTests
+namespace UnitTests.TelnetTests
 {
     public class TelnetWriteTests
     {

@@ -1,4 +1,4 @@
-﻿namespace UnitTests.Actors.SubSystemTests
+﻿namespace UnitTests.Subsystem
 {
     class ShortRangeScanTests
     {

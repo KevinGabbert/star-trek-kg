@@ -2,7 +2,7 @@
 using StarTrek_KG.Playfield;
 using UnitTests.Playfield.RegionTests;
 
-namespace UnitTests.Actors.RegionsTests
+namespace UnitTests.RegionsTests
 {
     [TestFixture]
     public class RegionsTests: RegionTests_Base

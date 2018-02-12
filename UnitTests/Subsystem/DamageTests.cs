@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using StarTrek_KG.Interfaces;
 
-namespace UnitTests.Actors.SubSystemTests
+namespace UnitTests.Subsystem
 {
     [TestFixture]
     public class DamageIntegrationTests

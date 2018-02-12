@@ -8,7 +8,7 @@ using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
 using UnitTests.TestObjects;
 
-namespace UnitTests.Actors.SubSystemTests
+namespace UnitTests.Subsystem
 {
     [TestFixture]
     public class LongRangeScanTests: TestClass_Base

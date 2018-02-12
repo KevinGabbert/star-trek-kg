@@ -57,7 +57,10 @@ namespace UnitTests.GameTests
         [Test]
         public void MoveGameTimeForward()
         {
-            var map = new Map();
+            var map = new Map
+            {
+                Game = new Game(new StarTrekKGSettings())
+            };
 
             //apparently, the only requirement for this is that an observed movement needs to happen
             map.Game.MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 1));
@@ -69,7 +72,10 @@ namespace UnitTests.GameTests
         [Test]
         public void MoveGameTimeForward2()
         {
-            var map = new Map();
+            var map = new Map
+            {
+                Game = new Game(new StarTrekKGSettings())
+            };
 
             //apparently, the only requirement for this is that an observed movement needs to happen
             map.Game.MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 0));
@@ -87,7 +93,10 @@ namespace UnitTests.GameTests
         public void MoveGameTimeForward3()
         {
             //todo: test this with a full map, and ship set up.  Then tell ship to move.  
-            var map = new Map();
+            var map = new Map
+            {
+                Game = new Game(new StarTrekKGSettings())
+            };
 
             //MovementTests.Move_Region("w", 1*8);
 

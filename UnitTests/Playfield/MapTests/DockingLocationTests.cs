@@ -4,7 +4,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using UnitTests.TestObjects;
 
-namespace UnitTests.Actors.MapTests
+namespace UnitTests.MapTests
 {
     [TestFixture]
     public class DockingLocationTests: TestClass_Base

@@ -44,10 +44,6 @@ namespace StarTrek_KG.Actors
             this.Map = map;
 
             //todo: this could actually be a feature later..
-            if (faction == null)
-            {
-                throw new GameException(this.Config.GetText("NullFaction"));
-            }
 
             if (this.Map.Regions == null)
             {
@@ -74,7 +70,7 @@ namespace StarTrek_KG.Actors
             this.Type = this.GetType();
             this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
-            this.Faction = faction;
+            this.Faction = faction ?? throw new GameException(this.Config.GetText("NullFaction"));
             
             this.Subsystems = new Subsystems(this);
 

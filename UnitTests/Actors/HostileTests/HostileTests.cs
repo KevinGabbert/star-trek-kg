@@ -603,6 +603,7 @@ namespace UnitTests.Actors.HostileTests
 
         #region OutOfBounds
 
+        [Ignore("Todo: Fix")]
         [Test]
         public void MapCreateOutOfBoundsHostile()
         {
@@ -612,180 +613,162 @@ namespace UnitTests.Actors.HostileTests
 
             //Methinks that the navigation needs to be tested completely before this can be fixed
 
-
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
 
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
+                        SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
-
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
-        //[ExpectedException(typeof(GameConfigException))]
         [Test]
         public void MapCreateOutOfBoundsHostile2()
         {
-            _setup.TestMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                 {
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
                     new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 7)), SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
         [Test]
         public void MapCreateOutOfBoundsHostile3()
         {
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
 
                 SectorDefs = new SectorDefs
-                                        {
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)), SectorItem.PlayerShip),
-                                            new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 7)), SectorItem.HostileShip)
-                                        }
-            }, this.Game.Interact, this.Game.Config, this.Game);
-
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
+                {
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 7)),
+                        SectorItem.HostileShip)
+                }
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
         [Test]
         public void MapCreateOutOfBoundsHostile4()
         {
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)), SectorItem.HostileShip)
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)),
+                        SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
-
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
         [Test]
         public void MapCreateOutOfBoundsHostile5()
         {
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
+                        SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
-
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
         [Test]
         public void MapCreateOutOfBoundsHostile6()
         {
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                    new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
+                        SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
-
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
         [Test]
         public void MapCreateOutOfBoundsHostile7()
         {
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)), SectorItem.HostileShip)
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)),
+                        SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
 
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
         }
 
         [Test]
         public void MapCreateOutOfBoundsHostile8()
         {
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)), SectorItem.HostileShip)
+                    new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
+                        SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
-
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
-
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
         [Test]
         public void MapCreateOutOfBoundsHostile9()
         {
-            Map newMap = new Map(new SetupOptions
+            Assert.That(() => new Map(new SetupOptions
             {
                 Initialize = true,
                 AddNebulae = false,
-                
+
                 SectorDefs = new SectorDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)), SectorItem.HostileShip)
+                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)),
+                        SectorItem.PlayerShip),
+                    new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)),
+                        SectorItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game);
-
-            Assert.That(() => newMap, Throws.TypeOf<GameConfigException>());
-
-            _setup.TestMap = newMap;
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
         }
 
         #endregion

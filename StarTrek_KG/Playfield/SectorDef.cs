@@ -29,27 +29,26 @@ namespace StarTrek_KG.Playfield
 
         public SectorDef(LocationDef location, SectorItem sectorItem)
         {
-
             string sectorSetupError = new StarTrekKGSettings().GetText("SectorDefSetupError");
 
             if (location.Sector.X < DEFAULTS.SECTOR_MIN)
             {
-                throw new GameConfigException(sectorSetupError + " Sector x < " + DEFAULTS.SECTOR_MIN);
+                throw new GameConfigException($"{sectorSetupError} Sector x < {DEFAULTS.SECTOR_MIN}");
             }
 
             if (location.Sector.X > DEFAULTS.SECTOR_MAX)
             {
-                throw new GameConfigException(sectorSetupError + " Sector x > " + DEFAULTS.SECTOR_MAX);
+                throw new GameConfigException($"{sectorSetupError} Sector x > {DEFAULTS.SECTOR_MAX}");
             }
 
             if (location.Sector.Y < DEFAULTS.SECTOR_MIN)
             {
-                throw new GameConfigException(sectorSetupError + "Sector y < " + DEFAULTS.SECTOR_MIN);
+                throw new GameConfigException($"{sectorSetupError}Sector y < {DEFAULTS.SECTOR_MIN}");
             }
 
             if (location.Sector.Y > DEFAULTS.SECTOR_MAX)
             {
-                throw new GameConfigException(sectorSetupError + "Sector y > " + DEFAULTS.SECTOR_MAX);
+                throw new GameConfigException($"{sectorSetupError}Sector y > {DEFAULTS.SECTOR_MAX}");
             }
 
             this.Sector = new Sector(new LocationDef(location.Region, new Coordinate(location.Sector.X, location.Sector.Y)));

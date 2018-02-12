@@ -1,4 +1,4 @@
-﻿namespace UnitTests.Tests
+﻿namespace UnitTests.Subsystem
 {
     public class WarpTests
     {
