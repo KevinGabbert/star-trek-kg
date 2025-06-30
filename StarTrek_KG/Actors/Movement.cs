@@ -5,6 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 
@@ -100,14 +101,42 @@ namespace StarTrek_KG.Actors
 
             for (int sector = 0; sector < distance; sector++)
             {
+                // Move coordinate by one step in direction
                 Coordinate newCoordinate = this.GetNewCoordinate(impulseTravelDirection, (Coordinate)travellingShip.Sector);
 
+                // --- NEW LOGIC: Check for sector edge crossing ---
+                if (newCoordinate.X < 0 || newCoordinate.X >= DEFAULTS.SECTOR_MAX ||
+                    newCoordinate.Y < 0 || newCoordinate.Y >= DEFAULTS.SECTOR_MAX)
+                {
+                    // Move to next region
+                    Region nextRegion = Regions.GetNext(this.ShipConnectedTo.Map, currentRegion, impulseTravelDirection);
+
+                    // If barrier hit, stop
+                    if (this.ShipConnectedTo.Map.Regions.IsGalacticBarrier(nextRegion))
+                    {
+                        this.SystemPrompt.Line("All Stop. Galactic Barrier reached. Cannot proceed.");
+                        break;
+                    }
+
+                    // Update region and wrap coordinates
+                    currentRegion = nextRegion;
+
+                    if (newCoordinate.X < 0) newCoordinate.X = DEFAULTS.SECTOR_MAX - 1;
+                    else if (newCoordinate.X >= DEFAULTS.SECTOR_MAX) newCoordinate.X = 0;
+
+                    if (newCoordinate.Y < 0) newCoordinate.Y = DEFAULTS.SECTOR_MAX - 1;
+                    else if (newCoordinate.Y >= DEFAULTS.SECTOR_MAX) newCoordinate.Y = 0;
+                }
+
+                // --- Existing logic to build new location and check obstacles ---
                 bool stopNavigation;
-                Location newLocation = this.GetNewLocation(impulseTravelDirection, 
-                                                           travellingShip, 
-                                                           currentRegion,
-                                                           newCoordinate, 
-                                                           out stopNavigation);
+                Location newLocation = this.GetNewLocation(
+                    impulseTravelDirection,
+                    travellingShip,
+                    currentRegion,
+                    newCoordinate,
+                    out stopNavigation
+                );
 
                 if (stopNavigation)
                 {
@@ -117,8 +146,6 @@ namespace StarTrek_KG.Actors
                 {
                     this.ShipConnectedTo.Map.SetPlayershipInLocation(travellingShip, this.ShipConnectedTo.Map, newLocation);
                 }
-
-                //todo:  this.Game.MoveTimeForward(this.Game.Map, new Coordinate(lastRegionX, lastRegionY), newLocation);
             }
         }
 
@@ -405,7 +432,7 @@ namespace StarTrek_KG.Actors
             string userDirection = "";
             List<int> availableDirections = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 
-            bool userEnteredCourse = this.ShipConnectedTo.Map.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()} Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.ShipConnectedTo.Map.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()}{Environment.NewLine}Enter Course: ", out userDirection);
 
             if (userEnteredCourse)
             {

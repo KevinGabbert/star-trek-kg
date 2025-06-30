@@ -11,6 +11,8 @@ namespace StarTrek_KG_Web.WebApp
     {
         public List<string> ExecuteCommand(string command, string sessionID, List<string> responseLines, Game game)
         {
+
+            //todo: make this into a resource file. KLW
             switch (command.Trim().ToLower())
             {
                 case "connect to ncc1701":

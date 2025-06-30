@@ -727,20 +727,35 @@ namespace StarTrek_KG.Output
 
         private List<string> EvalTopLevelMenuCommand(IShip playerShip, string menuCommand)
         {
+            //todo: resource this out.
             List<string> retVal = new List<string>();
 
-            if (menuCommand == Menu.nto.ToString() || menuCommand == Menu.wrp.ToString()) //|| menuCommand == Menu.imp.ToString()
+            //if (menuCommand == Menu.nto.ToString() || menuCommand == Menu.wrp.ToString()) //|| menuCommand == Menu.imp.ToString()
+            //{
+            //    this.Subscriber.PromptInfo.SubSystem = SubsystemType.Navigation;
+
+            //    //todo: we may need to break out warp and imp, or change the process here because we can't tell which of the 3 we need for prompt.
+
+            //    retVal = Navigation.For(playerShip).Controls(menuCommand);
+            //}
+
+            if (menuCommand == Menu.nto.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Navigation;
-
-                //todo: we may need to break out warp and imp, or change the process here because we can't tell which of the 3 we need for prompt.
-
                 retVal = Navigation.For(playerShip).Controls(menuCommand);
             }
+            else if (menuCommand == Menu.wrp.ToString())
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.Navigation;
+                retVal = this.WarpMenu(playerShip).ToList();
+            }
+
+
             //else if (menuCommand == Menu.wrp.ToString())
             //{
-            //    this.Subscriber.PromptInfo.SubSystem = SubsystemType.Warp;
-            //    retVal = Warp.For(playerShip).Controls(menuCommand).ToList();
+            //    //todo: deprecated. remove  - KLW
+            //    //this.Subscriber.PromptInfo.SubSystem = SubsystemType.Warp;
+            //    //retVal = Warp.For(playerShip).Controls(menuCommand).ToList();
             //}
             else if (menuCommand == Menu.imp.ToString())
             {
@@ -832,7 +847,6 @@ namespace StarTrek_KG.Output
 
             string menuName = this.Subscriber.PromptInfo.SubSystem.Name;
 
-            //todo: Finish other menus.  refactor their common menu creation steps
             if (this.IsAcceptable(playerEnteredText, this.Subscriber.PromptInfo.SubSystem, this.Subscriber.PromptInfo.Level))
             {
                 ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
@@ -840,10 +854,10 @@ namespace StarTrek_KG.Output
             }
             else
             {
-                retVal = new List<string>()
+                retVal = new List<string>
                 {
-                    $"Unrecognized Command. Exiting {menuName} Menu"      //todo: resource this
-                }; 
+                    $"Unrecognized Command. Exiting {menuName} Menu" //todo: resource this
+                };
 
                 this.Subscriber.PromptInfo.Level = 0; //resets our menu level
 
@@ -1008,6 +1022,58 @@ namespace StarTrek_KG.Output
             this.OutputStrings(Impulse.IMPULSE_PANEL);
         }
 
+        private IEnumerable<string> WarpMenu(IShip playerShip, string warpPanelCommand = "")
+        {
+            // Setup Warp panel
+            Navigation.WARP_PANEL = new List<string> { Environment.NewLine };
+
+            try
+            {
+                var menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+                this.OutputWarpMenu(menuItems);
+            }
+            catch
+            {
+                // todo: handle config error
+            }
+
+            string warpPromptReply;
+
+            this.PromptUser(
+                SubsystemType.Navigation,
+                $"{this.Subscriber.PromptInfo.DefaultPrompt}Warp Control -> ",
+                this.RenderCourse() + "Enter Course: ",
+                out warpPromptReply,
+                this.Output.Queue,
+                1
+            );
+
+            Navigation.For(playerShip).Controls(warpPanelCommand);
+
+            return this.Output.Queue;
+        }
+
+
+        private void OutputWarpMenu(IEnumerable<MenuItemDef> menuItems)
+        {
+            var menuItemDefs = menuItems as IList<MenuItemDef> ?? menuItems.ToList();
+
+            Navigation.WARP_PANEL.Add($"─── Warp Status: ── <Not Implemented Yet> ──");
+            Navigation.WARP_PANEL.Add(Environment.NewLine);
+            Navigation.WARP_PANEL.Add(this.RenderCourse());
+            Navigation.WARP_PANEL.Add(Environment.NewLine);
+
+            foreach (MenuItemDef menuItem in menuItemDefs)
+            {
+                Navigation.WARP_PANEL.Add($"{menuItem.name} {menuItem.divider} {menuItem.description}");
+            }
+
+            Interaction.AddShipPanelOption(menuItemDefs, Navigation.WARP_PANEL);
+
+            this.OutputStrings(Navigation.WARP_PANEL);
+        }
+
+
         private void OutputShieldMenu(IEnumerable<MenuItemDef> menuItems, int currentShieldEnergy)
         {
             //todo: resource out header
@@ -1104,16 +1170,16 @@ namespace StarTrek_KG.Output
             {
                 if (!string.IsNullOrWhiteSpace(promptMessage))
                 {
-                    this.WithNoEndCR(promptMessage);
+                    foreach (var line in promptMessage.Split(new[] { "\n", "\r\n" }, StringSplitOptions.None))
+                    {
+                        this.Output.WriteLine(line);
+                    }
                 }
 
                 this.CurrentPrompt = promptDisplay;
 
-                //todo: subsystemtype.None is currently the holding for subsystems like Impulse, and Warp. they need to be broken out to a separate class.
                 this.Subscriber.PromptInfo.SubSystem = promptSubsystem;
                 this.Subscriber.PromptInfo.Level = subPromptLevel;
-
-                //todo: an endCR might need to be added here
 
                 value = "-1";
                 retVal = true;
@@ -1138,21 +1204,29 @@ namespace StarTrek_KG.Output
         }
 
         //tod: combine this with PromptUser
+
+
         public bool PromptUserSubscriber(string promptMessage, out string value)
         {
             value = null;
-
-            this.Output.Write(promptMessage);
-
             //todo: Game.Mode to submenu?
             //that mode will persist across ajax calls, so user will have to either type in a submenu entry, or 
             //exit it.
 
+
+
+            foreach (var line in promptMessage.Split(new[] { Environment.NewLine }, StringSplitOptions.None))
+            {
+                this.Output.WriteLine(line);
+
+            }
             //var readLine = this.Output.ReadLine();
             //if (readLine != null) value = readLine.ToLower();
 
+
             return false;
         }
+
 
         public bool PromptUserConsole(string promptMessage, out string value)
         {
@@ -1274,6 +1348,19 @@ namespace StarTrek_KG.Output
 
         public void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel)
         {
+            // Suppress condition warnings if the player is in the Warp control men
+
+            //todo: making this work for now, but wrp should still become its own subsystem in the future.
+            //this supression message needs to be more standardized
+            var promptInfo = ship.Map.Game.Interact.Subscriber.PromptInfo;
+            if (promptInfo.SubSystem == SubsystemType.Navigation &&
+    (string.Equals(promptInfo.SubCommand, "wrp", StringComparison.OrdinalIgnoreCase)
+     || promptInfo.Level >= 1))
+            {
+                return;
+            }
+
+
             ship.GetConditionAndSetIcon();
 
             if (ship.AtLowEnergyLevel())

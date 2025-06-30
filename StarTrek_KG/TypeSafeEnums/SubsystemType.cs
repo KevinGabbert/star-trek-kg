@@ -6,8 +6,8 @@ namespace StarTrek_KG.TypeSafeEnums
     public sealed class SubsystemType
     {
         public string Name { get; }
-        private string Abbreviation { get; }
-        private readonly int value;
+        public string Abbreviation { get; }
+        public readonly int value;
 
         public static readonly SubsystemType None = new SubsystemType(1, "None", "");
         public static readonly SubsystemType Debug = new SubsystemType(1, "Debug", "dbg");

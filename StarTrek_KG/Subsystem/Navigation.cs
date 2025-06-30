@@ -16,6 +16,9 @@ namespace StarTrek_KG.Subsystem
     {
         private NavDirection _movementDirection;
 
+        public static List<string> WARP_PANEL = new List<string>();
+
+
         #region Properties
 
         public bool Docked { get; set; } //todo: move this to ship
@@ -56,7 +59,9 @@ namespace StarTrek_KG.Subsystem
 
             SubsystemType currentSelectedSubsystem = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubSystem;
 
-            if (currentSelectedSubsystem == SubsystemType.Warp)
+            //todo: fix subsystem? use constant
+            //todo: we may want to use warp subsystem
+            if (currentSelectedSubsystem == SubsystemType.Navigation && (command == SubsystemType.Warp.Abbreviation))
             {
                 this.WarpControls();
             }
