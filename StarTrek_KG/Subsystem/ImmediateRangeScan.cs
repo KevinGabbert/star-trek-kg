@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Types;
@@ -92,6 +93,17 @@ namespace StarTrek_KG.Subsystem
 
         public IRSResult Execute(Location locationToScan)
         {
+            if (locationToScan?.Region == null || locationToScan.Sector == null)
+            {
+                return new IRSResult
+                {
+                    GalacticBarrier = locationToScan?.Region?.Type == RegionType.GalacticBarrier,
+                    RegionName = locationToScan?.Region?.Name,
+                    Coordinate = locationToScan?.Region == null ? null : new Coordinate(locationToScan.Region.X, locationToScan.Region.Y),
+                    Unknown = locationToScan?.Region == null
+                };
+            }
+
             var sectorResult = new IRSResult
             {
                 Coordinate = locationToScan.Sector.GetCoordinate(),

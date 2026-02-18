@@ -25,6 +25,8 @@ namespace StarTrek_KG.Actors
         public IInteraction SystemPrompt { get; set; }
 
         private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil"; //todo: resource this.
+        private const int GALACTIC_BARRIER_DAMAGE = 1000;
+        private readonly string GALACTIC_BARRIER_ENCOUNTERED = "Navigation auto shutdown. Galactic Barrier encountered.";
 
         public Movement(IShip shipConnectedTo)
         {
@@ -114,7 +116,7 @@ namespace StarTrek_KG.Actors
                     // If barrier hit, stop
                     if (this.ShipConnectedTo.Map.Regions.IsGalacticBarrier(nextRegion))
                     {
-                        this.SystemPrompt.Line("All Stop. Galactic Barrier reached. Cannot proceed.");
+                        this.ApplyGalacticBarrierPenalty();
                         break;
                     }
 
@@ -222,6 +224,24 @@ namespace StarTrek_KG.Actors
             }
         }
 
+        private void ApplyGalacticBarrierPenalty()
+        {
+            this.SystemPrompt.Line(this.GALACTIC_BARRIER_ENCOUNTERED);
+
+            if (this.ShipConnectedTo == null)
+            {
+                return;
+            }
+
+            this.ShipConnectedTo.Energy -= GALACTIC_BARRIER_DAMAGE;
+
+            if (this.ShipConnectedTo.Energy <= 0)
+            {
+                this.ShipConnectedTo.Energy = 0;
+                this.ShipConnectedTo.Destroyed = true;
+            }
+        }
+
         #endregion
 
         #region Regions
@@ -248,6 +268,7 @@ namespace StarTrek_KG.Actors
 
                 if (barrierHit)
                 {
+                    this.ApplyGalacticBarrierPenalty();
                     //ship location is not updated. this means the ship will stop right before the barrier
                     //todo: later, a config option could be that the ship can be thrown to an adjacent region.
                     break;
@@ -357,7 +378,7 @@ namespace StarTrek_KG.Actors
 
             if (scanResult.GalacticBarrier)
             {
-                this.ShipConnectedTo.OutputLine("All Stop. Cannot cross Galactic Barrier.");
+                this.ApplyGalacticBarrierPenalty();
                 stopNavigation = true;
             }
             else

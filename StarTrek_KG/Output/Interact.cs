@@ -1074,7 +1074,6 @@ namespace StarTrek_KG.Output
         {
             Navigation.WARP_PANEL.Add($"─── Warp Status: ── <Not Implemented Yet> ──");
             Navigation.WARP_PANEL.Add(Environment.NewLine);
-            Navigation.WARP_PANEL.Add(this.RenderCourse());
             Navigation.WARP_PANEL.Add(Environment.NewLine);
 
             this.OutputStrings(Navigation.WARP_PANEL);

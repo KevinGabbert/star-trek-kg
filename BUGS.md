@@ -11,3 +11,9 @@
 
 4. `wrp` command showed subcommands but they were not wired to prompt flow.
    Status: Fixed (wrp now enters prompt-driven warp flow).
+
+5. Galactic Barrier collisions gave no feedback and no damage penalty.
+   Status: Fixed (message + 1000 energy damage on barrier encounter).
+
+6. IRS crashed when scanning a Galactic Barrier sector (null sector).
+   Status: Fixed (guarded Execute for null sector/region; return barrier result).
