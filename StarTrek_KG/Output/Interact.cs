@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using StarTrek_KG.Commands;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Constants;
@@ -556,6 +557,15 @@ namespace StarTrek_KG.Output
                 return null;
             }
 
+            if (this.Subscriber.PromptInfo.Level == 0)
+            {
+                string nlCommand = NaturalLanguageRouter.TryParse(userCommand);
+                if (!string.IsNullOrWhiteSpace(nlCommand))
+                {
+                    userCommand = nlCommand;
+                }
+            }
+
             if (userCommand.Contains(" "))
             {
                 return ProcessMultiStepCommand(playerShip, userCommand);
@@ -630,6 +640,43 @@ namespace StarTrek_KG.Output
             {
                 case "level":
                     return this.Output.WriteLine($"At Prompt Level: {promptLevel}"); //todo: resource this
+
+                case "?":
+                case "help":
+                    this.ResetPrompt();
+                    retVal.AddRange(this.Output.WriteLine($"─── {playerShip.Name} Command Help ───"));
+                    retVal.AddRange(this.Output.WriteLine(""));
+                    retVal.AddRange(this.Output.WriteLine("NAVIGATION"));
+                    retVal.AddRange(this.Output.WriteLine("  imp   Impulse navigation"));
+                    retVal.AddRange(this.Output.WriteLine("  wrp   Warp navigation"));
+                    retVal.AddRange(this.Output.WriteLine("  nto   Navigate to object"));
+                    retVal.AddRange(this.Output.WriteLine(""));
+                    retVal.AddRange(this.Output.WriteLine("SCANNERS"));
+                    retVal.AddRange(this.Output.WriteLine("  irs   Immediate range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  srs   Short range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  lrs   Long range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  crs   Combined range scan"));
+                    retVal.AddRange(this.Output.WriteLine(""));
+                    retVal.AddRange(this.Output.WriteLine("WEAPONS"));
+                    retVal.AddRange(this.Output.WriteLine("  pha   Phasers"));
+                    retVal.AddRange(this.Output.WriteLine("  tor   Photon torpedoes"));
+                    retVal.AddRange(this.Output.WriteLine("  toq   Target object in region"));
+                    retVal.AddRange(this.Output.WriteLine(""));
+                    retVal.AddRange(this.Output.WriteLine("SYSTEMS"));
+                    retVal.AddRange(this.Output.WriteLine("  she   Shields"));
+                    retVal.AddRange(this.Output.WriteLine("  com   Computer"));
+                    retVal.AddRange(this.Output.WriteLine("  dmg   Damage control"));
+                    retVal.AddRange(this.Output.WriteLine(""));
+                    retVal.AddRange(this.Output.WriteLine("NATURAL LANGUAGE EXAMPLES"));
+                    retVal.AddRange(this.Output.WriteLine("  add 500 to shields"));
+                    retVal.AddRange(this.Output.WriteLine("  raise shields"));
+                    retVal.AddRange(this.Output.WriteLine("  warp 3 course 7"));
+                    retVal.AddRange(this.Output.WriteLine("  move right 3"));
+                    retVal.AddRange(this.Output.WriteLine("  long range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  fire phasers 200"));
+                    retVal.AddRange(this.Output.WriteLine("  fire torpedo at 3 4"));
+                    retVal.AddRange(this.Output.WriteLine(""));
+                    return retVal;
 
                 case "ship":
                 case "out":

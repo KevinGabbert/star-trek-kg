@@ -87,6 +87,7 @@
     <Compile Include="Commands\CommandDef.cs" />
     <Compile Include="Commands\CommandDispatcher.cs" />
     <Compile Include="Commands\CommandRepository.cs" />
+    <Compile Include="Commands\NaturalLanguageRouter.cs" />
     <Compile Include="Config\Elements\CommandElement.cs" />
     <Compile Include="Config\Elements\MenuItemDef.cs" />
     <Compile Include="Config\Elements\MenusElement.cs" />
