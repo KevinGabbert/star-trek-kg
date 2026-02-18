@@ -15,7 +15,7 @@
         var settings = {
             prompt: 'Terminal: ',
             name: 'termWindow',
-            height: 800,
+            height: $(window).height(),
             greetings: 'Star Trek KG \n' +
                        'A modern, C# Code rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :) \n\n' +
                        'Type "start" to begin, or "term menu" for terminal commands\n' +
@@ -46,6 +46,12 @@
         var self = this;
 
         self.terminal = this.find('.td').terminal(eval, settings);
+
+        $(window).on('resize', function () {
+            if (self.terminal) {
+                self.terminal.resize($(window).width(), $(window).height());
+            }
+        });
 
         $('body').data('termWindow', this);
 
