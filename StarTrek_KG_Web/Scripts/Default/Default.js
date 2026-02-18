@@ -42,54 +42,51 @@ var defaultPage = Class.extend({
     },
     QueryConsoleAJAX: function(command, sessionID, terminal) {
 
-        var response;
-
-        $.ajax({
+        var request = $.ajax({
             type: 'POST',
             url: 'Default.aspx/QueryConsole',
             data: '{ command: \'' + command + '\',' +
                   'sessionID: \'' + sessionID + '\'}',
             contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            async: false,
-            success: function (retVal) {
-                response = JSON.parse(retVal.d);
+            dataType: 'json'
+        });
 
-                var header = response.shift();
+        request.done(function (retVal) {
+            var response = JSON.parse(retVal.d);
+            var header = response.shift();
 
-                //for a complete separation of business logic, we might want to do this in the page data.
-                if (header === "Err:") {
-
-                    $.each(response, function(index, item) {
-                        terminal.error(item);
-                    });
-                }
-                else if (header.indexOf("Started:") > -1) {
-                    $.each(response, function (index, item) {
-                        terminal.echo(item,
-                        {
-                            color: 'FFFF00',
-                            raw: true
-                        });
-                    });
-
-                    terminal.flush();
-                }
-                else {
-
-                    //for a complete separation of business logic, we might want to do this in the page data.
-                    $.each(response, function (index, item) {
-                        terminal.echo(item,
-                        {
-                            raw: true
-                        });
-                    });  
-                }
-
-                _thisPage.GetPrompt(terminal);
+            //for a complete separation of business logic, we might want to do this in the page data.
+            if (header === "Err:") {
+                $.each(response, function(index, item) {
+                    terminal.error(item);
+                });
             }
-        }).fail(function (failReason) {
-            response = JSON.parse(failReason.d);
+            else if (header.indexOf("Started:") > -1) {
+                $.each(response, function (index, item) {
+                    terminal.echo(item,
+                    {
+                        color: 'FFFF00',
+                        raw: true
+                    });
+                });
+
+                terminal.flush();
+            }
+            else {
+                //for a complete separation of business logic, we might want to do this in the page data.
+                $.each(response, function (index, item) {
+                    terminal.echo(item,
+                    {
+                        raw: true
+                    });
+                });  
+            }
+
+            _thisPage.GetPrompt(terminal);
+        });
+
+        request.fail(function (failReason) {
+            var response = failReason && failReason.d ? JSON.parse(failReason.d) : [];
 
             terminal.error('**Problem Communicating with Server** ~ ');
 
@@ -98,19 +95,27 @@ var defaultPage = Class.extend({
                 terminal.echo(item);
             });
         });
+
+        return request;
     },
     GetPrompt: function(terminal) {
-            $.ajax({
+            if (this._promptRequest && this._promptRequest.readyState !== 4) {
+                this._promptRequest.abort();
+            }
+
+            this._promptRequest = $.ajax({
                 type: 'POST',
                 url: 'Default.aspx/Prompt',
                 contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                async: false, 
-                success: function (retVal) {
-                    var response = JSON.parse(retVal.d);
-                    terminal.set_prompt(response);
-                }
-            }).fail(function () {
+                dataType: 'json'
+            });
+
+            this._promptRequest.done(function (retVal) {
+                var response = JSON.parse(retVal.d);
+                terminal.set_prompt(response);
+            });
+
+            this._promptRequest.fail(function () {
                 terminal.set_prompt(':X');
             });
     }
