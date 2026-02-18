@@ -50,13 +50,15 @@ namespace StarTrek_KG.Actors
                     break;
 
                 case MovementType.Warp:
-                    this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
+                    Region newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), direction, this.ShipConnectedTo);
 
-                    var newRegion = this.ShipConnectedTo.GetRegion();
-                    if (newRegion != null &&
-                        (newRegion.X != playershipRegion.X || newRegion.Y != playershipRegion.Y))
+                    this.ShipConnectedTo.Coordinate = newLocation;
+
+                    if (newLocation != null)
                     {
-                        game.MoveTimeForward(game.Map, playershipRegion, newRegion);
+                        newLocation.SetActive();
+                        game.Map.SetPlayershipInActiveSector(game.Map); //sets friendly in Active Region 
+                        game.MoveTimeForward(game.Map, playershipRegion, newLocation);
                     }
 
                     break;

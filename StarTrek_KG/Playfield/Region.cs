@@ -718,7 +718,10 @@ namespace StarTrek_KG.Playfield
             {
                 regionResult.Coordinate = new Coordinate(region.X, region.Y);
                 regionResult.Name = region.Name;
-                //regionResult.Unknown = true; //todo: is it?
+                regionResult.Unknown = true;
+                regionResult.Hostiles = 0;
+                regionResult.Starbases = 0;
+                regionResult.Stars = 0;
             }
 
             return regionResult;

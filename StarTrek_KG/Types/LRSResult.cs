@@ -25,7 +25,7 @@ namespace StarTrek_KG.Types
         {
             string returnVal = null;
 
-            returnVal = $"{this.Hostiles}{this.Starbases}{this.Stars}";
+            returnVal = $"{this.Hostiles.GetValueOrDefault(0)}{this.Starbases.GetValueOrDefault(0)}{this.Stars.GetValueOrDefault(0)}";
 
             return returnVal;
         }
@@ -38,7 +38,7 @@ namespace StarTrek_KG.Types
         {
             string returnVal = null;
 
-            returnVal = $"{this.Hostiles} ∙ {this.Starbases} ∙ {this.Stars}";
+            returnVal = $"{this.Hostiles.GetValueOrDefault(0)} ∙ {this.Starbases.GetValueOrDefault(0)} ∙ {this.Stars.GetValueOrDefault(0)}";
 
             return returnVal;
         }
