@@ -641,6 +641,10 @@ namespace StarTrek_KG.Output
                 case "level":
                     return this.Output.WriteLine($"At Prompt Level: {promptLevel}"); //todo: resource this
 
+                case "title":
+                    playerShip.Map.Game.ShowRandomTitle();
+                    return this.Output.Queue.ToList();
+
                 case "?":
                 case "help":
                     this.ResetPrompt();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
@@ -22,6 +23,7 @@ namespace StarTrek_KG
     {
         #region Properties
         private CommandDispatcher Dispatcher { get; set; }
+        private string _lastTitlePictureKey;
 
         public delegate TResult _promptFunc<T, out TResult>(T input, out T output);
 
@@ -331,84 +333,84 @@ namespace StarTrek_KG
             this.Interact.Resource("AppTitleSpace");
         }
 
+        public void ShowRandomTitle()
+        {
+            this.RandomAppTitle();
+        }
+
         private void RandomPicture()
         {
-            Utility.Utility.Random = new Random(Guid.NewGuid().GetHashCode());
-            int randomVal = Utility.Utility.Random.Next(100);
-            switch (randomVal)
+            List<Tuple<string, int>> pictures = this.GetAppTitlePictureDefs();
+            if (pictures.Count == 0)
             {
-                case 1:
-                    this.AppTitleItem("ExcelsiorMedium", 8);
-                    break;
-
-                case 2:
-                    this.AppTitleItem("DaedalusSmall", 8);
-                    break;
-
-                case 3:
-                    this.AppTitleItem("Reliant", 8);
-                    break;
-
-                case 4:
-                    this.AppTitleItem("D7Front", 6);
-                    break;
-
-                case 5:
-                    this.AppTitleItem("D-10-", 6);
-                    break;
-
-                case 6:
-                    this.AppTitleItem("D-4-", 7);
-                    break;
-
-                case 7:
-                    this.AppTitleItem("D-11-", 6);
-                    break;
-
-                case 8:
-                    this.AppTitleItem("D-18-", 6);
-                    break;
-
-                case 9:
-                    this.AppTitleItem("D-27-", 7);
-                    break;
-
-                case 10:
-                    this.AppTitleItem("AkulaSmall", 7);
-                    break;
-
-                case 11:
-                    this.AppTitleItem("BattlecruiserSmall", 6);
-                    break;
-
-                case 12:
-                    this.AppTitleItem("SaladinSmall", 6);
-                    break;
-
-                case 13:
-                    this.AppTitleItem("EagleSmall", 6);
-                    break;
-
-                case 14:
-                    this.AppTitleItem("DreadnaughtSide", 9);
-                    break;
-
-                case 15:
-                    this.AppTitleItem("Enterprise-BSmall", 6);
-                    break;
-
-                case 16:
-                    this.AppTitleItem("ExcelsiorSmall", 6);
-                    break;
-
-                case 17:
-                    this.AppTitleItem("RomulanBOP", 8);
-                    break;
-
-                default:
-                    this.AppTitleItem("2ShipsSmall", 7);
-                    break;
+                this.AppTitleItem("2ShipsSmall", 7);
+                return;
             }
+
+            int randomVal = Utility.Utility.Random.Next(pictures.Count);
+            Tuple<string, int> pick = pictures[randomVal];
+            if (!string.IsNullOrWhiteSpace(this._lastTitlePictureKey) && pictures.Count > 1)
+            {
+                if (string.Equals(this._lastTitlePictureKey, pick.Item1, StringComparison.OrdinalIgnoreCase))
+                {
+                    randomVal = (randomVal + 1) % pictures.Count;
+                    pick = pictures[randomVal];
+                }
+            }
+
+            this._lastTitlePictureKey = pick.Item1;
+            this.AppTitleItem(pick.Item1, pick.Item2);
+        }
+
+        private List<Tuple<string, int>> GetAppTitlePictureDefs()
+        {
+            Dictionary<string, int> results = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            string[] exclude = { "Classic", "Movie", "TNG", "Space" };
+
+            foreach (System.Configuration.ConfigurationElement element in this.Config.Get.ConsoleText)
+            {
+                Config.Elements.NameValue nameValue = (Config.Elements.NameValue)element;
+                string key = nameValue.name;
+
+                if (!key.StartsWith("AppTitle", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                Match match = Regex.Match(key, @"^AppTitle(?<name>.+?)(?<index>\d+)$");
+                if (!match.Success)
+                {
+                    continue;
+                }
+
+                string baseName = match.Groups["name"].Value;
+                bool excluded = exclude.Any(e => string.Equals(e, baseName, StringComparison.OrdinalIgnoreCase));
+                if (excluded)
+                {
+                    continue;
+                }
+
+                int index;
+                if (!int.TryParse(match.Groups["index"].Value, out index))
+                {
+                    continue;
+                }
+
+                int currentMax;
+                if (!results.TryGetValue(baseName, out currentMax) || index > currentMax)
+                {
+                    results[baseName] = index;
+                }
+            }
+
+            List<Tuple<string, int>> pictures = new List<Tuple<string, int>>();
+            foreach (KeyValuePair<string, int> entry in results)
+            {
+                // AppTitleItem prints 1..(endingLine-1)
+                pictures.Add(Tuple.Create(entry.Key, entry.Value + 1));
+            }
+
+            return pictures;
         }
 
         private void AppTitleItem(string itemName, int endingLine)

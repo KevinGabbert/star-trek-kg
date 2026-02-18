@@ -90,6 +90,9 @@ namespace StarTrek_KG.Commands
 
                 (new Regex(@"^(damage\s+control|repair\s+systems|dmg)$", RegexOptions.IgnoreCase),
                     m => "dmg")
+                ,
+                (new Regex(@"^(show\s+random\s+title|title)$", RegexOptions.IgnoreCase),
+                    m => "title")
             };
 
         public static string TryParse(string input)
