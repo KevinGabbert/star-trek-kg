@@ -628,15 +628,18 @@ namespace StarTrek_KG.Playfield
             int locationY = location.Region.Y;
             List<Region> thisRegionAndThoseNextToThisOne = new List<Region>
             {
-                this.Item(currentlyInNebula, game, locationX, locationY),
-                this.Item(currentlyInNebula, game, locationX - 1, locationY),
-                this.Item(currentlyInNebula, game, locationX, locationY - 1),
-                this.Item(currentlyInNebula, game, locationX + 1, locationY),
-                this.Item(currentlyInNebula, game, locationX, locationY + 1),
+                // Row-major order: top-left to bottom-right, so current location is centered.
+                this.Item(currentlyInNebula, game, locationX - 1, locationY - 1),
+                this.Item(currentlyInNebula, game, locationX,     locationY - 1),
                 this.Item(currentlyInNebula, game, locationX + 1, locationY - 1),
+
+                this.Item(currentlyInNebula, game, locationX - 1, locationY),
+                this.Item(currentlyInNebula, game, locationX,     locationY),
+                this.Item(currentlyInNebula, game, locationX + 1, locationY),
+
                 this.Item(currentlyInNebula, game, locationX - 1, locationY + 1),
-                this.Item(currentlyInNebula, game, locationX + 1, locationY + 1),
-                this.Item(currentlyInNebula, game, locationX - 1, locationY - 1)
+                this.Item(currentlyInNebula, game, locationX,     locationY + 1),
+                this.Item(currentlyInNebula, game, locationX + 1, locationY + 1)
             };
 
             //build map
