@@ -53,7 +53,7 @@ var defaultPage = Class.extend({
             dataType: 'json',
             async: false,
             success: function (retVal) {
-                response = jQuery.parseJSON(retVal.d);
+                response = JSON.parse(retVal.d);
 
                 var header = response.shift();
 
@@ -89,7 +89,7 @@ var defaultPage = Class.extend({
                 _thisPage.GetPrompt(terminal);
             }
         }).fail(function (failReason) {
-            response = jQuery.parseJSON(failReason.d);
+            response = JSON.parse(failReason.d);
 
             terminal.error('**Problem Communicating with Server** ~ ');
 
@@ -107,7 +107,7 @@ var defaultPage = Class.extend({
                 dataType: 'json',
                 async: false, 
                 success: function (retVal) {
-                    var response = jQuery.parseJSON(retVal.d);
+                    var response = JSON.parse(retVal.d);
                     terminal.set_prompt(response);
                 }
             }).fail(function () {

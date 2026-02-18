@@ -9,15 +9,20 @@
   <title>Star Trek KG</title>
   <meta name="Description" content="Star Trek KG"/>
 
-  <script src="Scripts/jquery-3.3.1.min.js"></script>
+  <script src="Scripts/jquery-4.0.0.min.js"></script>
+  <script>
+    if (window.jQuery && !jQuery.parseJSON) {
+      jQuery.parseJSON = JSON.parse;
+    }
+  </script>
   <script src="Scripts/jquery.mousewheel-min.js"></script>
 
-  <script src="Scripts/jquery.terminal-1.11.4.js"></script>
+  <script src="Scripts/jquery.terminal-2.45.2.min.js"></script>
   <script src="Scripts/TerminalWindow.js"></script>
   <script src="Scripts/class.js"></script>
   <script src="Scripts/Default/Default.js"></script>
 
-  <link href="Content/jquery.terminal.css" rel="stylesheet" />
+  <link href="Content/jquery.terminal-2.45.2.min.css" rel="stylesheet" />
   <link href="Content/Site.css" rel="stylesheet" />
 
 <script>

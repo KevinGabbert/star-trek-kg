@@ -50,3 +50,34 @@ pre {
      word-wrap: break-word; 
      font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
 }
+/* Normalize terminal text sizing to pre-upgrade defaults */
+.terminal,
+.terminal .cmd,
+.terminal .terminal-output,
+.terminal .terminal-output > div,
+.terminal .terminal-output > div > div {
+  font-size: 15px;
+  line-height: 1em;
+}
+
+/* Force terminal layout metrics to align with legacy spacing */
+.terminal {
+  --size: 1;
+  --terminal-line: 15px;
+  --terminal-font-size: 15px;
+}
+
+/* Remove extra vertical gaps between rows */
+.terminal .terminal-output > div {
+  margin-top: 0 !important;
+}
+.terminal .terminal-output > div:not(.raw) div,
+.terminal .cmd,
+.terminal .cmd div {
+  line-height: 12px !important;
+}
+
+/* Preserve trailing spaces for raw output (grid alignment) */
+.terminal .terminal-output > div.raw > div {
+  white-space: pre !important;
+}
