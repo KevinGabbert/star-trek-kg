@@ -35,10 +35,12 @@ namespace StarTrek_KG.Subsystem
             Location myLocation = this.ShipConnectedTo.GetLocation();
             var renderedResults = this.RunFullLRSScan(myLocation);
 
-            foreach (var line in renderedResults)
+            foreach (string line in renderedResults)
             {
                 this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
             }
+
+            this.ShipConnectedTo.OutputLine("");
 
             return this.ShipConnectedTo.OutputQueue();
         }

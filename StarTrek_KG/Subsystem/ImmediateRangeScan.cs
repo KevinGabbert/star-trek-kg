@@ -27,10 +27,14 @@ namespace StarTrek_KG.Subsystem
             Location myLocation = this.ShipConnectedTo.GetLocation();
             var renderedResults = this.RunFullIRSScan(myLocation);
 
-            foreach (var line in renderedResults)
+            this.ShipConnectedTo.Map.Game.Interact.SingleLine("*** Currently Nonfunctional ***");
+
+            foreach (string line in renderedResults)
             {
                 this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
             }
+
+            this.ShipConnectedTo.OutputLine("");
 
             return this.ShipConnectedTo.OutputQueue();
         }

@@ -164,6 +164,8 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\jquery.terminal.css" />
+    <Content Include="Content\jquery.terminal-2.45.2.css" />
+    <Content Include="Content\jquery.terminal-2.45.2.min.css" />
     <Content Include="Content\logo.png" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\style.css" />
@@ -181,11 +183,15 @@
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <Content Include="Scripts\jquery-4.0.0.js" />
+    <Content Include="Scripts\jquery-4.0.0.min.js" />
     <Content Include="Scripts\jquery.mousewheel-min.js" />
     <Content Include="Scripts\jquery.terminal-0.11.23.js" />
     <Content Include="Scripts\jquery.terminal-0.11.23.min.js" />
     <Content Include="Scripts\jquery.terminal-1.11.4.js" />
     <Content Include="Scripts\jquery.terminal-1.11.4.min.js" />
+    <Content Include="Scripts\jquery.terminal-2.45.2.js" />
+    <Content Include="Scripts\jquery.terminal-2.45.2.min.js" />
     <Content Include="Scripts\TerminalWindow.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Default.aspx" />

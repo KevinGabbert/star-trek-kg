@@ -267,6 +267,8 @@ namespace StarTrek_KG.Output
 
             region.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
             region.Scanned = true;
+
+            this.Line("");
         }
 
         public List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, IGame game)
@@ -376,13 +378,13 @@ namespace StarTrek_KG.Output
         public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, IGame game)
         {
             int scanColumn = 0;  //todo resource this
-            string longestName = Interaction.GetLongestName(data);
+            int longestText = Interaction.GetLongestScanText(data);
 
             var galacticBarrierText = this.Config.GetSetting<string>("GalacticBarrierText");
             var barrierID = galacticBarrierText;
             var cellPadding = 1; //todo resource this
 
-            int cellLength = longestName.Length > barrierID.Length ? longestName.Length : barrierID.Length;
+            int cellLength = longestText > barrierID.Length ? longestText : barrierID.Length;
             cellLength += cellPadding;
 
             var topLeft = this.Config.Setting(scanRenderType + "TopLeft");
@@ -1400,6 +1402,30 @@ namespace StarTrek_KG.Output
             }
 
             return longestName;
+        }
+
+        private static int GetLongestScanText(IEnumerable<IScanResult> data)
+        {
+            int longest = 0;
+
+            foreach (IScanResult result in data)
+            {
+                if (result?.RegionName != null && result.RegionName.Length > longest)
+                {
+                    longest = result.RegionName.Length;
+                }
+
+                if (result != null)
+                {
+                    string scanText = result.ToScanString();
+                    if (scanText != null && scanText.Length > longest)
+                    {
+                        longest = scanText.Length;
+                    }
+                }
+            }
+
+            return longest;
         }
 
         public void PrintMissionResult(IShip ship, bool starbasesAreHostile, int starbasesLeft)
