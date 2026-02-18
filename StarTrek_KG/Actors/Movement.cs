@@ -25,8 +25,7 @@ namespace StarTrek_KG.Actors
         public IInteraction SystemPrompt { get; set; }
 
         private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil"; //todo: resource this.
-        private const int GALACTIC_BARRIER_DAMAGE = 1000;
-        private readonly string GALACTIC_BARRIER_ENCOUNTERED = "Navigation auto shutdown. Galactic Barrier encountered.";
+        private readonly string GALACTIC_BARRIER_ENCOUNTERED = "Navigation auto shutdown. Galactic Barrier encountered. Power drained by {0}.";
 
         public Movement(IShip shipConnectedTo)
         {
@@ -226,14 +225,19 @@ namespace StarTrek_KG.Actors
 
         private void ApplyGalacticBarrierPenalty()
         {
-            this.SystemPrompt.Line(this.GALACTIC_BARRIER_ENCOUNTERED);
+            int damage = this.ShipConnectedTo?.Map?.Game?.Config?.GetSetting<int>("GalacticBarrierDamage") ?? 0;
+
+            if (this.ShipConnectedTo != null)
+            {
+                this.ShipConnectedTo.OutputLine(string.Format(this.GALACTIC_BARRIER_ENCOUNTERED, damage));
+            }
 
             if (this.ShipConnectedTo == null)
             {
                 return;
             }
 
-            this.ShipConnectedTo.Energy -= GALACTIC_BARRIER_DAMAGE;
+            this.ShipConnectedTo.Energy -= damage;
 
             if (this.ShipConnectedTo.Energy <= 0)
             {

@@ -160,6 +160,7 @@ namespace StarTrek_KG
             else
             {
                 this.ReportGameStatus();
+                retVal = this.Map.Playership.OutputQueue();
             }
 
             return retVal;

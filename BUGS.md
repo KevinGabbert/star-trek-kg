@@ -17,3 +17,6 @@
 
 6. IRS crashed when scanning a Galactic Barrier sector (null sector).
    Status: Fixed (guarded Execute for null sector/region; return barrier result).
+
+7. Nebula/unknown LRS patterns were random per render, so CRS and LRS didn't match.
+   Status: Fixed (deterministic pattern based on region coordinate).

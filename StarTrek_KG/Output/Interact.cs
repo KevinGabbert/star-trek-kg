@@ -295,7 +295,7 @@ namespace StarTrek_KG.Output
 
             if (dataPoint.Unknown)
             {
-                currentRegionResult = Utility.Utility.DamagedScannerUnit();
+                currentRegionResult = Utility.Utility.DamagedScannerUnit(dataPoint.Coordinate);
             }
             else if (dataPoint.GalacticBarrier)
             {
@@ -444,7 +444,7 @@ namespace StarTrek_KG.Output
 
                 if (scanDataPoint.Unknown)
                 {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit();
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit(scanDataPoint.Coordinate);
                 }
                 else if (scanDataPoint.GalacticBarrier)
                 {
@@ -1042,7 +1042,7 @@ namespace StarTrek_KG.Output
             try
             {
                 var menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
-                this.OutputWarpMenu(menuItems);
+                this.OutputWarpMenu(playerShip, menuItems);
             }
             catch
             {
@@ -1070,9 +1070,10 @@ namespace StarTrek_KG.Output
         }
 
 
-        private void OutputWarpMenu(IEnumerable<MenuItemDef> menuItems)
+        private void OutputWarpMenu(IShip playerShip, IEnumerable<MenuItemDef> menuItems)
         {
-            Navigation.WARP_PANEL.Add($"─── Warp Status: ── <Not Implemented Yet> ──");
+            int damage = Navigation.For(playerShip).Damage;
+            Navigation.WARP_PANEL.Add($"─── Warp: Dmg {damage}% ──");
             Navigation.WARP_PANEL.Add(Environment.NewLine);
             Navigation.WARP_PANEL.Add(Environment.NewLine);
 
@@ -1418,7 +1419,7 @@ namespace StarTrek_KG.Output
             }
             else if (ship.Energy == 0)
             {
-                commandResult = $"{missionFailed}: {ship.Name.ToUpper()} {energyExhausted}.";
+                commandResult = $"{missionFailed}: {ship.Name.ToUpper()} {energyExhausted}. Ship {ship.Name.ToUpper()} has run out of power.";
             }
             else if (starbasesAreHostile && starbasesLeft == 0)
             {

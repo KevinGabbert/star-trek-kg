@@ -206,6 +206,28 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
+        public static string DamagedScannerUnit(ICoordinate coordinate)
+        {
+            if (coordinate == null)
+            {
+                return DamagedScannerUnit();
+            }
+
+            int seed = (coordinate.X + 1) * 31 + (coordinate.Y + 1) * 131;
+            return DamagedScannerUnit(seed);
+        }
+
+        public static string DamagedScannerUnit(int seed)
+        {
+            const int places = 3;
+            int totalPossibilities = 1 << places;
+            int exitNumber = Math.Abs(seed) % totalPossibilities;
+
+            string nebulaPattern = Convert.ToString(exitNumber, 2).PadLeft(places, '0').Replace('0', '-').Replace('1', '+');
+
+            return nebulaPattern;
+        }
+
         public static string AdjustIfNebula(Region thisRegion, string direction, ref string shipSectorX, ref string shipSectorY)
         {
             if (thisRegion.Type == RegionType.Nebulae)
