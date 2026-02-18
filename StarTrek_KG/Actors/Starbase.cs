@@ -187,5 +187,7 @@ namespace StarTrek_KG.Actors
                 throw new NotImplementedException();
             }
         }
+
+        public INavigationSubsystem NavigationSubsystem => throw new NotImplementedException();
     }
 }

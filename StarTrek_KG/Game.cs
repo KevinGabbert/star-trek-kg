@@ -11,6 +11,7 @@ using StarTrek_KG.Utility;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Commands;
 
 namespace StarTrek_KG
 {
@@ -20,6 +21,8 @@ namespace StarTrek_KG
     public class Game : IDisposable, IInteractContainer, IConfig, IGame
     {
         #region Properties
+        private CommandDispatcher Dispatcher { get; set; }
+
         public delegate TResult _promptFunc<T, out TResult>(T input, out T output);
 
         public IStarTrekKGSettings Config { get; set; }
@@ -140,26 +143,30 @@ namespace StarTrek_KG
         /// <returns></returns>
         public List<string> SubscriberSendAndGetResponse(string command)
         {
-            List<string> retVal = null;
-
             this.Interact.Output.Clear();
 
-            retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, command);
+            if (command.StartsWith("wrp ", StringComparison.OrdinalIgnoreCase))
+            {
+                this.Dispatcher.HandleInput(command, this.Map.Playership);
+                return this.Map.Playership.OutputQueue();
+            }
+
+            var retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, command);
 
             if (retVal == null)
             {
-                //do nothing.  exit out
                 retVal = new List<string>();
             }
             else
             {
-                //todo: this may need to be added to Queue;
                 this.ReportGameStatus();
             }
 
-            //Write.OutputQueue should be filled with everything that just happened.
-            return retVal; 
+            return retVal;
         }
+
+
+
 
         #endregion
 
@@ -171,7 +178,27 @@ namespace StarTrek_KG
         {
             this.Started = true;
             this.Interact.ResetPrompt();
+            this.CommandInit();
         }
+
+        private void CommandInit()
+        {
+            var repository = new CommandRepository(this.Config);
+            this.Dispatcher = new CommandDispatcher(repository);
+
+            this.Dispatcher.RegisterHandler("wrp", "set course", (ship, val) => {
+                ship.NavigationSubsystem.SetCourse(val);
+            });
+
+            this.Dispatcher.RegisterHandler("wrp", "set speed", (ship, val) => {
+                ship.NavigationSubsystem.SetWarpSpeed(val);
+            });
+
+            this.Dispatcher.RegisterHandler("wrp", "engage", (ship, val) => {
+                ship.NavigationSubsystem.EngageWarp();
+            });
+        }
+
 
         //private void Initialize()
         //{

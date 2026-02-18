@@ -23,7 +23,7 @@ namespace StarTrek_KG.Subsystem
         {
             this.ShipConnectedTo.ClearOutputQueue();
 
-            if (command == Commands.DamageControl.FixSubsystem)
+            if (command == OldCommands.DamageControl.FixSubsystem)
             {
                 string subsystemToFix;
                 this.ShipConnectedTo.Map.Game.Interact.PromptUserConsole(this.ShowSubsystemsToFix(), out subsystemToFix);

@@ -13,6 +13,8 @@ namespace StarTrek_KG.Interfaces
         Subsystems Subsystems { get; set; }
         Coordinate Coordinate { get; set; }
         Allegiance Allegiance { get; set; }
+        INavigationSubsystem NavigationSubsystem { get; }
+
 
         int Energy { get; set; }
         bool Destroyed { get; set; }

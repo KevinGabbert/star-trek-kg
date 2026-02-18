@@ -847,6 +847,15 @@ namespace StarTrek_KG.Output
 
             string menuName = this.Subscriber.PromptInfo.SubSystem.Name;
 
+            if ((this.Subscriber.PromptInfo.SubSystem == SubsystemType.Navigation ||
+                 this.Subscriber.PromptInfo.SubSystem == SubsystemType.Impulse) &&
+                this.Subscriber.PromptInfo.Level > 0)
+            {
+                ISubsystem navSubsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
+                retVal = navSubsystem.Controls(playerEnteredText);
+                return retVal?.ToList();
+            }
+
             if (this.IsAcceptable(playerEnteredText, this.Subscriber.PromptInfo.SubSystem, this.Subscriber.PromptInfo.Level))
             {
                 ISubsystem subsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
@@ -989,7 +998,10 @@ namespace StarTrek_KG.Output
                             this.Output.Queue, 
                             1);
 
-            Navigation.For(playerShip).Controls(impulsePanelCommand);
+            if (!string.IsNullOrWhiteSpace(impulsePanelCommand))
+            {
+                Navigation.For(playerShip).Controls(impulsePanelCommand);
+            }
 
             return this.Output.Queue;
         }
@@ -1048,7 +1060,11 @@ namespace StarTrek_KG.Output
                 1
             );
 
-            Navigation.For(playerShip).Controls(warpPanelCommand);
+            this.Subscriber.PromptInfo.SubCommand = SubsystemType.Warp.Abbreviation;
+            if (!string.IsNullOrWhiteSpace(warpPanelCommand))
+            {
+                Navigation.For(playerShip).Controls(warpPanelCommand);
+            }
 
             return this.Output.Queue;
         }
@@ -1056,19 +1072,10 @@ namespace StarTrek_KG.Output
 
         private void OutputWarpMenu(IEnumerable<MenuItemDef> menuItems)
         {
-            var menuItemDefs = menuItems as IList<MenuItemDef> ?? menuItems.ToList();
-
             Navigation.WARP_PANEL.Add($"─── Warp Status: ── <Not Implemented Yet> ──");
             Navigation.WARP_PANEL.Add(Environment.NewLine);
             Navigation.WARP_PANEL.Add(this.RenderCourse());
             Navigation.WARP_PANEL.Add(Environment.NewLine);
-
-            foreach (MenuItemDef menuItem in menuItemDefs)
-            {
-                Navigation.WARP_PANEL.Add($"{menuItem.name} {menuItem.divider} {menuItem.description}");
-            }
-
-            Interaction.AddShipPanelOption(menuItemDefs, Navigation.WARP_PANEL);
 
             this.OutputStrings(Navigation.WARP_PANEL);
         }

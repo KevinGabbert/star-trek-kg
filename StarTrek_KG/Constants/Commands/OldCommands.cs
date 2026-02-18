@@ -1,6 +1,6 @@
 ﻿namespace StarTrek_KG.Constants.Commands
 {
-    public static class Commands
+    public static class OldCommands
     {
         //TODO: eventually make this all data driven from the config file.  (Like done in Shields subsystem)
 

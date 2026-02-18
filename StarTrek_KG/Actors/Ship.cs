@@ -24,6 +24,8 @@ namespace StarTrek_KG.Actors
             public ISector Sector { get; set; } //This is a ship's location in a Region
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
+            public INavigationSubsystem NavigationSubsystem { get; private set; }
+
             public Type Type { get; set; }
             public IMap Map { get; set; }
             public IStarTrekKGSettings Config { get; set; }
@@ -79,6 +81,9 @@ namespace StarTrek_KG.Actors
 
             //todo: pull config settings here
             //refactor from Game.GetGlobalInfo()
+
+            this.NavigationSubsystem = new NavigationSubsystem(this);
+
         }
 
         public override string ToString()

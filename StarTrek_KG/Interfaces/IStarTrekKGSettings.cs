@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
@@ -31,10 +32,11 @@ namespace StarTrek_KG.Interfaces
         NameValues GameSettings { get; }
 
         [ConfigurationProperty("Menus")]
-        [ConfigurationCollection(typeof (Menus), AddItemName = "MenuElement")]
-        Menus Menus { get; }
+        MenusElement Menus { get; }
 
         #endregion
+
+        List<CommandDef> LoadCommands();
 
         StarTrekKGSettings GetConfig();
 

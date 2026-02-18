@@ -44,6 +44,30 @@ namespace StarTrek_KG.Subsystem
             //todo: refactor this to be a module variable
         }
 
+        private int ComputeMaxImpulseDistance()
+        {
+            var energy = this.ShipConnectedTo?.Energy ?? 1;
+            var cap = DEFAULTS.SECTOR_MAX; // keep impulse travel reasonable; tweak if needed
+            if (energy < 1)
+            {
+                return 1;
+            }
+            return energy > cap ? cap : energy;
+        }
+
+        private void EnsureMaxWarpFactor()
+        {
+            if (this.MaxWarpFactor <= 0)
+            {
+                this.MaxWarpFactor = this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("MaxWarpFactor");
+            }
+
+            if (this.Damaged())
+            {
+                this.DivineMaxWarpFactor();
+            }
+        }
+
         private void DivineMaxWarpFactor()
         {
             this.MaxWarpFactor = (int) (0.2 + Utility.Utility.Random.Next(9));
@@ -57,13 +81,21 @@ namespace StarTrek_KG.Subsystem
         {
             //this.ShipConnectedTo.ClearOutputQueue();
 
-            SubsystemType currentSelectedSubsystem = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.SubSystem;
+            var promptInfo = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo;
+            SubsystemType currentSelectedSubsystem = promptInfo.SubSystem;
 
             //todo: fix subsystem? use constant
             //todo: we may want to use warp subsystem
-            if (currentSelectedSubsystem == SubsystemType.Navigation && (command == SubsystemType.Warp.Abbreviation))
+            if (currentSelectedSubsystem == SubsystemType.Navigation)
             {
-                this.WarpControls();
+                if (promptInfo.Level > 0)
+                {
+                    this.WarpPromptControls(command);
+                }
+                else if (command == SubsystemType.Warp.Abbreviation)
+                {
+                    this.WarpControls();
+                }
             }
             else if (currentSelectedSubsystem == SubsystemType.Impulse)
             {
@@ -114,55 +146,166 @@ namespace StarTrek_KG.Subsystem
 
             if (!base.Damaged())
             {
+                var promptLevel = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level;
 
-                //expecting a numeric value at this point.
-                if (command.IsNumeric())
+                // Expecting numeric input at this point.
+                if (string.IsNullOrWhiteSpace(command) || !command.IsNumeric() || command.Contains("."))
                 {
-                    switch (this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level)
-                    {
-                        case 1:
-                            //todo: verify course is valid
-                            this._movementDirection = (NavDirection) Convert.ToInt32(command);
+                    this.ShipConnectedTo.OutputLine("Invalid entry.");
+                    this.RepromptImpulse(promptLevel);
+                    return this.ShipConnectedTo.OutputQueue();
+                }
 
-                            //(this.Movement.PromptAndCheckCourse(out direction))
+                switch (promptLevel)
+                {
+                    case 1:
+                        // direction input
+                        int directionValue;
+                        if (!int.TryParse(command, out directionValue))
+                        {
+                            this.ShipConnectedTo.OutputLine("Invalid course.");
+                            this.RepromptImpulse(promptLevel);
+                            return this.ShipConnectedTo.OutputQueue();
+                        }
 
-                            this.GetValueFromUser("distance");
-                            break;
-                        case 2:
-                            //todo:
+                        var directions = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
+                        if (directionValue < directions.Min() || directionValue > directions.Max())
+                        {
+                            this.ShipConnectedTo.OutputLine("Invalid course.");
+                            this.RepromptImpulse(promptLevel);
+                            return this.ShipConnectedTo.OutputQueue();
+                        }
 
-                            //if (this.Impulse.InvalidSublightFactorCheck(this.MaxWarpFactor, out distance))
-                            //    return this.ShipConnectedTo.OutputQueue();
+                        this._movementDirection = (NavDirection)directionValue;
+                        this.GetValueFromUser("distance");
+                        break;
 
-                            int lastRegionY;
-                            int lastRegionX;
+                    case 2:
+                        // distance input
+                        int distance;
+                        if (!int.TryParse(command, out distance))
+                        {
+                            this.ShipConnectedTo.OutputLine("Invalid distance.");
+                            this.RepromptImpulse(promptLevel);
+                            return this.ShipConnectedTo.OutputQueue();
+                        }
 
-                            //command should be distance here
+                        this.MaxDistance = this.ComputeMaxImpulseDistance();
+                        if (distance < 1 || distance > this.MaxDistance)
+                        {
+                            this.ShipConnectedTo.OutputLine($"Invalid distance. Enter 1 to {this.MaxDistance}.");
+                            this.RepromptImpulse(promptLevel);
+                            return this.ShipConnectedTo.OutputQueue();
+                        }
 
-                            if (!Impulse.Engage(this._movementDirection, int.Parse(command), out lastRegionY,
-                                out lastRegionX, this.ShipConnectedTo.Map))
-                            {
-                                return this.ShipConnectedTo.OutputQueue();
-                            }
+                        int lastRegionY;
+                        int lastRegionX;
 
-                            this.RepairOrTakeDamage(lastRegionX, lastRegionY);
+                        if (!Impulse.Engage(this._movementDirection, distance, out lastRegionY,
+                            out lastRegionX, this.ShipConnectedTo.Map))
+                        {
+                            return this.ShipConnectedTo.OutputQueue();
+                        }
 
-                            var crs = CombinedRangeScan.For(this.ShipConnectedTo);
-                            if (crs.Damaged())
-                            {
-                                ShortRangeScan.For(this.ShipConnectedTo).Controls();
-                            }
-                            else
-                            {
-                                crs.Controls();
-                            }
+                        this.RepairOrTakeDamage(lastRegionX, lastRegionY);
 
-                            this.ShipConnectedTo.ResetPrompt();
-                            break;
-                    }
+                        var crs = CombinedRangeScan.For(this.ShipConnectedTo);
+                        if (crs.Damaged())
+                        {
+                            ShortRangeScan.For(this.ShipConnectedTo).Controls();
+                        }
+                        else
+                        {
+                            crs.Controls();
+                        }
+
+                        this.ShipConnectedTo.ResetPrompt();
+                        break;
                 }
 
                 //prompt needs to reset, then do a CRS, SRS, or just return a message to say that you have traveled.
+            }
+
+            return this.ShipConnectedTo.OutputQueue();
+        }
+
+        private List<string> WarpPromptControls(string command)
+        {
+            var promptLevel = this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.Level;
+
+            if (promptLevel == 1)
+            {
+                this.EnsureMaxWarpFactor();
+            }
+
+            if (string.IsNullOrWhiteSpace(command) || !command.IsNumeric() || command.Contains("."))
+            {
+                this.ShipConnectedTo.OutputLine("Invalid entry.");
+                this.RepromptWarp(promptLevel);
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            switch (promptLevel)
+            {
+                case 1:
+                    int directionValue;
+                    if (!int.TryParse(command, out directionValue))
+                    {
+                        this.ShipConnectedTo.OutputLine("Invalid course.");
+                        this.RepromptWarp(promptLevel);
+                        return this.ShipConnectedTo.OutputQueue();
+                    }
+
+                    var directions = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
+                    if (directionValue < directions.Min() || directionValue > directions.Max())
+                    {
+                        this.ShipConnectedTo.OutputLine("Invalid course.");
+                        this.RepromptWarp(promptLevel);
+                        return this.ShipConnectedTo.OutputQueue();
+                    }
+
+                    this._movementDirection = (NavDirection)directionValue;
+                    this.PromptForWarpFactor();
+                    break;
+
+                case 2:
+                    int warpFactor;
+                    if (!int.TryParse(command, out warpFactor))
+                    {
+                        this.ShipConnectedTo.OutputLine("Invalid warp factor.");
+                        this.RepromptWarp(promptLevel);
+                        return this.ShipConnectedTo.OutputQueue();
+                    }
+
+                    if (warpFactor < 1 || warpFactor > this.MaxWarpFactor)
+                    {
+                        this.ShipConnectedTo.OutputLine($"Invalid warp factor. Enter 1 to {this.MaxWarpFactor}.");
+                        this.RepromptWarp(promptLevel);
+                        return this.ShipConnectedTo.OutputQueue();
+                    }
+
+                    int lastRegionY;
+                    int lastRegionX;
+
+                    if (!Warp.Engage(this._movementDirection, warpFactor, out lastRegionY, out lastRegionX, this.ShipConnectedTo.Map))
+                    {
+                        return this.ShipConnectedTo.OutputQueue();
+                    }
+
+                    this.RepairOrTakeDamage(lastRegionX, lastRegionY);
+
+                    var crs = CombinedRangeScan.For(this.ShipConnectedTo);
+                    if (crs.Damaged())
+                    {
+                        ShortRangeScan.For(this.ShipConnectedTo).Controls();
+                    }
+                    else
+                    {
+                        crs.Controls();
+                    }
+
+                    this.ShipConnectedTo.ResetPrompt();
+                    break;
             }
 
             return this.ShipConnectedTo.OutputQueue();
@@ -367,6 +510,7 @@ namespace StarTrek_KG.Subsystem
             if (promptInfo.Level == 1)
             {
                 string transfer;
+                this.MaxDistance = this.ComputeMaxImpulseDistance();
                 this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Impulse,
                                                                    "Impulse Control-> Distance-> ",
                                                                    $"Enter distance to travel (1--{this.MaxDistance}) ", //todo: resource this
@@ -376,6 +520,58 @@ namespace StarTrek_KG.Subsystem
             }
 
             promptInfo.SubCommand = subCommand;
+        }
+
+        private void PromptForWarpFactor()
+        {
+            string transfer;
+            this.ShipConnectedTo.Map.Game.Interact.PromptUser(
+                SubsystemType.Navigation,
+                "Warp Control-> Speed-> ",
+                $"Enter warp factor (1--{this.MaxWarpFactor}) ",
+                out transfer,
+                this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
+                subPromptLevel: 2);
+        }
+
+        private void RepromptImpulse(int promptLevel)
+        {
+            string throwaway;
+
+            if (promptLevel <= 1)
+            {
+                this.ShipConnectedTo.Map.Game.Interact.PromptUser(
+                    SubsystemType.Impulse,
+                    $"{this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.DefaultPrompt}Impulse Control -> Enter Direction ->",
+                    null,
+                    out throwaway,
+                    this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
+                    1);
+            }
+            else
+            {
+                this.GetValueFromUser("distance");
+            }
+        }
+
+        private void RepromptWarp(int promptLevel)
+        {
+            string throwaway;
+
+            if (promptLevel <= 1)
+            {
+                this.ShipConnectedTo.Map.Game.Interact.PromptUser(
+                    SubsystemType.Navigation,
+                    $"{this.ShipConnectedTo.Map.Game.Interact.Subscriber.PromptInfo.DefaultPrompt}Warp Control -> ",
+                    this.ShipConnectedTo.Map.Game.Interact.RenderCourse() + "Enter Course: ",
+                    out throwaway,
+                    this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
+                    1);
+            }
+            else
+            {
+                this.PromptForWarpFactor();
+            }
         }
     }
 }

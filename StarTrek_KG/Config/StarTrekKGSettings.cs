@@ -8,6 +8,7 @@ using StarTrek_KG.Exceptions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Commands;
 
 namespace StarTrek_KG.Config
 {
@@ -16,7 +17,7 @@ namespace StarTrek_KG.Config
     /// This, however, may change if the game ever scales up to multiplayer, in which case, just add on an IConfiguration interface, and make
     /// a data class implement it, and either switch to it, or allow switching.
     /// </summary>
-    public class StarTrekKGSettings: ConfigurationSection, IStarTrekKGSettings
+    public class StarTrekKGSettings : ConfigurationSection, IStarTrekKGSettings
     {
         public StarTrekKGSettings Get { get; set; }
         public StarTrekKGSettings GetConfig()
@@ -40,7 +41,7 @@ namespace StarTrek_KG.Config
                 }
                 else
                 {
-                     throw; //todo: output a message to the user
+                    throw; //todo: output a message to the user
                 }
             }
             catch (Exception)
@@ -71,8 +72,8 @@ namespace StarTrek_KG.Config
         public NameValues GameSettings => (NameValues)this["GameSettings"];
 
         [ConfigurationProperty("Menus")]
-        [ConfigurationCollection(typeof(Menus), AddItemName = "MenuElement")]
-        public Menus Menus => (Menus)this["Menus"];
+        public MenusElement Menus => (MenusElement)this["Menus"];
+
 
         #endregion
 
@@ -112,7 +113,7 @@ namespace StarTrek_KG.Config
 
             IEnumerable<SeverityValueTranslation> threatElements = (from SeverityValueTranslation threatElement in factionThreatCollection select threatElement).ToList();
 
-            var threats = threatElements.Select(factionThreat => new FactionThreat(factionThreat.value, factionThreat.translation)) .ToList();
+            var threats = threatElements.Select(factionThreat => new FactionThreat(factionThreat.value, factionThreat.translation)).ToList();
 
             return threats;
         }
@@ -126,7 +127,7 @@ namespace StarTrek_KG.Config
             this.Reset();
 
             //todo: throw a try..catch here in case it breaks.
-            MenuElement menuElement = this.Get?.Menus[menuName];
+            MenuElement menuElement = this.Get?.Menus?.MenuElements?[menuName];
 
             return menuElement?.MenuItems;
         }
@@ -182,7 +183,7 @@ namespace StarTrek_KG.Config
             T setting;
             if (element != null)
             {
-                if(whiteSpaceIsOk)
+                if (whiteSpaceIsOk)
                 {
                     if (element.value == null)
                     {
@@ -205,11 +206,11 @@ namespace StarTrek_KG.Config
             try
             {
                 //user is passing in the data type (T), so typecast it here to the provided type so they don't have to.
-                setting = (T) Convert.ChangeType(element.value, typeof (T));
+                setting = (T)Convert.ChangeType(element.value, typeof(T));
             }
             catch (Exception)
             {
-                throw new ConfigurationErrorsException( $"(DataType Error) Unable to cast config setting {name}. Check to make sure setting is filled out correctly.");
+                throw new ConfigurationErrorsException($"(DataType Error) Unable to cast config setting {name}. Check to make sure setting is filled out correctly.");
             }
             return setting;
         }
@@ -220,6 +221,58 @@ namespace StarTrek_KG.Config
             {
                 this.Get = this.GetConfig();
             }
+        }
+
+        public List<CommandDef> LoadCommandsNew()
+        {
+            var commands = new List<CommandDef>();
+
+            // Example: parse from App.config XML
+            System.Xml.XmlElement section = (System.Xml.XmlElement)ConfigurationManager.GetSection("Commands");
+
+            foreach (System.Xml.XmlElement cmdElem in section.GetElementsByTagName("Command"))
+            {
+                var command = new CommandDef
+                {
+                    Key = cmdElem.GetAttribute("key"),
+                    Subsystem = cmdElem.GetAttribute("subsystem"),
+                    Description = cmdElem.GetAttribute("description")
+                };
+
+                foreach (System.Xml.XmlElement subElem in cmdElem.GetElementsByTagName("Subcommand"))
+                {
+                    var subcommand = new SubcommandDef
+                    {
+                        Key = subElem.GetAttribute("key"),
+                        Prompt = subElem.GetAttribute("prompt"),
+                        Description = subElem.GetAttribute("description")
+                    };
+
+                    command.Subcommands.Add(subcommand);
+                }
+
+                commands.Add(command);
+            }
+
+            return commands;
+        }
+        public List<CommandDef> LoadCommands()
+        {
+            return new List<CommandDef>
+            {
+                new CommandDef
+                {
+                    Key = "wrp",
+                    Subcommands = new List<SubcommandDef>
+                    {
+                        new SubcommandDef { Key = "set course", Prompt = "Enter Course:" },
+                        new SubcommandDef { Key = "set speed", Prompt = "Enter Warp Speed:" },
+                        new SubcommandDef { Key = "engage", Prompt = "" }
+                    }
+                }
+
+                // add more commands if needed
+                };
         }
     }
 }

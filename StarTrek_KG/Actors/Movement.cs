@@ -50,15 +50,13 @@ namespace StarTrek_KG.Actors
                     break;
 
                 case MovementType.Warp:
-                    Region newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), direction, this.ShipConnectedTo);
+                    this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
 
-                    this.ShipConnectedTo.Coordinate = newLocation;
-
-                    if (newLocation != null)
+                    var newRegion = this.ShipConnectedTo.GetRegion();
+                    if (newRegion != null &&
+                        (newRegion.X != playershipRegion.X || newRegion.Y != playershipRegion.Y))
                     {
-                        newLocation.SetActive();
-                        game.Map.SetPlayershipInActiveSector(game.Map); //sets friendly in Active Region 
-                        game.MoveTimeForward(game.Map, playershipRegion, newLocation);
+                        game.MoveTimeForward(game.Map, playershipRegion, newRegion);
                     }
 
                     break;
@@ -434,30 +432,33 @@ namespace StarTrek_KG.Actors
 
             bool userEnteredCourse = this.ShipConnectedTo.Map.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()}{Environment.NewLine}Enter Course: ", out userDirection);
 
-            if (userEnteredCourse)
+            if (!userEnteredCourse || string.IsNullOrWhiteSpace(userDirection))
             {
-                //todo: check to see if number is higher than 8
-
-                if (!userDirection.IsNumeric() || userDirection.Contains("."))
-                {
-                    this.SystemPrompt.Line("Invalid course.");
-                    direction = NavDirection.Up;
-
-                    return true;
-                }
-
-                int directionToCheck = Convert.ToInt32(userDirection);
-
-                if (directionToCheck > availableDirections.Max() || directionToCheck < availableDirections.Min())
-                {
-                    this.SystemPrompt.Line("Invalid course..");
-                    direction = NavDirection.Up;
-
-                    return true;
-                }
+                direction = NavDirection.Up;
+                return true;
             }
 
-            direction = (NavDirection)availableDirections.Where(d => d == Convert.ToInt32(userDirection)).SingleOrDefault();
+            //todo: check to see if number is higher than 8
+
+            if (!userDirection.IsNumeric() || userDirection.Contains("."))
+            {
+                this.SystemPrompt.Line("Invalid course.");
+                direction = NavDirection.Up;
+
+                return true;
+            }
+
+            int directionToCheck = Convert.ToInt32(userDirection);
+
+            if (directionToCheck > availableDirections.Max() || directionToCheck < availableDirections.Min())
+            {
+                this.SystemPrompt.Line("Invalid course.");
+                direction = NavDirection.Up;
+
+                return true;
+            }
+
+            direction = (NavDirection)availableDirections.Where(d => d == directionToCheck).SingleOrDefault();
 
             return false;
         }

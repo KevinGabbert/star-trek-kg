@@ -54,13 +54,32 @@ namespace StarTrek_KG.Actors
         }
         public bool PromptAndCheckForInvalidWarpFactor(int maxWarpFactor, out string distance)
         {
-            if (!this.Interact.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance, this.Interact.Output.Queue)
-                || int.Parse(distance) < 0 
-                || int.Parse(distance) > maxWarpFactor)
+            if (!this.Interact.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance, this.Interact.Output.Queue))
             {
-                this.Interact.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
                 return true;
             }
+
+            // If prompt is being set (web flow), distance will not be a user value yet.
+            if (string.IsNullOrWhiteSpace(distance) || distance == "-1")
+            {
+                return true;
+            }
+
+            if (distance.Contains("."))
+            {
+                this.Interact.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
+                this.Interact.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance, this.Interact.Output.Queue);
+                return true;
+            }
+
+            int warpFactor;
+            if (!int.TryParse(distance, out warpFactor) || warpFactor < 1 || warpFactor > maxWarpFactor)
+            {
+                this.Interact.Line("Invalid warp factor. Maximum Warp is " + maxWarpFactor + " at this time.");
+                this.Interact.PromptUser(SubsystemType.None, "Warp:>", $"Enter warp factor (1-{maxWarpFactor}): ", out distance, this.Interact.Output.Queue);
+                return true;
+            }
+
             return false;
         }
         public bool Engage(NavDirection direction, int distance, out int lastRegionY, out int lastRegionX, IMap map)

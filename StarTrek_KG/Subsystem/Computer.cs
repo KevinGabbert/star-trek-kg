@@ -42,11 +42,11 @@ namespace StarTrek_KG.Subsystem
             //todo: thise commands should be pulled from web.config entries
             switch (command.ToLower())
             {
-                case Commands.Computer.GalacticRecord:
+                case OldCommands.Computer.GalacticRecord:
                     Computer.For(this.ShipConnectedTo).PrintGalacticRecord(game.Map.Regions);
                     break;
 
-                case Commands.Computer.Status:
+                case OldCommands.Computer.Status:
 
                     //todo: get a list of all baddie names in Region
 
@@ -56,29 +56,29 @@ namespace StarTrek_KG.Subsystem
                                               this.ShipConnectedTo.GetRegion());
                     break;
 
-                case Commands.Computer.TorpedoCalculator:
+                case OldCommands.Computer.TorpedoCalculator:
                     //todo: calculator code will be refactored to this object
                     if (this.Damaged()) return null;
                     Torpedoes.For(this.ShipConnectedTo).Calculator();
                     break;
 
-                case Commands.Computer.TargetObjectInRegion:
+                case OldCommands.Computer.TargetObjectInRegion:
                     this.TargetObjectInRegion();
                     break;
 
-                case Commands.Computer.StarbaseCalculator:
+                case OldCommands.Computer.StarbaseCalculator:
                     //todo: calculator code will be refactored to this object
                     if (this.Damaged()) return null;
                     Navigation.For(this.ShipConnectedTo).StarbaseCalculator(this.ShipConnectedTo); 
                     break;
 
-                case Commands.Computer.NavigationCalculator:
+                case OldCommands.Computer.NavigationCalculator:
                     //todo: calculator code will be refactored to this object
                     if (this.Damaged()) return null;
                     Navigation.For(this.ShipConnectedTo).Calculator();
                     break;
 
-                case Commands.Computer.TranslateLastMessage:
+                case OldCommands.Computer.TranslateLastMessage:
 
                     if (game.LatestTaunts != null && game.LatestTaunts.Count > 0)
                     {

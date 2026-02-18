@@ -1,4 +1,5 @@
 using StarTrek_KG.Interfaces;
+using System;
 
 namespace StarTrek_KG.Output
 {
@@ -9,6 +10,9 @@ namespace StarTrek_KG.Output
 
         public Subscriber(IStarTrekKGSettings config)
         {
+            if (config == null)
+                throw new ArgumentNullException(nameof(config), "Config cannot be null.");
+
             this.Config = config;
 
             string defaultPrompt = this.Config.GetText("defaultPrompt");
