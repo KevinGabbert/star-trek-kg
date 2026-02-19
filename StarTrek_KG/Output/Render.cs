@@ -66,37 +66,43 @@ namespace StarTrek_KG.Output
 
         private string GetSRSRowIndicator(int row, IMap map, Location location)
         {
-            string retVal = " ";
-
+            string indicator;
             switch (row)
             {
                 case 0:
-                    retVal += string.Format(this.Config.GetText("SRSRegionIndicator"), Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
+                    indicator = string.Format(this.Config.GetText("SRSRegionIndicator"),
+                                              Convert.ToString(location.Sector.X),
+                                              Convert.ToString(location.Sector.Y));
                     break;
                 case 1:
-                    retVal += string.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y));
+                    indicator = string.Format(this.Config.GetText("SRSSectorIndicator"),
+                                              Convert.ToString(location.Region.X),
+                                              Convert.ToString(location.Region.Y));
                     break;
                 case 2:
-                    retVal += string.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
+                    indicator = string.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
                     break;
                 case 3:
-                    retVal += string.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
+                    indicator = string.Format(this.Config.GetText("SRSTimeRemainingIndicator"), map.timeRemaining);
                     break;
                 case 4:
-                    retVal += string.Format(this.Config.GetText("SRSConditionIndicator"), map.Playership.GetConditionAndSetIcon());
+                    indicator = string.Format(this.Config.GetText("SRSConditionIndicator"), map.Playership.GetConditionAndSetIcon());
                     break;
                 case 5:
-                    retVal += string.Format(this.Config.GetText("SRSEnergyIndicator"), map.Playership.Energy);
+                    indicator = string.Format(this.Config.GetText("SRSEnergyIndicator"), map.Playership.Energy);
                     break;
                 case 6:
-                    retVal += string.Format(this.Config.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
+                    indicator = string.Format(this.Config.GetText("SRSShieldsIndicator"), Shields.For(map.Playership).Energy);
                     break;
                 case 7:
-                    retVal += string.Format(this.Config.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
+                    indicator = string.Format(this.Config.GetText("SRSTorpedoesIndicator"), Torpedoes.For(map.Playership).Count);
+                    break;
+                default:
+                    indicator = "";
                     break;
             }
 
-            return retVal;
+            return " " + indicator;
         }
 
         private void ScanLine(string srsText, string rightSideText = "")
