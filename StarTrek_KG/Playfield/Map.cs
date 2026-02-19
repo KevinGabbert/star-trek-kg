@@ -113,6 +113,7 @@ namespace StarTrek_KG.Playfield
             }
 
             this.Playership?.UpdateDivinedSectors();
+            this.HostilesToSetUp = this.Regions.GetHostileCount();
         }
 
         public void SetupPlayerShipInSectors(SectorDefs sectorDefs)
