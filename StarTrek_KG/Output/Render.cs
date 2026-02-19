@@ -71,10 +71,10 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    retVal += string.Format(this.Config.GetText("SRSRegionIndicator"), Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y));
+                    retVal += string.Format(this.Config.GetText("SRSRegionIndicator"), Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
                     break;
                 case 1:
-                    retVal += string.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(location.Sector.X), Convert.ToString(location.Sector.Y));
+                    retVal += string.Format(this.Config.GetText("SRSSectorIndicator"), Convert.ToString(location.Region.X), Convert.ToString(location.Region.Y));
                     break;
                 case 2:
                     retVal += string.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
@@ -118,8 +118,8 @@ namespace StarTrek_KG.Output
 
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - topBorderAreaMeasurement);
 
-            var RegionIndicator =
-                $" Coord: [{Convert.ToString(location.Region.X)},{Convert.ToString(location.Region.Y)}]  Sec: §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
+            string RegionIndicator =
+                $" Coord: [{Convert.ToString(location.Sector.X)},{Convert.ToString(location.Sector.Y)}]  Sec: §{Convert.ToString(location.Region.X)}.{Convert.ToString(location.Region.Y)}";
 
             regionLineBuilder.Insert(topBorderAreaMeasurement, RegionIndicator);
 
