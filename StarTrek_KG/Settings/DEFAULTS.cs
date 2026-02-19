@@ -4,7 +4,7 @@
     public static class DEFAULTS
     {
         public const string EMPTY = "   ";
-        public const string PLAYERSHIP = "<*>";
+        public const string PLAYERSHIP = "=0";
         public const string STARBASE = ">!<"; //∞
         public const string STAR = " * ";
         public const string DEBUG_MARKER = " X ";
