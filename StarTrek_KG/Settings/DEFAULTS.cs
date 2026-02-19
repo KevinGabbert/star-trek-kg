@@ -4,15 +4,15 @@
     public static class DEFAULTS
     {
         public const string EMPTY = "   ";
-        public const string PLAYERSHIP = "=0";
-        public const string STARBASE = ">!<"; //∞
-        public const string STAR = " * ";
+        public static string PLAYERSHIP = "<0>";
+        public static string STARBASE = ">!<"; //∞
+        public static string STAR = " * ";
         public const string DEBUG_MARKER = " X ";
 
         public const string NULL_MARKER = "!!"; //you shouldn't see this ever rendered.  if it is, then the game has an issue
 
         //--------------------------------------
-        public const string ALLY = "<++>"; //todo: future feature
+        public static string ALLY = "<+>"; //todo: future feature
 
         public const string SCAN_SECTOR_DIVIDER = "│";
 

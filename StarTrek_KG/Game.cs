@@ -229,6 +229,11 @@ namespace StarTrek_KG
 
             DEFAULTS.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
             DEFAULTS.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");
+
+            DEFAULTS.PLAYERSHIP = this.Config.GetSetting<string>("PlayerShipGlyph");
+            DEFAULTS.STAR = this.Config.GetSetting<string>("StarGlyph");
+            DEFAULTS.STARBASE = this.Config.GetSetting<string>("StarbaseGlyph");
+            DEFAULTS.ALLY = this.Config.GetSetting<string>("AllyGlyph");
         }
 
         private SectorDefs SectorSetup()
