@@ -54,15 +54,19 @@ namespace StarTrek_KG.Subsystem
                                   "Enter firing direction (1.0--9.0) ";
 
             string direction;
-            if (!prompt.PromptUser(SubsystemType.Phasers, "Phasers->", firingDirection, out direction, prompt.Output.Queue)
-                || int.Parse(direction) < 1.0 
-                || int.Parse(direction) > 9.0)
+            if (!prompt.PromptUser(SubsystemType.Torpedoes, "Torpedoes->", firingDirection, out direction, prompt.Output.Queue))
+            {
+                return prompt.Output.Queue.ToList();
+            }
+
+            int directionValue;
+            if (!int.TryParse(direction, out directionValue) || directionValue < 1 || directionValue > 9)
             {
                 prompt.Line("Invalid direction.");
                 return prompt.Output.Queue.ToList();
             }
 
-            this.Shoot(int.Parse(direction));
+            this.Shoot(directionValue);
 
             return prompt.Output.Queue.ToList();
         }
