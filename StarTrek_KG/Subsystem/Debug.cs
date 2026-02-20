@@ -146,7 +146,7 @@ namespace StarTrek_KG.Subsystem
                     break;
 
                 case "dlrs":
-                    LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Regions(DEFAULTS.DEBUG_MODE);
+                    LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Sectors(DEFAULTS.DEBUG_MODE);
                     this.ShipConnectedTo.OutputLine( $"All Sectors set to: {DEFAULTS.DEBUG_MODE}.  (set debugmode to true to make this scan all.)");
                     break;
 

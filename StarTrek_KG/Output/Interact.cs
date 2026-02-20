@@ -961,17 +961,30 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> DebugMenu(IShip playerShip)
         {
-           IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+            var rawMenuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel");
+            if (rawMenuItems == null)
+            {
+                return this.Output.Queue.ToList();
+            }
 
-            Interaction.AddShipPanelOption(menuItems, Debug.DEBUG_PANEL);
+            var menuItems = rawMenuItems.Cast<MenuItemDef>().ToList();
+            if (!menuItems.Any())
+            {
+                return this.Output.Queue.ToList();
+            }
 
-            this.OutputStrings(Debug.DEBUG_PANEL);
-            this.WithNoEndCR(this.ENTER_DEBUG_COMMAND);
+            var debugPanel = Debug.DEBUG_PANEL.ToList();
+            Interaction.AddShipPanelOption(menuItems, debugPanel);
 
-            //todo: readline needs to be done using an event
-            var debugCommand = Output.ReadLine().Trim().ToLower();
+            this.OutputStrings(debugPanel);
 
-            Debug.For(playerShip).Controls(debugCommand);
+            string promptReply;
+            this.PromptUser(SubsystemType.Debug,
+                $"{this.Subscriber.PromptInfo.DefaultPrompt}Debug -> ",
+                null,
+                out promptReply,
+                this.Output.Queue,
+                1);
 
             return this.Output.Queue.ToList();
         }
