@@ -158,7 +158,7 @@ namespace UnitTests.Subsystem
             playershipBefore.Map.Game = phasers.ShipConnectedTo.Map.Game;
             Torpedoes.For(playershipBefore).ShipConnectedTo.Map.Game.RandomFactorForTesting = 2;
 
-            badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 200;
+            badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 2;
 
             //This action will hit every single hostile in the Sector
             phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
@@ -219,7 +219,7 @@ namespace UnitTests.Subsystem
             playershipBefore.Map.Game = phasers.ShipConnectedTo.Map.Game;
             Torpedoes.For(playershipBefore).ShipConnectedTo.Map.Game.RandomFactorForTesting = 2;
 
-            badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 200;
+            badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 2;
 
             //This action will hit every single hostile in the Sector
             phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
