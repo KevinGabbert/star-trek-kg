@@ -59,13 +59,7 @@ namespace StarTrek_KG.Subsystem
             prompt.Output.Write(hostileCheckOutput);
 
             //todo: resource this out.
-            var firingDirection = Environment.NewLine +
-                                  " 4   5   6 " + Environment.NewLine +
-                                 @"   \ ? /  " + Environment.NewLine +
-                                  "3 ? <*> ? 7" + Environment.NewLine +
-                                 @"   / ? \  " + Environment.NewLine +
-                                  " 2   1   8" + Environment.NewLine +
-                                  Environment.NewLine +
+            var firingDirection = Output.Interaction.COURSE_GRID +
                                   "Enter firing direction (1.0--9.0) ";
 
             string direction;
@@ -106,13 +100,7 @@ namespace StarTrek_KG.Subsystem
 
         private string BuildFiringDirectionPrompt()
         {
-            return Environment.NewLine +
-                   " 4   5   6 " + Environment.NewLine +
-                   @"   \ ? /  " + Environment.NewLine +
-                   "3 ? <*> ? 7" + Environment.NewLine +
-                   @"   / ? \  " + Environment.NewLine +
-                   " 2   1   8" + Environment.NewLine +
-                   Environment.NewLine +
+            return Output.Interaction.COURSE_GRID +
                    "Enter firing direction (1.0--9.0) ";
         }
 

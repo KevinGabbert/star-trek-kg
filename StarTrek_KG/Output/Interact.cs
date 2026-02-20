@@ -46,6 +46,14 @@ namespace StarTrek_KG.Output
         //todo: resource these out.
         private readonly string ENTER_DEBUG_COMMAND = "Enter Debug command: ";
         private readonly string ENTER_COMPUTER_COMMAND = "Enter computer command: ";
+        public static readonly string COURSE_GRID =
+            Environment.NewLine +
+            " 4   5   6 " + Environment.NewLine +
+            @"   \ ? /  " + Environment.NewLine +
+            "3 ? <*> ? 7" + Environment.NewLine +
+            @"   / ? \  " + Environment.NewLine +
+            " 2   1   8" + Environment.NewLine +
+            Environment.NewLine;
 
         #endregion
 
@@ -493,14 +501,7 @@ namespace StarTrek_KG.Output
         public string RenderCourse()
         {
             //todo: pull this from app.config
-
-            return Environment.NewLine +
-                   " 4   5   6 " + Environment.NewLine +
-                   @"   \ ? /  " + Environment.NewLine +
-                   "3 ? <*> ? 7" + Environment.NewLine +
-                   @"   / ? \  " + Environment.NewLine +
-                   " 2   1   8" + Environment.NewLine +
-                   Environment.NewLine;
+            return COURSE_GRID;
         }
 
         #endregion
@@ -1079,11 +1080,13 @@ namespace StarTrek_KG.Output
             Impulse.IMPULSE_PANEL.Add($"--- Impulse Status: -- <Not Implemented Yet> --");
 
             Impulse.IMPULSE_PANEL.Add(Environment.NewLine);
-            Impulse.IMPULSE_PANEL.Add(@"      4   5   6");
-            Impulse.IMPULSE_PANEL.Add(@"        \ ? /");
-            Impulse.IMPULSE_PANEL.Add(@"     3 ? <*> ? 7");
-            Impulse.IMPULSE_PANEL.Add(@"        / ? \");
-            Impulse.IMPULSE_PANEL.Add(@"      2   1   8");
+            foreach (var line in COURSE_GRID.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None))
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    Impulse.IMPULSE_PANEL.Add("    " + line);
+                }
+            }
             Impulse.IMPULSE_PANEL.Add(Environment.NewLine);
 
             foreach (MenuItemDef menuItem in menuItemDefs)
