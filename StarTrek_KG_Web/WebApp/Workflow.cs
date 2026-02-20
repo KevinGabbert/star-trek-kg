@@ -11,72 +11,79 @@ namespace StarTrek_KG_Web.WebApp
     {
         public List<string> ExecuteCommand(string command, string sessionID, List<string> responseLines, Game game)
         {
-
-            //todo: make this into a resource file. KLW
-            switch (command.Trim().ToLower())
+            try
             {
-                case "connect to ncc1701":
-                    //todo: connects to ncc1701
-                    //todo: flesh this out to connect to any ship needed.
-                    break;
+                //todo: make this into a resource file. KLW
+                switch (command.Trim().ToLower())
+                {
+                    case "connect to ncc1701":
+                        //todo: connects to ncc1701
+                        //todo: flesh this out to connect to any ship needed.
+                        break;
 
-                //todo: resource out menu
-                case "term menu":
-                    responseLines = this.Response(new List<string>() //todo: resource this
-                    {
-                        " --- Terminal Menu ---",
-                        "start - starts a session",
-                        "end session - ends the currently running game",
-                        "reset config - reloads config",
-                        "release notes - see the latest release notes",
-                        "clear - clear the screen"
-                    });
-                    break;
+                    //todo: resource out menu
+                    case "term menu":
+                        responseLines = this.Response(new List<string>() //todo: resource this
+                        {
+                            " --- Terminal Menu ---",
+                            "start - starts a session",
+                            "end session - ends the currently running game",
+                            "reset config - reloads config",
+                            "release notes - see the latest release notes",
+                            "clear - clear the screen"
+                        });
+                        break;
 
-                case "test":
-                    responseLines = this.SendTestResponse();
-                    break;
+                    case "test":
+                        responseLines = this.SendTestResponse();
+                        break;
 
-                case "make error":
-                    throw new ArgumentException("This is a test error");
+                    case "make error":
+                        throw new ArgumentException("This is a test error");
 
-                case "end session":
-                case "stop":
-                    //todo: gives final stats and stops game
-                    responseLines = this.Response(new List<string>()
-                    {
-                        "-- Session Terminated --"
-                    });
+                    case "end session":
+                    case "stop":
+                        //todo: gives final stats and stops game
+                        responseLines = this.Response(new List<string>()
+                        {
+                            "-- Session Terminated --"
+                        });
 
-                    this.ClearSession(responseLines);
-                    break;
+                        this.ClearSession(responseLines);
+                        break;
 
-                case "clear session":
-                    responseLines = this.ClearSession(responseLines);
-                    break;
+                    case "clear session":
+                        responseLines = this.ClearSession(responseLines);
+                        break;
 
-                case "reset config":
-                    responseLines = new List<string>()
-                    {
-                        "Not Implemented Yet."
-                    };
+                    case "reset config":
+                        responseLines = new List<string>()
+                        {
+                            "Not Implemented Yet."
+                        };
 
-                    break;
+                        break;
 
-                case "start":
-                    responseLines = this.StartGame(game, responseLines);
-                    break;
+                    case "start":
+                        responseLines = this.StartGame(game, responseLines);
+                        break;
 
-                case "release notes":
-                    //todo: pull release notes from a file
-                    responseLines = this.Response("Under Construction");
-                    break;
+                    case "release notes":
+                        //todo: pull release notes from a file
+                        responseLines = this.Response("Under Construction");
+                        break;
 
-                default:
-                    responseLines = this.NewTurn(responseLines, sessionID, command);
-                    break;
+                    default:
+                        responseLines = this.NewTurn(responseLines, sessionID, command);
+                        break;
+                }
+                return responseLines;
             }
-            return responseLines;
+            catch(Exception ex)
+            {
+                //todo: make this happen only if in debugmode
+                return this.Response($"There is an issue with the game. {ex.Message}");
+            }
         }
 
         private List<string> StartGame(Game game, List<string> responseLines)

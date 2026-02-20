@@ -146,26 +146,34 @@ namespace StarTrek_KG
         public List<string> SubscriberSendAndGetResponse(string command)
         {
             this.Interact.Output.Clear();
-
-            if (command.StartsWith("wrp ", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                this.Dispatcher.HandleInput(command, this.Map.Playership);
-                return this.Map.Playership.OutputQueue();
+                if (command.StartsWith("wrp ", StringComparison.OrdinalIgnoreCase))
+                {
+                    this.Dispatcher.HandleInput(command, this.Map.Playership);
+                    return this.Map.Playership.OutputQueue();
+                }
+
+                var retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, command);
+
+                if (retVal == null)
+                {
+                    retVal = new List<string>();
+                }
+                else
+                {
+                    this.ReportGameStatus();
+                    retVal = this.Map.Playership.OutputQueue();
+                }
+
+                return retVal;
             }
-
-            var retVal = this.Interact.ReadAndOutput(this.Map.Playership, this.Map.Text, command);
-
-            if (retVal == null)
+            catch (Exception ex)
             {
-                retVal = new List<string>();
+                //todo: make this happen only if in debugmode
+                this.Interact.Output.WriteLine($"There is an issue with the game. {ex.Message}");
+                return this.Interact.Output.Queue.ToList();
             }
-            else
-            {
-                this.ReportGameStatus();
-                retVal = this.Map.Playership.OutputQueue();
-            }
-
-            return retVal;
         }
 
 
