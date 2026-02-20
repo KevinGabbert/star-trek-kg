@@ -65,51 +65,57 @@ namespace StarTrek_KG.Subsystem
             return renderedData;
         }
 
-        public LRSResult GetInfo(Map map, string regionName)
+        public LRSResult GetInfo(Map map, string sectorName)
         {
-            var regionResult = new LRSResult();
+            var sectorResult = new LRSResult();
 
-            Sector regionToScan = map.Sectors.Get(regionName);
+            Sector sectorToScan = map.Sectors.Get(sectorName);
 
-            regionResult.Point = regionToScan.GetPoint();
+            sectorResult.Point = sectorToScan.GetPoint();
+            sectorResult.Hostiles = 0;
+            sectorResult.Starbases = 0;
+            sectorResult.Stars = 0;
 
-            if (regionToScan.Type != SectorType.Nebulae)
+            if (sectorToScan.Type != SectorType.Nebulae)
             {
-                regionResult.Hostiles = regionToScan.GetHostiles().Count;
-                regionResult.Starbases = regionToScan.GetStarbaseCount();
-                regionResult.Stars = regionToScan.GetStarCount();
+                sectorResult.Hostiles = sectorToScan.GetHostiles().Count;
+                sectorResult.Starbases = sectorToScan.GetStarbaseCount();
+                sectorResult.Stars = sectorToScan.GetStarCount();
             }
 
             var barrierID = "Galactic Barrier"; //todo: resource this
-            regionResult.Name = regionResult.GalacticBarrier ? barrierID : regionToScan.Name;
+            sectorResult.Name = sectorResult.GalacticBarrier ? barrierID : sectorToScan.Name;
 
-            regionToScan.Scanned = true;
+            sectorToScan.Scanned = true;
 
-            return regionResult;
+            return sectorResult;
         }
 
-        public static LRSResult Execute(Sector regionToScan)
+        public static LRSResult Execute(Sector sectorToScan)
         {
-            var regionResult = new LRSResult
+            var sectorResult = new LRSResult
             {
-                Point = regionToScan.GetPoint()
+                Point = sectorToScan.GetPoint()
             };
 
+            sectorResult.Hostiles = 0;
+            sectorResult.Starbases = 0;
+            sectorResult.Stars = 0;
 
-            if (regionToScan.Type != SectorType.Nebulae)
+            if (sectorToScan.Type != SectorType.Nebulae)
             {
-                regionResult.Hostiles = regionToScan.GetHostiles().Count;
-                regionResult.Starbases = regionToScan.GetStarbaseCount();
-                regionResult.Stars = regionToScan.GetStarCount();
-                regionResult.Name = regionToScan.Name;
+                sectorResult.Hostiles = sectorToScan.GetHostiles().Count;
+                sectorResult.Starbases = sectorToScan.GetStarbaseCount();
+                sectorResult.Stars = sectorToScan.GetStarCount();
+                sectorResult.Name = sectorToScan.Name;
             }
 
-            regionToScan.Scanned = true;
+            sectorToScan.Scanned = true;
 
-            return regionResult;
+            return sectorResult;
         }
 
-        public void Debug_Scan_All_Regions(bool setScanned)
+        public void Debug_Scan_All_Sectors(bool setScanned)
         {
             foreach (var Sector in this.ShipConnectedTo.Map.Sectors)
             {
