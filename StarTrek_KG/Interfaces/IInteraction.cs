@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Output;
 using StarTrek_KG.Types;
@@ -66,7 +66,7 @@ namespace StarTrek_KG.Interfaces
         List<string> EvalSubLevelCommand(IShip playerShip, string playerEnteredText, int promptLevel);
 
         void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel);
-        void RenderSectors(SectorScanType scanType, ISubsystem subsystem);
+        void RenderSectors(CoordinateScanType scanType, ISubsystem subsystem);
         string RenderCourse();
 
         //todo: these don't belong here.  move them

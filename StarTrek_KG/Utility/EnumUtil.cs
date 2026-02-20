@@ -1,4 +1,4 @@
-﻿using X = System;
+using X = System;
 
 namespace StarTrek_KG.Utility
 {

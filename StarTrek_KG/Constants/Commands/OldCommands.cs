@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Constants.Commands
+namespace StarTrek_KG.Constants.Commands
 {
     public static class OldCommands
     {

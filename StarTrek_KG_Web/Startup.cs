@@ -1,4 +1,4 @@
-﻿using Microsoft.Owin;
+using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(StarTrek_KG_Web.Startup))]

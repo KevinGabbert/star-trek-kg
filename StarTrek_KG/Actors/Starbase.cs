@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -12,7 +12,7 @@ namespace StarTrek_KG.Actors
     {
         public IGame Game { get; set; }
 
-        public ISector Sector
+        public ICoordinate Coordinate
         {
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
@@ -88,7 +88,7 @@ namespace StarTrek_KG.Actors
         }
 
 
-        public Coordinate Coordinate
+        public Point Point
         {
             get
             {
@@ -100,7 +100,7 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        public Region GetRegion()
+        public Sector GetSector()
         {
             throw new NotImplementedException();
         }
@@ -176,7 +176,7 @@ namespace StarTrek_KG.Actors
             throw new NotImplementedException();
         }
 
-        Type ISectorObject.Type
+        Type ICoordinateObject.Type
         {
             get
             {

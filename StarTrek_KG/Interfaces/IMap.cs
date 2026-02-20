@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
@@ -14,7 +14,7 @@ namespace StarTrek_KG.Interfaces
     {
         IGame Game { get; set; }
         Ship Playership { get; set; } // todo: eventually make this an IEnumerable<StarShip>().
-        Regions Regions { get; set; }
+        Sectors Sectors { get; set; }
         SetupOptions GameConfig { get; set; }
         IInteraction Write { get; set; }
 
@@ -26,11 +26,11 @@ namespace StarTrek_KG.Interfaces
         int HostilesToSetUp { get; set; }
 
         void Initialize(SetupOptions setupOptions);
-        void Initialize(SectorDefs sectorDefs, bool generateWithNebulae);
-        void SetupPlayerShipInSectors(SectorDefs sectorDefs);
-        void InitializeRegionsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae);
-        void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebulae);
-        IEnumerable<Sector> AddStarbases();
+        void Initialize(CoordinateDefs sectorDefs, bool generateWithNebulae);
+        void SetupPlayerShipInSectors(CoordinateDefs sectorDefs);
+        void InitializeSectorsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, CoordinateDefs sectorDefs, bool generateWithNebulae);
+        void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Coordinate> itemsToPopulate, bool generateWithNebulae);
+        IEnumerable<Coordinate> AddStarbases();
         IEnumerable<IShip> GetAllFederationShips();
 
         /// <summary>
@@ -38,10 +38,10 @@ namespace StarTrek_KG.Interfaces
         /// </summary>
         void GetGlobalInfo();
 
-        void SetUpPlayerShip(SectorDef playerShipDef);
+        void SetUpPlayerShip(CoordinateDef playerShipDef);
         void SetupSubsystems();
         void GetSubsystemSetupFromConfig();
-        void SetupPlayershipRegion(SectorDef playerShipDef);
+        void SetupPlayershipSector(CoordinateDef playerShipDef);
         void SetupPlayershipTorpedoes();
         void SetupPlayershipShields();
         void SetupPlayershipNav();
@@ -53,10 +53,10 @@ namespace StarTrek_KG.Interfaces
         /// <param name="j"></param>
         /// <param name="sectors"></param>
         /// <returns></returns>
-        bool IsDockingLocation(int i, int j, Sectors sectors);
+        bool IsDockingLocation(int i, int j, Coordinates sectors);
 
-        SectorItem GetItem(int RegionX, int RegionY, int sectorX, int sectorY);
-        Sector Get(int RegionX, int RegionY, int sectorX, int sectorY);
+        CoordinateItem GetItem(int RegionX, int RegionY, int sectorX, int sectorY);
+        Coordinate Get(int RegionX, int RegionY, int sectorX, int sectorY);
         void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips);
         void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips);
         void RemoveTargetFromSector(IMap map, IShip ship);
@@ -78,7 +78,7 @@ namespace StarTrek_KG.Interfaces
         void AddHostileFederationShipsToExistingMap();
         void AddACoupleHostileFederationShipsToExistingMap();
 
-        bool OutOfBounds(Region region);
+        bool OutOfBounds(Sector region);
         void SetPlayershipInLocation(IShip shipToSet, IMap map, Location newLocation);
     }
 }

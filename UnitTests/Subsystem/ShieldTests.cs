@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using UnitTests.TestObjects;

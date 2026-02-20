@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Commands
+namespace StarTrek_KG.Commands
 {
     public class SubcommandDef
     {

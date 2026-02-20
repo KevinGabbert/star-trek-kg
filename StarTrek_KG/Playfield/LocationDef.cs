@@ -1,30 +1,30 @@
-﻿using StarTrek_KG.Structs;
+using StarTrek_KG.Structs;
 
 namespace StarTrek_KG.Playfield
 {
     public class LocationDef
     {
-        public Coordinate Region { get; set; }
-        public Coordinate Sector { get; set; }
+        public Point Sector { get; set; }
+        public Point Coordinate { get; set; }
 
         public LocationDef()
         {
 
         }
 
-        public LocationDef(NonNullable<Coordinate> Region, NonNullable<Coordinate> sector)
+        public LocationDef(NonNullable<Point> sector, NonNullable<Point> coordinate)
         {
-            this.Region = Region;
             this.Sector = sector;
+            this.Coordinate = coordinate;
         }
 
-        public LocationDef(int RegionX, int RegionY, int sectorX, int sectorY)
+        public LocationDef(int sectorX, int sectorY, int coordinateX, int coordinateY)
         {
-            var region = new Coordinate(RegionX, RegionY);
-            var sector = new Coordinate(sectorX, sectorY);
+            var sector = new Point(sectorX, sectorY);
+            var coordinate = new Point(coordinateX, coordinateY);
 
-            this.Region = region;
             this.Sector = sector;
+            this.Coordinate = coordinate;
         }
 
         internal bool IsNeighbor(Location currentShipLocation)

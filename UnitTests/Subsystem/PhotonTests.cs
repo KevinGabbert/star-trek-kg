@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -13,7 +13,7 @@ namespace UnitTests.Subsystem
     public class PhotonTests : TestClass_Base
     {
         private Torpedoes _photonsToTest;
-        private Region _testRegion;
+        private Sector _testRegion;
 
         [SetUp]
         public void Setup()
@@ -28,7 +28,7 @@ namespace UnitTests.Subsystem
             _setup.SetupMapWith1Friendly();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testRegion = _setup.TestMap.Playership.GetRegion();
+            _testRegion = _setup.TestMap.Playership.GetSector();
 
             Assert.AreEqual(10, _photonsToTest.Count);
 
@@ -55,7 +55,7 @@ namespace UnitTests.Subsystem
             _setup.SetupMapWith1Friendly();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testRegion = _setup.TestMap.Playership.GetRegion();
+            _testRegion = _setup.TestMap.Playership.GetSector();
 
             DEFAULTS.DEBUG_MODE = true;
 
@@ -84,13 +84,13 @@ namespace UnitTests.Subsystem
             _setup.SetupMapWith1Hostile();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testRegion = _setup.TestMap.Playership.GetRegion();
+            _testRegion = _setup.TestMap.Playership.GetSector();
 
             IShip hostile = _testRegion.GetHostiles().Single();
 
             //Verify ship's location
-            Assert.AreEqual(0, hostile.Sector.X);
-            Assert.AreEqual(1, hostile.Sector.Y);
+            Assert.AreEqual(0, hostile.Coordinate.X);
+            Assert.AreEqual(1, hostile.Coordinate.Y);
 
             DEFAULTS.DEBUG_MODE = true;
 
@@ -109,13 +109,13 @@ namespace UnitTests.Subsystem
             _setup.SetupMapWith1Hostile();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testRegion = _setup.TestMap.Playership.GetRegion();
+            _testRegion = _setup.TestMap.Playership.GetSector();
 
             IShip hostile = _testRegion.GetHostiles().Single();
 
             //Verify ship's location
-            Assert.AreEqual(0, hostile.Sector.X);
-            Assert.AreEqual(1, hostile.Sector.Y);
+            Assert.AreEqual(0, hostile.Coordinate.X);
+            Assert.AreEqual(1, hostile.Coordinate.Y);
 
             DEFAULTS.DEBUG_MODE = true;
 
@@ -149,19 +149,19 @@ namespace UnitTests.Subsystem
             srs.Controls();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testRegion = _setup.TestMap.Playership.GetRegion();
+            _testRegion = _setup.TestMap.Playership.GetSector();
 
             IShip hostile = _testRegion.GetHostiles().Single();
 
-            Assert.AreEqual(0, _photonsToTest.ShipConnectedTo.Sector.X, "Playership.X not at 0");
-            Assert.AreEqual(0, _photonsToTest.ShipConnectedTo.Sector.Y, "Playership.Y not at 0");
+            Assert.AreEqual(0, _photonsToTest.ShipConnectedTo.Coordinate.X, "Playership.X not at 0");
+            Assert.AreEqual(0, _photonsToTest.ShipConnectedTo.Coordinate.Y, "Playership.Y not at 0");
 
             //Verify Hostile ship's location
-            Assert.AreEqual(0, hostile.Sector.X, "Hostile.X not at 0");
-            Assert.AreEqual(1, hostile.Sector.Y, "Hostile.Y not at 1");
+            Assert.AreEqual(0, hostile.Coordinate.X, "Hostile.X not at 0");
+            Assert.AreEqual(1, hostile.Coordinate.Y, "Hostile.Y not at 1");
 
-            Assert.AreEqual(SectorItem.HostileShip, hostile.Sector.Item);
-            Assert.IsNotNull(hostile.Sector.Object);
+            Assert.AreEqual(CoordinateItem.HostileShip, hostile.Coordinate.Item);
+            Assert.IsNotNull(hostile.Coordinate.Object);
 
             DEFAULTS.DEBUG_MODE = debugMode;
 
@@ -179,58 +179,58 @@ namespace UnitTests.Subsystem
         [Test]
         public void ShootHostileE()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(4, 5), 7, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(4, 5), 7, true);
         }
 
         [Test]
         public void ShootHostileSE()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(5, 5), 8, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(5, 5), 8, true);
         }
 
         [Test]
         public void ShootHostileS()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(6, 4), 1, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(6, 4), 1, true);
         }
 
         [Test]
         public void ShootHostileSW()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(5, 3), 2, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(5, 3), 2, true);
         }
 
         [Test]
         public void ShootHostileW()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(4, 3), 3, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(4, 3), 3, true);
         }
 
         [Test]
         public void ShootHostileNW()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(3, 3), 4, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(3, 3), 4, true);
         }
 
         [Test]
         public void ShootHostileN()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(3, 4), 5, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(3, 4), 5, true);
         }
 
         [Test]
         public void ShootHostileNE()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(3, 5), 6, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(3, 5), 6, true);
         }
 
         [Test]
         public void ShootHostileOutfSector()
         {
-            this.ShootHostileAt(new Coordinate(4, 4), new Coordinate(3, 5), 6, true);
+            this.ShootHostileAt(new Point(4, 4), new Point(3, 5), 6, true);
         }
 
-        public void ShootHostileAt(Coordinate friendlySector, Coordinate hostileSector, int directionToShoot, bool debugMode)
+        public void ShootHostileAt(Point friendlySector, Point hostileSector, int directionToShoot, bool debugMode)
         {
             DEFAULTS.DEBUG_MODE = false;
 
@@ -240,19 +240,19 @@ namespace UnitTests.Subsystem
             srs.Controls();
 
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
-            _testRegion = _setup.TestMap.Playership.GetRegion();
+            _testRegion = _setup.TestMap.Playership.GetSector();
 
             IShip hostile = _testRegion.GetHostiles().Single();
 
-            Assert.AreEqual(friendlySector.X, _photonsToTest.ShipConnectedTo.Sector.X, "Playership.X not at 0");
-            Assert.AreEqual(friendlySector.Y, _photonsToTest.ShipConnectedTo.Sector.Y, "Playership.Y not at 0");
+            Assert.AreEqual(friendlySector.X, _photonsToTest.ShipConnectedTo.Coordinate.X, "Playership.X not at 0");
+            Assert.AreEqual(friendlySector.Y, _photonsToTest.ShipConnectedTo.Coordinate.Y, "Playership.Y not at 0");
 
             //Verify Hostile ship's location
-            Assert.AreEqual(hostileSector.X, hostile.Sector.X, "Hostile.X not at 0");
-            Assert.AreEqual(hostileSector.Y, hostile.Sector.Y, "Hostile.Y not at 1");
+            Assert.AreEqual(hostileSector.X, hostile.Coordinate.X, "Hostile.X not at 0");
+            Assert.AreEqual(hostileSector.Y, hostile.Coordinate.Y, "Hostile.Y not at 1");
 
-            Assert.AreEqual(SectorItem.HostileShip, hostile.Sector.Item);
-            Assert.IsNotNull(hostile.Sector.Object);
+            Assert.AreEqual(CoordinateItem.HostileShip, hostile.Coordinate.Item);
+            Assert.IsNotNull(hostile.Coordinate.Object);
 
             DEFAULTS.DEBUG_MODE = debugMode;
             _photonsToTest.Shoot(directionToShoot);

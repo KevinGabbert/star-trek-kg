@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+using System.Configuration;
 using E = StarTrek_KG.Config.Elements;
 
 namespace StarTrek_KG.Config.Collections

@@ -1,4 +1,4 @@
-﻿using System.Web.Optimization;
+using System.Web.Optimization;
 
 namespace StarTrek_KG_Web
 {

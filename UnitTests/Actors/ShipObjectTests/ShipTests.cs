@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Config;
 
 namespace UnitTests.Tests

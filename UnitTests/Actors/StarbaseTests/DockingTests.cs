@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
@@ -10,14 +10,14 @@ namespace UnitTests.Actors.StarbaseTests
     public class DockingTests: TestClass_Base
     {
         Map _testMapNoObjects;
-        Movement _testMovement;
-        Coordinate _startingRegion;
+        //Movement _testMovement;
+        //Point _startingRegion;
 
-        int _startingSectorX;
-        int _startingSectorY;
+        //int _startingSectorX;
+        //int _startingSectorY;
 
-        private int _lastRegionX;
-        private int _lastRegionY;
+        //private int _lastRegionX;
+        //private int _lastRegionY;
 
         [SetUp]
         public void SetUp()
@@ -28,11 +28,11 @@ namespace UnitTests.Actors.StarbaseTests
         [TearDown]
         public void TearDown()
         {
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 0;
+
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
-
-            DEFAULTS.REGION_MIN = 0;
-            DEFAULTS.REGION_MAX = 0;
         }
 
 
@@ -42,19 +42,19 @@ namespace UnitTests.Actors.StarbaseTests
             {
                 Initialize = true,
                 AddNebulae = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 0)), SectorItem.PlayerShip), //todo: this needs to be in a random spo
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 2)), SectorItem.Starbase)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 0)), CoordinateItem.PlayerShip), //todo: this needs to be in a random spo
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 2)), CoordinateItem.Starbase)
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
             //Todo: this is how we would like to add a starbase
             ////add a ship
-            //var starbase = new Starbase("starbaseAlpha", _testMap, new Sector(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7))));
+            //var starbase = new Starbase("starbaseAlpha", _testMap, new Coordinate(new LocationDef(new Point(0, 0), new Point(2, 7))));
 
-            //var activeRegion = _testMap.Regions.GetActive();
-            //activeRegion.AddShip(starbase, starbase.Sector);
+            //var activeRegion = _testMap.Sectors.GetActive();
+            //activeRegion.AddShip(starbase, starbase.Coordinate);
         }
 
         [Test]
@@ -77,25 +77,25 @@ namespace UnitTests.Actors.StarbaseTests
 
         //private void Move_Sector(string direction, int distance)
         //{
-        //    var playershipRegion = _testMapNoObjects.Playership.GetRegion();
+        //    var playershipRegion = _testMapNoObjects.Playership.GetSector();
 
-        //    _startingRegion = new Coordinate(playershipRegion.X, playershipRegion.Y);
+        //    _startingRegion = new Point(playershipRegion.X, playershipRegion.Y);
 
-        //    _startingSectorX = _testMapNoObjects.Playership.Sector.X;
-        //    _startingSectorY = _testMapNoObjects.Playership.Sector.Y;
+        //    _startingSectorX = _testMapNoObjects.Playership.Coordinate.X;
+        //    _startingSectorY = _testMapNoObjects.Playership.Coordinate.Y;
 
         //    //verify that the ship is where we think it is before we start
-        //    Assert.AreEqual(SectorItem.Friendly, Sector.Get(_testMapNoObjects.Regions.GetActive().Sectors,
-        //                                                   _testMapNoObjects.Playership.Sector.X,
-        //                                                   _testMapNoObjects.Playership.Sector.Y).Item);
+        //    Assert.AreEqual(CoordinateItem.Friendly, Coordinate.Get(_testMapNoObjects.Sectors.GetActive().Coordinates,
+        //                                                   _testMapNoObjects.Playership.Coordinate.X,
+        //                                                   _testMapNoObjects.Playership.Coordinate.Y).Item);
 
         //    _testMovement = new Movement(_testMapNoObjects.Playership, this.Game);
         //    _testMovement.BlockedByObstacle = false;
 
         //    var sectorItem =
-        //        Sector.Get(_testMovement.Game.Map.Regions.GetActive().Sectors, _testMovement.Game.Map.Playership.Sector.X,
-        //                                                               _testMovement.Game.Map.Playership.Sector.Y).Item;
-        //    Assert.AreEqual(SectorItem.Friendly, sectorItem);
+        //        Coordinate.Get(_testMovement.Game.Map.Sectors.GetActive().Coordinates, _testMovement.Game.Map.Playership.Coordinate.X,
+        //                                                               _testMovement.Game.Map.Playership.Coordinate.Y).Item;
+        //    Assert.AreEqual(CoordinateItem.Friendly, sectorItem);
 
         //    _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastRegionX, out _lastRegionY);
 
@@ -104,3 +104,5 @@ namespace UnitTests.Actors.StarbaseTests
         //}
     }
 }
+
+

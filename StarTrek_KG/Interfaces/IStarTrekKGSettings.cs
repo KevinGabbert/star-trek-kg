@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Configuration;
 using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
@@ -76,7 +76,7 @@ namespace StarTrek_KG.Interfaces
         string GetText(string textToGet, string textToGet2);
 
         /// <summary>
-        /// Settings look like this in the app.config: <add name="DebugNoSetUpSectorsInRegion" value="No Sectors Set up in Region: "/>
+        /// Settings look like this in the app.config: <add name="DebugNoSetUpCoordinatesInSector" value="No Coordinates Set up in Sector: "/>
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="name"></param>

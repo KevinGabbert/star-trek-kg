@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NUnit.Framework;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -8,20 +8,20 @@ using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
-namespace UnitTests.Playfield.RegionTests
+namespace UnitTests.Playfield.SectorTests
 {
-    public class NebulaTests: RegionTests_Base
+    public class NebulaTests: SectorTests_Base
     {
         [SetUp]
         public void Setup()
         {
             _testRegion =
-                new Region(this.Game.Map)
+                new Sector(this.Game.Map)
                 {
                     Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game),
                     Name = "Setup",
                     Scanned = false,
-                    Type = RegionType.Nebulae,
+                    Type = SectorType.Nebulae,
                     X = 0,
                     Y = 0
                 };
@@ -40,14 +40,14 @@ namespace UnitTests.Playfield.RegionTests
         [Test]
         public void New()
         {
-            //*************** sector not being created with new Region
-            _testRegion = new Region(this.Game.Map, true);
+            //*************** sector not being created with new Sector
+            _testRegion = new Sector(this.Game.Map, true);
 
             Assert.IsInstanceOf<Map>(_testRegion.Map);
             
-            this.RegionNewAsserts();
+            this.SectorNewAsserts();
 
-            Assert.AreEqual(RegionType.Nebulae, _testRegion.Type);
+            Assert.AreEqual(SectorType.Nebulae, _testRegion.Type);
         }
 
         [Test]
@@ -59,20 +59,20 @@ namespace UnitTests.Playfield.RegionTests
             _setup.SetupMapWith1Friendly();
 
             int nameIndex;
-            _testRegion = new Region(_setup.TestMap, RegionNames, baddieNames, null, out nameIndex, false, true);
+            _testRegion = new Sector(_setup.TestMap, RegionNames, baddieNames, null, out nameIndex, false, true);
 
             //todo: make sure that map is not set up with anyting
 
             Assert.IsInstanceOf(typeof(Map), _testRegion.Map);
-            Assert.AreEqual(RegionType.Nebulae, _testRegion.Type);
+            Assert.AreEqual(SectorType.Nebulae, _testRegion.Type);
 
             Assert.AreEqual("Zeta Alpha", _testRegion.Name);
-            Assert.IsInstanceOf<Sectors>(_testRegion.Sectors);
+            Assert.IsInstanceOf<Coordinates>(_testRegion.Coordinates);
             Assert.AreEqual(false, _testRegion.Scanned);
             Assert.AreEqual(0, _testRegion.X);
             Assert.AreEqual(0, _testRegion.Y);
             Assert.AreEqual(true, _testRegion.Empty);
-            Assert.IsNotNull(_testRegion.Sectors);
+            Assert.IsNotNull(_testRegion.Coordinates);
         }
 
         [Test]
@@ -117,11 +117,11 @@ namespace UnitTests.Playfield.RegionTests
             const bool setupNebula = true;
             this.SetupRegion(setupNebula); 
 
-            Assert.AreEqual(RegionType.Nebulae, _testRegion.Type);
+            Assert.AreEqual(SectorType.Nebulae, _testRegion.Type);
 
-            foreach (var sector in _testRegion.Sectors)
+            foreach (var sector in _testRegion.Coordinates)
             {
-                Assert.AreEqual(SectorType.Nebula, sector.Type, "Expected Nebula at Sector[" + sector.X + "," + sector.Y + "]");
+                Assert.AreEqual(CoordinateType.Nebula, sector.Type, "Expected Nebula at Coordinate[" + sector.X + "," + sector.Y + "]");
             }
 
             this.VerifyScanResults(null);
@@ -133,11 +133,11 @@ namespace UnitTests.Playfield.RegionTests
             const bool setupNebula = false;
             this.SetupRegion(setupNebula); 
 
-            Assert.AreEqual(RegionType.GalacticSpace, _testRegion.Type);
+            Assert.AreEqual(SectorType.GalacticSpace, _testRegion.Type);
 
-            foreach (var sector in _testRegion.Sectors)
+            foreach (var sector in _testRegion.Coordinates)
             {
-                Assert.AreEqual(SectorType.Space, sector.Type, "Expected Empty Space at Sector[" + sector.X + "," + sector.Y + "]");
+                Assert.AreEqual(CoordinateType.Space, sector.Type, "Expected Empty Space at Coordinate[" + sector.X + "," + sector.Y + "]");
             }
 
             this.VerifyScanResults(1);
@@ -159,9 +159,9 @@ namespace UnitTests.Playfield.RegionTests
         {
             _setup.SetupMapWith1Hostile();
 
-            //Assert.AreEqual(1, _setup.TestMap.Regions.GetActive());
+            //Assert.AreEqual(1, _setup.TestMap.Sectors.GetActive());
 
-            _testRegion = _setup.TestMap.Playership.GetRegion();
+            _testRegion = _setup.TestMap.Playership.GetSector();
 
             if (withNebula)
             {

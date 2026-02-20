@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Playfield;
@@ -26,7 +26,7 @@ namespace UnitTests.GameTests
         {
             _setup.SetupMapWith1Hostile();
 
-            //_testRegion = _setup.TestMap.Playership.GetRegion();
+            //_testRegion = _setup.TestMap.Playership.GetSector();
 
             Game.EnemiesWillNowTaunt();
         }
@@ -36,7 +36,7 @@ namespace UnitTests.GameTests
         {
             _setup.SetupMapWith1FedHostile();
 
-            //_testRegion = _setup.TestMap.Playership.GetRegion();
+            //_testRegion = _setup.TestMap.Playership.GetSector();
 
             Game.EnemiesWillNowTaunt();
 
@@ -62,7 +62,7 @@ namespace UnitTests.GameTests
             };
 
             //apparently, the only requirement for this is that an observed movement needs to happen
-            map.Game.MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 1));
+            map.Game.MoveTimeForward(map, new Point(0, 0), new Point(0, 1));
 
             Assert.AreEqual(-1, map.timeRemaining);
             Assert.AreEqual(1, map.Stardate);
@@ -77,7 +77,7 @@ namespace UnitTests.GameTests
             };
 
             //apparently, the only requirement for this is that an observed movement needs to happen
-            map.Game.MoveTimeForward(map, new Coordinate(0, 0), new Coordinate(0, 0));
+            map.Game.MoveTimeForward(map, new Point(0, 0), new Point(0, 0));
 
             //Time has not moved
             Assert.AreEqual(0, map.timeRemaining);

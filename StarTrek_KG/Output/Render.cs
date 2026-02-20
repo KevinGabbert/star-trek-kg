@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using StarTrek_KG.Enums;
@@ -26,20 +26,20 @@ namespace StarTrek_KG.Output
             this.Interact.Config = config;
         }
 
-        public void CreateSRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
+        public void CreateSRSViewScreen(ISector Sector, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            this.Interact.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSRegion"), RegionDisplayName);
+            this.Interact.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSSector"), RegionDisplayName);
 
             int srsRows = Convert.ToInt32(this.GetConfigText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
             {
-                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Region.Sectors, totalHostiles, isNebula);
+                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Sector.Coordinates, totalHostiles, isNebula);
             }
 
             this.Interact.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
-        public void CreateCRSViewScreen(IRegion Region, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
+        public void CreateCRSViewScreen(ISector Sector, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
             List<string> lrsResults = LongRangeScan.For(map.Playership).RunLRSScan(shipLocation);
 
@@ -52,7 +52,7 @@ namespace StarTrek_KG.Output
             for (int i = 0; i < crsRows; i++) 
             {
                 var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults, totalHostiles);
-                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, Region.Sectors, totalHostiles, isNebula);
+                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, Sector.Coordinates, totalHostiles, isNebula);
             }
 
             string lrsBottom = null;
@@ -70,14 +70,14 @@ namespace StarTrek_KG.Output
             switch (row)
             {
                 case 0:
-                    indicator = string.Format(this.Config.GetText("SRSRegionIndicator"),
-                                              Convert.ToString(location.Sector.X),
-                                              Convert.ToString(location.Sector.Y));
+                    indicator = string.Format(this.Config.GetText("SRSCoordinateIndicator"),
+                                              Convert.ToString(location.Coordinate.X),
+                                              Convert.ToString(location.Coordinate.Y));
                     break;
                 case 1:
                     indicator = string.Format(this.Config.GetText("SRSSectorIndicator"),
-                                              Convert.ToString(location.Region.X),
-                                              Convert.ToString(location.Region.Y));
+                                              Convert.ToString(location.Sector.X),
+                                              Convert.ToString(location.Sector.Y));
                     break;
                 case 2:
                     indicator = string.Format(this.Config.GetText("SRSStardateIndicator"), map.Stardate);
@@ -120,12 +120,12 @@ namespace StarTrek_KG.Output
         private void CRS_Region_ScanLine(string RegionName, string topBorder, Location location)
         {
             int topBorderAreaMeasurement = topBorder.Length + 1;
-            var regionLineBuilder = new StringBuilder($"Region: {RegionName}".PadRight(topBorderAreaMeasurement));
+            var regionLineBuilder = new StringBuilder($"Sector: {RegionName}".PadRight(topBorderAreaMeasurement));
 
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - topBorderAreaMeasurement);
 
             string RegionIndicator =
-                $" Coord: [{Convert.ToString(location.Sector.X)},{Convert.ToString(location.Sector.Y)}]  Sec: §{Convert.ToString(location.Region.X)}.{Convert.ToString(location.Region.Y)}";
+                $" Coord: [{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}]  Sec: �{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
 
             regionLineBuilder.Insert(topBorderAreaMeasurement, RegionIndicator);
 
@@ -168,25 +168,25 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Sectors sectors, int totalHostiles, bool isNebula)
+        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Coordinates sectors, int totalHostiles, bool isNebula)
         {
-            for (var column = 0; column < DEFAULTS.SECTOR_MAX; column++)
+            for (var column = 0; column < DEFAULTS.COORDINATE_MAX; column++)
             {
-                Sector sector = sectors[row, column];
+                Coordinate sector = sectors[row, column];
 
                 switch (sector.Item)
                 {
-                    case SectorItem.Empty:
+                    case CoordinateItem.Empty:
 
                         //todo: might be good to put some false positives here  (jsut throw in some random faction letters)
                         sb.Append(isNebula ? Utility.Utility.DamagedScannerUnit() : DEFAULTS.EMPTY);
                         break;
 
-                    case SectorItem.PlayerShip:
+                    case CoordinateItem.PlayerShip:
                         sb.Append(DEFAULTS.PLAYERSHIP);
                         break;
 
-                    case SectorItem.HostileShip:
+                    case CoordinateItem.HostileShip:
 
                         //todo: later it might be nice to have something act on this.. say.. more power to the sensors can change this value
                         bool canActuallySeeEnemy = isNebula && (Utility.Utility.Random.Next(10) == 5); //todo: resource this out
@@ -205,7 +205,7 @@ namespace StarTrek_KG.Output
 
                         break;
 
-                    case SectorItem.Star:
+                    case CoordinateItem.Star:
 
                         bool canActuallySeeStar = !isNebula || (isNebula && (Utility.Utility.Random.Next(10) == 6)); //todo: resource this out
                         if (canActuallySeeStar)
@@ -222,14 +222,14 @@ namespace StarTrek_KG.Output
 
                         break;
 
-                    case SectorItem.Starbase:
+                    case CoordinateItem.Starbase:
                         //todo:  this.AppendFactionDesignator(sb, totalHostiles, sector);
                         //this code will be used when starbase is an object
 
                         sb.Append(DEFAULTS.STARBASE);
                         break;
 
-                    case SectorItem.Debug:
+                    case CoordinateItem.Debug:
                         sb.Append(DEFAULTS.DEBUG_MARKER);
                         break;
 
@@ -247,7 +247,7 @@ namespace StarTrek_KG.Output
             sb.Length = 0;
         }
 
-        private void AppendShipDesignator(StringBuilder sb, int totalHostiles, ISector sector)
+        private void AppendShipDesignator(StringBuilder sb, int totalHostiles, ICoordinate sector)
         {
             var ship = (IShip) sector.Object;
 
@@ -285,11 +285,11 @@ namespace StarTrek_KG.Output
             sb.Append(factionDesignator);
         }
 
-        public void OutputScanWarnings(IRegion Region, IMap map, bool shieldsAutoRaised)
+        public void OutputScanWarnings(ISector Sector, IMap map, bool shieldsAutoRaised)
         {
-            if (Region.GetHostiles().Count > 0)
+            if (Sector.GetHostiles().Count > 0)
             {                
-                this.SRSScanHostile(Region);
+                this.SRSScanHostile(Sector);
             }
 
             this.Interact.OutputConditionAndWarnings(map.Playership, this.Config.GetSetting<int>("ShieldsDownLevel"));
@@ -301,13 +301,13 @@ namespace StarTrek_KG.Output
         }
 
         //todo: this function needs to be part of SRS
-        private void SRSScanHostile(IRegion Region)
+        private void SRSScanHostile(ISector Sector)
         {
-            this.Interact.Line(string.Format(this.Config.GetText("HostileDetected"), Region.GetHostiles().Count == 1 ? "" : "s"));
+            this.Interact.Line(string.Format(this.Config.GetText("HostileDetected"), Sector.GetHostiles().Count == 1 ? "" : "s"));
 
-            bool inNebula = Region.Type == RegionType.Nebulae;
+            bool inNebula = Sector.Type == SectorType.Nebulae;
 
-            foreach (var hostile in Region.GetHostiles())
+            foreach (var hostile in Sector.GetHostiles())
             {
                 var hostileName = hostile.Name;
 
@@ -333,3 +333,4 @@ namespace StarTrek_KG.Output
         }
     }
 }
+

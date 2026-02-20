@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace StarTrek_KG.Interfaces

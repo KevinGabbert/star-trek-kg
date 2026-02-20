@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
@@ -47,7 +47,7 @@ namespace StarTrek_KG.Subsystem
         private int ComputeMaxImpulseDistance()
         {
             var energy = this.ShipConnectedTo?.Energy ?? 1;
-            var cap = DEFAULTS.SECTOR_MAX; // keep impulse travel reasonable; tweak if needed
+            var cap = DEFAULTS.COORDINATE_MAX; // keep impulse travel reasonable; tweak if needed
             if (energy < 1)
             {
                 return 1;
@@ -108,7 +108,7 @@ namespace StarTrek_KG.Subsystem
             //    this.NavigateToObject();
             //}
 
-            //todo: upon arriving in Region, all damaged controls need to be enumerated
+            //todo: upon arriving in Sector, all damaged controls need to be enumerated
             this.ShipConnectedTo.Map.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
             ShipConnectedTo.UpdateDivinedSectors();
@@ -126,7 +126,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.ShipConnectedTo.OutputLine("");
-            this.ShipConnectedTo.OutputLine("Objects in Region:");
+            this.ShipConnectedTo.OutputLine("Objects in Sector:");
 
             Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
@@ -353,7 +353,7 @@ namespace StarTrek_KG.Subsystem
                 crs.Controls();
             }
 
-            //todo: upon arriving in Region, all damaged controls need to be enumerated
+            //todo: upon arriving in Sector, all damaged controls need to be enumerated
             //this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
             return;
@@ -368,8 +368,8 @@ namespace StarTrek_KG.Subsystem
 
             if (!game.PlayerNowEnemyToFederation) //No Docking allowed if they hate you.
             {
-                this.Docked = game.Map.IsDockingLocation(thisShip.Sector.Y, thisShip.Sector.X,
-                    game.Map.Regions.GetActive().Sectors);
+                this.Docked = game.Map.IsDockingLocation(thisShip.Coordinate.Y, thisShip.Coordinate.X,
+                    game.Map.Sectors.GetActive().Coordinates);
             }
 
             if (Docked)
@@ -400,7 +400,7 @@ namespace StarTrek_KG.Subsystem
             Location thisShip = this.ShipConnectedTo.GetLocation();
             IGame game = this.ShipConnectedTo.Map.Game;
 
-            Region currentRegion = map.Regions[thisShip.Region];
+            Sector currentRegion = map.Sectors[thisShip.Sector];
 
             List<IShip> hostiles = currentRegion.GetHostiles();
             bool baddiesHangingAround = hostiles.Count > 0;
@@ -408,7 +408,7 @@ namespace StarTrek_KG.Subsystem
             bool hostileFedsInRegion = hostiles.Any(h => h.Faction == FactionName.Federation);
                 //todo: Cheap.  Use a property for this.
 
-            bool stillInSameRegion = lastRegionX == thisShip.Region.X && lastRegionY == thisShip.Region.Y;
+            bool stillInSameRegion = lastRegionX == thisShip.Sector.X && lastRegionY == thisShip.Sector.Y;
 
             if ((baddiesHangingAround && stillInSameRegion) ||
                 hostileFedsInRegion ||
@@ -435,20 +435,20 @@ namespace StarTrek_KG.Subsystem
             string RegionX;
             string RegionY;
 
-            this.ShipConnectedTo.OutputLine(string.Format("Your Ship" + config.GetSetting<string>("LocatedInRegion"),
-                thisShip.Region.X, thisShip.Region.Y));
+            this.ShipConnectedTo.OutputLine(string.Format("Your Ship" + config.GetSetting<string>("LocatedInSector"),
+                thisShip.Sector.X, thisShip.Sector.Y));
 
-            if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionX"), out RegionX, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 1)
-                || int.Parse(RegionX) < DEFAULTS.REGION_MIN + 1
-                || int.Parse(RegionX) > DEFAULTS.REGION_MAX)
+            if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationSectorX"), out RegionX, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 1)
+                || int.Parse(RegionX) < DEFAULTS.SECTOR_MIN + 1
+                || int.Parse(RegionX) > DEFAULTS.SECTOR_MAX)
             {
                 this.ShipConnectedTo.OutputLine(config.GetSetting<string>("InvalidXCoordinate"));
                 return;
             }
 
-            if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationRegionY"), out RegionY, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 2)
-                || int.Parse(RegionY) < DEFAULTS.REGION_MIN + 1
-                || int.Parse(RegionY) > DEFAULTS.REGION_MAX)
+            if (!this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Navigation, "Navigation:>", config.GetSetting<string>("DestinationSectorY"), out RegionY, this.ShipConnectedTo.Map.Game.Interact.Output.Queue, 2)
+                || int.Parse(RegionY) < DEFAULTS.SECTOR_MIN + 1
+                || int.Parse(RegionY) > DEFAULTS.SECTOR_MAX)
             {
                 this.ShipConnectedTo.OutputLine(config.GetSetting<string>("InvalidYCoordinate"));
                 return;
@@ -457,14 +457,14 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo.OutputLine("");
             var qx = int.Parse(RegionX) - 1;
             var qy = int.Parse(RegionY) - 1;
-            if (qx == thisShip.Region.X && qy == thisShip.Region.Y)
+            if (qx == thisShip.Sector.X && qy == thisShip.Sector.Y)
             {
                 this.ShipConnectedTo.OutputLine(config.GetSetting<string>("TheCurrentLocation") + "Your Ship.");
                 return;
             }
 
-            this.ShipConnectedTo.OutputLine($"Direction: {Utility.Utility.ComputeDirection(thisShip.Region.X, thisShip.Region.Y, qx, qy):#.##}");
-            this.ShipConnectedTo.OutputLine($"Distance:  {Utility.Utility.Distance(thisShip.Region.X, thisShip.Region.Y, qx, qy):##.##}");
+            this.ShipConnectedTo.OutputLine($"Direction: {Utility.Utility.ComputeDirection(thisShip.Sector.X, thisShip.Sector.Y, qx, qy):#.##}");
+            this.ShipConnectedTo.OutputLine($"Distance:  {Utility.Utility.Distance(thisShip.Sector.X, thisShip.Sector.Y, qx, qy):##.##}");
         }
 
         public void StarbaseCalculator(IShip shipConnectedTo)
@@ -474,11 +474,11 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
-            var mySector = shipConnectedTo.Sector;
+            var mySector = shipConnectedTo.Coordinate;
 
-            var thisRegion = shipConnectedTo.GetRegion();
+            var thisRegion = shipConnectedTo.GetSector();
 
-            var starbasesInSector = thisRegion.Sectors.Where(s => s.Item == SectorItem.Starbase).ToList();
+            var starbasesInSector = thisRegion.Coordinates.Where(s => s.Item == CoordinateItem.Starbase).ToList();
 
             if (starbasesInSector.Any())
             {
@@ -488,16 +488,16 @@ namespace StarTrek_KG.Subsystem
                     this.ShipConnectedTo.OutputLine($"Starbase in sector [{starbase.X + 1},{starbase.Y + 1}].");
                     
                     this.ShipConnectedTo.OutputLine($"Direction: {Utility.Utility.ComputeDirection(mySector.X, mySector.Y, starbase.X, starbase.Y):#.##}");
-                    this.ShipConnectedTo.OutputLine($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.SECTOR_MAX:##.##}");
+                    this.ShipConnectedTo.OutputLine($"Distance:  {Utility.Utility.Distance(mySector.X, mySector.Y, starbase.X, starbase.Y)/ DEFAULTS.COORDINATE_MAX:##.##}");
                 }
             }
             else
             {
-                this.ShipConnectedTo.OutputLine("There are no starbases in this Region.");
+                this.ShipConnectedTo.OutputLine("There are no starbases in this Sector.");
             }
         }
 
-        public static Navigation For(IShip ship)
+        public new static Navigation For(IShip ship)
         {
             return (Navigation) SubSystem_Base.For(ship, SubsystemType.Navigation);
         }

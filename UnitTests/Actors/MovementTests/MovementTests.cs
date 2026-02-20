@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using StarTrek_KG.Actors;
@@ -15,13 +15,12 @@ namespace UnitTests.Actors.MovementTests
         public void TravelAlongCourse_BugVerification()
         {
             var testMovement = new Movement( this.Game.Map.Playership);
+            //double x = 31.5084577259018;
+            //double y = 31.5084577259018;
 
-            double x = 31.5084577259018;
-            double y = 31.5084577259018;
-
-            //testMovement.TravelAlongCourse(0, 0, -0.00565685424949238, new Coordinate(), -0.00565685424949238, ref x, ref y );
-            //.Encountered obstacle within Region. X:0Y:0 Friendlyvx: -0.00565685424949238 vy: -0.00565685424949238 x: 31.5084577259018 y: 31.5084577259018
-            //.Encountered obstacle within Region. X:0Y:0 Friendlyvx: -0.00565685424949238 vy: -0.00565685424949238 x: 31.5084577259018 y: 31.5084577259018 lastsectX: 0 lastSectY: 0
+            //testMovement.TravelAlongCourse(0, 0, -0.00565685424949238, new Point(), -0.00565685424949238, ref x, ref y );
+            //.Encountered obstacle within Sector. X:0Y:0 Friendlyvx: -0.00565685424949238 vy: -0.00565685424949238 x: 31.5084577259018 y: 31.5084577259018
+            //.Encountered obstacle within Sector. X:0Y:0 Friendlyvx: -0.00565685424949238 vy: -0.00565685424949238 x: 31.5084577259018 y: 31.5084577259018 lastsectX: 0 lastSectY: 0
         }
 
         [Ignore(reason: "Mod MoveSector to be able to move to a new region")]
@@ -42,3 +41,4 @@ namespace UnitTests.Actors.MovementTests
 
     }
 }
+

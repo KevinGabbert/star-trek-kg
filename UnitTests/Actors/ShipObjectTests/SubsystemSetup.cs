@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using NUnit.Framework;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -8,14 +8,14 @@ namespace UnitTests.Actors.ShipObjectTests
     [TestFixture]
     public class SubsystemSetup
     {
-        private Mock<Sector> _mockSector;
+        private Mock<Coordinate> _mockSector;
         private Mock<Map> _mockMap;
         private Mock<IStarTrekKGSettings> _mockSettings;
 
         [SetUp]
         public void Setup()
         {
-            _mockSector = new Mock<Sector>();
+            _mockSector = new Mock<Coordinate>();
             _mockMap = new Mock<Map>();
             _mockSettings = new Mock<IStarTrekKGSettings>();
         }

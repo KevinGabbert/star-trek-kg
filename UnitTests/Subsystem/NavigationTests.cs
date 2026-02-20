@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using UnitTests.TestObjects;
@@ -22,11 +22,11 @@ namespace UnitTests.Subsystem
         [TearDown]
         public void TearDown()
         {
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 0;
+
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
-
-            DEFAULTS.REGION_MIN = 0;
-            DEFAULTS.REGION_MAX = 0;
         }
 
         //For this test to work, InvalidCourseCheck needs to be mocked

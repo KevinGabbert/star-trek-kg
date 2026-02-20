@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Playfield
+namespace StarTrek_KG.Playfield
 {
     public class Vector
     {

@@ -1,4 +1,4 @@
-﻿using StarTrek_KG.Interfaces;
+using StarTrek_KG.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

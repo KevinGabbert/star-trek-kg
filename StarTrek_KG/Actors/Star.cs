@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Actors
@@ -10,7 +10,7 @@ namespace StarTrek_KG.Actors
             this.Type = this.GetType();
         }
 
-        public ISector Sector
+        public ICoordinate Coordinate
         {
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }

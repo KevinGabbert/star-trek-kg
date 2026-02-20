@@ -1,4 +1,4 @@
-﻿using StarTrek_KG;
+using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;

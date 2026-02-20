@@ -1,4 +1,4 @@
-﻿using StarTrek_KG.Interfaces;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Subsystem
 {

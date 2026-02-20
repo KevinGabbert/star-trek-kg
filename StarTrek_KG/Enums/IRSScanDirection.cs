@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Enums
+namespace StarTrek_KG.Enums
 {
     public enum IRSScanDirection
     {

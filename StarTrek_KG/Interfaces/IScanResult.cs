@@ -1,10 +1,10 @@
-﻿using StarTrek_KG.Playfield;
+using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Interfaces
 {
     public interface IScanResult
     {
-        Coordinate Coordinate { get; set; }
+        Point Point { get; set; }
         bool MyLocation { get; set; }
 
         bool GalacticBarrier { get; set; }

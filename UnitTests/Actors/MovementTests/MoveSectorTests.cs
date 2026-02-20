@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -10,7 +10,7 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
 {
     public class MoveSectorTests : Movement_Base
     {
-        #region Sectors
+        #region Coordinates
 
         [Ignore("")]
         [Test]
@@ -22,18 +22,18 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
         [Test]
         public void HitObstacle()
         {
-            Assert.AreEqual(4, _testShip.Sector.X);
-            Assert.AreEqual(4, _testShip.Sector.Y);
+            Assert.AreEqual(4, _testShip.Coordinate.X);
+            Assert.AreEqual(4, _testShip.Coordinate.Y);
 
-            Region activeRegion = this.Game.Map.Regions.GetActive();
-            Region shipRegion = _testShip.GetRegion();
+            Sector activeRegion = this.Game.Map.Sectors.GetActive();
+            Sector shipRegion = _testShip.GetSector();
 
             Assert.AreEqual(activeRegion.Name, shipRegion.Name);
 
-            var _testSector = this.Game.Map.Regions[activeRegion.Name].Sectors[4, 2];
+            var _testSector = this.Game.Map.Sectors[activeRegion.Name].Coordinates[4, 2];
 
             //todo: simplify the setting of an object - get rid of "item"
-            _testSector.Item = SectorItem.Star;
+            _testSector.Item = CoordinateItem.Star;
             _testSector.Object = new Star()
             {
                 Designation = "Fred"
@@ -43,7 +43,7 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
 
             Assert.IsTrue(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
-            this.Game.Map.Regions.GetActive().Sectors[3, 4].Item = SectorItem.Empty;
+            this.Game.Map.Sectors.GetActive().Coordinates[3, 4].Item = CoordinateItem.Empty;
         }
 
         [Test]
@@ -55,8 +55,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
 
             //verify that ship has moved the expected distance from starting sector
             //we test by "reversing" the movement made by the playership
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y + 1, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y + 1, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]
@@ -67,8 +67,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X - 1, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y + 1, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X - 1, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y + 1, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]
@@ -79,8 +79,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X - 1, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X - 1, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]
@@ -91,8 +91,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X - 1, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y - 1, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X - 1, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y - 1, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]
@@ -103,8 +103,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y - 1, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y - 1, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]
@@ -115,8 +115,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X + 1, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y - 1, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X + 1, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y - 1, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]
@@ -127,8 +127,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X + 1, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X + 1, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]
@@ -139,8 +139,8 @@ namespace UnitTests.Actors.MovementTests.MoveSectorTests
             this.CheckSectorsAfterMovement();
 
             //verify that ship has moved the expected distance from starting sector
-            Assert.AreEqual(_startingSectorX, _testShip.Sector.X + 1, "this.Game.Map.Playership.Sector.X");
-            Assert.AreEqual(_startingSectorY, _testShip.Sector.Y + 1, "this.Game.Map.Playership.Sector.Y");
+            Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X + 1, "this.Game.Map.Playership.Coordinate.X");
+            Assert.AreEqual(_startingSectorY, _testShip.Coordinate.Y + 1, "this.Game.Map.Playership.Coordinate.Y");
         }
 
         [Test]

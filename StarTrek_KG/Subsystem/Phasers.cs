@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
@@ -11,7 +11,7 @@ namespace StarTrek_KG.Subsystem
     public class Phasers : SubSystem_Base, IWeapon
     {
         //dependencies to inject
-        //Regions
+        //Sectors
         //Utility
 
         public Phasers(IShip shipConnectedTo): base(shipConnectedTo)
@@ -45,13 +45,13 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged()) return this.ShipConnectedTo.OutputQueue();
 
-            //todo:  this doesn't *work* too well as a feature of *Regions*, but rather, of Ship?
+            //todo:  this doesn't *work* too well as a feature of *Sectors*, but rather, of Ship?
 
-            var regions = new Regions(this.ShipConnectedTo.Map, this.ShipConnectedTo.Map.Game.Interact);
+            var regions = new Sectors(this.ShipConnectedTo.Map, this.ShipConnectedTo.Map.Game.Interact);
 
             //todo: this may need a different refactor
             List<string> hostilesOutputLines;
-            bool gotHostiles = regions.NoHostiles(this.ShipConnectedTo.Map.Regions.GetActive().GetHostiles(), out hostilesOutputLines);
+            bool gotHostiles = regions.NoHostiles(this.ShipConnectedTo.Map.Sectors.GetActive().GetHostiles(), out hostilesOutputLines);
 
             if (gotHostiles)
             {
@@ -83,14 +83,14 @@ namespace StarTrek_KG.Subsystem
 
             var destroyedShips = new List<IShip>();
 
-            List<IShip> hostiles = game.Map.Regions.GetActive().GetHostiles();
+            List<IShip> hostiles = game.Map.Sectors.GetActive().GetHostiles();
 
             foreach (var badGuyShip in hostiles)
             {
                 this.FireOnShip(phaserEnergy, badGuyShip, inNebula, destroyedShips);
             }
 
-            if (this.ShipConnectedTo.GetRegion().GetStarbaseCount() > 0 && game.PlayerNowEnemyToFederation)
+            if (this.ShipConnectedTo.GetSector().GetStarbaseCount() > 0 && game.PlayerNowEnemyToFederation)
             {
                 //todo: this is because starbases are not an object yet and we don't know how tough their shields are.. stay tuned, then delete this IF statement when they become like everyone else
                 
@@ -103,7 +103,7 @@ namespace StarTrek_KG.Subsystem
 
         private bool InNebula()
         {
-            var inNebula = this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae;
+            var inNebula = this.ShipConnectedTo.GetSector().Type == SectorType.Nebulae;
 
             if (inNebula)
             {
@@ -119,8 +119,8 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo.OutputLine("Phasers locked on: " + badGuyShip.Name);
 
-            double distance = Utility.Utility.Distance(location.Sector.X, location.Sector.Y, badGuyShip.Sector.X,
-                badGuyShip.Sector.Y);
+            double distance = Utility.Utility.Distance(location.Coordinate.X, location.Coordinate.Y, badGuyShip.Coordinate.X,
+                badGuyShip.Coordinate.Y);
             double deliveredEnergy = Utility.Utility.ShootBeamWeapon(phaserEnergy, distance, "PhaserShotDeprecationRate",
                 "PhaserEnergyAdjustment", inNebula);
 
@@ -161,13 +161,13 @@ namespace StarTrek_KG.Subsystem
             string badGuyShipName = badGuyShip.Name;
             string badguyShieldEnergy = badGuyShields.Energy.ToString();
 
-            if (badGuyShip.GetRegion().Type == RegionType.Nebulae)
+            if (badGuyShip.GetSector().Type == SectorType.Nebulae)
             {
                 badGuyShipName = "Unknown Hostile Ship";
                 badguyShieldEnergy = "Unknown level";
             }
 
-            var badGuy = Utility.Utility.HideXorYIfNebula(badGuyShip.GetRegion(), badGuyShip.Sector.X.ToString(), badGuyShip.Sector.Y.ToString());
+            var badGuy = Utility.Utility.HideXorYIfNebula(badGuyShip.GetSector(), badGuyShip.Coordinate.X.ToString(), badGuyShip.Coordinate.Y.ToString());
 
             this.ShipConnectedTo.OutputLine(
                 string.Format("Hit " + badGuyShipName + " at sector [{0},{1}], shield strength now at {2}.", badGuy.X, badGuy.Y, badguyShieldEnergy));
@@ -185,7 +185,7 @@ namespace StarTrek_KG.Subsystem
             destroyedShips.Add(badGuyShip);
         }
 
-        public static Phasers For(IShip ship)
+        public new static Phasers For(IShip ship)
         {
             return (Phasers)SubSystem_Base.For(ship, SubsystemType.Phasers);
         }
@@ -200,7 +200,7 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo.OutputLine("");
             this.ShipConnectedTo.OutputLine("Objects to Target:");
 
-            List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
+            List<KeyValuePair<int, Coordinate>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
             string userReply;
             this.ShipConnectedTo.OutputLine("");
@@ -232,17 +232,17 @@ namespace StarTrek_KG.Subsystem
                 var destroyedShips = new List<IShip>();
                 switch (objectToFireOn.Item)
                 {
-                     case SectorItem.HostileShip:
-                     case SectorItem.FriendlyShip:
+                     case CoordinateItem.HostileShip:
+                     case CoordinateItem.FriendlyShip:
                          this.FireOnShip(int.Parse(phaserEnergy), (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
                         break;
 
-                     case SectorItem.Starbase:
+                     case CoordinateItem.Starbase:
                         //todo: support Starbase Hit points
                         game.DestroyStarbase(game.Map, objectToFireOn.Y, objectToFireOn.X, objectToFireOn);
                         break;
 
-                     case SectorItem.Star:
+                     case CoordinateItem.Star:
                         this.FireOnStar((IStar)objectToFireOn.Object);
                         break;
                 }

@@ -1,4 +1,4 @@
-﻿namespace UnitTests.Output
+namespace UnitTests.Output
 {
     class SubscriberOutputTests
     {

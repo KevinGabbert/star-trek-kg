@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -22,24 +22,24 @@ namespace UnitTests.Subsystem
         [TearDown]
         public void TearDown()
         {
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 0;
+
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
-
-            DEFAULTS.REGION_MIN = 0;
-            DEFAULTS.REGION_MAX = 0;
         }
 
         [Test]
         public void PhaserFireSubtractsEnergyFromShip2()
         {
-            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
+            _setup.SetupMapWith1FriendlyAtSector(new Point(2, 1));
 
             var startingEnergy = new StarTrekKGSettings().GetSetting<double>("energy");
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const int testBoltEnergy = 89;
 
-            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Sector.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy);
 
             this.VerifyFiringShipIntegrity(_setup.TestMap.Playership, startingEnergy, testBoltEnergy, 1911);
@@ -51,14 +51,14 @@ namespace UnitTests.Subsystem
         [Test]
         public void PhaserFireSubtractsEnergyFromShip()
         {
-            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2,1));
+            _setup.SetupMapWith1FriendlyAtSector(new Point(2,1));
 
             var startingEnergy = new StarTrekKGSettings().GetSetting<double>("energy");;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const int testBoltEnergy = 89;
 
-            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Sector.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy);
 
             this.VerifyFiringShipIntegrity(_setup.TestMap.Playership, startingEnergy, testBoltEnergy, 1911);
@@ -70,7 +70,7 @@ namespace UnitTests.Subsystem
         [Test]
         public void PhasersWontFireWhenToldTooMuchEnergy()
         {
-            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
+            _setup.SetupMapWith1FriendlyAtSector(new Point(2, 1));
 
             var ship = _setup.TestMap.Playership;
 
@@ -80,7 +80,7 @@ namespace UnitTests.Subsystem
             const int testBoltEnergy = 4000;
             var beforeEnergy = ship.Energy;
 
-            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Sector.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy);
 
             Assert.AreEqual(ship.Energy, beforeEnergy); //verify that no energy xfer happened.
@@ -96,14 +96,14 @@ namespace UnitTests.Subsystem
         [Test]
         public void PhasersWontFireWhenToldNotEnoughEnergy()
         {
-            _setup.SetupMapWith1FriendlyAtSector(new Coordinate(2, 1));
+            _setup.SetupMapWith1FriendlyAtSector(new Point(2, 1));
 
             var startingEnergy = new StarTrekKGSettings().GetSetting<int>("energy"); ;
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
 
             const int testBoltEnergy = -1;
 
-            //This action will hit every single hostile in the Region.  In this case, it will hit no one  :D
+            //This action will hit every single hostile in the Sector.  In this case, it will hit no one  :D
             Phasers.For(_setup.TestMap.Playership).Fire(testBoltEnergy);
 
             this.VerifyFiringShipIntegrity(_setup.TestMap.Playership, startingEnergy, testBoltEnergy, startingEnergy);
@@ -118,11 +118,11 @@ namespace UnitTests.Subsystem
         public void HitThatDestroys_NonNebula()
         {
             //TestClass_Base called before this, doing some initialization a second time
-            _setup.SetupMapWith1HostileAtSector(new Coordinate(2, 1), new Coordinate(2,6), true);
+            _setup.SetupMapWith1HostileAtSector(new Point(2, 1), new Point(2,6), true);
 
             //todo: why active? are hostiles in the same sector?
-            var activeRegion = _setup.TestMap.Regions.GetActive();
-            activeRegion.Type = RegionType.GalacticSpace; // for testing purposes.
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            activeRegion.Type = SectorType.GalacticSpace; // for testing purposes.
 
             var beforeHostiles = activeRegion.GetHostiles();
             var countOfHostiles = beforeHostiles.Count;
@@ -130,11 +130,11 @@ namespace UnitTests.Subsystem
             Assert.AreEqual(1, countOfHostiles);
 
             //Verify ship's location
-            Assert.AreEqual(2, beforeHostiles[0].Sector.X);
-            Assert.AreEqual(6, beforeHostiles[0].Sector.Y);
+            Assert.AreEqual(2, beforeHostiles[0].Coordinate.X);
+            Assert.AreEqual(6, beforeHostiles[0].Coordinate.Y);
 
             //verify position on map.
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[22].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[22].Item);
 
             //set badguy energy
             var badGuyShields = Shields.For(beforeHostiles[0]);
@@ -160,7 +160,7 @@ namespace UnitTests.Subsystem
 
             badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 200;
 
-            //This action will hit every single hostile in the Region
+            //This action will hit every single hostile in the Sector
             phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
 
             var playershipAfter = _setup.TestMap.Playership;
@@ -172,20 +172,20 @@ namespace UnitTests.Subsystem
 
             //in space. no one can hear you scream.
             Assert.AreEqual(0, afterHostilesCount);
-            Assert.AreEqual(null, activeRegion.Sectors[22].Object);
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[22].Item);
+            Assert.AreEqual(null, activeRegion.Coordinates[22].Object);
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[22].Item);
         }
 
         [Test]
         public void HitThatDestroys_Nebula()
         {
             //TestClass_Base called before this, doing some initialization a second time
-            _setup.SetupMapWith1HostileAtSector(new Coordinate(2, 1), new Coordinate(2, 6), true);
+            _setup.SetupMapWith1HostileAtSector(new Point(2, 1), new Point(2, 6), true);
             Game.RandomFactorForTesting = 123;
 
             //todo: why active? are hostiles in the same sector?
-            var activeRegion = _setup.TestMap.Regions.GetActive();
-            activeRegion.Type = RegionType.Nebulae; // for testing purposes.
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            activeRegion.Type = SectorType.Nebulae; // for testing purposes.
 
             var beforeHostiles = activeRegion.GetHostiles();
             var countOfHostiles = beforeHostiles.Count;
@@ -193,11 +193,11 @@ namespace UnitTests.Subsystem
             Assert.AreEqual(1, countOfHostiles);
 
             //Verify ship's location
-            Assert.AreEqual(2, beforeHostiles[0].Sector.X);
-            Assert.AreEqual(6, beforeHostiles[0].Sector.Y);
+            Assert.AreEqual(2, beforeHostiles[0].Coordinate.X);
+            Assert.AreEqual(6, beforeHostiles[0].Coordinate.Y);
 
             //verify position on map.
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[22].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[22].Item);
 
             //set badguy energy
             var badGuyShields = Shields.For(beforeHostiles[0]);
@@ -221,7 +221,7 @@ namespace UnitTests.Subsystem
 
             badGuyShields.ShipConnectedTo.Map.Game.RandomFactorForTesting = 200;
 
-            //This action will hit every single hostile in the Region
+            //This action will hit every single hostile in the Sector
             phasers.Fire(testBoltEnergy);  //due to the distance between the 2 ships, this is how much power it takes to knock the hostile's shield level of 50 down to nothing.
 
             var playershipAfter = _setup.TestMap.Playership;
@@ -233,8 +233,8 @@ namespace UnitTests.Subsystem
 
             //in space. no one can hear you scream.
             Assert.AreEqual(0, afterHostilesCount);
-            Assert.AreEqual(null, activeRegion.Sectors[22].Object);
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[22].Item);
+            Assert.AreEqual(null, activeRegion.Coordinates[22].Object);
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[22].Item);
         }
 
         [Ignore("")]
@@ -247,7 +247,7 @@ namespace UnitTests.Subsystem
 
         public void HitThatWounds()
         {
-            //_testMap.Regions.GetHostile(0).Shields = 20
+            //_testMap.Sectors.GetHostile(0).Shields = 20
 
             //todo: ensure that baddie has less than 50 (from config?)
             Phasers.For(_setup.TestMap.Playership).Fire(50); 

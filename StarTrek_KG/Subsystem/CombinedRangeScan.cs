@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -24,12 +24,12 @@ namespace StarTrek_KG.Subsystem
                 this.ShipConnectedTo.OutputLine("Combined Scan needs SRS Subsystem in order to run.");
             }
 
-            this.ShipConnectedTo.Map.Game.Interact.RenderSectors(SectorScanType.CombinedRange, this);
+            this.ShipConnectedTo.Map.Game.Interact.RenderSectors(CoordinateScanType.CombinedRange, this);
 
             return this.ShipConnectedTo.OutputQueue();
         }
 
-        public static CombinedRangeScan For(IShip ship)
+        public new static CombinedRangeScan For(IShip ship)
         {
             return (CombinedRangeScan)For(ship, SubsystemType.CombinedRangeScan);
         }

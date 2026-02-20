@@ -1,4 +1,4 @@
-ï»¿using StarTrek_KG.Interfaces;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Types
@@ -11,7 +11,7 @@ namespace StarTrek_KG.Types
             set { this.Name = value; }
         }
 
-        public Coordinate Coordinate { get; set; }
+        public Point Point { get; set; }
         public bool MyLocation { get; set; }
         public bool GalacticBarrier { get; set; }
         public bool Unknown { get; set; }
@@ -38,7 +38,7 @@ namespace StarTrek_KG.Types
         {
             string returnVal = null;
 
-            returnVal = $"{this.Hostiles.GetValueOrDefault(0)} âˆ™ {this.Starbases.GetValueOrDefault(0)} âˆ™ {this.Stars.GetValueOrDefault(0)}";
+            returnVal = $"{this.Hostiles.GetValueOrDefault(0)} · {this.Starbases.GetValueOrDefault(0)} · {this.Stars.GetValueOrDefault(0)}";
 
             return returnVal;
         }

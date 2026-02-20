@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -68,7 +68,7 @@ namespace StarTrek_KG
 
                     this.Prompt = (string s, out string output) => this.Interact.PromptUserSubscriber(s, out output);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     this.Interact = new Interaction()
                     {
@@ -99,7 +99,7 @@ namespace StarTrek_KG
                 {
                     Initialize = true,
                     AddNebulae = true,
-                    SectorDefs = this.SectorSetup()
+                    CoordinateDefs = this.SectorSetup()
                 };
 
                 this.InitMap(startConfig, this);
@@ -209,7 +209,7 @@ namespace StarTrek_KG
         //    this.Interact.ResetPrompt();
 
         //    //TODO:  we can possibly reorder the baddies in this.Map.GameConfig..
-        //    this.Map.Initialize(this.Map.GameConfig.SectorDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
+        //    this.Map.Initialize(this.Map.GameConfig.CoordinateDefs, this.Map.GameConfig.AddNebulae); //we gonna start over
         //}
 
         private void GetConstants()
@@ -221,11 +221,11 @@ namespace StarTrek_KG
                 this.Interact.Line("// ---------------- Debug Mode ----------------");
             }
 
+            DEFAULTS.COORDINATE_MIN = this.Config.GetSetting<int>("COORDINATE_MIN");
+            DEFAULTS.COORDINATE_MAX = this.Config.GetSetting<int>("COORDINATE_MAX");
+
             DEFAULTS.SECTOR_MIN = this.Config.GetSetting<int>("SECTOR_MIN");
             DEFAULTS.SECTOR_MAX = this.Config.GetSetting<int>("SECTOR_MAX");
-
-            DEFAULTS.REGION_MIN = this.Config.GetSetting<int>("Region_MIN");
-            DEFAULTS.REGION_MAX = this.Config.GetSetting<int>("RegionMax");
 
             DEFAULTS.SHIELDS_DOWN_LEVEL = this.Config.GetSetting<int>("ShieldsDownLevel");
             DEFAULTS.LOW_ENERGY_LEVEL = this.Config.GetSetting<int>("LowEnergyLevel");
@@ -236,10 +236,10 @@ namespace StarTrek_KG
             DEFAULTS.ALLY = this.Config.GetSetting<string>("AllyGlyph");
         }
 
-        private SectorDefs SectorSetup()
+        private CoordinateDefs SectorSetup()
         {
 
-            //todo: these SectorDefs can be computed somewhere
+            //todo: these CoordinateDefs can be computed somewhere
             //todo: this make a GetSectorDefsFromAppConfig()
             //todo: Output a message if GetSectorDefsFromAppConfig() fails, then use hardcoded setup and start game anyway
 
@@ -250,48 +250,48 @@ namespace StarTrek_KG
         /// This is the setup we get if app config can not be read for some reason (or it is buggy)
         /// </summary>
         /// <returns></returns>
-        private SectorDefs DefaultHardcodedSetup()
+        private CoordinateDefs DefaultHardcodedSetup()
         {
             //todo: get rid of this.  generate on the fly!
             //todo: this needs to be  in a config file
 
-            return new SectorDefs
+            return new CoordinateDefs
                        {
-                           //This tells us what Types of items will be generated at start.  if Coordinates are passed, that is an
+                           //This tells us what Types of items will be generated at start.  if Points are passed, that is an
                            //indicator that an individual object needs to be placed, istead of generated objects from config file.
 
                            //todo: get rid of that second, stupid parameter.
-                           new SectorDef(SectorItem.PlayerShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.HostileShip),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Starbase),
-                           new SectorDef(SectorItem.Star),
+                           new CoordinateDef(CoordinateItem.PlayerShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.HostileShip),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Starbase),
+                           new CoordinateDef(CoordinateItem.Star),
                        };
         }
 
@@ -441,7 +441,7 @@ namespace StarTrek_KG
             //this is called from torpedo control/phaser control, and navigation control
 
             var returnValue = false;
-            var activeRegion = map.Regions.GetActive();
+            var activeRegion = map.Sectors.GetActive();
             var hostilesAttacking = activeRegion.GetHostiles();
 
             this.HostileStarbasesAttack(map, activeRegion);
@@ -467,11 +467,11 @@ namespace StarTrek_KG
             return returnValue;
         }
 
-        private void HostileStarbasesAttack(IMap map, IRegion activeRegion)
+        private void HostileStarbasesAttack(IMap map, ISector activeRegion)
         {
             if (this.PlayerNowEnemyToFederation)
             {
-                if (activeRegion.Type != RegionType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
+                if (activeRegion.Type != SectorType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
                 {
                     var starbasesAttacking = activeRegion.GetStarbaseCount();
 
@@ -513,17 +513,17 @@ namespace StarTrek_KG
         private void AttackNonDockedPlayership(IMap map, IShip badGuy, int randomFactor)
         {
             var playerShipLocation = map.Playership.GetLocation();
-            var distance = Utility.Utility.Distance(playerShipLocation.Sector.X,
-                                                    playerShipLocation.Sector.Y,
-                                                    badGuy.Sector.X,
-                                                    badGuy.Sector.Y);
+            var distance = Utility.Utility.Distance(playerShipLocation.Coordinate.X,
+                                                    playerShipLocation.Coordinate.Y,
+                                                    badGuy.Coordinate.X,
+                                                    badGuy.Coordinate.Y);
 
             int disruptorShotSeed = this.Config.GetSetting<int>("DisruptorShotSeed");
 
             //todo: randomFactor is blowing out the top of the int
             int seedEnergyToPowerWeapon = disruptorShotSeed; // * (randomFactor/5);
 
-            var inNebula = badGuy.GetRegion().Type == RegionType.Nebulae;
+            var inNebula = badGuy.GetSector().Type == SectorType.Nebulae;
 
             //Todo: this should be Disruptors.For(this.ShipConnectedTo).Shoot()
             //todo: the -1 should be the ship energy you want to allocate
@@ -548,17 +548,17 @@ namespace StarTrek_KG
         #region Taunts
 
         /// <summary>
-        /// All enemies in PlayerShip's Region shall now commence to unclog their noses in the general direction of the player.
+        /// All enemies in PlayerShip's Sector shall now commence to unclog their noses in the general direction of the player.
         /// </summary>
         public void EnemiesWillNowTaunt()
         {
             //todo: move this to communications subsystem eventually
-            var currentRegion = this.Map.Playership.GetRegion();
-            var hostilesInRegion = currentRegion.GetHostiles();
+            var currentRegion = this.Map.Playership.GetSector();
+            var HostilesInSector = currentRegion.GetHostiles();
 
             this.LatestTaunts = new List<FactionThreat>();
 
-            IEnumerable<IShip> shipsWithTaunts = from ship in hostilesInRegion
+            IEnumerable<IShip> shipsWithTaunts = from ship in HostilesInSector
                                                     let tauntLikely = Utility.Utility.Random.Next(5) == 1
                                                     where tauntLikely
                                                     select ship;
@@ -599,11 +599,11 @@ namespace StarTrek_KG
             }
             else if (currentFaction == FactionName.Klingon)
             {
-                this.Interact.WithNoEndCR($"Klingon ship at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
+                this.Interact.WithNoEndCR($"Klingon ship at {"[" + ship.Coordinate.X + "," + ship.Coordinate.Y + "]"} sends the following message: ");
             }
             else
             {
-                this.Interact.WithNoEndCR($"Hostile at {"[" + ship.Sector.X + "," + ship.Sector.Y + "]"} sends the following message: ");
+                this.Interact.WithNoEndCR($"Hostile at {"[" + ship.Coordinate.X + "," + ship.Coordinate.Y + "]"} sends the following message: ");
                 currentShipName = ship.Name;
             }
 
@@ -621,11 +621,11 @@ namespace StarTrek_KG
 
         #region Shields
 
-        public bool Auto_Raise_Shields(IMap map, IRegion Region)
+        public bool Auto_Raise_Shields(IMap map, ISector Sector)
         {
             bool shieldsRaised = false;
 
-            if (Region.Type != RegionType.Nebulae)
+            if (Sector.Type != SectorType.Nebulae)
             {
                 var thisShip = map.Playership;
                 var thisShipEnergy = thisShip.Energy;
@@ -676,7 +676,7 @@ namespace StarTrek_KG
 
         #region Starbase
 
-        public void DestroyStarbase(IMap map, int newY, int newX, Sector qLocation)
+        public void DestroyStarbase(IMap map, int newY, int newX, ICoordinate qLocation)
         {
             //todo: technically, the script below should leave the Torpedoes class and move to a script class..
             //todo: raise an event that a script can use.
@@ -684,7 +684,7 @@ namespace StarTrek_KG
             //At present, a starbase can be destroyed by a single hit
             bool emergencyMessageSuccess = this.StarbaseEmergencyMessageAttempt();
 
-            this.DestroyStarbase(map, newY, newX, (ISector)qLocation);
+            this.ExecuteStarbaseDestruction(map, newY, newX, qLocation);
 
             if (emergencyMessageSuccess)
             {
@@ -707,14 +707,14 @@ namespace StarTrek_KG
             }
         }
 
-        private void DestroyStarbase(IMap map, int newY, int newX, ISector qLocation)
+        private void ExecuteStarbaseDestruction(IMap map, int newY, int newX, ICoordinate qLocation)
         {
             Navigation.For(map.Playership).Docked = false;  //in case you shot it point-blank range..
 
             map.starbases--;
 
             qLocation.Object = null;
-            qLocation.Item = SectorItem.Empty;
+            qLocation.Item = CoordinateItem.Empty;
 
             //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
             this.Interact.Line($"You have destroyed A Federation starbase! (at sector [{newX},{newY}])");
@@ -796,7 +796,7 @@ namespace StarTrek_KG
 
         //private bool HostileCheck(GameConfig startConfig)
         //{
-        //    if (startConfig.SectorDefs.GetHostiles().Count() < 1)
+        //    if (startConfig.CoordinateDefs.GetHostiles().Count() < 1)
         //    {
         //        Output.WriteLine("ERROR: --- No Hostiles have been set up.");
 
@@ -811,7 +811,7 @@ namespace StarTrek_KG
 
         private bool HostileCheck(IMap map)
         {
-            if (!map.Regions.GetHostiles().Any())
+            if (!map.Sectors.GetHostiles().Any())
             {
                 this.Interact.Line("ERROR: --- No Hostiles have been set up.");
 
@@ -826,7 +826,7 @@ namespace StarTrek_KG
 
         private void ReportGameStatus()
         {
-            int starbasesLeft = this.Map.Regions.GetStarbaseCount();
+            int starbasesLeft = this.Map.Sectors.GetStarbaseCount();
 
             if (this.PlayerNowEnemyToFederation)
             {
@@ -839,16 +839,16 @@ namespace StarTrek_KG
             {
                 this.GameOver = !(this.Map.Playership.Energy > 0 &&
                                   !this.Map.Playership.Destroyed &&
-                                  (this.Map.Regions.GetHostileCount() > 0) &&
+                                  (this.Map.Sectors.GetHostileCount() > 0) &&
                                   this.Map.timeRemaining > 0);
             }
 
             this.Interact.PrintMissionResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
-        public void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region)
+        public void MoveTimeForward(IMap map, Point lastRegion, Point Sector)
         {
-            if (lastRegion.X != Region.X || lastRegion.Y != Region.Y)
+            if (lastRegion.X != Sector.X || lastRegion.Y != Sector.Y)
             {
                 map.timeRemaining--;
                 map.Stardate++;
@@ -857,11 +857,11 @@ namespace StarTrek_KG
 
         public void Dispose()
         {
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 0;
+
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
-
-            DEFAULTS.REGION_MIN = 0;
-            DEFAULTS.REGION_MAX = 0;
         }
 
         public string GetConfigText(string textToGet)
@@ -870,3 +870,4 @@ namespace StarTrek_KG
         }
     }
 }
+

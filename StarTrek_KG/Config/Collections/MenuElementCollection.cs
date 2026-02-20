@@ -5,7 +5,7 @@ namespace StarTrek_KG.Config.Collections
 {
     public class MenuElementCollection : ConfigurationElementCollection
     {
-        public new MenuElement this[int index]
+        public MenuElement this[int index]
         {
             get { return (MenuElement)BaseGet(index); }
             set

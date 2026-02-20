@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace StarTrek_KG.TypeSafeEnums
@@ -24,7 +24,7 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly Menu com = new Menu(10, "com", "Access Computer");
         public static readonly Menu imp = new Menu(11, "imp", "Impulse Navigation");
         public static readonly Menu nto = new Menu(12, "nto", "Navigate To Object");
-        public static readonly Menu toq = new Menu(13, "toq", "Target Object in this Region");
+        public static readonly Menu toq = new Menu(13, "toq", "Target Object in this Sector");
         public static readonly Menu dmg = new Menu(14, "dmg", "Damage Control");              
         public static readonly Menu dbg = new Menu(15, "dbg", "Debug Test Mode");
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Actors
@@ -8,7 +8,7 @@ namespace StarTrek_KG.Actors
         //Not Implemented yet..
         //on construct, set my gravity to be reeel high
         //(basically), this affects how many sectors around the black hole can pull the ship in
-        public ISector Sector
+        public ICoordinate Coordinate
         {
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
@@ -29,7 +29,7 @@ namespace StarTrek_KG.Actors
             get { throw new NotImplementedException(); }
         }
 
-        Type ISectorObject.Type
+        Type ICoordinateObject.Type
         {
             get
             {
@@ -41,6 +41,6 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        string ISectorObject.Name { get; set; }
+        string ICoordinateObject.Name { get; set; }
     }
 }

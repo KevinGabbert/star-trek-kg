@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -15,7 +15,7 @@ namespace StarTrek_KG.Subsystem
             this.Type = SubsystemType.Impulse;
         }
 
-        public static Impulse For(IShip ship)
+        public new static Impulse For(IShip ship)
         {
             return (Impulse)SubSystem_Base.For(ship, SubsystemType.Impulse);
         }

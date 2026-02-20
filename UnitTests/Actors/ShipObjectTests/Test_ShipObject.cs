@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using StarTrek_KG.Actors;
@@ -16,9 +16,9 @@ namespace UnitTests.Actors.ShipObjectTests
         private Mock<IGame> _mockGame;
         private Mock<IMap> _mockMap;
         private Mock<IInteraction> _mockWrite;
-        private Mock<ISector> _mockSector;
         private Mock<IStarTrekKGSettings> _mockSettings;
         private Mock<IOutputMethod> _mockOutput;
+        private ICoordinate _testCoordinate;
 
         [SetUp]
         public void Setup()
@@ -27,14 +27,15 @@ namespace UnitTests.Actors.ShipObjectTests
             _mockGame = new Mock<IGame>();
             _mockMap = new Mock<IMap>();
             _mockWrite = new Mock<IInteraction>();
-            _mockSector = new Mock<ISector>();
             _mockSettings = new Mock<IStarTrekKGSettings>();
-            _mockMap.Setup(m => m.Regions).Returns(new Regions(_mockMap.Object, _mockWrite.Object));
+            _mockMap.Setup(m => m.Sectors).Returns(new Sectors(_mockMap.Object, _mockWrite.Object));
 
-            var regions = new Regions(_mockMap.Object, _mockWrite.Object)
+            var regions = new Sectors(_mockMap.Object, _mockWrite.Object)
             {
-                new Region(new Coordinate())
+                new Sector(new Point())
             };
+
+            _testCoordinate = new Coordinate(new LocationDef(new Point(0, 0), new Point(0, 0)));
 
             _mockWrite.Setup(m => m.Output).Returns(_mockOutput.Object);
             _mockWrite.Setup(m => m.ShipHitMessage(It.IsAny<IShip>(), It.IsAny<int>()));
@@ -42,10 +43,8 @@ namespace UnitTests.Actors.ShipObjectTests
             _mockGame.Setup(m => m.Interact).Returns(_mockWrite.Object);
 
             _mockMap.Setup(m => m.Game).Returns(_mockGame.Object);
-            _mockMap.Setup(m => m.Regions).Returns(regions);
+            _mockMap.Setup(m => m.Sectors).Returns(regions);
             _mockMap.Setup(m => m.Write).Returns(_mockWrite.Object);
-
-            _mockSector.Setup(c => c.RegionDef).Returns(new Coordinate());
 
             _mockOutput.Setup(m => m.Queue).Returns(new Queue<string>());
             _mockMap.Setup(m => m.Config).Returns(_mockSettings.Object);
@@ -56,7 +55,7 @@ namespace UnitTests.Actors.ShipObjectTests
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("GoodGuy");
 
-            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _mockSector.Object, _mockMap.Object);
+            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _testCoordinate, _mockMap.Object);
 
             Assert.IsInstanceOf<Ship>(shipToTest);
             Assert.AreEqual(Allegiance.GoodGuy, shipToTest.Allegiance);
@@ -65,7 +64,7 @@ namespace UnitTests.Actors.ShipObjectTests
         [Test]
         public void Basic_Instantiation32()
         {
-            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _mockSector.Object, _mockMap.Object)
+            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _testCoordinate, _mockMap.Object)
             {
                 Allegiance = Allegiance.GoodGuy
             };
@@ -79,7 +78,7 @@ namespace UnitTests.Actors.ShipObjectTests
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("blah Blah Blah!!!");
 
-            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _mockSector.Object, _mockMap.Object);
+            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _testCoordinate, _mockMap.Object);
 
             Assert.IsInstanceOf<Ship>(shipToTest);
             Assert.AreEqual(Allegiance.Indeterminate, shipToTest.Allegiance);
@@ -90,7 +89,7 @@ namespace UnitTests.Actors.ShipObjectTests
         {
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("blah Blah Blah!!!");
 
-            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _mockSector.Object, _mockMap.Object);
+            var shipToTest = new Ship(FactionName.Klingon, "TestShip", _testCoordinate, _mockMap.Object);
 
             Shields.For(shipToTest).Energy = 100;  //this is syntactic sugar for: ship.Subsystems.Single(s => s.Type == SubsystemType.Shields);
 
@@ -99,10 +98,8 @@ namespace UnitTests.Actors.ShipObjectTests
             _mockWrite.Setup(w => w.Line(It.IsAny<string>()));
 
             _mockMap.Object.Write = _mockWrite.Object;
-            _mockSector.Setup(s => s.X).Returns(-2);
-            _mockSector.Setup(s => s.Y).Returns(-3);
-
-            var attacker = new Ship(FactionName.Klingon, "The attacking Ship", _mockSector.Object, _mockMap.Object);
+            var attackerCoordinate = new Coordinate(new LocationDef(new Point(-2, -3), new Point(0, 0)));
+            var attacker = new Ship(FactionName.Klingon, "The attacking Ship", attackerCoordinate, _mockMap.Object);
             shipToTest.AbsorbHitFrom(attacker, 50);
 
             Assert.AreEqual(50, Shields.For(shipToTest).Energy);
@@ -133,7 +130,7 @@ namespace UnitTests.Actors.ShipObjectTests
 
         }
 
-        //GetRegion()
+        //GetSector()
         //GetLocation()
         //RepairEverything()
     }

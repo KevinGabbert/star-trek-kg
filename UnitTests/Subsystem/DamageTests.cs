@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Interfaces;
 
 namespace UnitTests.Subsystem
@@ -6,7 +6,7 @@ namespace UnitTests.Subsystem
     [TestFixture]
     public class DamageIntegrationTests
     {
-        private IShip _testShip;
+        //private IShip _testShip;
 
         [SetUp]
         public void Setup()
@@ -60,3 +60,5 @@ namespace UnitTests.Subsystem
         }
     }
 }
+
+

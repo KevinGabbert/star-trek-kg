@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
@@ -20,7 +20,7 @@ namespace UnitTests.Actors.HostileTests
         [Test]
         public void ALLHostilesAttack_ShipUndocked_WithShields()
         {
-            //todo:  verify that Regions are set up correctly.
+            //todo:  verify that Sectors are set up correctly.
             //todo: This test does not run alone.  what do the other tests set up that this needs?  why don't thea other tests tear down their stuff?
 
             //todo: will we need to mock out the Console.write process just so that we can test the output?  I'm thinking so..
@@ -55,7 +55,7 @@ namespace UnitTests.Actors.HostileTests
             //todo:  This test needs to be tuned to proper gameplay
             _setup.SetupMapWith1Hostile();
 
-            IShip badGuy = _setup.TestMap.Regions.GetHostiles().Single();
+            IShip badGuy = _setup.TestMap.Sectors.GetHostiles().Single();
             badGuy.Energy = 2000;
             badGuy.Subsystems.Add(new Disruptors(badGuy) { Energy = 500});
             Disruptors disruptorsForBadGuy = (Disruptors)badGuy.Subsystems.Single(s => s.Type == SubsystemType.Disruptors);
@@ -112,7 +112,7 @@ namespace UnitTests.Actors.HostileTests
             //Assert.AreEqual(2500, Shields.For(_testMap.Playership).Energy, "Unexpected shield energy level"); //shields charged correctly // todo: do more tests on this in ShieldTests          
             //Assert.AreEqual(500, _testMap.Playership.Energy, "Ship energy not at maximum"); //ship has no damage
 
-            //_testMap.Regions.ALLHostilesAttack(_testMap);
+            //_testMap.Sectors.ALLHostilesAttack(_testMap);
 
             //Assert.IsFalse(_testMap.Playership.Destroyed);
             //Assert.Less(Shields.For(_testMap.Playership).Energy, 2500);
@@ -130,7 +130,7 @@ namespace UnitTests.Actors.HostileTests
 
             //Assert.AreEqual(3000, _testMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
 
-            //_testMap.Regions.ALLHostilesAttack(_testMap);
+            //_testMap.Sectors.ALLHostilesAttack(_testMap);
 
             //Assert.IsFalse(_testMap.Playership.Destroyed);
 
@@ -213,20 +213,20 @@ namespace UnitTests.Actors.HostileTests
             _setup.TestMap = new Map(new SetupOptions
             {
                 Initialize = true,
-                SectorDefs = new SectorDefs(),
+                CoordinateDefs = new CoordinateDefs(),
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Sectors.Count);
-            Assert.AreEqual(0, _setup.TestMap.Regions.GetHostileCount()); //no hostiles
+            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            Assert.AreEqual(0, _setup.TestMap.Sectors.GetHostileCount()); //no hostiles
             Assert.AreEqual(null, _setup.TestMap.Playership); //no friendly
             
             //just empty sectors
-            foreach (var sector in _setup.TestMap.Regions.SelectMany(Region => Region.Sectors))
+            foreach (var sector in _setup.TestMap.Sectors.SelectMany(Sector => Sector.Coordinates))
             {
-                Assert.AreEqual(SectorItem.Empty, sector.Item);
+                Assert.AreEqual(CoordinateItem.Empty, sector.Item);
             }
         }
 
@@ -239,27 +239,27 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 
                 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(SectorItem.PlayerShip)
+                    new CoordinateDef(CoordinateItem.PlayerShip)
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Sectors.Count);
+            Assert.AreEqual(64, activeRegion.Coordinates.Count);
 
-            //Playership's Region has been set correctly..
-            Assert.AreEqual(_setup.TestMap.Playership.Coordinate.X, activeRegion.X);
-            Assert.AreEqual(_setup.TestMap.Playership.Coordinate.Y, activeRegion.Y);
+            //Playership's Sector has been set correctly..
+            Assert.AreEqual(_setup.TestMap.Playership.Point.X, activeRegion.X);
+            Assert.AreEqual(_setup.TestMap.Playership.Point.Y, activeRegion.Y);
 
-            //Check to see if Playership has been assigned to a sector in the active Region.
+            //Check to see if Playership has been assigned to a sector in the active Sector.
 
             //indirectly..
-            Assert.AreEqual(1, activeRegion.Sectors.Count(s => s.Item == SectorItem.PlayerShip));
+            Assert.AreEqual(1, activeRegion.Coordinates.Count(s => s.Item == CoordinateItem.PlayerShip));
 
             //directly.
-            Assert.AreEqual(SectorItem.PlayerShip, activeRegion.Sectors.Single(s => s.X == _setup.TestMap.Playership.Sector.X && s.Y == _setup.TestMap.Playership.Sector.Y).Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates.Single(s => s.X == _setup.TestMap.Playership.Coordinate.X && s.Y == _setup.TestMap.Playership.Coordinate.Y).Item);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -271,25 +271,25 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 
                 
-                SectorDefs = new SectorDefs()
+                CoordinateDefs = new CoordinateDefs()
             }, this.Game.Interact, this.Game.Config, this.Game);
 
 
-            var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
+            var locationDef = new LocationDef(new Point(0, 0), new Point(1, 7));
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(locationDef), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Coordinate(locationDef), this.Game.Map);
 
-            _setup.TestMap.Regions[0].AddShip(hostileShip, _setup.TestMap.Regions[0].Sectors.Get(new Coordinate(1, 7)));
+            _setup.TestMap.Sectors[0].AddShip(hostileShip, _setup.TestMap.Sectors[0].Coordinates.Get(new Point(1, 7)));
 
-            var hostiles = _setup.TestMap.Regions.GetHostiles();
+            var hostiles = _setup.TestMap.Sectors.GetHostiles();
             Assert.AreEqual(1, hostiles.Count);
 
-            var firstHostile = _setup.TestMap.Regions.GetHostiles()[0];
-            Assert.AreEqual("Sector: 1, 7", firstHostile.Sector.ToString());
+            var firstHostile = _setup.TestMap.Sectors.GetHostiles()[0];
+            Assert.AreEqual("Coordinate: 1, 7", firstHostile.Coordinate.ToString());
 
-            Assert.AreEqual(1, _setup.TestMap.Regions.GetHostiles()[0].Sector.X);
-            Assert.AreEqual(7, _setup.TestMap.Regions.GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(1, _setup.TestMap.Sectors.GetHostiles()[0].Coordinate.X);
+            Assert.AreEqual(7, _setup.TestMap.Sectors.GetHostiles()[0].Coordinate.Y);
         }
 
         [Test]
@@ -300,20 +300,20 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
                 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(4, 6)), CoordinateItem.HostileShip)
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var hostiles = _setup.TestMap.Regions.GetHostiles();
+            var hostiles = _setup.TestMap.Sectors.GetHostiles();
             Assert.AreEqual(1, hostiles.Count);
 
             var firstHostile = hostiles[0];
-            Assert.AreEqual("Sector: 4, 6", firstHostile.Sector.ToString());
+            Assert.AreEqual("Coordinate: 4, 6", firstHostile.Coordinate.ToString());
 
-            Assert.AreEqual(4, hostiles[0].Sector.X);
-            Assert.AreEqual(6, hostiles[0].Sector.Y);
+            Assert.AreEqual(4, hostiles[0].Coordinate.X);
+            Assert.AreEqual(6, hostiles[0].Coordinate.Y);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -324,19 +324,19 @@ namespace UnitTests.Actors.HostileTests
             {
                 AddNebulae = false,
                 Initialize = true,
-                SectorDefs = new SectorDefs()
+                CoordinateDefs = new CoordinateDefs()
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var locationDef = new LocationDef(new Coordinate(0, 0), new Coordinate(1, 7));
+            var locationDef = new LocationDef(new Point(0, 0), new Point(1, 7));
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(locationDef), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Coordinate(locationDef), this.Game.Map);
 
-            _setup.TestMap.Regions[0].AddShip(hostileShip, _setup.TestMap.Regions[0].Sectors.Get(new Coordinate(1, 7)));
+            _setup.TestMap.Sectors[0].AddShip(hostileShip, _setup.TestMap.Sectors[0].Coordinates.Get(new Point(1, 7)));
 
-            _setup.TestMap.Regions.RemoveShip(hostileShip);
+            _setup.TestMap.Sectors.RemoveShip(hostileShip);
 
-            Assert.AreEqual(0, _setup.TestMap.Regions.GetHostiles().Count);
+            Assert.AreEqual(0, _setup.TestMap.Sectors.GetHostiles().Count);
         }
 
         //this method is here to test passing in 
@@ -365,50 +365,50 @@ namespace UnitTests.Actors.HostileTests
             {
                 Initialize = true,
                 AddNebulae = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(
-                        new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(
-                        new LocationDef(new Coordinate(0, 0), new Coordinate(2, 6)),
-                        SectorItem.HostileShip),
-                    new SectorDef(
-                        new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)),
-                        SectorItem.HostileShip),
-                    new SectorDef(
-                        new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(
+                        new LocationDef(new Point(0, 0), new Point(2, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(
+                        new LocationDef(new Point(0, 0), new Point(2, 6)),
+                        CoordinateItem.HostileShip),
+                    new CoordinateDef(
+                        new LocationDef(new Point(0, 0), new Point(2, 7)),
+                        CoordinateItem.HostileShip),
+                    new CoordinateDef(
+                        new LocationDef(new Point(0, 0), new Point(4, 4)),
+                        CoordinateItem.HostileShip)
                 },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Sectors.Count);
+            Assert.AreEqual(64, activeRegion.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
-            //var activeRegion = _setup.TestMap.Regions.GetActive();
+            //var activeRegion = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(SectorItem.PlayerShip, activeRegion.Sectors[17].Item);
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[22].Item);
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[23].Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates[17].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[22].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[23].Item);
 
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[24].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[24].Item);
 
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[36].Item);
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[37].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[36].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[37].Item);
 
             Assert.AreEqual(3, activeRegion.GetHostiles().Count);
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Sector.X);
-            Assert.AreEqual(6, activeRegion.GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Coordinate.X);
+            Assert.AreEqual(6, activeRegion.GetHostiles()[0].Coordinate.Y);
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[1].Sector.X);
-            Assert.AreEqual(7, activeRegion.GetHostiles()[1].Sector.Y);
+            Assert.AreEqual(2, activeRegion.GetHostiles()[1].Coordinate.X);
+            Assert.AreEqual(7, activeRegion.GetHostiles()[1].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Sector.X);
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Sector.Y);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.X);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.Y);
         }
 
         /// <summary>
@@ -424,41 +424,41 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
                 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 5)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.HostileShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(4, 5)), CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(4, 6)), CoordinateItem.HostileShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 7)), CoordinateItem.HostileShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(4, 4)), CoordinateItem.HostileShip)
                 },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Sectors.Count);
+            Assert.AreEqual(64, activeRegion.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
             //var activeRegion = activeRegion;
 
-            Assert.AreEqual(SectorItem.PlayerShip, activeRegion.Sectors[37].Item);
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[38].Item);
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[23].Item);
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[24].Item);
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[36].Item);
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[39].Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates[37].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[38].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[23].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[24].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[36].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[39].Item);
 
             Assert.AreEqual(3, activeRegion.GetHostiles().Count);
             Assert.AreEqual(3, activeRegion.GetHostiles().Count);
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Sector.X);
-            Assert.AreEqual(7, activeRegion.GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Coordinate.X);
+            Assert.AreEqual(7, activeRegion.GetHostiles()[0].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Sector.X);
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Sector.Y);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.X);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Sector.X);
-            Assert.AreEqual(6, activeRegion.GetHostiles()[2].Sector.Y);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.X);
+            Assert.AreEqual(6, activeRegion.GetHostiles()[2].Coordinate.Y);
         }
 
         /// <summary>
@@ -478,30 +478,30 @@ namespace UnitTests.Actors.HostileTests
 
             _setup.TestMap = this.SetUp3Hostiles();
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Sectors.Count);
+            Assert.AreEqual(64, activeRegion.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
             //var activeRegion = activeRegion;
 
-            Assert.AreEqual(SectorItem.PlayerShip, activeRegion.Sectors[1].Item);
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[38].Item, "Expected Hostile at activeRegion.Sectors[38]");
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[23].Item, "Expected Hostile at activeRegion.Sectors[23]");
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[24].Item);
-            Assert.AreEqual(SectorItem.HostileShip, activeRegion.Sectors[36].Item, "Expected Hostile at activeRegion.Sectors[39]");
-            Assert.AreEqual(SectorItem.Empty, activeRegion.Sectors[39].Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates[1].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[38].Item, "Expected Hostile at activeRegion.Coordinates[38]");
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[23].Item, "Expected Hostile at activeRegion.Coordinates[23]");
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[24].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[36].Item, "Expected Hostile at activeRegion.Coordinates[39]");
+            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[39].Item);
 
 
             //when the following code is run after this, when the full test harness is run, this errors.
-            //Assert.AreEqual(2, activeRegion.Hostiles[0].Sector.X);
-            //Assert.AreEqual(7, activeRegion.Hostiles[0].Sector.Y);
+            //Assert.AreEqual(2, activeRegion.Hostiles[0].Coordinate.X);
+            //Assert.AreEqual(7, activeRegion.Hostiles[0].Coordinate.Y);
 
-            //Assert.AreEqual(4, activeRegion.Hostiles[1].Sector.X, "SectorX location expected to be a 4");
-            //Assert.AreEqual(6, activeRegion.Hostiles[1].Sector.Y, "SectorY location expected to be a 6"); //when run with a lot of tests, this is 6.  if run by itself, its 4
+            //Assert.AreEqual(4, activeRegion.Hostiles[1].Coordinate.X, "SectorX location expected to be a 4");
+            //Assert.AreEqual(6, activeRegion.Hostiles[1].Coordinate.Y, "SectorY location expected to be a 6"); //when run with a lot of tests, this is 6.  if run by itself, its 4
 
-            //Assert.AreEqual(4, activeRegion.Hostiles[2].Sector.X);
-            //Assert.AreEqual(6, activeRegion.Hostiles[2].Sector.Y);
+            //Assert.AreEqual(4, activeRegion.Hostiles[2].Coordinate.X);
+            //Assert.AreEqual(6, activeRegion.Hostiles[2].Coordinate.Y);
         }
 
         private Map SetUp3Hostiles()
@@ -511,12 +511,12 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
                                     
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 6)), SectorItem.HostileShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 7)), SectorItem.HostileShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(4, 4)), SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 1)), CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(4, 6)), CoordinateItem.HostileShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 7)), CoordinateItem.HostileShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(4, 4)), CoordinateItem.HostileShip)
                 },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
@@ -532,8 +532,8 @@ namespace UnitTests.Actors.HostileTests
 
             _setup.TestMap = this.SetUp3Hostiles();
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
-            Assert.AreEqual(64, activeRegion.Sectors.Count);
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            Assert.AreEqual(64, activeRegion.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
             //var activeRegion = activeRegion;
@@ -550,18 +550,18 @@ namespace UnitTests.Actors.HostileTests
         {
             _setup.TestMap = this.SetUp3Hostiles();
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
             //todo: why active? are hostiles in the same sector?
             //var activeRegion = activeRegion;
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Sector.X);
-            Assert.AreEqual(7, activeRegion.GetHostiles()[0].Sector.Y);
+            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Coordinate.X);
+            Assert.AreEqual(7, activeRegion.GetHostiles()[0].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Sector.X);
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Sector.Y);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.X);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Sector.X);
-            Assert.AreEqual(6, activeRegion.GetHostiles()[2].Sector.Y);
+            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.X);
+            Assert.AreEqual(6, activeRegion.GetHostiles()[2].Coordinate.Y);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -573,32 +573,32 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
                                        
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(SectorItem.PlayerShip)
+                    new CoordinateDef(CoordinateItem.PlayerShip)
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Regions.GetActive();
+            var activeRegion = _setup.TestMap.Sectors.GetActive();
             //var activeRegion = activeRegion;
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Sector(new LocationDef(activeRegion, new Coordinate(1, 7))), this.Game.Map);
-            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Sector(new LocationDef(activeRegion, new Coordinate(1, 6))), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Coordinate(new LocationDef(activeRegion, new Point(1, 7))), this.Game.Map);
+            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Coordinate(new LocationDef(activeRegion, new Point(1, 6))), this.Game.Map);
 
-            activeRegion.AddShip(hostileShip, hostileShip.Sector);
-            activeRegion.AddShip(hostileShip2, hostileShip2.Sector);
+            activeRegion.AddShip(hostileShip, hostileShip.Coordinate);
+            activeRegion.AddShip(hostileShip2, hostileShip2.Coordinate);
 
-            var activeRegionAfterAdding = _setup.TestMap.Regions.GetActive();
+            var activeRegionAfterAdding = _setup.TestMap.Sectors.GetActive();
             var hostiles = activeRegionAfterAdding.GetHostiles();
 
             Assert.AreEqual(2, hostiles.Count);
 
-            Assert.AreEqual(1, hostiles[0].Sector.X);
-            Assert.AreEqual(6, hostiles[0].Sector.Y);
+            Assert.AreEqual(1, hostiles[0].Coordinate.X);
+            Assert.AreEqual(6, hostiles[0].Coordinate.Y);
 
-            Assert.AreEqual(1, hostiles[1].Sector.X);
-            Assert.AreEqual(7, hostiles[1].Sector.Y);
+            Assert.AreEqual(1, hostiles[1].Coordinate.X);
+            Assert.AreEqual(7, hostiles[1].Coordinate.Y);
         }
 
         #region OutOfBounds
@@ -618,14 +618,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 8)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         [Test]
@@ -636,12 +636,12 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)), SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 7)), SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 1)), CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(-1, 7)), CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         [Test]
@@ -652,14 +652,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, -1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, 7)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, -1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 7)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         [Test]
@@ -670,14 +670,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(0, -1)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, -1)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         [Test]
@@ -688,14 +688,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(-1, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 8)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         [Test]
@@ -706,14 +706,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(-1, 0), new Coordinate(1, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(-1, 0), new Point(1, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 8)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         [Test]
@@ -724,14 +724,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, -1), new Coordinate(2, 8)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(-1, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, -1), new Point(2, 8)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
 
         }
 
@@ -743,14 +743,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 9), new Coordinate(-1, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(2, 8)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 9), new Point(-1, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(2, 8)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         [Test]
@@ -761,14 +761,14 @@ namespace UnitTests.Actors.HostileTests
                 Initialize = true,
                 AddNebulae = false,
 
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0, 0), new Coordinate(-1, 1)),
-                        SectorItem.PlayerShip),
-                    new SectorDef(new LocationDef(new Coordinate(0, 10), new Coordinate(2, 8)),
-                        SectorItem.HostileShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(-1, 1)),
+                        CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 10), new Point(2, 8)),
+                        CoordinateItem.HostileShip)
                 }
-            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Sector Sector x < 0"
+            }, this.Game.Interact, this.Game.Config, this.Game), Throws.TypeOf<GameConfigException>()); //"Error Setting up Coordinate Coordinate x < 0"
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
@@ -18,7 +18,7 @@ namespace StarTrek_KG.Playfield
         #region Properties
 
             public IGame Game { get; set; }
-            public Regions Regions { get; set; }
+            public Sectors Sectors { get; set; }
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
             public SetupOptions GameConfig { get; set; }
             public IInteraction Write { get; set; }
@@ -56,23 +56,23 @@ namespace StarTrek_KG.Playfield
             {
                 if (setupOptions.Initialize)
                 {
-                    if (setupOptions.SectorDefs == null)
+                    if (setupOptions.CoordinateDefs == null)
                     {
                         //todo: then use appConfigSectorDefs  
-                        throw new GameConfigException(this.Config.GetSetting<string>("NoSectorDefsSetUp"));
+                        throw new GameConfigException(this.Config.GetSetting<string>("NoCoordinateDefsSetUp"));
                     }
 
-                    this.Initialize(setupOptions.SectorDefs, setupOptions.AddNebulae); //Playership is set up here.
+                    this.Initialize(setupOptions.CoordinateDefs, setupOptions.AddNebulae); //Playership is set up here.
                 }
 
                 //if (setupOptions.GenerateMap)
                 //{
-                //    //this.Regions.PopulateSectors(setupOptions.SectorDefs, this);
+                //    //this.Sectors.PopulateSectors(setupOptions.CoordinateDefs, this);
                 //}
             }
         }
 
-        public void Initialize(SectorDefs sectorDefs, bool generateWithNebulae)
+        public void Initialize(CoordinateDefs sectorDefs, bool generateWithNebulae)
         {
             this.GetGlobalInfo();
 
@@ -81,7 +81,7 @@ namespace StarTrek_KG.Playfield
 
             this.Write.DebugLine("Got Starsystems");
 
-            //TODO: if there are less than 64 Region names then there will be problems..
+            //TODO: if there are less than 64 Sector names then there will be problems..
 
             var names = new Stack<string>(RegionNames.Shuffle());
 
@@ -93,9 +93,9 @@ namespace StarTrek_KG.Playfield
             var baddieNames = new Stack<string>(baddieShipNames.Shuffle());
 
             //todo: this just set up a "friendly"
-            this.InitializeRegionsWithBaddies(names, baddieNames, this.DefaultHostile, sectorDefs, generateWithNebulae);
+            this.InitializeSectorsWithBaddies(names, baddieNames, this.DefaultHostile, sectorDefs, generateWithNebulae);
 
-            this.Write.DebugLine("Intialized Regions with Baddies");
+            this.Write.DebugLine("Intialized Sectors with Baddies");
 
             if (sectorDefs != null)
             {
@@ -107,21 +107,21 @@ namespace StarTrek_KG.Playfield
             {
                 //TODO: write a hidden command that displays everything. (for debug purposes)
 
-                this.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new Region
+                this.Write.DisplayPropertiesOf(this.Playership); //This line may go away as it should be rolled out with a new Sector
                 this.Write.Line(this.Config.GetSetting<string>("DebugModeEnd"));
                 this.Write.Line("");
             }
 
             this.Playership?.UpdateDivinedSectors();
-            this.HostilesToSetUp = this.Regions.GetHostileCount();
+            this.HostilesToSetUp = this.Sectors.GetHostileCount();
         }
 
-        public void SetupPlayerShipInSectors(SectorDefs sectorDefs)
+        public void SetupPlayerShipInSectors(CoordinateDefs sectorDefs)
         {
             //if we have > 0 friendlies with XYs, then we will place them.
             //if we have at least 1 friendly with no XY, then config will be used to generate that type of ship.
 
-            List<SectorDef> playerShips = sectorDefs.PlayerShips().ToList();
+            List<CoordinateDef> playerShips = sectorDefs.PlayerShips().ToList();
 
             if (playerShips.Any())
             {
@@ -129,55 +129,52 @@ namespace StarTrek_KG.Playfield
                 {
                     this.SetUpPlayerShip(playerShips.Single()); //todo: this will eventually change
 
-                    Sector sectorToPlaceShip = this.Regions.GetActive().Sectors[this.Playership.Sector.X, this.Playership.Sector.Y];
+                    Coordinate sectorToPlaceShip = this.Sectors.GetActive().Coordinates[this.Playership.Coordinate.X, this.Playership.Coordinate.Y];
 
-                    //This places our newly created ship into our newly created List of Regions.
-                    sectorToPlaceShip.Item = SectorItem.PlayerShip;
+                    //This places our newly created ship into our newly created List of Sectors.
+                    sectorToPlaceShip.Item = CoordinateItem.PlayerShip;
                 }
                 catch (InvalidOperationException ex)
                 {
                     throw new GameConfigException(this.Config.GetSetting<string>("InvalidPlayershipSetup") + ex.Message);
                 }
-                catch (Exception ex)
-                {
-                    throw new GameConfigException(this.Config.GetSetting<string>("ErrorPlayershipSetup") + ex.Message);
-                }
+                catch (Exception ex){ throw new GameConfigException(this.Config.GetSetting<string>("ErrorPlayershipSetup") + ex.Message); }
             }
             else
             {
-                //this.Regions[0].Active = true;
-                this.Regions[0].SetActive();
+                //this.Sectors[0].Active = true;
+                this.Sectors[0].SetActive();
             }
         }
 
-        //Creates a 2D array of Regions.  This is how all of our game pieces will be moving around.
-        public void InitializeRegionsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, SectorDefs sectorDefs, bool generateWithNebulae)
+        //Creates a 2D array of Sectors.  This is how all of our game pieces will be moving around.
+        public void InitializeSectorsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, CoordinateDefs sectorDefs, bool generateWithNebulae)
         {
-            this.Regions = new Regions(this, this.Write);
+            this.Sectors = new Sectors(this, this.Write);
 
             //Friendlies are added separately
-            List<Sector> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToSectors(this.Regions).Where(q => q.Item != SectorItem.PlayerShip).ToList();
+            List<Coordinate> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToCoordinates(this.Sectors).Where(q => q.Item != CoordinateItem.PlayerShip).ToList();
 
-            this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Regions: " + this.Regions.Count);
+            this.Write.DebugLine("ItemsToPopulate: " + itemsToPopulateThatAreNotPlayerShip.Count + " Sectors: " + this.Sectors.Count);
             
             //todo: this can be done with a single loop populating a list of XYs
             this.GenerateSquareGalaxy(names, baddieNames, stockBaddieFaction, itemsToPopulateThatAreNotPlayerShip, generateWithNebulae);
         }
 
-        public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Sector> itemsToPopulate, bool generateWithNebula)
+        public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Coordinate> itemsToPopulate, bool generateWithNebula)
         {
-            if (DEFAULTS.REGION_MAX == 0)
+            if (DEFAULTS.SECTOR_MAX == 0)
             {
-                throw new GameException("No Regions to set up.  Region_MAX set to Zero");
+                throw new GameException("No Sectors to set up.  Region_MAX set to Zero");
             }
 
-            for (var RegionX = 0; RegionX < DEFAULTS.REGION_MAX; RegionX++) //todo: app.config
+            for (var RegionX = 0; RegionX < DEFAULTS.SECTOR_MAX; RegionX++) //todo: app.config
             {
-                for (var RegionY = 0; RegionY < DEFAULTS.REGION_MAX; RegionY++)
+                for (var RegionY = 0; RegionY < DEFAULTS.SECTOR_MAX; RegionY++)
                 {
                     int index;
-                    var newRegion = new Region(this);
-                    var RegionXY = new Coordinate(RegionX, RegionY);
+                    var newRegion = new Sector(this);
+                    var RegionXY = new Point(RegionX, RegionY);
 
                     bool isNebulae = false;
                     if (generateWithNebula)
@@ -188,15 +185,15 @@ namespace StarTrek_KG.Playfield
                     newRegion.Create(names, baddieNames, stockBaddieFaction, RegionXY, out index, itemsToPopulate,
                                        this.GameConfig.AddStars, isNebulae);
 
-                    this.Regions.Add(newRegion);
+                    this.Sectors.Add(newRegion);
 
                     if (DEFAULTS.DEBUG_MODE)
                     {
-                        this.Write.SingleLine(this.Config.GetSetting<string>("DebugAddingNewRegion"));
+                        this.Write.SingleLine(this.Config.GetSetting<string>("DebugAddingNewSector"));
 
                         this.Write.DisplayPropertiesOf(newRegion);
 
-                        //TODO: each object within Region needs a .ToString()
+                        //TODO: each object within Sector needs a .ToString()
 
                         this.Write.Line("");
                     }
@@ -204,7 +201,7 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        public IEnumerable<Sector> AddStarbases()
+        public IEnumerable<Coordinate> AddStarbases()
         {
             throw new NotImplementedException();
         }
@@ -230,21 +227,21 @@ namespace StarTrek_KG.Playfield
         }
 
         //todo: refactor these to a setup object
-        public void SetUpPlayerShip(SectorDef playerShipDef)
+        public void SetUpPlayerShip(CoordinateDef playerShipDef)
         {
             this.Write.DebugLine(this.Config.GetSetting<string>("DebugSettingUpPlayership"));
 
             //todo: remove this requirement
-            if (this.Regions.IsNullOrEmpty())
+            if (this.Sectors.IsNullOrEmpty())
             {
-                throw new GameException(this.Config.GetSetting<string>("RegionsNeedToBeSetup1"));
+                throw new GameException(this.Config.GetSetting<string>("SectorsNeedToBeSetup1"));
             }
 
             //todo: if playershipDef.GetFromConfig then grab info from config.  else set up with default random numbers.
 
             string playerShipName = this.Config.GetSetting<string>("PlayerShip");
 
-            var startingSector = new Sector(new LocationDef(playerShipDef.RegionDef, new Coordinate(playerShipDef.Sector.X, playerShipDef.Sector.Y)));
+            var startingSector = new Coordinate(new LocationDef(playerShipDef.SectorDef, new Point(playerShipDef.Coordinate.X, playerShipDef.Coordinate.Y)));
 
             this.Playership = new Ship(FactionName.Federation, playerShipName, startingSector, this)
             {
@@ -252,7 +249,7 @@ namespace StarTrek_KG.Playfield
                 Energy = this.Config.GetSetting<int>("energy")
             };
 
-            this.SetupPlayershipRegion(playerShipDef);
+            this.SetupPlayershipSector(playerShipDef);
 
             this.SetupSubsystems();
 
@@ -311,22 +308,22 @@ namespace StarTrek_KG.Playfield
             //}
         }
 
-        public void SetupPlayershipRegion(SectorDef playerShipDef)
+        public void SetupPlayershipSector(CoordinateDef playerShipDef)
         {
-            if (playerShipDef.RegionDef == null)
+            if (playerShipDef.SectorDef == null)
             {
-                playerShipDef.RegionDef = Coordinate.GetRandom();
+                playerShipDef.SectorDef = Point.GetRandom();
             }
 
-            if(!this.Regions.Any())
+            if(!this.Sectors.Any())
             {
-                throw new ArgumentException(this.Config.GetSetting<string>("RegionsNotSetUp"));
+                throw new ArgumentException(this.Config.GetSetting<string>("SectorsNotSetUp"));
             }
 
-            Region regionWithPlayershipDef = this.Regions.Single(q => q.X == playerShipDef.RegionDef.X && q.Y == playerShipDef.RegionDef.Y);
-            this.Playership.Coordinate = new Coordinate(regionWithPlayershipDef.X, regionWithPlayershipDef.Y);
+            Sector regionWithPlayershipDef = this.Sectors.Single(q => q.X == playerShipDef.SectorDef.X && q.Y == playerShipDef.SectorDef.Y);
+            this.Playership.Point = new Point(regionWithPlayershipDef.X, regionWithPlayershipDef.Y);
 
-            this.Playership.GetRegion().SetActive();
+            this.Playership.GetSector().SetActive();
         }
 
         public void SetupPlayershipTorpedoes()
@@ -365,16 +362,16 @@ namespace StarTrek_KG.Playfield
         /// <param name="j"></param>
         /// <param name="sectors"></param>
         /// <returns></returns>
-        public bool IsDockingLocation(int i, int j, Sectors sectors)
+        public bool IsDockingLocation(int i, int j, Coordinates sectors)
         {
             //http://stackoverflow.com/questions/3150678/using-linq-with-2d-array-select-not-found
             for (int y = i - 1; y <= i + 1; y++)
             {
                 for (int x = j - 1; x <= j + 1; x++)
                 {
-                    Sector gotSector = Sectors.GetNoError(x, y, sectors);
+                    Coordinate gotSector = Coordinates.GetNoError(x, y, sectors);
 
-                    if (gotSector?.Item == SectorItem.Starbase)
+                    if (gotSector?.Item == CoordinateItem.Starbase)
                     {
                         return true;
                     }
@@ -400,7 +397,7 @@ namespace StarTrek_KG.Playfield
         //            {
         //                Console.WriteLine(
         //                    this.Playership.Name + " hit by ship at sector [{0},{1}]. No damage due to starbase shields.",
-        //                    (badGuy.Sector.X), (badGuy.Sector.Y));
+        //                    (badGuy.Coordinate.X), (badGuy.Coordinate.Y));
         //            }
         //            else
         //            {
@@ -413,24 +410,24 @@ namespace StarTrek_KG.Playfield
         //    return false;
         //}
 
-        public SectorItem GetItem(int RegionX, int RegionY, int sectorX, int sectorY)
+        public CoordinateItem GetItem(int RegionX, int RegionY, int sectorX, int sectorY)
         {
             var item = this.Get(RegionX, RegionY, sectorX, sectorY).Item;
             return item;
         }
 
-        public Sector Get(int RegionX, int RegionY, int sectorX, int sectorY)
+        public Coordinate Get(int RegionX, int RegionY, int sectorX, int sectorY)
         {
-            var item = this.Regions.Single(q => q.X == RegionX &&
-                                                  q.Y == RegionY).Sectors.Single(s => s.X == sectorX &&
+            var item = this.Sectors.Single(q => q.X == RegionX &&
+                                                  q.Y == RegionY).Coordinates.Single(s => s.X == sectorX &&
                                                                                         s.Y == sectorY);
             return item;
         }
 
         public void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips)
         {
-            map.Regions.Remove(destroyedShips);
-            map.Regions.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
+            map.Sectors.Remove(destroyedShips);
+            map.Sectors.GetActive().GetHostiles().RemoveAll(s => s.Destroyed);
         }
         public void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips)
         {
@@ -450,12 +447,12 @@ namespace StarTrek_KG.Playfield
 
         public void RemoveTargetFromSector(IMap map, IShip ship)
         {
-            map.Regions.Remove(ship);
+            map.Sectors.Remove(ship);
         }
 
         /// <summary>
         ///  Removes all friendlies fromevery sector in the entire map.
-        ///  zips through all sectors in all Regions.  remove any friendlies
+        ///  zips through all sectors in all Sectors.  remove any friendlies
         ///  This is a bit of a brute force approach, and not preferred, as it disguises any bugs that might have to do with forgetting
         ///  to remove the ship at the right time.  This function will need to go away or stop being used when or if this game is modified
         ///  to have multiple friendlies, as is the eventual plan.
@@ -463,7 +460,7 @@ namespace StarTrek_KG.Playfield
         /// <param name="map"></param>
         public void RemovePlayership(IMap map)
         {
-            map.Playership.Sector.Item = SectorItem.Empty;
+            map.Playership.Coordinate.Item = CoordinateItem.Empty;
         }
 
         /// <summary>
@@ -474,9 +471,9 @@ namespace StarTrek_KG.Playfield
         {
             this.RemovePlayership(map);
 
-            var activeRegion = map.Regions.GetActive();
+            var activeRegion = map.Sectors.GetActive();
 
-            var newActiveSector = activeRegion.Sectors[map.Playership.Sector.X, map.Playership.Sector.Y].Item = SectorItem.PlayerShip;
+            var newActiveSector = activeRegion.Coordinates[map.Playership.Coordinate.X, map.Playership.Coordinate.Y].Item = CoordinateItem.PlayerShip;
         }
 
         /// <summary>
@@ -489,32 +486,32 @@ namespace StarTrek_KG.Playfield
         {
             this.RemovePlayership(map);
 
-            newLocation.Region.SetActive();
+            newLocation.Sector.SetActive();
 
-            Sector foundSector = this.LookupSector(shipToSet.GetRegion(), newLocation);
-            foundSector.Item = SectorItem.PlayerShip;
+            Coordinate foundSector = this.LookupSector(shipToSet.GetSector(), newLocation);
+            foundSector.Item = CoordinateItem.PlayerShip;
 
-            shipToSet.Coordinate = newLocation.Region;
-            shipToSet.Sector = foundSector;
+            shipToSet.Point = new Point(newLocation.Sector.X, newLocation.Sector.Y);
+            shipToSet.Coordinate = foundSector;
         }
 
-        private Sector LookupSector(Region oldRegion, Location newLocation)
+        private Coordinate LookupSector(Sector oldRegion, Location newLocation)
         {
             //todo: divine where ship should be with old region and newlocation with negative numbers
 
-            IEnumerable<Sector> matchingSectors = newLocation.Region.Sectors
-                                                  .Where(s => s.X == newLocation.Sector.X && 
-                                                              s.Y == newLocation.Sector.Y);
-            Sector foundSector;
+            IEnumerable<Coordinate> matchingSectors = newLocation.Sector.Coordinates
+                                                  .Where(s => s.X == newLocation.Coordinate.X && 
+                                                              s.Y == newLocation.Coordinate.Y);
+            Coordinate foundSector;
 
             try
             {
                 foundSector = matchingSectors.Single();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //todo: if sector not found then this is a bug.
-                throw new ArgumentException($"Sector {newLocation.Sector.X}, {newLocation.Sector.Y}");
+                throw new ArgumentException($"Coordinate {newLocation.Coordinate.X}, {newLocation.Coordinate.Y}");
             }
 
             return foundSector;
@@ -525,23 +522,23 @@ namespace StarTrek_KG.Playfield
             List<string> federationShipNames = this.Config.ShipNames(FactionName.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
-            foreach (var region in this.Regions)
+            foreach (var region in this.Sectors)
             {
                 bool added = this.AddHostileFedToEmptyRegion(region, federaleNames);
-                if (added) break; //we found an empty Region to dump new fed ships into..
+                if (added) break; //we found an empty Sector to dump new fed ships into..
             }
         }
 
-        private bool AddHostileFedToEmptyRegion(IRegion Region, Stack<string> federaleNames)
+        private bool AddHostileFedToEmptyRegion(ISector Sector, Stack<string> federaleNames)
         {
-            var hostilesInRegion = Region.GetHostiles();
-            if (hostilesInRegion.Any()) //we don't want to mix with Klingons just yet..
+            var HostilesInSector = Sector.GetHostiles();
+            if (HostilesInSector.Any()) //we don't want to mix with Klingons just yet..
             {
-                var klingons = hostilesInRegion.Where(h => h.Faction == FactionName.Klingon);
+                var klingons = HostilesInSector.Where(h => h.Faction == FactionName.Klingon);
 
                 if (!klingons.Any())
                 {
-                    this.AddHostilesToRegion(Region, federaleNames);
+                    this.AddHostilesToRegion(Sector, federaleNames);
 
                     //we are only doing this once..
                     return true;
@@ -558,62 +555,62 @@ namespace StarTrek_KG.Playfield
             var federationShipNames = this.Config.ShipNames(FactionName.Federation);
             var federaleNames = new Stack<string>(federationShipNames.Shuffle());
 
-            foreach (var Region in this.Regions)
+            foreach (var Sector in this.Sectors)
             {
                 if (Utility.Utility.Random.Next(5) == 1) //todo: resource this out.
                 {
-                    if (!Region.GetHostiles().Any()) //we don't want to mix with Klingons just yet..
+                    if (!Sector.GetHostiles().Any()) //we don't want to mix with Klingons just yet..
                     {
-                        this.AddHostilesToRegion(Region, federaleNames);
+                        this.AddHostilesToRegion(Sector, federaleNames);
                     }
                 }
             }
         }
 
-        private void AddHostilesToRegion(IRegion Region, Stack<string> federaleNames)
+        private void AddHostilesToRegion(ISector Sector, Stack<string> federaleNames)
         {
             var numberOfHostileFeds = Utility.Utility.Random.Next(2);
 
             for (int i = 0; i < numberOfHostileFeds; i++)
             {
-                //todo: refactor to Region object
-                ISector sectorToAddTo = this.GetUnoccupiedRandomSector(Region);
-                this.AddHostileFederale(Region, sectorToAddTo, federaleNames);
+                //todo: refactor to Sector object
+                ICoordinate coordinateToAddTo = this.GetUnoccupiedRandomCoordinate(Sector);
+                this.AddHostileFederale(Sector, coordinateToAddTo, federaleNames);
             }
         }
 
-        private ISector GetUnoccupiedRandomSector(IRegion Region)
+        private ICoordinate GetUnoccupiedRandomCoordinate(ISector Sector)
         {
-            var randomCoordinate = GetRandomCoordinate();
+            Point randomCoordinate = GetRandomCoordinate();
 
-            ISector sector = Region.GetSector(randomCoordinate);
-            var sectorIsEmpty = sector.Item == SectorItem.Empty;
+            ICoordinate coordinate = Sector.GetCoordinate(randomCoordinate);
+            bool sectorIsEmpty = coordinate.Item == CoordinateItem.Empty;
 
             if (!sectorIsEmpty)
             {
-                sector = this.GetUnoccupiedRandomSector(Region);
+                coordinate = this.GetUnoccupiedRandomCoordinate(Sector);
             }
 
-            return sector;
+            return coordinate;
         }
 
-        private static Coordinate GetRandomCoordinate()
+        private static Point GetRandomCoordinate()
         {
-            var x = Utility.Utility.Random.Next(DEFAULTS.SECTOR_MIN);
-            var y = Utility.Utility.Random.Next(DEFAULTS.SECTOR_MAX);
+            int x = Utility.Utility.Random.Next(DEFAULTS.COORDINATE_MIN);
+            int y = Utility.Utility.Random.Next(DEFAULTS.COORDINATE_MAX);
 
-            var randomCoordinate = new Coordinate(x, y);
+            var randomCoordinate = new Point(x, y);
             return randomCoordinate;
         }
 
-        private void AddHostileFederale(IRegion Region, ISector sector, Stack<string> federaleNames)
+        private void AddHostileFederale(ISector Sector, ICoordinate coordinate, Stack<string> federaleNames)
         {
-            var newPissedOffFederale = new Ship(FactionName.Federation, federaleNames.Pop(), sector, this);
+            var newPissedOffFederale = new Ship(FactionName.Federation, federaleNames.Pop(), coordinate, this);
             Shields.For(newPissedOffFederale).Energy = Utility.Utility.Random.Next(100, 500); //todo: resource those numbers out
 
-            Region.AddShip(newPissedOffFederale, sector);
+            Sector.AddShip(newPissedOffFederale, coordinate);
 
-            this.Write.Line("Comm Reports a Federation starship has warped into Region: " + Region.Name);
+            this.Write.Line("Comm Reports a Federation starship has warped into Sector: " + Sector.Name);
         }
 
         public IEnumerable<IShip> GetAllFederationShips()
@@ -622,17 +619,17 @@ namespace StarTrek_KG.Playfield
             return new List<Ship>();
         }
 
-        public bool OutOfBounds(Region region)
+        public bool OutOfBounds(Sector region)
         {
             bool result;
 
             if (region != null)
             {
                 bool inTheNegative = region.X < 0 || region.Y < 0;
-                bool maxxed = region.X == DEFAULTS.REGION_MAX || region.Y == DEFAULTS.REGION_MAX;
+                bool maxxed = region.X == DEFAULTS.SECTOR_MAX || region.Y == DEFAULTS.SECTOR_MAX;
 
-                bool yOnMap = region.Y >= 0 && region.Y < DEFAULTS.REGION_MAX;
-                bool xOnMap = region.X >= 0 && region.X < DEFAULTS.REGION_MAX;
+                bool yOnMap = region.Y >= 0 && region.Y < DEFAULTS.SECTOR_MAX;
+                bool xOnMap = region.X >= 0 && region.X < DEFAULTS.SECTOR_MAX;
 
                 result = (inTheNegative || maxxed) && !(yOnMap && xOnMap);
             }
@@ -652,13 +649,13 @@ namespace StarTrek_KG.Playfield
 }
 
 
-//private static List<Sector> GetRegionObjects(int starbases, int HostilesToSetUp)
+//private static List<Coordinate> GetRegionObjects(int starbases, int HostilesToSetUp)
 //{
-//    var RegionObjects = new List<Sector>();
+//    var RegionObjects = new List<Coordinate>();
 
-//    //get stars for Region and subtract from parameter (will be subtracted when this is hit next?)
+//    //get stars for Sector and subtract from parameter (will be subtracted when this is hit next?)
 //    //newRegion.Stars = 1 + (Utility.Random).Next(Constants.SECTOR_MAX);
-//    //get hostiles for Region and subtract from big list
+//    //get hostiles for Sector and subtract from big list
 //    //get starbase T/F and subtract from big list
 //    return RegionObjects;
 //}
@@ -672,7 +669,7 @@ namespace StarTrek_KG.Playfield
 //    //returns the location of every single object in the map
 
 //    //roll out every object in:
-//    //this.Regions;
+//    //this.Sectors;
 //    //this.GameConfig;
             
 
@@ -680,10 +677,10 @@ namespace StarTrek_KG.Playfield
 //}
 
 //todo: finish this
-//public SectorItem GetShip(int RegionX, int RegionY, int sectorX, int sectorY)
+//public CoordinateItem GetShip(int RegionX, int RegionY, int sectorX, int sectorY)
 //{
-//    var t = this.Regions.Where(q => q.X == RegionX &&
-//                                      q.Y == RegionY).Single().Sectors.Where(s => s.X == sectorX &&
+//    var t = this.Sectors.Where(q => q.X == RegionX &&
+//                                      q.Y == RegionY).Single().Coordinates.Where(s => s.X == sectorX &&
 //                                                                                    s.Y == sectorY).Single().Item;
 
 
@@ -695,10 +692,12 @@ namespace StarTrek_KG.Playfield
 ///// <param name="map"></param>
 //public void RemoveAllFriendlies(IMap map)
 //{
-//    var sectorsWithFriendlies = map.Regions.SelectMany(Region => Region.Sectors.Where(sector => sector.Item == SectorItem.Friendly));
+//    var sectorsWithFriendlies = map.Sectors.SelectMany(Sector => Sector.Coordinates.Where(sector => sector.Item == CoordinateItem.Friendly));
 
-//    foreach (Sector sector in sectorsWithFriendlies)
+//    foreach (Coordinate sector in sectorsWithFriendlies)
 //    {
-//        sector.Item = SectorItem.Empty;
+//        sector.Item = CoordinateItem.Empty;
 //    }
 //}
+
+

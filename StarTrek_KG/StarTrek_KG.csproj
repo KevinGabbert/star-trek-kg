@@ -112,11 +112,11 @@
     <Compile Include="Subsystem\Warp.cs" />
     <Compile Include="TypeSafeEnums\Menu.cs" />
     <Compile Include="Enums\MovementType.cs" />
-    <Compile Include="Enums\SectorScanType.cs" />
+    <Compile Include="Enums\CoordinateScanType.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interfaces\IScanResult.cs" />
-    <Compile Include="Playfield\DivinedSectorItem.cs" />
-    <Compile Include="Playfield\DivinedSectorResult.cs" />
+    <Compile Include="Playfield\DivinedCoordinateItem.cs" />
+    <Compile Include="Playfield\DivinedCoordinateResult.cs" />
     <Compile Include="Subsystem\ImmediateRangeScan.cs" />
     <Compile Include="Enums\IRSScanDirection.cs" />
     <Compile Include="TypeSafeEnums\ScanRenderType.cs" />
@@ -127,13 +127,13 @@
     <Compile Include="Interfaces\IWeapon.cs" />
     <Compile Include="TypeSafeEnums\Faction.cs" />
     <Compile Include="Enums\ScavengeType.cs" />
-    <Compile Include="Enums\QuadrantType.cs" />
     <Compile Include="Enums\SectorType.cs" />
-    <Compile Include="Extensions\QuadrantExtensions.cs" />
-    <Compile Include="Interfaces\ICoordinate.cs" />
+    <Compile Include="Enums\CoordinateType.cs" />
+    <Compile Include="Extensions\SectorExtensions.cs" />
+    <Compile Include="Interfaces\IPoint.cs" />
     <Compile Include="Interfaces\IInteraction.cs" />
-    <Compile Include="Interfaces\IRegion.cs" />
     <Compile Include="Interfaces\ISector.cs" />
+    <Compile Include="Interfaces\ICoordinate.cs" />
     <Compile Include="Interfaces\IStarTrekKGSettings.cs" />
     <Compile Include="Interfaces\IInteractContainer.cs" />
     <Compile Include="Config\Collections\Factions.cs" />
@@ -150,26 +150,26 @@
     <Compile Include="Exceptions\GameConfigException.cs" />
     <Compile Include="Exceptions\GameException.cs" />
     <Compile Include="Extensions\intExtensions.cs" />
-    <Compile Include="Extensions\SectorDefExtensions.cs" />
-    <Compile Include="Interfaces\ISectorObject.cs" />
+    <Compile Include="Extensions\CoordinateDefExtensions.cs" />
+    <Compile Include="Interfaces\\ICoordinateObject.cs" />
     <Compile Include="Interfaces\IStar.cs" />
     <Compile Include="Interfaces\ISystem.cs" />
     <Compile Include="Interfaces\IConfig.cs" />
     <Compile Include="Output\Render.cs" />
-    <Compile Include="Playfield\OutputCoordinate.cs" />
+    <Compile Include="Playfield\OutputPoint.cs" />
     <Compile Include="Playfield\TorpedoCoordinate.cs" />
     <Compile Include="Structs\NonNullable.cs" />
     <Compile Include="Actors\BlackHole.cs" />
     <Compile Include="Playfield\Coordinate.cs" />
+    <Compile Include="Playfield\Point.cs" />
+    <Compile Include="Playfield\Points.cs" />
     <Compile Include="Playfield\Coordinates.cs" />
     <Compile Include="Enums\Allegiance.cs" />
     <Compile Include="Playfield\Location.cs" />
     <Compile Include="Actors\Movement.cs" />
     <Compile Include="Playfield\LocationDef.cs" />
-    <Compile Include="Playfield\Regions.cs" />
-    <Compile Include="Playfield\Sector.cs" />
-    <Compile Include="Playfield\SectorDef.cs" />
-    <Compile Include="Playfield\SectorDefs.cs" />
+    <Compile Include="Playfield\CoordinateDef.cs" />
+    <Compile Include="Playfield\CoordinateDefs.cs" />
     <Compile Include="Playfield\Sectors.cs" />
     <Compile Include="Actors\Star.cs" />
     <Compile Include="Actors\Starbase.cs" />
@@ -185,8 +185,8 @@
     <Compile Include="Output\Interact.cs" />
     <Compile Include="Actors\Ship.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Playfield\Region.cs" />
-    <Compile Include="Enums\SectorItem.cs" />
+    <Compile Include="Playfield\Sector.cs" />
+    <Compile Include="Enums\CoordinateItem.cs" />
     <Compile Include="TypeSafeEnums\SubsystemType.cs" />
     <Compile Include="Types\LRSResult.cs" />
     <Compile Include="Subsystem\Debug.cs" />
@@ -239,3 +239,11 @@
   </Target>
   -->
 </Project>
+
+
+
+
+
+
+
+

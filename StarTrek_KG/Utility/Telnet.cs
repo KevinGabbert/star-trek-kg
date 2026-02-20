@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Utility
+namespace StarTrek_KG.Utility
 {
     class Telnet
     {

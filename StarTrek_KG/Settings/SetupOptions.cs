@@ -1,4 +1,4 @@
-﻿using StarTrek_KG.Playfield;
+using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Settings
 {
@@ -14,6 +14,6 @@ namespace StarTrek_KG.Settings
         /// <summary>
         /// The plan here is to be able to start the game by throwing in all objects required for game with XY values
         /// </summary>
-        public SectorDefs SectorDefs { get; set; } 
+        public CoordinateDefs CoordinateDefs { get; set; } 
     }
 }

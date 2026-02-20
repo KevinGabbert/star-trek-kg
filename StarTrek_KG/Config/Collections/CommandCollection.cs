@@ -5,7 +5,7 @@ namespace StarTrek_KG.Config.Collections
 {
     public class CommandCollection : ConfigurationElementCollection
     {
-        public new CommandElement this[int index]
+        public CommandElement this[int index]
         {
             get { return (CommandElement)BaseGet(index); }
             set

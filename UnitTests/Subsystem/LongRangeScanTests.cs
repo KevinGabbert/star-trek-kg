@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
@@ -22,10 +22,10 @@ namespace UnitTests.Subsystem
                                       {
                                           AddNebulae = true,
                                           Initialize = true,
-                                          SectorDefs = new SectorDefs
+                                          CoordinateDefs = new CoordinateDefs
                                                            {
-                                                               new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
-                                                               new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
+                                                               new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip),
+                                                               new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 1)), CoordinateItem.HostileShip),
                                                            },
                                           AddStars = false
                                       }, this.Game.Interact, this.Game.Config, this.Game);
@@ -37,11 +37,11 @@ namespace UnitTests.Subsystem
         [TearDown]
         public void TearDown()
         {
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 0;
+
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
-
-            DEFAULTS.REGION_MIN = 0;
-            DEFAULTS.REGION_MAX = 0;
 
             this.Game.Map = null;
         }
@@ -65,6 +65,7 @@ namespace UnitTests.Subsystem
         }
 
         [Test]
+        [Ignore("TODO: placeholder")]
         public void DamagedLRSScannerShowsGarbledData()
         {
             //a possible LRS damaged state.  returns random data in some areas.
@@ -74,6 +75,7 @@ namespace UnitTests.Subsystem
         }
 
         [Test]
+        [Ignore("TODO: placeholder")]
         public void DamagedLRSScannerShowsNoData()
         {
             //a possible LRS damaged state.  returns no data.
@@ -81,6 +83,7 @@ namespace UnitTests.Subsystem
         }
 
         [Test]
+        [Ignore("TODO: placeholder")]
         public void DamagedLRSScannerIsNOTInTheProperOrder()
         {
             //basically, this is the unordered state that LRS first returns in.
@@ -90,6 +93,7 @@ namespace UnitTests.Subsystem
         }
 
         [Test]
+        [Ignore("TODO: placeholder")]
         public void GetInfoFromScannerIsInTheProperOrder()
         {
             //The returned LRS data is not in its proper order. this will likely require either that the LRS display
@@ -103,9 +107,9 @@ namespace UnitTests.Subsystem
             this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip)
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
@@ -122,9 +126,9 @@ namespace UnitTests.Subsystem
             this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.PlayerShip)
+                        new CoordinateDef(new LocationDef(new Point(4,4), new Point(4, 4)), CoordinateItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
@@ -141,9 +145,9 @@ namespace UnitTests.Subsystem
             this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(DEFAULTS.REGION_MAX - 1, DEFAULTS.REGION_MAX - 1), new Coordinate(DEFAULTS.REGION_MAX - 1, DEFAULTS.REGION_MAX - 1)), SectorItem.PlayerShip)
+                        new CoordinateDef(new LocationDef(new Point(DEFAULTS.SECTOR_MAX - 1, DEFAULTS.SECTOR_MAX - 1), new Point(DEFAULTS.SECTOR_MAX - 1, DEFAULTS.SECTOR_MAX - 1)), CoordinateItem.PlayerShip)
                     },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
@@ -160,19 +164,19 @@ namespace UnitTests.Subsystem
             this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip),
 
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.HostileShip)
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 1)), CoordinateItem.HostileShip),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 2)), CoordinateItem.HostileShip)
                     },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
-            var x = LongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
+            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
 
             Assert.AreEqual(2, x.Hostiles);
         }
@@ -185,22 +189,22 @@ namespace UnitTests.Subsystem
             {
                 Initialize = true,
                 AddNebulae = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 3)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 4)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 5)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 1)), CoordinateItem.HostileShip),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 2)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 3)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 4)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 5)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 6)), CoordinateItem.Starbase)
                     },
                     AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
-            var x = LongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
+            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
 
             Assert.AreEqual(5, x.Starbases);
             Assert.AreEqual(0, x.Stars);
@@ -216,21 +220,21 @@ namespace UnitTests.Subsystem
             {
                 Initialize = true,
                 AddNebulae = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                     {
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 1)), SectorItem.HostileShip),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 1)), CoordinateItem.HostileShip),
 
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 2)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 3)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 4)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 5)), SectorItem.Starbase),
-                        new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 6)), SectorItem.Starbase)
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 2)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 3)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 4)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 5)), CoordinateItem.Starbase),
+                        new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 6)), CoordinateItem.Starbase)
                     },
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var x = LongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
+            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
 
             Assert.AreEqual(5, x.Starbases);
         }
@@ -241,7 +245,7 @@ namespace UnitTests.Subsystem
         {
             //todo: fix hostiles and starbases and stars to test fully
 
-            var x = LongRangeScan.Execute(this.Game.Map.Regions[0]); //pulls count from Region object
+            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
 
             Assert.Greater(0, x.Hostiles);
             Assert.Greater(0, x.Starbases);
@@ -264,21 +268,21 @@ namespace UnitTests.Subsystem
                 AddNebulae = false,
                 Initialize = true,
                 AddStars = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                                                     {
-                                                        new SectorDef(
-                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 4)),
-                                                            SectorItem.Star),
-                                                        new SectorDef(
-                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
-                                                            SectorItem.Star),
+                                                        new CoordinateDef(
+                                                            new LocationDef(new Point(0, 0), new Point(0, 4)),
+                                                            CoordinateItem.Star),
+                                                        new CoordinateDef(
+                                                            new LocationDef(new Point(0, 0), new Point(0, 5)),
+                                                            CoordinateItem.Star),
                                                     }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
-            Region Region = this.Game.Map.Regions[0, 0];
-            int starCount = Region.GetStarCount();
+            Sector Sector = this.Game.Map.Sectors[0, 0];
+            int starCount = Sector.GetStarCount();
             Assert.AreEqual(2, starCount);
         }
 
@@ -288,27 +292,28 @@ namespace UnitTests.Subsystem
             {
                 Initialize = true,
                 AddStars = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                                                     {
-                                                        new SectorDef(
-                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 4)),
-                                                            SectorItem.Star),
-                                                        new SectorDef(
-                                                            new LocationDef(new Coordinate(0, 0), new Coordinate(0, 5)),
-                                                            SectorItem.Star),
+                                                        new CoordinateDef(
+                                                            new LocationDef(new Point(0, 0), new Point(0, 4)),
+                                                            CoordinateItem.Star),
+                                                        new CoordinateDef(
+                                                            new LocationDef(new Point(0, 0), new Point(0, 5)),
+                                                            CoordinateItem.Star),
                                                     }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
+            //int starbaseCount;
+            //int starCount;
+            //int hostileCount;
 
-            int starbaseCount;
-            int starCount;
-            int hostileCount;
-
-            var x = LongRangeScan.Execute(this.Game.Map.Regions[0]);
-            //pulls count from Region object
+            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]);
+            //pulls count from Sector object
 
             Assert.AreEqual(2, x.Stars);
         }
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -10,7 +10,7 @@ namespace StarTrek_KG.Subsystem
         {
         }
 
-        public static Warp For(IShip ship)
+        public new static Warp For(IShip ship)
         {
             return (Warp)SubSystem_Base.For(ship, SubsystemType.Warp);
         }

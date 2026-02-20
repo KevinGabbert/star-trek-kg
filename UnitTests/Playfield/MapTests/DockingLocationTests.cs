@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -22,9 +22,9 @@ namespace UnitTests.MapTests
             {
                 Initialize = true,
                 AddNebulae = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(0,0), new Coordinate(0, 0)), SectorItem.PlayerShip)
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip)
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
@@ -33,11 +33,11 @@ namespace UnitTests.MapTests
         [TearDown]
         public void TearDown()
         {
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 0;
+
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
-
-            DEFAULTS.REGION_MIN = 0;
-            DEFAULTS.REGION_MAX = 0;
         }
 
         [Test]
@@ -83,9 +83,9 @@ namespace UnitTests.MapTests
             {
                 Initialize = true,
                 AddNebulae = false,
-                SectorDefs = new SectorDefs
+                CoordinateDefs = new CoordinateDefs
                 {
-                    new SectorDef(new LocationDef(new Coordinate(4,4), new Coordinate(4, 4)), SectorItem.PlayerShip)
+                    new CoordinateDef(new LocationDef(new Point(4,4), new Point(4, 4)), CoordinateItem.PlayerShip)
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
@@ -119,9 +119,9 @@ namespace UnitTests.MapTests
 
         private bool IsDockingLocation(Map map, int sectorX, int sectorY, int locationX, int locationY)
         {
-            map.Regions.GetActive().Sectors[sectorX, sectorY].Item = SectorItem.Starbase;
+            map.Sectors.GetActive().Coordinates[sectorX, sectorY].Item = CoordinateItem.Starbase;
 
-            var isDockingLocation = map.IsDockingLocation(locationX, locationY, _testMapNoObjects.Regions.GetActive().Sectors);
+            var isDockingLocation = map.IsDockingLocation(locationX, locationY, _testMapNoObjects.Sectors.GetActive().Coordinates);
             return isDockingLocation;
         }
     }

@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using NUnit.Framework;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Settings;

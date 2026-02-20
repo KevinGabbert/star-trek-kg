@@ -1,21 +1,21 @@
-﻿using StarTrek_KG.Interfaces;
+using StarTrek_KG.Interfaces;
 
 namespace StarTrek_KG.Playfield
 {
     public class Location
     {
-        public Region Region { get; set; }
-        public ISector Sector { get; set; }
+        public Sector Sector { get; set; }
+        public ICoordinate Coordinate { get; set; }
 
         public Location()
         {
 
         }
 
-        public Location(Region Region, ISector sector)
+        public Location(Sector Sector, ICoordinate coordinate)
         {
-            this.Region = Region;
-            this.Sector = sector;
+            this.Sector = Sector;
+            this.Coordinate = coordinate;
         }
     }
 }

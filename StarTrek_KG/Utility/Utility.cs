@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Config;
@@ -206,14 +206,14 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
-        public static string DamagedScannerUnit(ICoordinate coordinate)
+        public static string DamagedScannerUnit(IPoint point)
         {
-            if (coordinate == null)
+            if (point == null)
             {
                 return DamagedScannerUnit();
             }
 
-            int seed = (coordinate.X + 1) * 31 + (coordinate.Y + 1) * 131;
+            int seed = (point.X + 1) * 31 + (point.Y + 1) * 131;
             return DamagedScannerUnit(seed);
         }
 
@@ -228,9 +228,9 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
-        public static string AdjustIfNebula(Region thisRegion, string direction, ref string shipSectorX, ref string shipSectorY)
+        public static string AdjustIfNebula(Sector thisRegion, string direction, ref string shipSectorX, ref string shipSectorY)
         {
-            if (thisRegion.Type == RegionType.Nebulae)
+            if (thisRegion.Type == SectorType.Nebulae)
             {
                 direction = "Unknown, due to interference";
             }
@@ -243,9 +243,9 @@ namespace StarTrek_KG.Utility
             return direction;
         }
 
-        public static OutputCoordinate HideXorYIfNebula(Region thisRegion, string x, string y)
+        public static OutputPoint HideXorYIfNebula(Sector thisRegion, string x, string y)
         {
-            if (thisRegion.Type == RegionType.Nebulae)
+            if (thisRegion.Type == SectorType.Nebulae)
             {
                 switch (Utility.Random.Next(2))
                 {
@@ -262,7 +262,7 @@ namespace StarTrek_KG.Utility
                 }
             }
 
-            return new OutputCoordinate(x, y);
+            return new OutputPoint(x, y);
         }
     }
 }

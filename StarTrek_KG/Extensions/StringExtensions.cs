@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Extensions
+namespace StarTrek_KG.Extensions
 {
     namespace System
     {

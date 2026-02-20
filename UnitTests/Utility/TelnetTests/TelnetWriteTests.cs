@@ -1,4 +1,4 @@
-﻿
+
 namespace UnitTests.TelnetTests
 {
     public class TelnetWriteTests

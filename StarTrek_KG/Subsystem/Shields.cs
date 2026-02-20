@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
@@ -154,7 +154,7 @@ namespace StarTrek_KG.Subsystem
 
         private void TransferEnergy(int transfer, bool adding)
         {
-            if (this.ShipConnectedTo.GetRegion().Type == RegionType.Nebulae)
+            if (this.ShipConnectedTo.GetSector().Type == SectorType.Nebulae)
             {
                 this.ShipConnectedTo.OutputLine("Energy cannot be added to shields while in a nebula."); //todo: resource this
             }
@@ -254,7 +254,7 @@ namespace StarTrek_KG.Subsystem
         /// </summary>
         /// <param name="region"></param>
         /// <returns></returns>
-        public bool AutoRaiseShieldsIfNeeded(IRegion region)
+        public bool AutoRaiseShieldsIfNeeded(ISector region)
         {
             //todo: resource this out as a feature that is turned on by default
 

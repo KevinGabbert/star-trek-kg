@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Interfaces
+namespace StarTrek_KG.Interfaces
 {
     public interface INavigationSubsystem
     {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -228,18 +228,18 @@ namespace StarTrek_KG.Output
         //    this.Output.Write("OutputConditionAndWarnings not implemented."); //todo: implement this.
         //}
 
-        public void RenderSectors(SectorScanType scanType, ISubsystem subsystem)
+        public void RenderSectors(CoordinateScanType scanType, ISubsystem subsystem)
         {
             IShip shipConnectedTo = subsystem.ShipConnectedTo;
             IGame game = shipConnectedTo.Map.Game;
 
             var location = shipConnectedTo.GetLocation();
-            Region region = game.Map.Regions[location.Region];
+            Sector region = game.Map.Sectors[location.Sector];
             var shieldsAutoRaised = Shields.For(shipConnectedTo).AutoRaiseShieldsIfNeeded(region);
             var printSector = new Render(this, game.Config);
 
-            int totalHostiles = game.Map.Regions.GetHostileCount();
-            var isNebula = region.Type == RegionType.Nebulae;
+            int totalHostiles = game.Map.Sectors.GetHostileCount();
+            var isNebula = region.Type == SectorType.Nebulae;
             string regionDisplayName = region.Name;
             var sectorScanStringBuilder = new StringBuilder();
 
@@ -252,11 +252,11 @@ namespace StarTrek_KG.Output
 
             switch (scanType)
             {
-                case SectorScanType.CombinedRange:
+                case CoordinateScanType.CombinedRange:
                     printSector.CreateCRSViewScreen(region, game.Map, location, totalHostiles, regionDisplayName, isNebula, sectorScanStringBuilder);
                     break;
 
-                case SectorScanType.ShortRange:
+                case CoordinateScanType.ShortRange:
                     printSector.CreateSRSViewScreen(region, game.Map, location, totalHostiles, regionDisplayName, isNebula, sectorScanStringBuilder);
                     break;
 
@@ -266,7 +266,7 @@ namespace StarTrek_KG.Output
 
             printSector.OutputScanWarnings(region, game.Map, shieldsAutoRaised);
 
-            region.ClearSectorsWithItem(SectorItem.Debug); //Clears any debug Markers that might have been set
+            region.ClearSectorsWithItem(CoordinateItem.Debug); //Clears any debug Markers that might have been set
             region.Scanned = true;
 
             this.Line("");
@@ -277,9 +277,9 @@ namespace StarTrek_KG.Output
             var renderedResults = new List<string>();
             int scanColumn = 0;
 
-            renderedResults.Add("┌─────┬─────┬─────┐");
+            renderedResults.Add("+-----------------+");
 
-            string currentLRSScanLine = "│";
+            string currentLRSScanLine = "�";
 
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (LRSResult dataPoint in lrsData)
@@ -287,7 +287,7 @@ namespace StarTrek_KG.Output
                 currentLRSScanLine = BuildLRSInterior(game, dataPoint, currentLRSScanLine, renderedResults, ref scanColumn);
             }
 
-            renderedResults.Add("└─────┴─────┴─────┘");
+            renderedResults.Add("+-----------------+");
 
             return renderedResults;
         }
@@ -298,7 +298,7 @@ namespace StarTrek_KG.Output
 
             if (dataPoint.Unknown)
             {
-                currentRegionResult = Utility.Utility.DamagedScannerUnit(dataPoint.Coordinate);
+                currentRegionResult = Utility.Utility.DamagedScannerUnit(dataPoint.Point);
             }
             else if (dataPoint.GalacticBarrier)
             {
@@ -309,13 +309,13 @@ namespace StarTrek_KG.Output
                 currentRegionResult += dataPoint;
             }
 
-            currentLRSScanLine += $" {currentRegionResult} " + "│";
+            currentLRSScanLine += $" {currentRegionResult} " + "�";
 
             if (scanColumn == 2 || scanColumn == 5)
             {
                 renderedResults.Add(currentLRSScanLine);
-                renderedResults.Add("├─────┼─────┼─────┤");
-                currentLRSScanLine = "│";
+                renderedResults.Add("+-----+-----+-----�");
+                currentLRSScanLine = "�";
             }
 
             if (scanColumn == 8)
@@ -332,9 +332,9 @@ namespace StarTrek_KG.Output
         //    var renderedResults = new List<string>();
         //    int scanColumn = 0;
 
-        //    renderedResults.Add("╒═════╤═════╤═════╕");
+        //    renderedResults.Add("+-----------------+");
 
-        //    string currentLRSScanLine = "│";
+        //    string currentLRSScanLine = "�";
 
         //    foreach (IRSResult dataPoint in irsData)
         //    {
@@ -353,13 +353,13 @@ namespace StarTrek_KG.Output
         //            currentRegionResult += dataPoint;
         //        }
 
-        //        currentLRSScanLine += " " + currentRegionResult + " " + "│";
+        //        currentLRSScanLine += " " + currentRegionResult + " " + "�";
 
         //        if (scanColumn == 2 || scanColumn == 5)
         //        {
         //            renderedResults.Add(currentLRSScanLine);
-        //            renderedResults.Add("╞═════╪═════╪═════╡");
-        //            currentLRSScanLine = "│";
+        //            renderedResults.Add("�-----+-----+-----�");
+        //            currentLRSScanLine = "�";
         //        }
 
         //        if (scanColumn == 8)
@@ -370,7 +370,7 @@ namespace StarTrek_KG.Output
         //        scanColumn++;
         //    }
 
-        //    renderedResults.Add("╘═════╧═════╧═════╛");
+        //    renderedResults.Add("+-----------------+");
 
         //    return renderedResults;
         //}
@@ -437,17 +437,17 @@ namespace StarTrek_KG.Output
                 string currentRegionResult = null;
                 string regionCoordinate = "";
 
-                if (scanDataPoint.Coordinate != null)
+                if (scanDataPoint.Point != null)
                 {
-                    regionCoordinate = DEFAULTS.SECTOR_INDICATOR + scanDataPoint.Coordinate.X + "." +
-                                       scanDataPoint.Coordinate.Y + "";
+                    regionCoordinate = DEFAULTS.SECTOR_INDICATOR + scanDataPoint.Point.X + "." +
+                                       scanDataPoint.Point.Y + "";
 
                     currentRegionName += scanDataPoint.RegionName;
                 }
 
                 if (scanDataPoint.Unknown)
                 {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit(scanDataPoint.Coordinate);
+                    currentRegionResult = Utility.Utility.DamagedScannerUnit(scanDataPoint.Point);
                 }
                 else if (scanDataPoint.GalacticBarrier)
                 {
@@ -496,9 +496,9 @@ namespace StarTrek_KG.Output
 
             return Environment.NewLine +
                    " 4   5   6 " + Environment.NewLine +
-                   @"   \ ↑ /  " + Environment.NewLine +
-                   "3 ← <*> → 7" + Environment.NewLine +
-                   @"   / ↓ \  " + Environment.NewLine +
+                   @"   \ ? /  " + Environment.NewLine +
+                   "3 ? <*> ? 7" + Environment.NewLine +
+                   @"   / ? \  " + Environment.NewLine +
                    " 2   1   8" + Environment.NewLine +
                    Environment.NewLine;
         }
@@ -532,7 +532,7 @@ namespace StarTrek_KG.Output
         //todo: resource out
         private string GetPanelHead(string shipName)
         {
-            return "─── " + shipName + " ───";
+            return "--- " + shipName + " ---";
         }
 
         /// <summary>
@@ -648,7 +648,7 @@ namespace StarTrek_KG.Output
                 case "?":
                 case "help":
                     this.ResetPrompt();
-                    retVal.AddRange(this.Output.WriteLine($"─── {playerShip.Name} Command Help ───"));
+                    retVal.AddRange(this.Output.WriteLine($"--- {playerShip.Name} Command Help ---"));
                     retVal.AddRange(this.Output.WriteLine(""));
                     retVal.AddRange(this.Output.WriteLine("NAVIGATION"));
                     retVal.AddRange(this.Output.WriteLine("  imp   Impulse navigation"));
@@ -743,7 +743,7 @@ namespace StarTrek_KG.Output
         {
             //todo: verify that this config entry exists
             MenuItems menuItems = this.Config.GetMenuItems($"{subsystem}Panel"); //todo: resource this
-            bool acceptable = menuItems.Cast<MenuItemDef>().Any(m => m.name == stringToCheck && m.promptLevel == promptLevel) != null;
+            bool acceptable = menuItems.Cast<MenuItemDef>().Any(m => m.name == stringToCheck && m.promptLevel == promptLevel);
             return acceptable;
         }
 
@@ -755,16 +755,16 @@ namespace StarTrek_KG.Output
                 "imp = Impulse Navigation",
                 "wrp = Warp Navigation",
                 "nto = Navigate To Object",
-                "─────────────────────────────",
+                "-----------------------------",
                 "irs = Immediate Range Scan",
                 "srs = Short Range Scan",
                 "lrs = Long Range Scan",
                 "crs = Combined Range Scan",
-                "─────────────────────────────",
+                "-----------------------------",
                 "pha = Phaser Control",
                 "tor = Photon Torpedo Control",
-                "toq = Target Object in this Region",
-                "─────────────────────────────",
+                "toq = Target Object in this Sector",
+                "-----------------------------",
                 "she = Shield Control",
                 "com = Access Computer",
                 "dmg = Damage Control"
@@ -773,7 +773,7 @@ namespace StarTrek_KG.Output
             if (DEFAULTS.DEBUG_MODE)
             {
                 SHIP_PANEL.Add("");
-                SHIP_PANEL.Add("─────────────────────────────");
+                SHIP_PANEL.Add("-----------------------------");
                 SHIP_PANEL.Add(this.DisplayMenuItem(Menu.dbg));
             }
         }
@@ -1067,13 +1067,13 @@ namespace StarTrek_KG.Output
             //todo:add header from config file.
 
             // ReSharper disable once UseStringInterpolation //todo: resource this
-            Impulse.IMPULSE_PANEL.Add($"─── Impulse Status: ── <Not Implemented Yet> ──");
+            Impulse.IMPULSE_PANEL.Add($"--- Impulse Status: -- <Not Implemented Yet> --");
 
             Impulse.IMPULSE_PANEL.Add(Environment.NewLine);
             Impulse.IMPULSE_PANEL.Add(@"      4   5   6");
-            Impulse.IMPULSE_PANEL.Add(@"        \ ↑ /");
-            Impulse.IMPULSE_PANEL.Add(@"     3 ← <*> → 7");
-            Impulse.IMPULSE_PANEL.Add(@"        / ↓ \");
+            Impulse.IMPULSE_PANEL.Add(@"        \ ? /");
+            Impulse.IMPULSE_PANEL.Add(@"     3 ? <*> ? 7");
+            Impulse.IMPULSE_PANEL.Add(@"        / ? \");
             Impulse.IMPULSE_PANEL.Add(@"      2   1   8");
             Impulse.IMPULSE_PANEL.Add(Environment.NewLine);
 
@@ -1126,7 +1126,7 @@ namespace StarTrek_KG.Output
         private void OutputWarpMenu(IShip playerShip, IEnumerable<MenuItemDef> menuItems)
         {
             int damage = Navigation.For(playerShip).Damage;
-            Navigation.WARP_PANEL.Add($"─── Warp: Dmg {damage}% ──");
+            Navigation.WARP_PANEL.Add($"--- Warp: Dmg {damage}% --");
             Navigation.WARP_PANEL.Add(Environment.NewLine);
             Navigation.WARP_PANEL.Add(Environment.NewLine);
 
@@ -1145,7 +1145,7 @@ namespace StarTrek_KG.Output
                 //todo:add header from config file.
 
                 // ReSharper disable once UseStringInterpolation //todo: resource this
-                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", $"< CURRENTLY AT: {currentShieldEnergy}>"));
+                Shields.SHIELD_PANEL.Add(string.Format("--- Shield Status: -- {0} --", $"< CURRENTLY AT: {currentShieldEnergy}>"));
 
                 foreach (MenuItemDef menuItem in menuItemDefs)
                 {
@@ -1156,7 +1156,7 @@ namespace StarTrek_KG.Output
             {
                 //todo: resource out header
                 // ReSharper disable once UseStringInterpolation
-                Shields.SHIELD_PANEL.Add(string.Format("─── Shield Status: ── {0} ──", "DOWN"));
+                Shields.SHIELD_PANEL.Add(string.Format("--- Shield Status: -- {0} --", "DOWN"));
 
                 MenuItemDef itemToAdd = menuItemDefs.First(m => m.name == "add"); //todo: resource this
                 Shields.SHIELD_PANEL.Add($"{itemToAdd.name} {itemToAdd.divider} {itemToAdd.description}");
@@ -1359,10 +1359,10 @@ namespace StarTrek_KG.Output
 
         public string ShipHitMessage(IShip attacker, int attackingEnergy)
         {
-            Region attackerRegion = attacker.GetRegion();
-            OutputCoordinate attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
+            Sector attackerRegion = attacker.GetSector();
+            OutputPoint attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Coordinate.X.ToString(), attacker.Coordinate.Y.ToString());
 
-            string attackerName = attackerRegion.Type == RegionType.Nebulae ? "Unknown Ship" : attacker.Name;
+            string attackerName = attackerRegion.Type == SectorType.Nebulae ? "Unknown Ship" : attacker.Name;
 
             if (attacker.Faction == FactionName.Federation)
             {
@@ -1383,10 +1383,10 @@ namespace StarTrek_KG.Output
 
         public string MisfireMessage(IShip attacker)
         {
-            var attackerRegion = attacker.GetRegion();
-            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Sector.X.ToString(), attacker.Sector.Y.ToString());
+            var attackerRegion = attacker.GetSector();
+            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Coordinate.X.ToString(), attacker.Coordinate.Y.ToString());
 
-            string attackerName = attackerRegion.Type == RegionType.Nebulae ? "Unknown Ship" : attacker.Name;
+            string attackerName = attackerRegion.Type == SectorType.Nebulae ? "Unknown Ship" : attacker.Name;
 
             if (attacker.Faction == FactionName.Federation)
             {
@@ -1401,9 +1401,9 @@ namespace StarTrek_KG.Output
             }
 
             string misfireBy = this.GetConfigText("misfireBy");
-            string misfireAtSector = this.GetConfigText("misfireAtSector");
+            string misfireAtCoordinate = this.GetConfigText("misfireAtCoordinate");
 
-            return string.Format(misfireBy + attackerName + misfireAtSector, attackerSector.X, attackerSector.Y);
+            return string.Format(misfireBy + attackerName + misfireAtCoordinate, attackerSector.X, attackerSector.Y);
         }
 
         public void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel)
@@ -1428,7 +1428,7 @@ namespace StarTrek_KG.Output
                 this.ResourceLine("LowEnergyLevel");
             }
 
-            if (ship.GetRegion().Type == RegionType.Nebulae)
+            if (ship.GetSector().Type == SectorType.Nebulae)
             {
                 this.SingleLine("");
                 this.ResourceLine("NebulaWarning");
@@ -1531,5 +1531,6 @@ namespace StarTrek_KG.Output
         #endregion
     }
 }
+
 
 

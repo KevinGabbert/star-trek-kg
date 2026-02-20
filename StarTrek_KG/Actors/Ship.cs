@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
@@ -7,21 +7,21 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
-using Region = StarTrek_KG.Playfield.Region;
+using Sector = StarTrek_KG.Playfield.Sector;
 
 namespace StarTrek_KG.Actors
 {
     //TODO: ship.Energy not decrementing after being hit
     public class Ship : ISystem, IShip
     {
-        //todo: needs access to Regions and utility and game for subsystem FOR mnemonic to work for DI
+        //todo: needs access to Sectors and utility and game for subsystem FOR mnemonic to work for DI
         #region Properties
 
-            //todo: (maybe) create function GetRegion() to replace this (will query map.Regions for ship)
-            public Coordinate Coordinate { get; set; }
+            //todo: (maybe) create function GetSector() to replace this (will query map.Sectors for ship)
+            public Point Point { get; set; }
 
-            //todo: create function GetSector() to replace this (will query map.Regions.active for ship)
-            public ISector Sector { get; set; } //This is a ship's location in a Region
+            //todo: create function GetSector() to replace this (will query map.Sectors.active for ship)
+            public ICoordinate Coordinate { get; set; } //This is a ship's location in a Sector
             public Allegiance Allegiance { get; set; }
             public Subsystems Subsystems { get; set; }
             public INavigationSubsystem NavigationSubsystem { get; private set; }
@@ -38,18 +38,18 @@ namespace StarTrek_KG.Actors
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log ShipLog { get; set; } //
 
-            //todo: get current Region of ship so list of baddies can be kept.
+            //todo: get current Sector of ship so list of baddies can be kept.
         #endregion
 
-        public Ship(FactionName faction, string name, ISector sector, IMap map)
+        public Ship(FactionName faction, string name, ICoordinate sector, IMap map)
         {
             this.Map = map;
 
             //todo: this could actually be a feature later..
 
-            if (this.Map.Regions == null)
+            if (this.Map.Sectors == null)
             {
-                throw new GameException(this.Config.GetText("MapHasNoRegions"));
+                throw new GameException(this.Config.GetText("MapHasNoSectors"));
             }
 
             if (this.Map.Config == null)
@@ -59,14 +59,14 @@ namespace StarTrek_KG.Actors
             
             this.Config = (IStarTrekKGSettings)CheckParam(map.Config);
 
-            if (sector.RegionDef == null)
+            if (sector.SectorDef == null)
             {
-                throw new GameConfigException(this.Config.GetText("ShipHasNoSector"));
+                throw new GameConfigException(this.Config.GetText("ShipHasNoCoordinate"));
             }
             else
             {
-                this.Coordinate = sector.RegionDef;
-                this.Sector = (ISector)CheckParam(sector);
+                this.Point = sector.SectorDef;
+                this.Coordinate = (ICoordinate)CheckParam(sector);
             }
 
             this.Type = this.GetType();
@@ -91,10 +91,10 @@ namespace StarTrek_KG.Actors
             return $"Name: {this.Name} " +
                    $"Allegiance: {this.Allegiance} " +
                    $"Faction: {this.Faction} " +
-                   $"Coordinate: {this.Coordinate} " +
+                   $"Point: {this.Point} " +
                    $"Destroyed: {this.Destroyed} " +
                    $"Config: {this.Config} " +
-                   $"Sector: {this.Sector} " +
+                   $"Coordinate: {this.Coordinate} " +
                    $"Type: {this.Type} " +
                    $"SubSystems: {this.Subsystems} " +
                    $"Energy: {this.Energy} ";
@@ -234,7 +234,7 @@ namespace StarTrek_KG.Actors
                 this.Map.Write.Line(message);
             }
 
-            bool shieldsWorking = this.GetRegion().Type != RegionType.Nebulae;
+            bool shieldsWorking = this.GetSector().Type != SectorType.Nebulae;
 
             if (!shieldsWorking)
             {
@@ -297,21 +297,21 @@ namespace StarTrek_KG.Actors
         }
 
         //todo: create a GetLastRegion & GetLastSector
-        public Playfield.Region GetRegion()
+        public Playfield.Sector GetSector()
         {
             //todo: get rid of this.Map ?
-            Region retVal = this.Map.Regions.SingleOrDefault(s => s.X == this.Coordinate.X && s.Y == this.Coordinate.Y);
+            Sector retVal = this.Map.Sectors.SingleOrDefault(s => s.X == this.Point.X && s.Y == this.Point.Y);
 
             if (retVal == null)
             {
-                if (this.Coordinate == null)
+                if (this.Point == null)
                 {
                     throw new GameConfigException(this.Map.Config.GetText("CoordinateNotFound"));
                 }
                 else
                 {
-                    string regionNotFound = this.Map.Write.GetFormattedConfigText("RegionNotFound", this.Coordinate.X, this.Coordinate.Y);
-                    throw new GameConfigException(regionNotFound);
+                    string SectorNotFound = this.Map.Write.GetFormattedConfigText("SectorNotFound", this.Point.X, this.Point.Y);
+                    throw new GameConfigException(SectorNotFound);
                 }
             }
 
@@ -323,7 +323,7 @@ namespace StarTrek_KG.Actors
         {
             var shipLocation = new Location
             {
-                Sector = this.Sector, Region = this.GetRegion()
+                Coordinate = this.Coordinate, Sector = this.GetSector()
             };
 
             return shipLocation;
@@ -366,7 +366,7 @@ namespace StarTrek_KG.Actors
 
         public string GetConditionAndSetIcon()
         {
-            var currentRegion = this.GetRegion();
+            var currentRegion = this.GetSector();
             var condition = this.Map.Config.GetText("ConditionNormal");
 
             if (currentRegion.GetHostiles().Count > 0)
@@ -388,7 +388,7 @@ namespace StarTrek_KG.Actors
 
         /// <summary>
         /// Used to get an idea of the area immediately surrounding the ship
-        /// This was created primarily to determine if a sector surrounding the ship is in another Region for navigation purposes
+        /// This was created primarily to determine if a sector surrounding the ship is in another Sector for navigation purposes
         /// This function is called when the ship is set in place on the map.
         /// 
         /// Called at:
@@ -407,49 +407,49 @@ namespace StarTrek_KG.Actors
             //Immediate Range Scan
 
             //Busted
-            //↑|↑|→   //+|-|+
-            //E|P|→   //+|+|+
-            //E|E|→   //-|-|-
+            //?|?|?   //+|-|+
+            //E|P|?   //+|+|+
+            //E|E|?   //-|-|-
 
             //Longhand
-            //[3,6] E [3,7] S [3,→] FreeHold
-            //[4,6] E [4,7] P [4,→] FreeHold
-            //[5,6] E [5,7] E [5,→] FreeHold
+            //[3,6] E [3,7] S [3,?] FreeHold
+            //[4,6] E [4,7] P [4,?] FreeHold
+            //[5,6] E [5,7] E [5,?] FreeHold
 
-            //←	↑	→	↓	
-            //Portal to other Galaxy - ⇄
-            //⇶
+            //?	?	?	?	
+            //Portal to other Galaxy - ?
+            //?
 
             //http://en.wikipedia.org/wiki/Template:Unicode_chart_Arrows
 
             var myLocation = this.GetLocation();
 
-            this.Sector.Neighbors = new List<DivinedSectorItem>();
+            this.Coordinate.Neighbors = new List<DivinedCoordinateItem>();
 
             int row = 0;
 
-            for (var sectorL = myLocation.Sector.Y - 1; sectorL <= myLocation.Sector.Y + 1; sectorL++)
+            for (var sectorL = myLocation.Coordinate.Y - 1; sectorL <= myLocation.Coordinate.Y + 1; sectorL++)
             {
                 if (sectorL >= -1 && sectorL <= 8)
                 {
-                    for (var sectorT = myLocation.Sector.X - 1; sectorT <= myLocation.Sector.X + 1; sectorT++)
+                    for (var sectorT = myLocation.Coordinate.X - 1; sectorT <= myLocation.Coordinate.X + 1; sectorT++)
                     {
-                        var currentResult = new DivinedSectorItem
+                        var currentResult = new DivinedCoordinateItem
                         {
-                            MyLocation = myLocation.Sector.X == sectorT && myLocation.Sector.Y == sectorL, Location = new Location()
+                            MyLocation = myLocation.Coordinate.X == sectorT && myLocation.Coordinate.Y == sectorL, Location = new Location()
                         };
 
                         if (sectorT >= -1 && sectorT <= 8)
                         {
-                            Sectors sectorsToQuery = myLocation.Region.Sectors;
+                            Coordinates sectorsToQuery = myLocation.Sector.Coordinates;
 
-                            currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(sectorT, sectorL));
+                            currentResult.Location.Coordinate = sectorsToQuery.GetNoError(new Point(sectorT, sectorL));
 
-                            bool nullSector = currentResult.Location.Sector == null;
+                            bool nullSector = currentResult.Location.Coordinate == null;
 
                             if (nullSector)
                             {
-                                var currentRegion = myLocation.Region;
+                                var currentRegion = myLocation.Sector;
 
                                 //todo: debug: fix this.
                                 if (sectorT == 8 || sectorT == -1)
@@ -459,24 +459,24 @@ namespace StarTrek_KG.Actors
                                     //int i;
                                 }
 
-                                var sectorToExamine = new Sector(new LocationDef(currentRegion, new Coordinate(sectorT, sectorL)));
+                                var sectorToExamine = new Coordinate(new LocationDef(currentRegion, new Point(sectorT, sectorL)));
                                 var locationToExamine = new Location(currentRegion, sectorToExamine);
 
                                 //todo: this could be currentRegion.GetDivinedSector()
-                                Location neighborSectorLocation = myLocation.Region.DivineSectorOnMap(locationToExamine, this.Map);
+                                Location neighborSectorLocation = myLocation.Sector.DivineSectorOnMap(locationToExamine, this.Map);
 
-                                if (neighborSectorLocation.Region.Type != RegionType.GalacticBarrier)
+                                if (neighborSectorLocation.Sector.Type != SectorType.GalacticBarrier)
                                 {
                                     //todo: are we moving the Ship?  what's going on?
 
-                                    //currentResult.Location.Region = neighborSectorLocation.Region;
+                                    //currentResult.Location.Sector = neighborSectorLocation.Sector;
 
-                                    //sectorsToQuery = currentResult.Location.Region.Sectors;
+                                    //sectorsToQuery = currentResult.Location.Sector.Coordinates;
 
-                                    //this.Map.Write.SingleLine(currentResult.Location.Region.Name);
+                                    //this.Map.Write.SingleLine(currentResult.Location.Sector.Name);
 
                                     ////Do we really need this second assignment?
-                                    //currentResult.Location.Sector = sectorsToQuery.GetNoError(new Coordinate(lookedUpLocation.Sector.X, lookedUpLocation.Sector.Y, false));
+                                    //currentResult.Location.Coordinate = sectorsToQuery.GetNoError(new Point(lookedUpLocation.Coordinate.X, lookedUpLocation.Coordinate.Y, false));
                                 }
                             }
                         }
@@ -493,7 +493,7 @@ namespace StarTrek_KG.Actors
         /// </summary>
         public void UpdateLocalFiringRange()
         {
-            this.Sector.Neighbors = new List<DivinedSectorItem>();
+            this.Coordinate.Neighbors = new List<DivinedCoordinateItem>();
         }
     }
 }

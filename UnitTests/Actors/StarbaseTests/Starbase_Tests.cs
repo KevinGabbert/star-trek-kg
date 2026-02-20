@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Settings;
 using UnitTests.TestObjects;
 
@@ -15,11 +15,11 @@ namespace UnitTests.Actors.StarbaseTests
         [TearDown]
         public void TearDown()
         {
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 0;
+
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
-
-            DEFAULTS.REGION_MIN = 0;
-            DEFAULTS.REGION_MAX = 0;
         }
 
 
@@ -28,7 +28,7 @@ namespace UnitTests.Actors.StarbaseTests
         {
             _setup.SetupMapWithStarbase();
 
-            Assert.IsNotNull(_setup.TestMap.Regions[0].Sectors);
+            Assert.IsNotNull(_setup.TestMap.Sectors[0].Coordinates);
         }
     }
 }

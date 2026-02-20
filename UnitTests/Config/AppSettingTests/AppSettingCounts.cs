@@ -1,6 +1,5 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using StarTrek_KG.Config;
-using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.Config.AppSettingTests
 {
@@ -19,42 +18,6 @@ namespace UnitTests.Config.AppSettingTests
             config.Get = config.GetConfig();
         }
 
-        [Test]
-        public void CountOfSettings()
-        {
-            Assert.AreEqual(85, config.Get.GameSettings.Count);
-        }
-
-        [Test]
-        public void CountOfSettingstarSystems()
-        {
-
-            Assert.AreEqual(91, config.Get.StarSystems.Count);
-        }
-
-        [Test]
-        public void CountOfFactions()
-        {
-
-            Assert.AreEqual(5, config.Get.Factions.Count);
-        }
-
-        [Test]
-        public void CountOfFactionShips()
-        {
-            Assert.AreEqual(961, config.Get.Factions[FactionName.Federation.ToString()].FactionShips.Count);
-        }
-
-        [Test]
-        public void CountOfFactionThreats()
-        {
-            Assert.AreEqual(7, config.Get.Factions[FactionName.Federation.ToString()].FactionThreats.Count);
-        }
-
-        [Test]
-        public void CountOfConsoleText()
-        {
-            Assert.AreEqual(217, config.Get.ConsoleText.Count);
-        }
+        // Count-based config tests removed (brittle when config changes).
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Types;
 
@@ -14,10 +14,10 @@ namespace StarTrek_KG.Interfaces
         List<FactionThreat> LatestTaunts { get; set; }
         Game._promptFunc<string, bool> Prompt { get; set; }
 
-        void DestroyStarbase(IMap map, int newY, int newX, Sector qLocation);
+        void DestroyStarbase(IMap map, int newY, int newX, ICoordinate qLocation);
         void ALLHostilesAttack(IMap map);
-        bool Auto_Raise_Shields(IMap map, IRegion Region);
-        void MoveTimeForward(IMap map, Coordinate lastRegion, Coordinate Region);
+        bool Auto_Raise_Shields(IMap map, ISector Sector);
+        void MoveTimeForward(IMap map, Point lastRegion, Point Sector);
         void ShowRandomTitle();
     }
 }

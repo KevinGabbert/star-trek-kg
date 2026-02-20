@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -20,26 +20,26 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged()) return null;
 
-            this.ShipConnectedTo.Map.Game.Interact.RenderSectors(SectorScanType.ShortRange, this);
+            this.ShipConnectedTo.Map.Game.Interact.RenderSectors(CoordinateScanType.ShortRange, this);
             return this.ShipConnectedTo.Map.Game.Interact.Output.Queue?.ToList();
         }
 
-        public static ShortRangeScan For(IShip ship)
+        public new static ShortRangeScan For(IShip ship)
         {
             return (ShortRangeScan)For(ship, SubsystemType.ShortRangeScan);
         }
 
-        public IEnumerable<Sector> ObjectFinder()
+        public IEnumerable<Coordinate> ObjectFinder()
         {
             if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
             {
                 this.ShipConnectedTo.OutputLine("Cannot locate Objects for calculations");
-                return new List<Sector>(); //todo: is this correct?
+                return new List<Coordinate>(); //todo: is this correct?
             }
 
-            var thisRegion = this.ShipConnectedTo.GetRegion();
+            var thisRegion = this.ShipConnectedTo.GetSector();
 
-            IEnumerable<Sector> sectorsWithObjects = thisRegion.Sectors.Where(s => s.Item != SectorItem.Empty);
+            IEnumerable<Coordinate> sectorsWithObjects = thisRegion.Coordinates.Where(s => s.Item != CoordinateItem.Empty);
 
             return sectorsWithObjects;
         }

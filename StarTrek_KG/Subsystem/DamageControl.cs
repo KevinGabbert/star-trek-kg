@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Constants.Commands;
 using StarTrek_KG.Interfaces;
@@ -37,7 +37,7 @@ namespace StarTrek_KG.Subsystem
         private string ShowSubsystemsToFix()
         {
             this.ShipConnectedTo.Map.Game.Interact.CreateCommandPanel();
-            this.ShipConnectedTo.Map.Game.Interact.Panel("─── Subsystem to Fix", this.ShipConnectedTo.Map.Game.Interact.SHIP_PANEL);
+            this.ShipConnectedTo.Map.Game.Interact.Panel("--- Subsystem to Fix", this.ShipConnectedTo.Map.Game.Interact.SHIP_PANEL);
             this.ShipConnectedTo.Map.Game.Interact.WithNoEndCR("Enter subsystem: ");
             return "";
         }
@@ -68,7 +68,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public static DamageControl For(IShip ship)
+        public new static DamageControl For(IShip ship)
         {
             return (DamageControl)For(ship, SubsystemType.DamageControl);
         }

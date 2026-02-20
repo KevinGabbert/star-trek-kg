@@ -1,4 +1,4 @@
-﻿namespace StarTrek_KG.Playfield
+namespace StarTrek_KG.Playfield
 {
     //public class VectorCoordinate
     //{
@@ -45,7 +45,7 @@
 
     //    public override string ToString()
     //    {
-    //        return "Coordinate: " + this.X + ", " + this.Y;
+    //        return "Point: " + this.X + ", " + this.Y;
     //    }
 
     //    internal void IncrementBy(VectorCoordinate vector)

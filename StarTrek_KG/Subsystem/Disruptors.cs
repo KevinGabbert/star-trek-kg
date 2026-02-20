@@ -1,4 +1,4 @@
-﻿using StarTrek_KG.Interfaces;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -18,10 +18,10 @@ namespace StarTrek_KG.Subsystem
         {
             IShip thisShip = this.ShipConnectedTo;
 
-            var distance = Utility.Utility.Distance(targetLocation.Sector.X,
-                                                    targetLocation.Sector.Y,
-                                                    thisShip.Sector.X,
-                                                    thisShip.Sector.Y);
+            var distance = Utility.Utility.Distance(targetLocation.Coordinate.X,
+                                                    targetLocation.Coordinate.Y,
+                                                    thisShip.Coordinate.X,
+                                                    thisShip.Coordinate.Y);
 
             //Ship target; //= Object in sector with targetLocation.sectorX, targetLocation.sectorY
 
@@ -60,7 +60,7 @@ namespace StarTrek_KG.Subsystem
         //    this.Game.Write.Line("");
         //    this.Game.Write.Line("Objects to Target:");
 
-        //    List<KeyValuePair<int, Sector>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
+        //    List<KeyValuePair<int, Coordinate>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
 
         //    string userReply;
         //    this.Game.Write.Line("");
@@ -83,17 +83,17 @@ namespace StarTrek_KG.Subsystem
         //        var destroyedShips = new List<IShip>();
         //        switch (objectToFireOn.Item)
         //        {
-        //            case SectorItem.HostileShip:
-        //            case SectorItem.FriendlyShip:
+        //            case CoordinateItem.HostileShip:
+        //            case CoordinateItem.FriendlyShip:
         //                this.FireOnShip(0, (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
         //                break;
 
-        //            case SectorItem.Starbase:
+        //            case CoordinateItem.Starbase:
         //                //this.FireOnStarbase(0, (IShip)objectToFireOn.Object, this.InNebula(), destroyedShips);
         //                this.Game.Write.Line("Firing on Starbases unsupported with phasers (for now).");
         //                break;
 
-        //            case SectorItem.Star:
+        //            case CoordinateItem.Star:
         //                this.FireOnStar((IStar)objectToFireOn.Object);
         //                break;
         //        }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Enums;
@@ -50,7 +50,7 @@ namespace StarTrek_KG.Subsystem
         {
             IGame game = this.ShipConnectedTo.Map.Game;
 
-            IEnumerable<LRSResult> tlrsResults = shipLocation.Region.GetLRSFullData(shipLocation, game);
+            IEnumerable<LRSResult> tlrsResults = shipLocation.Sector.GetLRSFullData(shipLocation, game);
             var renderedData = game.Interact.RenderLRSData(tlrsResults, game);
 
             return renderedData;
@@ -59,7 +59,7 @@ namespace StarTrek_KG.Subsystem
         private IEnumerable<string> RunFullLRSScan(Location shipLocation)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
-            IEnumerable<IScanResult> lrsData = shipLocation.Region.GetLRSFullData(shipLocation, this.ShipConnectedTo.Map.Game);
+            IEnumerable<IScanResult> lrsData = shipLocation.Sector.GetLRSFullData(shipLocation, this.ShipConnectedTo.Map.Game);
             IEnumerable<string> renderedData = this.ShipConnectedTo.Map.Game.Interact.RenderScanWithNames(ScanRenderType.SingleLine, "*** Long Range Scan ***", lrsData.ToList(), this.ShipConnectedTo.Map.Game);
 
             return renderedData;
@@ -69,11 +69,11 @@ namespace StarTrek_KG.Subsystem
         {
             var regionResult = new LRSResult();
 
-            Region regionToScan = map.Regions.Get(regionName);
+            Sector regionToScan = map.Sectors.Get(regionName);
 
-            regionResult.Coordinate = regionToScan.GetCoordinate();
+            regionResult.Point = regionToScan.GetPoint();
 
-            if (regionToScan.Type != RegionType.Nebulae)
+            if (regionToScan.Type != SectorType.Nebulae)
             {
                 regionResult.Hostiles = regionToScan.GetHostiles().Count;
                 regionResult.Starbases = regionToScan.GetStarbaseCount();
@@ -88,15 +88,15 @@ namespace StarTrek_KG.Subsystem
             return regionResult;
         }
 
-        public static LRSResult Execute(Region regionToScan)
+        public static LRSResult Execute(Sector regionToScan)
         {
             var regionResult = new LRSResult
             {
-                Coordinate = regionToScan.GetCoordinate()
+                Point = regionToScan.GetPoint()
             };
 
 
-            if (regionToScan.Type != RegionType.Nebulae)
+            if (regionToScan.Type != SectorType.Nebulae)
             {
                 regionResult.Hostiles = regionToScan.GetHostiles().Count;
                 regionResult.Starbases = regionToScan.GetStarbaseCount();
@@ -111,13 +111,13 @@ namespace StarTrek_KG.Subsystem
 
         public void Debug_Scan_All_Regions(bool setScanned)
         {
-            foreach (var Region in this.ShipConnectedTo.Map.Regions)
+            foreach (var Sector in this.ShipConnectedTo.Map.Sectors)
             {
-                Region.Scanned = setScanned;
+                Sector.Scanned = setScanned;
             }
         }
 
-        public static LongRangeScan For(IShip ship)
+        public new static LongRangeScan For(IShip ship)
         {
             return (LongRangeScan)SubSystem_Base.For(ship, SubsystemType.LongRangeScan);
         }
