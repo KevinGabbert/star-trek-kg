@@ -314,39 +314,40 @@ namespace StarTrek_KG.Actors
             switch (travelDirection)
             {
                 case NavDirection.Left:
-                    this.GoLeft(ref currentCoordinateX);
+
+                    this.GoLeft(ref currentCoordinateY);
                     break;
 
                 case NavDirection.LeftUp:
-                    this.GoLeft(ref currentCoordinateX);
-                    this.GoUp(ref currentCoordinateY);
+                    this.GoLeft(ref currentCoordinateY);
+                    this.GoUp(ref currentCoordinateX);
                     break;
 
                 case NavDirection.Up:
-                    this.GoUp(ref currentCoordinateY);
+                    this.GoUp(ref currentCoordinateX);
                     break;
 
                 case NavDirection.RightUp:
-                    this.GoRight(ref currentCoordinateX);
-                    this.GoUp(ref currentCoordinateY);
+                    this.GoRight(ref currentCoordinateY);
+                    this.GoUp(ref currentCoordinateX);
                     break;
 
                 case NavDirection.Right:
-                    this.GoRight(ref currentCoordinateX);
+                    this.GoRight(ref currentCoordinateY);
                     break;
 
                 case NavDirection.RightDown:
-                    this.GoRight(ref currentCoordinateX);
-                    this.GoDown(ref currentCoordinateY);
+                    this.GoRight(ref currentCoordinateY);
+                    this.GoDown(ref currentCoordinateX);
                     break;
 
                 case NavDirection.Down:
-                    this.GoDown(ref currentCoordinateY);
+                    this.GoDown(ref currentCoordinateX);
                     break;
 
                 case NavDirection.LeftDown:
-                    this.GoLeft(ref currentCoordinateX);
-                    this.GoDown(ref currentCoordinateY);
+                    this.GoLeft(ref currentCoordinateY);
+                    this.GoDown(ref currentCoordinateX);
                     break;
 
                 default:
