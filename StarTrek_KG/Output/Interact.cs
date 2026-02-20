@@ -59,7 +59,9 @@ namespace StarTrek_KG.Output
 
         public Interaction()
         {
+            this.Config = new StarTrek_KG.Config.StarTrekKGSettings();
             this.Subscriber = new Subscriber(this.Config);
+            this.Output = new SubscriberOutput(this.Config);
         }
 
         public Interaction(IStarTrekKGSettings config)
