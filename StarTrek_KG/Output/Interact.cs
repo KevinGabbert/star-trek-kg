@@ -48,11 +48,11 @@ namespace StarTrek_KG.Output
         private readonly string ENTER_COMPUTER_COMMAND = "Enter computer command: ";
         public static readonly string COURSE_GRID =
             Environment.NewLine +
-            " 4   5   6 " + Environment.NewLine +
-            @"   \ ? /  " + Environment.NewLine +
-            "3 ? <*> ? 7" + Environment.NewLine +
-            @"   / ? \  " + Environment.NewLine +
-            " 2   1   8" + Environment.NewLine +
+             " 4   5   6 " + Environment.NewLine +
+            @"   \ | /  " + Environment.NewLine +
+             "3 - <*> - 7" + Environment.NewLine +
+            @"   / | \  " + Environment.NewLine +
+             " 2   1   8" + Environment.NewLine +
             Environment.NewLine;
 
         #endregion
@@ -285,9 +285,21 @@ namespace StarTrek_KG.Output
             var renderedResults = new List<string>();
             int scanColumn = 0;
 
-            renderedResults.Add("+-----------------+");
+            var verticalBoxLine = this.Config.Setting("VerticalBoxLine");
+            var topLeft = this.Config.Setting("SingleLineTopLeft");
+            var topMiddle = this.Config.Setting("SingleLineTopMiddle");
+            var topRight = this.Config.Setting("SingleLineTopRight");
+            var middleLeft = this.Config.Setting("SingleLineMiddleLeft");
+            var middle = this.Config.Setting("SingleLineMiddle");
+            var middleRight = this.Config.Setting("SingleLineMiddleRight");
+            var bottomLeft = this.Config.Setting("SingleLineBottomLeft");
+            var bottomMiddle = this.Config.Setting("SingleLineBottomMiddle");
+            var bottomRight = this.Config.Setting("SingleLineBottomRight");
+            var cellLine = new string(Convert.ToChar(this.Config.Setting("SingleLineCellLine")), 5);
 
-            string currentLRSScanLine = "¦";
+            renderedResults.Add(topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight);
+
+            string currentLRSScanLine = verticalBoxLine;
 
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (LRSResult dataPoint in lrsData)
@@ -295,7 +307,7 @@ namespace StarTrek_KG.Output
                 currentLRSScanLine = BuildLRSInterior(game, dataPoint, currentLRSScanLine, renderedResults, ref scanColumn);
             }
 
-            renderedResults.Add("+-----------------+");
+            renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
 
             return renderedResults;
         }
@@ -317,13 +329,19 @@ namespace StarTrek_KG.Output
                 currentRegionResult += dataPoint;
             }
 
-            currentLRSScanLine += $" {currentRegionResult} " + "¦";
+            var verticalBoxLine = game.Config.Setting("VerticalBoxLine");
+            var middleLeft = game.Config.Setting("SingleLineMiddleLeft");
+            var middle = game.Config.Setting("SingleLineMiddle");
+            var middleRight = game.Config.Setting("SingleLineMiddleRight");
+            var cellLine = new string(Convert.ToChar(game.Config.Setting("SingleLineCellLine")), 5);
+
+            currentLRSScanLine += $" {currentRegionResult} " + verticalBoxLine;
 
             if (scanColumn == 2 || scanColumn == 5)
             {
                 renderedResults.Add(currentLRSScanLine);
-                renderedResults.Add("+-----+-----+-----¦");
-                currentLRSScanLine = "¦";
+                renderedResults.Add(middleLeft + cellLine + middle + cellLine + middle + cellLine + middleRight);
+                currentLRSScanLine = verticalBoxLine;
             }
 
             if (scanColumn == 8)
