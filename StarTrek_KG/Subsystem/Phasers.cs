@@ -66,11 +66,36 @@ namespace StarTrek_KG.Subsystem
                 return this.ShipConnectedTo.OutputQueue();
             }
 
+            if (phaserEnergy == "-1")
+            {
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
             this.ShipConnectedTo.OutputLine("");
 
             this.Fire(int.Parse(phaserEnergy)); //, shipFiringPhasers
             this.ShipConnectedTo.Map.Game.Interact.OutputConditionAndWarnings(this.ShipConnectedTo, this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("ShieldsDownLevel"));
 
+            return this.ShipConnectedTo.OutputQueue();
+        }
+
+        public override List<string> Controls(string command)
+        {
+            if (string.IsNullOrWhiteSpace(command))
+            {
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            int phaserEnergy;
+            if (!int.TryParse(command, out phaserEnergy))
+            {
+                this.ShipConnectedTo.OutputLine("Invalid energy level.");
+                this.PromptUserForPhaserEnergy(out _);
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            this.Fire(phaserEnergy);
+            this.ShipConnectedTo.ResetPrompt();
             return this.ShipConnectedTo.OutputQueue();
         }
 
@@ -129,7 +154,13 @@ namespace StarTrek_KG.Subsystem
 
         private bool PromptUserForPhaserEnergy(out string phaserEnergy)
         {
-            return this.ShipConnectedTo.Map.Game.Interact.PromptUser(SubsystemType.Phasers, "Phasers:>", $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ", out phaserEnergy, this.ShipConnectedTo.Map.Game.Interact.Output.Queue);
+            return this.ShipConnectedTo.Map.Game.Interact.PromptUser(
+                SubsystemType.Phasers,
+                "Phasers:>",
+                $"Enter phaser energy (1--{this.ShipConnectedTo.Energy}): ",
+                out phaserEnergy,
+                this.ShipConnectedTo.Map.Game.Interact.Output.Queue,
+                1);
         }
 
         //todo: move to Utility() object

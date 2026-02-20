@@ -25,7 +25,22 @@ namespace StarTrek_KG.Subsystem
 
         public override List<string> Controls(string command)
         {
-            return this.Controls();
+            if (string.IsNullOrWhiteSpace(command))
+            {
+                return this.Controls();
+            }
+
+            int directionValue;
+            if (!int.TryParse(command, out directionValue) || directionValue < 1 || directionValue > 9)
+            {
+                this.ShipConnectedTo.OutputLine("Invalid direction.");
+                this.PromptForDirection();
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            this.Shoot(directionValue);
+            this.ShipConnectedTo.ResetPrompt();
+            return this.ShipConnectedTo.OutputQueue();
         }
 
         public List<string> Controls()
@@ -54,7 +69,12 @@ namespace StarTrek_KG.Subsystem
                                   "Enter firing direction (1.0--9.0) ";
 
             string direction;
-            if (!prompt.PromptUser(SubsystemType.Torpedoes, "Torpedoes->", firingDirection, out direction, prompt.Output.Queue))
+            if (!prompt.PromptUser(SubsystemType.Torpedoes, "Torpedoes->", firingDirection, out direction, prompt.Output.Queue, 1))
+            {
+                return prompt.Output.Queue.ToList();
+            }
+
+            if (direction == "-1")
             {
                 return prompt.Output.Queue.ToList();
             }
@@ -71,6 +91,31 @@ namespace StarTrek_KG.Subsystem
             return prompt.Output.Queue.ToList();
         }
 
+        private void PromptForDirection()
+        {
+            string throwaway;
+            IInteraction prompt = this.ShipConnectedTo.Map.Game.Interact;
+            prompt.PromptUser(
+                SubsystemType.Torpedoes,
+                "Torpedoes->",
+                this.BuildFiringDirectionPrompt(),
+                out throwaway,
+                prompt.Output.Queue,
+                1);
+        }
+
+        private string BuildFiringDirectionPrompt()
+        {
+            return Environment.NewLine +
+                   " 4   5   6 " + Environment.NewLine +
+                   @"   \ ? /  " + Environment.NewLine +
+                   "3 ? <*> ? 7" + Environment.NewLine +
+                   @"   / ? \  " + Environment.NewLine +
+                   " 2   1   8" + Environment.NewLine +
+                   Environment.NewLine +
+                   "Enter firing direction (1.0--9.0) ";
+        }
+
         public void Shoot(double direction)
         {
             IGame game = this.ShipConnectedTo.Map.Game;
@@ -81,8 +126,6 @@ namespace StarTrek_KG.Subsystem
             }
 
             game.ALLHostilesAttack(game.Map);
-
-            double angle = Utility.Utility.ComputeAngle(direction);
 
             Location torpedoStartingLocation = this.ShipConnectedTo.GetLocation();
             Sector Sector = game.Map.Sectors[torpedoStartingLocation.Sector];
@@ -105,25 +148,70 @@ namespace StarTrek_KG.Subsystem
                 Coordinate = new Coordinate()
             };
 
-            ////todo: condense WHILE to be a function of Point
-            ////todo: eliminate the twice rounding of torpedo location, as the same value is evaluated twice
-            ////todo: the rounding can happen once in a variable, and then referred to twice (see note below)
-            //while (Torpedoes.IsInRegion(currentLocation))
-            //{
-            //    //Increment to next Coordinate
-            //    if (this.HitSomething(currentLocation, lastPosition, newLocation))
-            //    {
-            //        this.Game.Write.OutputConditionAndWarnings(this.ShipConnectedTo, this.Game.Config.GetSetting<int>("ShieldsDownLevel"));
-            //        return;
-            //    }
+            var delta = GetDirectionDelta(direction);
+            var min = DEFAULTS.COORDINATE_MIN;
+            var maxExclusive = DEFAULTS.COORDINATE_MAX;
 
-            //    //Keep going.. because we haven't hit anything yet
+            var currentX = torpedoStartingLocation.Coordinate.X;
+            var currentY = torpedoStartingLocation.Coordinate.Y;
 
-            //    //todo: How about storing a *rounded* XY that is referred to by the While, and the new SectorToCheck
-            //    currentLocation.IncrementBy(torpedoVector);
-            //}
+            while (true)
+            {
+                currentX += delta.X;
+                currentY += delta.Y;
+
+                if (currentX < min || currentY < min || currentX >= maxExclusive || currentY >= maxExclusive)
+                {
+                    break;
+                }
+
+                newLocation.Coordinate.X = currentX;
+                newLocation.Coordinate.Y = currentY;
+
+                if (Torpedoes.LastPositionAintNewPosition(newLocation, lastPosition))
+                {
+                    lastPosition.Update(newLocation);
+                }
+
+                Torpedoes.DebugTrack(newLocation);
+
+                if (this.HitSomething(newLocation))
+                {
+                    return;
+                }
+            }
 
             this.ShipConnectedTo.OutputLine("Photon torpedo failed to hit anything.");
+        }
+
+        private static Point GetDirectionDelta(double direction)
+        {
+            if (Math.Abs(direction - 9.0) < 0.001)
+            {
+                direction = 1.0;
+            }
+
+            switch ((int)Math.Round(direction))
+            {
+                case 1: // down
+                    return new Point(1, 0);
+                case 2: // down-left
+                    return new Point(1, -1);
+                case 3: // left
+                    return new Point(0, -1);
+                case 4: // up-left
+                    return new Point(-1, -1);
+                case 5: // up
+                    return new Point(-1, 0);
+                case 6: // up-right
+                    return new Point(-1, 1);
+                case 7: // right
+                    return new Point(0, 1);
+                case 8: // down-right
+                    return new Point(1, 1);
+                default:
+                    return new Point(0, 0);
+            }
         }
 
         //private bool HitSomething(VectorCoordinate currentLocation, Point lastPosition, Location newLocation)
@@ -198,10 +286,10 @@ namespace StarTrek_KG.Subsystem
             IGame game = this.ShipConnectedTo.Map.Game;
 
             var thisRegion = game.Map.Sectors.GetActive();
-            var HostilesInSector = thisRegion.GetHostiles();
-            IShip hostileInSector = HostilesInSector.SingleOrDefault(hostileShip => hostileShip.Coordinate.X == newX &&
-                                                                                      hostileShip.Coordinate.Y == newY);
-            if (hostileInSector != null)
+            var targetCoordinate = thisRegion.Coordinates.GetNoError(new Point(newX, newY));
+            var hostileInSector = targetCoordinate?.Object as IShip;
+
+            if (targetCoordinate?.Item == CoordinateItem.HostileShip && hostileInSector != null)
             {
                 game.Map.RemoveTargetFromSector(game.Map, hostileInSector);
 

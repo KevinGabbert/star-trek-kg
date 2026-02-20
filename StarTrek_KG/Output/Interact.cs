@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -279,7 +279,7 @@ namespace StarTrek_KG.Output
 
             renderedResults.Add("+-----------------+");
 
-            string currentLRSScanLine = "¦";
+            string currentLRSScanLine = "Â¦";
 
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (LRSResult dataPoint in lrsData)
@@ -309,13 +309,13 @@ namespace StarTrek_KG.Output
                 currentRegionResult += dataPoint;
             }
 
-            currentLRSScanLine += $" {currentRegionResult} " + "¦";
+            currentLRSScanLine += $" {currentRegionResult} " + "Â¦";
 
             if (scanColumn == 2 || scanColumn == 5)
             {
                 renderedResults.Add(currentLRSScanLine);
-                renderedResults.Add("+-----+-----+-----¦");
-                currentLRSScanLine = "¦";
+                renderedResults.Add("+-----+-----+-----Â¦");
+                currentLRSScanLine = "Â¦";
             }
 
             if (scanColumn == 8)
@@ -334,7 +334,7 @@ namespace StarTrek_KG.Output
 
         //    renderedResults.Add("+-----------------+");
 
-        //    string currentLRSScanLine = "¦";
+        //    string currentLRSScanLine = "Â¦";
 
         //    foreach (IRSResult dataPoint in irsData)
         //    {
@@ -353,13 +353,13 @@ namespace StarTrek_KG.Output
         //            currentRegionResult += dataPoint;
         //        }
 
-        //        currentLRSScanLine += " " + currentRegionResult + " " + "¦";
+        //        currentLRSScanLine += " " + currentRegionResult + " " + "Â¦";
 
         //        if (scanColumn == 2 || scanColumn == 5)
         //        {
         //            renderedResults.Add(currentLRSScanLine);
-        //            renderedResults.Add("¦-----+-----+-----¦");
-        //            currentLRSScanLine = "¦";
+        //            renderedResults.Add("Â¦-----+-----+-----Â¦");
+        //            currentLRSScanLine = "Â¦";
         //        }
 
         //        if (scanColumn == 8)
@@ -906,6 +906,15 @@ namespace StarTrek_KG.Output
             {
                 ISubsystem navSubsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
                 retVal = navSubsystem.Controls(playerEnteredText);
+                return retVal?.ToList();
+            }
+
+            if ((this.Subscriber.PromptInfo.SubSystem == SubsystemType.Torpedoes ||
+                 this.Subscriber.PromptInfo.SubSystem == SubsystemType.Phasers) &&
+                this.Subscriber.PromptInfo.Level > 0)
+            {
+                ISubsystem weaponSubsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
+                retVal = weaponSubsystem.Controls(playerEnteredText);
                 return retVal?.ToList();
             }
 

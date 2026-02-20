@@ -32,14 +32,17 @@ namespace StarTrek_KG.Output
 
         public List<string> Write(List<string> textLines)
         {
-            List<string> linesToEnqueue = new List<string> { textLines + Environment.NewLine };
+            if (textLines == null)
+            {
+                return new List<string>();
+            }
 
-            foreach (var line in linesToEnqueue)
+            foreach (var line in textLines)
             {
                 this.Enqueue(line);
             }
 
-            return linesToEnqueue;
+            return textLines;
         }
 
         public string WriteLine()
