@@ -13,10 +13,19 @@ function normalizeLines(lines) {
 
 function splitHeader(lines) {
   const cleaned = normalizeLines(lines);
-  const nonEmpty = cleaned.filter(l => l.trim() !== '');
-  if (nonEmpty.length && nonEmpty[0].trim() === 'Err:') {
-    return { isError: true, lines: cleaned.filter(l => l.trim() !== 'Err:') };
+  let headerIndex = -1;
+  for (let i = 0; i < cleaned.length; i++) {
+    if (cleaned[i].trim() !== '') {
+      headerIndex = i;
+      break;
+    }
   }
+
+  if (headerIndex >= 0 && cleaned[headerIndex].trim() === 'Err:') {
+    const withoutHeader = cleaned.slice(0, headerIndex).concat(cleaned.slice(headerIndex + 1));
+    return { isError: true, lines: withoutHeader };
+  }
+
   return { isError: false, lines: cleaned };
 }
 
@@ -47,11 +56,11 @@ jQuery(function ($) {
     return;
   }
 
-  const greetings =
-    'Star Trek KG\\n' +
-    'A modern, C# rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :)\\n\\n' +
-    'Type \"start\" to begin, or \"term menu\" for terminal commands\\n' +
-    'This application is currently under construction.\\n';
+    const greetings =
+        'Star Trek KG\n\n' +
+        'A modern, C# rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :)\n\n' +
+        'Type "start" to begin, or "term menu" for terminal commands\n' +
+        'This application is currently under construction.\n';
 
   const termHost = $('#termWindow');
 
@@ -63,13 +72,11 @@ jQuery(function ($) {
 
     if (result.isError) {
       result.lines.forEach(item => {
-        if (item.trim() !== '') term.error(item);
+        term.error(item);
       });
     } else {
       result.lines.forEach(item => {
-        if (item.trim() !== '') {
-          term.echo(item, { raw: true });
-        }
+        term.echo(item, { raw: true });
       });
     }
 
