@@ -8,17 +8,6 @@ namespace UnitTests.Output
     public class OutputTests
     {
         [Test]
-        public void SubscriberOutput_Enqueue_WrapsInPreTags()
-        {
-            var output = new SubscriberOutput(new StarTrekKGSettings());
-
-            output.Enqueue("hello");
-
-            Assert.AreEqual(1, output.Queue.Count);
-            Assert.IsTrue(output.Queue.Peek().Contains("<pre>hello</pre>"));
-        }
-
-        [Test]
         public void SubscriberOutput_WriteLine_AddsNewline()
         {
             var output = new SubscriberOutput(new StarTrekKGSettings());

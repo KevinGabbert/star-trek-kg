@@ -22,7 +22,7 @@ namespace StarTrek_KG.Output
 
         public void Enqueue(string text)
         {
-            this.Queue.Enqueue($"<pre>{text.Replace("\r\n", "")}</pre>");
+            this.Queue.Enqueue(text.Replace("\r\n", ""));
         }
 
         public void Write(string text)
