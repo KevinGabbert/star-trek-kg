@@ -11,6 +11,68 @@ function normalizeLines(lines) {
   return lines.map(line => String(line || '').replace(/<\/?pre>/gi, ''));
 }
 
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function toHex(value) {
+  const hex = value.toString(16).padStart(2, '0');
+  return hex.toUpperCase();
+}
+
+function randomNebulaColor() {
+  const roll = Math.random();
+  if (roll < 0.03) {
+    const r = randomInt(200, 255);
+    const g = randomInt(180, 255);
+    const b = randomInt(0, 40);
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
+  if (roll < 0.515) {
+    const r = randomInt(180, 255);
+    const g = randomInt(0, 50);
+    const b = randomInt(0, 60);
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
+  const r = randomInt(0, 60);
+  const g = randomInt(0, 80);
+  const b = randomInt(180, 255);
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function shouldColorizeNebulaLine(line, hasNebulaContext) {
+  if (!hasNebulaContext) return false;
+
+  const plusMinusCount = (line.match(/[+-]/g) || []).length;
+  if (plusMinusCount < 8) return false;
+
+  const lower = line.toLowerCase();
+  if (lower.includes("star trek") || lower.includes("mission:") || lower.includes("ncc") || lower.includes("type '") || lower.includes("game started")) {
+    return false;
+  }
+
+  return true;
+}
+
+function colorizeNebulaLine(line) {
+  let formatted = '';
+  let isFormatted = false;
+
+  for (const ch of line) {
+    if (ch === '+' || ch === '-') {
+      const color = randomNebulaColor();
+      formatted += `[[;${color};]${ch}]`;
+      isFormatted = true;
+    } else {
+      formatted += ch;
+    }
+  }
+
+  return { text: formatted, formatted: isFormatted };
+}
+
 function splitHeader(lines) {
   const cleaned = normalizeLines(lines);
   let headerIndex = -1;
@@ -70,13 +132,20 @@ jQuery(function ($) {
     const lines = await sendTerminalCommand(command);
     const result = splitHeader(lines);
 
+    const hasNebulaContext = result.lines.some(line => line.toLowerCase().includes("nebula"));
+
     if (result.isError) {
       result.lines.forEach(item => {
         term.error(item);
       });
     } else {
       result.lines.forEach(item => {
-        term.echo(item, { raw: true });
+        if (shouldColorizeNebulaLine(item, hasNebulaContext)) {
+          const colored = colorizeNebulaLine(item);
+          term.echo(colored.text, { raw: false });
+        } else {
+          term.echo(item, { raw: true });
+        }
       });
     }
 

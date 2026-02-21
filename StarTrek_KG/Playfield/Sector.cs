@@ -710,7 +710,16 @@ namespace StarTrek_KG.Playfield
             //Sector regionToScan; // = Sectors.Get(game.Map, this.CoordinateToScan(region.X, region.Y, game.Config));
             var regionResult = new LRSResult();
 
-            if (region.Type != SectorType.Nebulae)
+            if (region.Type == SectorType.Unknown)
+            {
+                regionResult.Point = new Point(region.X, region.Y);
+                regionResult.Name = region.Name;
+                regionResult.Unknown = true;
+                regionResult.Hostiles = null;
+                regionResult.Starbases = null;
+                regionResult.Stars = null;
+            }
+            else if (region.Type != SectorType.Nebulae)
             {
                 regionResult = LongRangeScan.Execute(region);
             }
@@ -719,9 +728,9 @@ namespace StarTrek_KG.Playfield
                 regionResult.Point = new Point(region.X, region.Y);
                 regionResult.Name = region.Name;
                 regionResult.Unknown = true;
-                regionResult.Hostiles = 0;
-                regionResult.Starbases = 0;
-                regionResult.Stars = 0;
+                regionResult.Hostiles = null;
+                regionResult.Starbases = null;
+                regionResult.Stars = null;
             }
 
             return regionResult;
