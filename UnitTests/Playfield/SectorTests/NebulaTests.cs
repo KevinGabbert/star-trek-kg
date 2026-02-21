@@ -124,6 +124,7 @@ namespace UnitTests.Playfield.SectorTests
                 Assert.AreEqual(CoordinateType.Nebula, sector.Type, "Expected Nebula at Coordinate[" + sector.X + "," + sector.Y + "]");
             }
 
+            //expected baddies are zero because LRS can't see how many are in a nebula. it interferes with sensors.
             this.VerifyScanResults(null);
         }
 

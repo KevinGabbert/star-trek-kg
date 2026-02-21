@@ -98,15 +98,18 @@ namespace StarTrek_KG.Subsystem
                 Point = sectorToScan.GetPoint()
             };
 
-            sectorResult.Hostiles = 0;
-            sectorResult.Starbases = 0;
-            sectorResult.Stars = 0;
-
             if (sectorToScan.Type != SectorType.Nebulae)
             {
                 sectorResult.Hostiles = sectorToScan.GetHostiles().Count;
                 sectorResult.Starbases = sectorToScan.GetStarbaseCount();
                 sectorResult.Stars = sectorToScan.GetStarCount();
+                sectorResult.Name = sectorToScan.Name;
+            }
+            else
+            {
+                sectorResult.Hostiles = null; //because LRS can't penetrate nebulae
+                sectorResult.Starbases = null; //because LRS can't penetrate nebulae
+                sectorResult.Stars = null; //because LRS can't penetrate nebulae
                 sectorResult.Name = sectorToScan.Name;
             }
 
