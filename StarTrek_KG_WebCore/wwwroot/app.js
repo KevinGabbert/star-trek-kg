@@ -11,10 +11,33 @@ function stripPreTags(text) {
   return text.replace(/<\/?pre>/gi, '');
 }
 
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function applyGreenBorder(lines) {
+  const hasGreen = lines.some(line => line.includes('Condition: GREEN'));
+  if (!hasGreen) return lines.map(line => escapeHtml(line));
+
+  return lines.map(line => {
+    const escaped = escapeHtml(line);
+    if (!(line.includes('╙') || line.includes('╚') || line.includes('└') || line.includes('┘'))) {
+      return escaped;
+    }
+    return escaped.replace(/----/g, '<span class="green-border">----</span>');
+  });
+}
+
 function appendLines(lines) {
   if (!lines || !output) return;
   const cleaned = lines.map(line => stripPreTags(String(line)));
-  output.textContent += cleaned.join('\n') + '\n';
+  const rendered = applyGreenBorder(cleaned);
+  output.innerHTML += rendered.join('\n') + '\n';
   output.scrollTop = output.scrollHeight;
 }
 

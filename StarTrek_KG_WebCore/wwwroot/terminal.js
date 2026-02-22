@@ -42,11 +42,13 @@ function randomNebulaColor() {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
+const NEBULA_COLOR_WIDTH = 24;
+
 function shouldColorizeNebulaLine(line, hasNebulaContext) {
   if (!hasNebulaContext) return false;
 
   const plusMinusCount = (line.match(/[+-]/g) || []).length;
-  if (plusMinusCount < 8) return false;
+  if (plusMinusCount < 1) return false;
 
   const lower = line.toLowerCase();
   if (lower.includes("star trek") || lower.includes("mission:") || lower.includes("ncc") || lower.includes("type '") || lower.includes("game started")) {
@@ -60,8 +62,9 @@ function colorizeNebulaLine(line) {
   let formatted = '';
   let isFormatted = false;
 
-  for (const ch of line) {
-    if (ch === '+' || ch === '-') {
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if ((ch === '+' || ch === '-') && i < NEBULA_COLOR_WIDTH) {
       const color = randomNebulaColor();
       formatted += `[[;${color};]${ch}]`;
       isFormatted = true;
@@ -71,6 +74,19 @@ function colorizeNebulaLine(line) {
   }
 
   return { text: formatted, formatted: isFormatted };
+}
+
+function colorizeConditionBorder(line, condition) {
+  if (!condition) return { text: line, formatted: false };
+  if (!line || line.indexOf('----') === -1) return { text: line, formatted: false };
+  if (!(line.includes('╙') || line.includes('╚') || line.includes('╘') || line.includes('╜') || line.includes('└') || line.includes('┘') || line.includes('┴') || line.includes('╝') || line.includes('═'))) {
+    return { text: line, formatted: false };
+  }
+  const color = condition === 'red'
+    ? '#ff3b30'
+    : (condition === 'blue' ? '#4da3ff' : '#00ff00');
+  const colored = line.replace(/----/g, `[[;${color};]----]`);
+  return { text: colored, formatted: true };
 }
 
 function splitHeader(lines) {
@@ -125,6 +141,8 @@ jQuery(function ($) {
         'This application is currently under construction.\n';
 
   const termHost = $('#termWindow');
+  let lastCondition = null;
+  let lastInNebula = false;
 
   const terminal = termHost.terminalWindow(async function (command, term) {
     if (!command) return;
@@ -133,14 +151,41 @@ jQuery(function ($) {
     const result = splitHeader(lines);
 
     const hasNebulaContext = result.lines.some(line => line.toLowerCase().includes("nebula"));
+    const hasConditionLine = result.lines.find(line => line.includes("Condition: "));
+    if (hasConditionLine) {
+      if (hasConditionLine.includes("Condition: RED")) {
+        lastCondition = 'red';
+      } else if (hasConditionLine.includes("Condition: GREEN")) {
+        lastCondition = 'green';
+      }
+    }
+    const nebulaLine = result.lines.find(line => line.toLowerCase().includes("sector:") && line.toLowerCase().includes("nebula"));
+    if (nebulaLine) {
+      lastInNebula = true;
+    }
+    if (result.lines.some(line => line.toLowerCase().includes("while in nebula"))) {
+      lastInNebula = true;
+    }
 
     if (result.isError) {
       result.lines.forEach(item => {
         term.error(item);
       });
     } else {
+      let inLrsBlock = false;
       result.lines.forEach(item => {
-        if (shouldColorizeNebulaLine(item, hasNebulaContext)) {
+        if (item.includes('*** Long Range Scan ***')) {
+          inLrsBlock = true;
+        } else if (item.trim().startsWith('NCC ')) {
+          inLrsBlock = false;
+        }
+        const borderCondition = lastInNebula ? 'blue' : lastCondition;
+        const coloredBorder = colorizeConditionBorder(item, borderCondition);
+        if (coloredBorder.formatted) {
+          term.echo(coloredBorder.text, { raw: false });
+          return;
+        }
+        if (!inLrsBlock && shouldColorizeNebulaLine(item, hasNebulaContext)) {
           const colored = colorizeNebulaLine(item);
           term.echo(colored.text, { raw: false });
         } else {
