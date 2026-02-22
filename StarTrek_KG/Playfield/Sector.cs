@@ -561,13 +561,13 @@ namespace StarTrek_KG.Playfield
 
             //todo:  //bool currentlyInNebula = shipLocation.Coordinate.Type == SectorType.Nebulae;
 
-            for (var sectorX = shipLocation.Coordinate.X - 1;
-                sectorX <= shipLocation.Coordinate.X + 1;
-                sectorX++)
+            for (var sectorY = shipLocation.Coordinate.Y - 1;
+                sectorY <= shipLocation.Coordinate.Y + 1;
+                sectorY++)
             {
-                for (var sectorY = shipLocation.Coordinate.Y - 1;
-                    sectorY <= shipLocation.Coordinate.Y + 1;
-                    sectorY++)
+                for (var sectorX = shipLocation.Coordinate.X - 1;
+                    sectorX <= shipLocation.Coordinate.X + 1;
+                    sectorX++)
                 {
                     var outOfBounds = Sector.OutOfBounds(shipLocation.Coordinate);
 
@@ -577,8 +577,8 @@ namespace StarTrek_KG.Playfield
                     };
 
                     currentResult = this.GetSectorInfo(shipLocation.Sector, new Point(sectorX, sectorY), outOfBounds, game);
-                    currentResult.MyLocation = shipLocation.Sector.X == sectorX &&
-                                                shipLocation.Sector.Y == sectorY;
+                      currentResult.MyLocation = shipLocation.Coordinate.X == sectorX &&
+                                                  shipLocation.Coordinate.Y == sectorY;
 
                     scanData.Add(currentResult);
                 }
@@ -691,9 +691,16 @@ namespace StarTrek_KG.Playfield
                 }
                 else
                 {
-                    //currentResult.SectorName = "Unknown";
-                    currentResult.Unknown = true;
-                    currentResult.Point = new Point(currentSector.X, currentSector.Y);
+                    // 30% chance to reveal actual info in nebula
+                    if (Utility.Utility.Random.Next(100) < 30)
+                    {
+                        currentResult = this.GetSectorData(currentSector, sector, game);
+                    }
+                    else
+                    {
+                        currentResult.Unknown = true;
+                        currentResult.Point = new Point(currentSector.X, currentSector.Y);
+                    }
                 }
             }
             else
@@ -738,14 +745,65 @@ namespace StarTrek_KG.Playfield
 
         private IRSResult GetSectorData(Sector currentSector, IPoint sector, IGame game)
         {
-            Coordinate sectorToScan = this.Coordinates.GetNoError(sector);
+            var scanX = sector.X;
+            var scanY = sector.Y;
 
-            Point xx = sectorToScan ?? new Point(sector.X, sector.Y);
+            var max = DEFAULTS.COORDINATE_MAX;
+            var min = DEFAULTS.COORDINATE_MIN;
 
-            ICoordinate coordinateToExamine = new Coordinate(new LocationDef(currentSector, xx));
-            var locationToExamine = new Location(currentSector, coordinateToExamine);
+            var targetSectorX = currentSector.X;
+            var targetSectorY = currentSector.Y;
 
-            Location divinedLocationOnMap = currentSector.DivineCoordinateOnMap(locationToExamine, this.Map);
+            if (scanX < min)
+            {
+                targetSectorX -= 1;
+                scanX = max - 1;
+            }
+            else if (scanX >= max)
+            {
+                targetSectorX += 1;
+                scanX = min;
+            }
+
+            if (scanY < min)
+            {
+                targetSectorY -= 1;
+                scanY = max - 1;
+            }
+            else if (scanY >= max)
+            {
+                targetSectorY += 1;
+                scanY = min;
+            }
+
+            var targetSector = this.Map.Sectors.SingleOrDefault(r => r.X == targetSectorX && r.Y == targetSectorY);
+
+            if (targetSector == null)
+            {
+                return new IRSResult
+                {
+                    Point = new Point(scanX, scanY),
+                    GalacticBarrier = true
+                };
+            }
+
+            Coordinate sectorToScan = targetSector.Coordinates.GetNoError(new Point(scanX, scanY));
+
+            if (sectorToScan == null)
+            {
+                return new IRSResult
+                {
+                    Point = new Point(scanX, scanY),
+                    GalacticBarrier = true
+                };
+            }
+
+            Point xx = new Point(scanX, scanY);
+
+            ICoordinate coordinateToExamine = new Coordinate(new LocationDef(targetSector, xx));
+            var locationToExamine = new Location(targetSector, coordinateToExamine);
+
+            Location divinedLocationOnMap = locationToExamine;
 
             if (divinedLocationOnMap.Sector.Type != SectorType.GalacticBarrier)
             {

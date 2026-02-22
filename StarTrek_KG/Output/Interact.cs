@@ -468,6 +468,8 @@ namespace StarTrek_KG.Output
             string currentLRSScanLine1 = verticalBoxLine;
             string currentLRSScanLine2 = verticalBoxLine;
 
+            var coordinateIndicator = scanRenderType == ScanRenderType.DoubleSingleLine ? "°" : DEFAULTS.SECTOR_INDICATOR;
+
             foreach (IScanResult scanDataPoint in data)
             {
                 string currentSectorName = "";
@@ -476,8 +478,8 @@ namespace StarTrek_KG.Output
 
                 if (scanDataPoint.Point != null)
                 {
-                    regionCoordinate = DEFAULTS.SECTOR_INDICATOR + scanDataPoint.Point.X + "." +
-                                       scanDataPoint.Point.Y + "";
+                    regionCoordinate = coordinateIndicator + scanDataPoint.Point.X + "." +
+                                         scanDataPoint.Point.Y + "";
 
                     currentSectorName += scanDataPoint.SectorName;
                 }
@@ -496,11 +498,17 @@ namespace StarTrek_KG.Output
                     currentSectorResult += scanDataPoint.ToScanString();
                 }
 
+                if (scanRenderType == ScanRenderType.DoubleSingleLine && scanDataPoint.MyLocation)
+                {
+                    currentSectorName = "YOU";
+                    currentSectorResult = "YOU";
+                }
+
                 //breaks because coordinate is not populated when nebula
 
                 currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
                 currentLRSScanLine1 += " " + currentSectorName.PadCenter(cellLength) + verticalBoxLine;
-                currentLRSScanLine2 += currentSectorResult.PadCenter(cellLength + 1) + verticalBoxLine; //todo resource this
+                currentLRSScanLine2 += " " + currentSectorResult.PadCenter(cellLength) + verticalBoxLine; //todo resource this
 
                 if (scanColumn == 2 || scanColumn == 5) //todo resource this
                 {

@@ -72,6 +72,12 @@ namespace StarTrek_KG.Actors
                     game.Interact.Line("Unsupported Movement Type");
                     break;
             }
+
+            if (this.BlockedByGalacticBarrier)
+            {
+                // Ensure the ship remains visible when movement is blocked
+                this.ShipConnectedTo.Map.SetPlayershipInActiveSector(this.ShipConnectedTo.Map);
+            }
         }
 
         //todo: for warp-to-Sector
@@ -99,6 +105,7 @@ namespace StarTrek_KG.Actors
         private void TravelThroughCoordinates(int distance, NavDirection impulseTravelDirection, IShip travellingShip)
         {
             Sector currentSector = travellingShip.GetSector();
+            this.BlockedByGalacticBarrier = false;
 
             for (int sector = 0; sector < distance; sector++)
             {
@@ -115,6 +122,7 @@ namespace StarTrek_KG.Actors
                     // If barrier hit, stop
                     if (this.ShipConnectedTo.Map.Sectors.IsGalacticBarrier(nextSector))
                     {
+                        this.BlockedByGalacticBarrier = true;
                         this.ApplyGalacticBarrierPenalty();
                         break;
                     }
@@ -361,7 +369,7 @@ namespace StarTrek_KG.Actors
             //if on the edge of a Sector, newSector will have negative numbers
             var newCoordinateCandidate = new Coordinate(new LocationDef(currentSector.X, currentSector.Y, newCoordinate.X, newCoordinate.Y));
 
-            Sector newSectorCandidate = this.ShipConnectedTo.GetSector();
+            Sector newSectorCandidate = currentSector;
 
             if (newCoordinateCandidate.Invalid())
             {
@@ -416,7 +424,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                newLocation.Sector = this.ShipConnectedTo.Map.Sectors.Where(r => r.Name == scanResult.SectorName).Single();
+                newLocation.Sector = newSectorCandidate;
             }
 
             return newLocation;

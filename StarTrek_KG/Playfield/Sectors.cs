@@ -43,7 +43,13 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public bool IsGalacticBarrier(Point regionToGet)
         {
-           Sector gotSector = this.Map?.Sectors?.FirstOrDefault(region => region.X == regionToGet.X && region.Y == regionToGet.Y);
+            if (regionToGet == null)
+            {
+                return true;
+            }
+
+            Sector gotSector = this.Map?.Sectors?.FirstOrDefault(region =>
+                region != null && region.X == regionToGet.X && region.Y == regionToGet.Y);
 
             return gotSector == null;
         }
@@ -199,8 +205,8 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         internal static Sector GetNext(IMap map, Sector currentSector, NavDirection direction)
         {
-            int newSectorX = 0;
-            int newSectorY = 0;
+            int newSectorX = currentSector.X;
+            int newSectorY = currentSector.Y;
 
             switch (direction)
             {
