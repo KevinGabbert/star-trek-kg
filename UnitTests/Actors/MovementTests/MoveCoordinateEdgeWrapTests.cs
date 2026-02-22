@@ -104,6 +104,58 @@ namespace UnitTests.Actors.MovementTests
         }
 
         [Test]
+        public void Impulse_EdgeWrap_RightDown()
+        {
+            CreateMovementAt(1, 1, 7, 7);
+            _movement.Execute(MovementType.Impulse, NavDirection.RightDown, 1, out _, out _);
+
+            Assert.AreEqual(2, _game.Map.Playership.Point.X);
+            Assert.AreEqual(2, _game.Map.Playership.Point.Y);
+            Assert.AreEqual(0, _game.Map.Playership.Coordinate.X);
+            Assert.AreEqual(0, _game.Map.Playership.Coordinate.Y);
+            Assert.IsFalse(_movement.BlockedByGalacticBarrier);
+        }
+
+        [Test]
+        public void Impulse_EdgeWrap_RightUp()
+        {
+            CreateMovementAt(1, 1, 7, 0);
+            _movement.Execute(MovementType.Impulse, NavDirection.RightUp, 1, out _, out _);
+
+            Assert.AreEqual(2, _game.Map.Playership.Point.X);
+            Assert.AreEqual(0, _game.Map.Playership.Point.Y);
+            Assert.AreEqual(0, _game.Map.Playership.Coordinate.X);
+            Assert.AreEqual(7, _game.Map.Playership.Coordinate.Y);
+            Assert.IsFalse(_movement.BlockedByGalacticBarrier);
+        }
+
+        [Test]
+        public void Impulse_EdgeWrap_LeftDown()
+        {
+            CreateMovementAt(1, 1, 0, 7);
+            _movement.Execute(MovementType.Impulse, NavDirection.LeftDown, 1, out _, out _);
+
+            Assert.AreEqual(0, _game.Map.Playership.Point.X);
+            Assert.AreEqual(2, _game.Map.Playership.Point.Y);
+            Assert.AreEqual(7, _game.Map.Playership.Coordinate.X);
+            Assert.AreEqual(0, _game.Map.Playership.Coordinate.Y);
+            Assert.IsFalse(_movement.BlockedByGalacticBarrier);
+        }
+
+        [Test]
+        public void Impulse_EdgeWrap_LeftUp()
+        {
+            CreateMovementAt(1, 1, 0, 0);
+            _movement.Execute(MovementType.Impulse, NavDirection.LeftUp, 1, out _, out _);
+
+            Assert.AreEqual(0, _game.Map.Playership.Point.X);
+            Assert.AreEqual(0, _game.Map.Playership.Point.Y);
+            Assert.AreEqual(7, _game.Map.Playership.Coordinate.X);
+            Assert.AreEqual(7, _game.Map.Playership.Coordinate.Y);
+            Assert.IsFalse(_movement.BlockedByGalacticBarrier);
+        }
+
+        [Test]
         public void Impulse_Barrier_Left()
         {
             CreateMovementAt(0, 1, 0, 3);
@@ -161,6 +213,38 @@ namespace UnitTests.Actors.MovementTests
 
             Assert.IsTrue(_movement.BlockedByGalacticBarrier);
             Assert.AreEqual(1, _game.Map.Playership.Point.X);
+            Assert.AreEqual(7, _game.Map.Playership.Point.Y);
+            Assert.AreEqual(startingEnergy - 1000, _game.Map.Playership.Energy);
+            Assert.AreEqual(CoordinateItem.PlayerShip,
+                _game.Map.Playership.GetSector().Coordinates[_game.Map.Playership.Coordinate.X, _game.Map.Playership.Coordinate.Y].Item);
+        }
+
+        [Test]
+        public void Impulse_Barrier_LeftUp_FromCorner()
+        {
+            CreateMovementAt(0, 0, 0, 0);
+            var startingEnergy = _game.Map.Playership.Energy;
+
+            _movement.Execute(MovementType.Impulse, NavDirection.LeftUp, 1, out _, out _);
+
+            Assert.IsTrue(_movement.BlockedByGalacticBarrier);
+            Assert.AreEqual(0, _game.Map.Playership.Point.X);
+            Assert.AreEqual(0, _game.Map.Playership.Point.Y);
+            Assert.AreEqual(startingEnergy - 1000, _game.Map.Playership.Energy);
+            Assert.AreEqual(CoordinateItem.PlayerShip,
+                _game.Map.Playership.GetSector().Coordinates[_game.Map.Playership.Coordinate.X, _game.Map.Playership.Coordinate.Y].Item);
+        }
+
+        [Test]
+        public void Impulse_Barrier_RightDown_FromCorner()
+        {
+            CreateMovementAt(7, 7, 7, 7);
+            var startingEnergy = _game.Map.Playership.Energy;
+
+            _movement.Execute(MovementType.Impulse, NavDirection.RightDown, 1, out _, out _);
+
+            Assert.IsTrue(_movement.BlockedByGalacticBarrier);
+            Assert.AreEqual(7, _game.Map.Playership.Point.X);
             Assert.AreEqual(7, _game.Map.Playership.Point.Y);
             Assert.AreEqual(startingEnergy - 1000, _game.Map.Playership.Energy);
             Assert.AreEqual(CoordinateItem.PlayerShip,
