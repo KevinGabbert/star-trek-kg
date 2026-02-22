@@ -151,20 +151,25 @@ jQuery(function ($) {
     const result = splitHeader(lines);
 
     const hasNebulaContext = result.lines.some(line => line.toLowerCase().includes("nebula"));
-    const hasConditionLine = result.lines.find(line => line.includes("Condition: "));
+    const hasConditionLine = result.lines.find(line => line.includes("Condition: ") || line.includes("Condition RED"));
     if (hasConditionLine) {
-      if (hasConditionLine.includes("Condition: RED")) {
+      if (hasConditionLine.includes("Condition: RED") || hasConditionLine.includes("Condition RED")) {
         lastCondition = 'red';
       } else if (hasConditionLine.includes("Condition: GREEN")) {
         lastCondition = 'green';
       }
+    } else if (!lastCondition) {
+      if (result.lines.some(line => line.includes("Warning: Shields are down."))) {
+        lastCondition = 'green';
+      }
     }
     const nebulaLine = result.lines.find(line => line.toLowerCase().includes("sector:") && line.toLowerCase().includes("nebula"));
-    if (nebulaLine) {
+    if (nebulaLine || result.lines.some(line => line.toLowerCase().includes("while in nebula"))) {
       lastInNebula = true;
-    }
-    if (result.lines.some(line => line.toLowerCase().includes("while in nebula"))) {
+    } else if (hasNebulaContext) {
       lastInNebula = true;
+    } else {
+      lastInNebula = false;
     }
 
     if (result.isError) {
