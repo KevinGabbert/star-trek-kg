@@ -42,11 +42,11 @@ namespace StarTrek_KG.Interfaces
         void WithNoEndCR(string stringToOutput);
         void DisplayPropertiesOf(object @object);
 
-        void RenderRegionCounts(bool renderingMyLocation, int? starbaseCount, int? starCount, int? hostileCount);
-        string RenderRegionCounts(int? starbaseCount, int? starCount, int? hostileCount);
+        void RenderSectorCounts(bool renderingMyLocation, int? starbaseCount, int? starCount, int? hostileCount);
+        string RenderSectorCounts(int? starbaseCount, int? starCount, int? hostileCount);
 
         void RenderNebula(bool renderingMyLocation);
-        void RenderUnscannedRegion(bool renderingMyLocation);
+        void RenderUnscannedSector(bool renderingMyLocation);
         List<string> RenderLRSData(IEnumerable<LRSResult> lrsData, IGame game);
         //IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsResults, IGame game);
         //IEnumerable<string> RenderLRSWithNames(List<IScanResult> lrsData, IGame game);

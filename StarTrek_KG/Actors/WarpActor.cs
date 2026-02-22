@@ -82,18 +82,18 @@ namespace StarTrek_KG.Actors
 
             return false;
         }
-        public bool Engage(NavDirection direction, int distance, out int lastRegionY, out int lastRegionX, IMap map)
+        public bool Engage(NavDirection direction, int distance, out int lastSectorY, out int lastSectorX, IMap map)
         {
             var success = this.EnergySubtracted(map.Playership, ref distance);
 
             if (success)
             {
-                Navigation.For(map.Playership).Movement.Execute(MovementType.Warp, direction, distance, out lastRegionX, out lastRegionY);
+                Navigation.For(map.Playership).Movement.Execute(MovementType.Warp, direction, distance, out lastSectorX, out lastSectorY);
             }
             else
             {
-                lastRegionX = 0;
-                lastRegionY = 0;
+                lastSectorX = 0;
+                lastSectorY = 0;
             }
 
             return success;

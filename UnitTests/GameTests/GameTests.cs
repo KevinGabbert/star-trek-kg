@@ -26,7 +26,7 @@ namespace UnitTests.GameTests
         {
             _setup.SetupMapWith1Hostile();
 
-            //_testRegion = _setup.TestMap.Playership.GetSector();
+            //_testSector = _setup.TestMap.Playership.GetSector();
 
             Game.EnemiesWillNowTaunt();
         }
@@ -36,7 +36,7 @@ namespace UnitTests.GameTests
         {
             _setup.SetupMapWith1FedHostile();
 
-            //_testRegion = _setup.TestMap.Playership.GetSector();
+            //_testSector = _setup.TestMap.Playership.GetSector();
 
             Game.EnemiesWillNowTaunt();
 
@@ -97,7 +97,7 @@ namespace UnitTests.GameTests
                 Game = new Game(new StarTrekKGSettings())
             };
 
-            //MovementTests.Move_Region("w", 1*8);
+            //MovementTests.Move_Sector("w", 1*8);
 
             //Time has moved
             Assert.AreEqual(0, map.timeRemaining);

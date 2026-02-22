@@ -23,7 +23,7 @@ namespace UnitTests.Output
         }
 
         [Test]
-        public void CreateSRSViewScreen_WritesRegionName()
+        public void CreateSRSViewScreen_WritesSectorName()
         {
             var sector = Game.Map.Sectors.GetActive();
             var shipLocation = Game.Map.Playership.GetLocation();

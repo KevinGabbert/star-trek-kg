@@ -60,7 +60,7 @@ namespace StarTrek_KG.Subsystem
         //    this.Game.Write.Line("");
         //    this.Game.Write.Line("Objects to Target:");
 
-        //    List<KeyValuePair<int, Coordinate>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
+        //    List<KeyValuePair<int, Coordinate>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInSector();
 
         //    string userReply;
         //    this.Game.Write.Line("");

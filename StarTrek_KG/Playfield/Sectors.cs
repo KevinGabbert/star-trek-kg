@@ -43,9 +43,9 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public bool IsGalacticBarrier(Point regionToGet)
         {
-           Sector gotRegion = this.Map?.Sectors?.FirstOrDefault(region => region.X == regionToGet.X && region.Y == regionToGet.Y);
+           Sector gotSector = this.Map?.Sectors?.FirstOrDefault(region => region.X == regionToGet.X && region.Y == regionToGet.Y);
 
-            return gotRegion == null;
+            return gotSector == null;
         }
 
         ////todo: this should go away
@@ -97,7 +97,7 @@ namespace StarTrek_KG.Playfield
 
         //    if (!outOfBounds)
         //    {
-        //        currentResult = this.GetRegionData(regionX, regionY, game);
+        //        currentResult = this.GetSectorData(regionX, regionY, game);
         //    }
         //    else
         //    {
@@ -112,15 +112,15 @@ namespace StarTrek_KG.Playfield
 
         public Sector GetActive()
         {
-            var activeRegions = this.Map.Sectors.Where(q => q.Active).ToList();
+            var activeSectors = this.Map.Sectors.Where(q => q.Active).ToList();
 
-            if(!activeRegions.Any())
+            if(!activeSectors.Any())
             {
                 throw new GameConfigException("No Sector has been set Active - This would happen if there are no friendlies on the map.");
             }
 
             //There can only be one active sector
-            return activeRegions.Single();
+            return activeSectors.Single();
         }
 
         public bool NoHostiles(IEnumerable<IShip> hostiles, out List<string> outputLines)
@@ -195,58 +195,58 @@ namespace StarTrek_KG.Playfield
         /// </summary>
         /// <param name="direction"></param>
         /// <param name="map"></param>
-        /// <param name="currentRegion"></param>
+        /// <param name="currentSector"></param>
         /// <returns></returns>
-        internal static Sector GetNext(IMap map, Sector currentRegion, NavDirection direction)
+        internal static Sector GetNext(IMap map, Sector currentSector, NavDirection direction)
         {
-            int newRegionX = 0;
-            int newRegionY = 0;
+            int newSectorX = 0;
+            int newSectorY = 0;
 
             switch (direction)
             {
                 case NavDirection.Right:
-                    newRegionX = currentRegion.X + 1;
+                    newSectorX = currentSector.X + 1;
                     break;
                 
                 case NavDirection.RightDown:
-                    newRegionX = currentRegion.X + 1;
-                    newRegionY = currentRegion.Y + 1;
+                    newSectorX = currentSector.X + 1;
+                    newSectorY = currentSector.Y + 1;
                     break;
 
                 case NavDirection.Down:
-                    newRegionY = currentRegion.Y + 1;
+                    newSectorY = currentSector.Y + 1;
                     break;
 
                 case NavDirection.LeftDown:
-                    newRegionX = currentRegion.X - 1;
-                    newRegionY = currentRegion.Y + 1;
+                    newSectorX = currentSector.X - 1;
+                    newSectorY = currentSector.Y + 1;
                     break;
 
                 case NavDirection.Left:
-                    newRegionX = currentRegion.X - 1;
+                    newSectorX = currentSector.X - 1;
                     break;
 
                 case NavDirection.LeftUp:
-                    newRegionX = currentRegion.X - 1;
-                    newRegionY = currentRegion.Y - 1;
+                    newSectorX = currentSector.X - 1;
+                    newSectorY = currentSector.Y - 1;
                     break;
 
                 case NavDirection.Up:
-                    newRegionY = currentRegion.Y - 1;
+                    newSectorY = currentSector.Y - 1;
                     break;
 
                 case NavDirection.RightUp:
-                    newRegionX = currentRegion.X + 1;
-                    newRegionY = currentRegion.Y - 1;
+                    newSectorX = currentSector.X + 1;
+                    newSectorY = currentSector.Y - 1;
                     break;
 
                 default:
                     throw new ArgumentException("Not a valid Sector");
             }
 
-            Sector newRegion = new Sector(new Point(newRegionX, newRegionY));
+            Sector newSector = new Sector(new Point(newSectorX, newSectorY));
 
-            var returnVal = !newRegion.Invalid() ? map.Sectors[newRegion] : null;
+            var returnVal = !newSector.Invalid() ? map.Sectors[newSector] : null;
             return returnVal;
         }
 
@@ -297,9 +297,9 @@ namespace StarTrek_KG.Playfield
         public void Remove(IShip shipToRemove)
         {
             //linq through Sectors and sectors to remove all ships that have the same details as Ship
-            Point shipToRemoveRegion = shipToRemove.Point;
+            Point shipToRemoveSector = shipToRemove.Point;
 
-            if(shipToRemoveRegion == null)
+            if(shipToRemoveSector == null)
             {
                 //For now, ships having no location is a config error, that is, until such a time comes that
                 //we determine that is actually a feature. 
@@ -363,13 +363,13 @@ namespace StarTrek_KG.Playfield
     ///// but thats not needed at the moment, so if the playership is ever directly removed, then get out and end game.
     ///// </summary>
     ///// <param name="map"></param>
-    ///// <param name="shipToRemoveRegion"></param>
-    //private static void CheckForPlayershipRemoval(IMap map, Point shipToRemoveRegion)
+    ///// <param name="shipToRemoveSector"></param>
+    //private static void CheckForPlayershipRemoval(IMap map, Point shipToRemoveSector)
     //{
-    //    var playerShipRegion = map.Playership.Point;
+    //    var playerShipSector = map.Playership.Point;
 
-    //    if (playerShipRegion.X == shipToRemoveRegion.X &&
-    //        playerShipRegion.Y == shipToRemoveRegion.Y)
+    //    if (playerShipSector.X == shipToRemoveSector.X &&
+    //        playerShipSector.Y == shipToRemoveSector.Y)
     //    {
     //        //Game Over.  Todo: finish this.
     //        throw new GameException("Game Over. Playership dead. Catch this, output to console, and start over.");
@@ -392,9 +392,9 @@ namespace StarTrek_KG.Playfield
 //{
 //    //foreach (Sector Sector in map.Sectors.Where(q => q.X == shipToRemove.SectorDef.X && q.Y == shipToRemove.SectorDef.Y))
 //    //{
-//    //    Sector Region1 = Sector;
-//    //    foreach (Coordinate sector in SectorsWithShips(Sector).Where(sector => Region1.X == shipToRemoveRegion.X &&
-//    //                                                                         Region1.Y == shipToRemoveRegion.Y &&
+//    //    Sector Sector1 = Sector;
+//    //    foreach (Coordinate sector in SectorsWithShips(Sector).Where(sector => Sector1.X == shipToRemoveSector.X &&
+//    //                                                                         Sector1.Y == shipToRemoveSector.Y &&
 //    //                                                                         sector.X == shipToRemove.Coordinate.X &&
 //    //                                                                         sector.Y == shipToRemove.Coordinate.Y))
 //    //    {
@@ -404,7 +404,7 @@ namespace StarTrek_KG.Playfield
 //    //        map.Sectors.Hostiles.Remove(shipToRemove); //remove from our big list of baddies //Remove from Sectors.Hostiles. //todo: is this needed?
 
 //    //        //Remove from this.Map.Playership
-//    //        Sectors.CheckForPlayershipRemoval(map, shipToRemoveRegion);
+//    //        Sectors.CheckForPlayershipRemoval(map, shipToRemoveSector);
 //    //    }
 //    //}
 //}

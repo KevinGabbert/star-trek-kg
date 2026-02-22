@@ -233,14 +233,14 @@ namespace StarTrek_KG.Utility
             return nebulaPattern;
         }
 
-        public static string AdjustIfNebula(Sector thisRegion, string direction, ref string shipSectorX, ref string shipSectorY)
+        public static string AdjustIfNebula(Sector thisSector, string direction, ref string shipSectorX, ref string shipSectorY)
         {
-            if (thisRegion.Type == SectorType.Nebulae)
+            if (thisSector.Type == SectorType.Nebulae)
             {
                 direction = "Unknown, due to interference";
             }
 
-            var result = Utility.HideXorYIfNebula(thisRegion, shipSectorX, shipSectorY);
+            var result = Utility.HideXorYIfNebula(thisSector, shipSectorX, shipSectorY);
 
             shipSectorX = result.X;
             shipSectorY = result.Y;
@@ -248,9 +248,9 @@ namespace StarTrek_KG.Utility
             return direction;
         }
 
-        public static OutputPoint HideXorYIfNebula(Sector thisRegion, string x, string y)
+        public static OutputPoint HideXorYIfNebula(Sector thisSector, string x, string y)
         {
-            if (thisRegion.Type == SectorType.Nebulae)
+            if (thisSector.Type == SectorType.Nebulae)
             {
                 switch (Utility.Random.Next(2))
                 {

@@ -78,8 +78,8 @@ namespace UnitTests.Config.AppSettingTests
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DisruptorShotDeprecationLevel"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DisruptorEnergyAdjustment"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("DamageSeed"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionX"));
-            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("RegionY"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("SectorX"));
+            //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("SectorY"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("sectorX"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("sectorY"));
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("warpDriveDamage"));

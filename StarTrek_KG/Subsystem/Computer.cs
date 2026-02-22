@@ -62,8 +62,8 @@ namespace StarTrek_KG.Subsystem
                     Torpedoes.For(this.ShipConnectedTo).Calculator();
                     break;
 
-                case OldCommands.Computer.TargetObjectInRegion:
-                    this.TargetObjectInRegion();
+                case OldCommands.Computer.TargetObjectInSector:
+                    this.TargetObjectInSector();
                     break;
 
                 case OldCommands.Computer.StarbaseCalculator:
@@ -99,7 +99,7 @@ namespace StarTrek_KG.Subsystem
             return game.Interact.Output.Queue.ToList();
         }
 
-        private void TargetObjectInRegion()
+        private void TargetObjectInSector()
         {
             string replyFromUser;
 
@@ -117,7 +117,7 @@ namespace StarTrek_KG.Subsystem
             }
         }
 
-        public List<KeyValuePair<int, Coordinate>> ListObjectsInRegion()
+        public List<KeyValuePair<int, Coordinate>> ListObjectsInSector()
         {
             var list = new List<KeyValuePair<int, Coordinate>>();
 
@@ -164,7 +164,7 @@ namespace StarTrek_KG.Subsystem
 
         //output this as KeyValueCollection that the UI can display as it likes.
 
-        private void PrintCurrentStatus(IMap map, int computerDamage, IShip ship, ISector currentRegion)
+        private void PrintCurrentStatus(IMap map, int computerDamage, IShip ship, ISector currentSector)
         {
             if (this.Damaged()) return;
 
@@ -176,7 +176,7 @@ namespace StarTrek_KG.Subsystem
             output.WriteLine("");
             output.WriteLine(config.GetText("CSTimeRemaining"), map.timeRemaining);
             output.WriteLine(config.GetText("CSHostilesRemaining"), map.Sectors.GetHostileCount());
-            output.WriteLine(config.GetText("CSHostilesInSector"), currentRegion.GetHostiles().Count);
+            output.WriteLine(config.GetText("CSHostilesInSector"), currentSector.GetHostiles().Count);
             output.WriteLine(config.GetText("CSStarbases"), map.starbases);
             output.WriteLine(config.GetText("CSWarpEngineDamage"), Navigation.For(ship).Damage);
             output.WriteLine(config.GetText("CSSRSDamage"), ShortRangeScan.For(ship).Damage);
@@ -188,7 +188,7 @@ namespace StarTrek_KG.Subsystem
             output.WriteLine(config.GetText("CSPhaserDamage"), Phasers.For(ship).Damage);
             output.WriteLine();
 
-            //foreach (var badGuy in currentRegion.Hostiles)
+            //foreach (var badGuy in currentSector.Hostiles)
             //{
             //    
             //}
@@ -209,23 +209,23 @@ namespace StarTrek_KG.Subsystem
 
             var myLocation = this.ShipConnectedTo.GetLocation();
 
-            for (var RegionLB = 0; RegionLB < DEFAULTS.SECTOR_MAX; RegionLB++)
+            for (var SectorLB = 0; SectorLB < DEFAULTS.SECTOR_MAX; SectorLB++)
             {
-                for (var RegionUB = 0; RegionUB < DEFAULTS.SECTOR_MAX; RegionUB++)
+                for (var SectorUB = 0; SectorUB < DEFAULTS.SECTOR_MAX; SectorUB++)
                 {
                     //todo: refactor this function
                     //todo: this needs to be refactored with LRS!
 
                     this.ShipConnectedTo.Map.Game.Interact.WithNoEndCR(DEFAULTS.SCAN_SECTOR_DIVIDER);
 
-                    var Sector = Playfield.Sectors.Get(Sectors, new Point(RegionUB, RegionLB));
+                    var Sector = Playfield.Sectors.Get(Sectors, new Point(SectorUB, SectorLB));
                     if (Sector.Scanned)
                     {
-                        this.RenderScannedRegion(Sector, myLocation, RegionUB, RegionLB);
+                        this.RenderScannedSector(Sector, myLocation, SectorUB, SectorLB);
                     }
                     else
                     {
-                        this.ShipConnectedTo.Map.Game.Interact.RenderUnscannedRegion(myLocation.Sector.X == RegionUB && myLocation.Sector.Y == RegionLB); //renderingMyLocation todo: refactor with other calls for that.
+                        this.ShipConnectedTo.Map.Game.Interact.RenderUnscannedSector(myLocation.Sector.X == SectorUB && myLocation.Sector.Y == SectorLB); //renderingMyLocation todo: refactor with other calls for that.
                     }
                 }
 
@@ -236,7 +236,7 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo.Map.Game.Interact.Output.WriteLine();
         }
 
-        private void RenderScannedRegion(ISector Sector, Location myLocation, int RegionUB, int RegionLB)
+        private void RenderScannedSector(ISector Sector, Location myLocation, int SectorUB, int SectorLB)
         {
             int? starbaseCount = null;
             int? starCount = null;
@@ -253,12 +253,12 @@ namespace StarTrek_KG.Subsystem
 
             if (myLocation.Sector.Scanned)
             {
-                renderingMyLocation = myLocation.Sector.X == RegionUB && myLocation.Sector.Y == RegionLB;
+                renderingMyLocation = myLocation.Sector.X == SectorUB && myLocation.Sector.Y == SectorLB;
             }
 
             if (Sector.Type != SectorType.Nebulae)
             {
-                this.ShipConnectedTo.Map.Game.Interact.RenderRegionCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
+                this.ShipConnectedTo.Map.Game.Interact.RenderSectorCounts(renderingMyLocation, starbaseCount, starCount, hostileCount);
             }
             else
             {

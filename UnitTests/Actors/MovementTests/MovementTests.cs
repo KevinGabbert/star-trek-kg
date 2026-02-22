@@ -8,13 +8,13 @@ using System.Linq;
 namespace UnitTests.Actors.MovementTests
 {
     [TestFixture]
-    public class MovementTests: Movement_Base
+    public class MovementTests : Movement_Base
     {
         [Ignore("")]// not working yet
         [Test]
         public void TravelAlongCourse_BugVerification()
         {
-            var testMovement = new Movement( this.Game.Map.Playership);
+            var testMovement = new Movement(this.Game.Map.Playership);
             //double x = 31.5084577259018;
             //double y = 31.5084577259018;
 
@@ -25,7 +25,7 @@ namespace UnitTests.Actors.MovementTests
 
         [Ignore(reason: "Mod MoveSector to be able to move to a new region")]
         [Test]
-        public void MoveSector_ToNewRegion()
+        public void MoveSector_ToNewSector()
         {
             List<int> directions = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 

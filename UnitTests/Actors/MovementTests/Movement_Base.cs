@@ -9,22 +9,22 @@ using UnitTests.TestObjects;
 
 namespace UnitTests.Actors.MovementTests
 {
-    public class Movement_Base: TestClass_Base
+    public class Movement_Base : TestClass_Base
     {
-        //todo: write error messages for no sector set up and no Sector set up.
+        //todo: write error messages for no Coordinate set up and no Coordinate set up.
         #region Setup
 
         #region Setup variables
         protected Movement _testMovement;
         protected Ship _testShip;
 
-        protected Point _startingRegion;
+        protected Point _startingSector;
 
-        protected int _startingSectorX;
-        protected int _startingSectorY;
+        protected int _startingCoordinateX;
+        protected int _startingCoordinateY;
 
-        protected int _lastRegionX;
-        protected int _lastRegionY;
+        protected int _lastCoordinateX;
+        protected int _lastCoordinateY;
 
         #endregion
 
@@ -41,7 +41,7 @@ namespace UnitTests.Actors.MovementTests
         public void TearDown()
         {
             reset();
-            this.ClearAllSectors();
+            this.ClearAllCoordinates();
 
             this.Game.Map.Playership = null;
             this.Game.Map = null;
@@ -95,13 +95,13 @@ namespace UnitTests.Actors.MovementTests
 
             #endregion
 
-            _startingRegion = new Point(this.Game.Map.Playership.Point.X, this.Game.Map.Playership.Point.Y); //random
+            _startingSector = new Point(this.Game.Map.Playership.Point.X, this.Game.Map.Playership.Point.Y); //random
 
-            _startingSectorX = this.Game.Map.Playership.Coordinate.X; //4;
-            _startingSectorY = this.Game.Map.Playership.Coordinate.Y; //4;
+            _startingCoordinateX = this.Game.Map.Playership.Coordinate.X; //4;
+            _startingCoordinateY = this.Game.Map.Playership.Coordinate.Y; //4;
 
-            _lastRegionX = 0;
-            _lastRegionY = 0;
+            _lastCoordinateX = 0;
+            _lastCoordinateY = 0;
         }
 
         #endregion
@@ -109,41 +109,41 @@ namespace UnitTests.Actors.MovementTests
         //todo: this needs to be refactored into a ship setup testfixture or something.
         private void CheckBeforeMovement()
         {
-            var activeRegion = this.Game.Map.Sectors.GetActive();
+            var activeSector = this.Game.Map.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            Assert.AreEqual(64, activeSector.Coordinates.Count);
 
-            Assert.IsInstanceOf<Sector>(activeRegion);
+            Assert.IsInstanceOf<Sector>(activeSector);
 
-            Assert.AreEqual(_startingRegion.X, activeRegion.X);
-            Assert.AreEqual(_startingRegion.Y, activeRegion.Y);
+            Assert.AreEqual(_startingSector.X, activeSector.X);
+            Assert.AreEqual(_startingSector.Y, activeSector.Y);
 
             //Check to see if Playership has been assigned to a sector in the active Sector.
 
             //indirectly..
-            Assert.AreEqual(1, activeRegion.Coordinates.Count(s => s.Item == CoordinateItem.PlayerShip));
+            Assert.AreEqual(1, activeSector.Coordinates.Count(s => s.Item == CoordinateItem.PlayerShip));
 
             //directly.
-            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates.Single(s => s.X == this.Game.Map.Playership.Coordinate.X && s.Y == this.Game.Map.Playership.Coordinate.Y).Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeSector.Coordinates.Single(s => s.X == this.Game.Map.Playership.Coordinate.X && s.Y == this.Game.Map.Playership.Coordinate.Y).Item);
 
-            var x = (from Coordinate s in activeRegion.Coordinates
-                where s.Item == CoordinateItem.PlayerShip
-                select s).Count();
+            var x = (from Coordinate s in activeSector.Coordinates
+                     where s.Item == CoordinateItem.PlayerShip
+                     select s).Count();
 
             Assert.AreEqual(1, x);
 
-            Assert.AreEqual(_startingRegion.X, this.Game.Map.Playership.Point.X, "startingRegionX");
-            Assert.AreEqual(_startingRegion.Y, this.Game.Map.Playership.Point.Y, "startingRegionY");
+            Assert.AreEqual(_startingSector.X, this.Game.Map.Playership.Point.X, "startingSectorX");
+            Assert.AreEqual(_startingSector.Y, this.Game.Map.Playership.Point.Y, "startingSectorY");
 
             Assert.AreEqual(4, this.Game.Map.Playership.Coordinate.X, "startingShipSectorX");
             Assert.AreEqual(4, this.Game.Map.Playership.Coordinate.Y, "startingShipSectorY");
         }
 
-        protected void CheckSectorsAfterMovement()
+        protected void CheckCoordinatesAfterMovement()
         {
-            var activeRegion = this.Game.Map.Sectors.GetActive();
+            var activeSector = this.Game.Map.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Coordinates.Count); //I'd certainly hope that this hasnt changed..
+            Assert.AreEqual(64, activeSector.Coordinates.Count); //I'd certainly hope that this hasnt changed..
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Blocked by Obstacle");
 
             //Ensure starting location is empty
@@ -157,64 +157,67 @@ namespace UnitTests.Actors.MovementTests
 
             //todo: this needs to be be flipped back. flip the increment variable in the test instead
             //originating sector is empty
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[_startingSectorX, _startingSectorY].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[_startingCoordinateX, _startingCoordinateY].Item);
 
             //indirectly..
             var found = this.Game.Map.Sectors.GetActive().Coordinates.Where(s => s.Item == CoordinateItem.PlayerShip).Count();
             Assert.AreEqual(1, found, "expected to find 1 friendly, not " + found + ".   ");
 
             //Look up sector by playership's coordinates. see if a friendly is there.
-            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates.Single(s => s.X == this.Game.Map.Playership.Coordinate.X &&
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeSector.Coordinates.Single(s => s.X == this.Game.Map.Playership.Coordinate.X &&
                                                                                 s.Y == this.Game.Map.Playership.Coordinate.Y).Item);
             //same thing.  uses sector.Get functionality to check.
-            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates[this.Game.Map.Playership.Coordinate.X, this.Game.Map.Playership.Coordinate.Y].Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeSector.Coordinates[this.Game.Map.Playership.Coordinate.X, this.Game.Map.Playership.Coordinate.Y].Item);
 
-            Assert.AreEqual(_startingRegion.X, _lastRegionX, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y, _lastRegionY, "(c)startingRegionY");
+            Assert.AreEqual(_startingSector.X, _lastCoordinateX, "(c)startingCoordinateX");
+            Assert.AreEqual(_startingSector.Y, _lastCoordinateY, "(c)startingCoordinateY");
         }
 
-        protected void ClearAllSectors()
+        protected void ClearAllCoordinates()
         {
-            var activeRegion = this.Game.Map.Sectors.GetActive();
+            var activeSector = this.Game.Map.Sectors.GetActive();
 
             //Clear everything. //Remember, when a map is set up, a ship is generated in a random location, and
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    activeRegion.Coordinates[i, j].Item = CoordinateItem.Empty;
+                    activeSector.Coordinates[i, j].Item = CoordinateItem.Empty;
                 }
             }
         }
 
-  
+
         protected void Move_Sector(NavDirection direction, int distance)
         {
-            //todo: Modify this to move to next region
+            //todo: Modify this to move to next (sector)region
 
-            var playershipRegion = this.Game.Map.Playership.GetSector();
+            _startingSector = new Point(this.Game.Map.Playership.Point.X, this.Game.Map.Playership.Point.Y);
 
-            _startingRegion = new Point(playershipRegion.X, playershipRegion.Y);
-
-            _startingSectorX = this.Game.Map.Playership.Coordinate.X;
-            _startingSectorY = this.Game.Map.Playership.Coordinate.Y;
+            _startingCoordinateX = this.Game.Map.Playership.Coordinate.X;
+            _startingCoordinateY = this.Game.Map.Playership.Coordinate.Y;
 
             //verify that the ship is where we think it is before we start
             Assert.AreEqual(CoordinateItem.PlayerShip, this.Game.Map.Sectors.GetActive().Coordinates[this.Game.Map.Playership.Coordinate.X, this.Game.Map.Playership.Coordinate.Y].Item);
-            var sectorItem =
+            var coordinateItem =
                 _testMovement.ShipConnectedTo.Map.Sectors.GetActive().Coordinates[_testMovement.ShipConnectedTo.Map.Playership.Coordinate.X,
                     _testMovement.ShipConnectedTo.Map.Playership.Coordinate.Y].Item;
-            Assert.AreEqual(CoordinateItem.PlayerShip, sectorItem);
+            Assert.AreEqual(CoordinateItem.PlayerShip, coordinateItem);
 
-            _testMovement.Execute(MovementType.Impulse, direction, distance, out _lastRegionX, out _lastRegionY);
+            _testMovement.Execute(MovementType.Impulse, direction, distance, out _lastCoordinateX, out _lastCoordinateY);
 
             //EnergySubtracted changes an entered value of .1 to .8
             //todo: measure time passed
         }
 
-        protected void Move_Region(string direction, int distance)
+        protected void Move_Coordinate(NavDirection direction, int distance)
         {
-            _testMovement.Execute(MovementType.Warp, (NavDirection)Convert.ToInt32(direction), distance, out _lastRegionX, out _lastRegionY);
+            _testMovement.Execute(MovementType.Impulse, direction, distance, out _lastCoordinateX, out _lastCoordinateY);
+        }
+
+        protected void Move_Coordinate(string direction, int distance)
+        {
+            _testMovement.Execute(MovementType.Warp, (NavDirection)Convert.ToInt32(direction), distance, out _lastCoordinateX, out _lastCoordinateY);
         }
     }
 }

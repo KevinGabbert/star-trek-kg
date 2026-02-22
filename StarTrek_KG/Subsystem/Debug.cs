@@ -89,10 +89,10 @@ namespace StarTrek_KG.Subsystem
 
                     var testShipNames = this.ShipConnectedTo.Map.Game.Config.ShipNames(FactionName.TestFaction).ToList().Shuffle();
 
-                    var RegionX = Point.GetRandom();
-                    var RegionY = Point.GetRandom();
+                    var SectorX = Point.GetRandom();
+                    var SectorY = Point.GetRandom();
 
-                    var randomSector = new Coordinate(new LocationDef(RegionX, RegionY));
+                    var randomSector = new Coordinate(new LocationDef(SectorX, SectorY));
 
                     this.ShipConnectedTo.Map.Config = this.ShipConnectedTo.Map.Game.Config;
 
@@ -111,19 +111,19 @@ namespace StarTrek_KG.Subsystem
 
                 case "disb":
  
-                    //var RegionX = Point.GetRandom();
-                    //var RegionY = Point.GetRandom();
+                    //var SectorX = Point.GetRandom();
+                    //var SectorY = Point.GetRandom();
 
-                    //var randomSector = new Coordinate(new LocationDef(RegionX, RegionY));
+                    //var randomSector = new Coordinate(new LocationDef(SectorX, SectorY));
 
                     //this.Game.Map.Config = this.Game.Config;
 
                     //var starbase = new Starbase("starbaseAlpha", this.Game.Map, new Coordinate(new LocationDef(new Point(0, 0), new Point(2, 7))));
 
-                    var activeRegion = this.ShipConnectedTo.Map.Sectors.GetActive();
+                    var activeSector = this.ShipConnectedTo.Map.Sectors.GetActive();
 
-                    //activeRegion[randomSector].Item = CoordinateItem.Starbase;
-                    //activeRegion.AddShip(starbase, starbase.Coordinate);
+                    //activeSector[randomSector].Item = CoordinateItem.Starbase;
+                    //activeSector.AddShip(starbase, starbase.Coordinate);
 
                     //var hostileShip = new Ship(testShipNames[0], randomSector, this.Game.Map);
 

@@ -55,8 +55,8 @@ namespace StarTrek_KG.Interfaces
         /// <returns></returns>
         bool IsDockingLocation(int i, int j, Coordinates sectors);
 
-        CoordinateItem GetItem(int RegionX, int RegionY, int sectorX, int sectorY);
-        Coordinate Get(int RegionX, int RegionY, int sectorX, int sectorY);
+        CoordinateItem GetItem(int SectorX, int SectorY, int sectorX, int sectorY);
+        Coordinate Get(int SectorX, int SectorY, int sectorX, int sectorY);
         void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips);
         void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips);
         void RemoveTargetFromSector(IMap map, IShip ship);

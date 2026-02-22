@@ -14,7 +14,7 @@ namespace StarTrek_KG.Types
         public bool MyLocation { get; set; }
         public bool GalacticBarrier { get; set; }
         public bool Unknown { get; set; }
-        public string RegionName { get; set; }
+        public string SectorName { get; set; }
 
         public string ToScanString()
         {

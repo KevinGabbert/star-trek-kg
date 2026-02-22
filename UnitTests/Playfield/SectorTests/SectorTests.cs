@@ -13,7 +13,7 @@ namespace UnitTests.Playfield.SectorTests
         [SetUp]
         public void Setup()
         {
-            base._testRegion =
+            base._testSector =
                 new Sector(this.Game.Map)
                 {
                     Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game),
@@ -29,11 +29,11 @@ namespace UnitTests.Playfield.SectorTests
         public void New()
         {
             //*************** sector not being created with new Sector
-            _testRegion = new Sector(this.Game.Map);
+            _testSector = new Sector(this.Game.Map);
 
-            Assert.IsInstanceOf<Map>(_testRegion.Map);
+            Assert.IsInstanceOf<Map>(_testSector.Map);
             base.SectorNewAsserts();
-            Assert.IsNull(_testRegion.Coordinates);
+            Assert.IsNull(_testSector.Coordinates);
         }
 
         [Test]
@@ -44,21 +44,21 @@ namespace UnitTests.Playfield.SectorTests
             _setup.SetupMapWith1Friendly();
 
             //you need to set ItemsToPopulat
-            _testRegion = new Sector(this.Game.Map, baddieNames, null, false);
+            _testSector = new Sector(this.Game.Map, baddieNames, null, false);
 
             //todo: make sure that map is not set up with anyting
 
-            Assert.IsInstanceOf(typeof(Map), _testRegion.Map);
+            Assert.IsInstanceOf(typeof(Map), _testSector.Map);
 
-            //UnitTests.ShipTests.MapTests.MapTests.NoInitializeAsserts(_testRegion.Map);
-            Assert.AreEqual(string.Empty, _testRegion.Name);
-            Assert.IsInstanceOf<Coordinates>(_testRegion.Coordinates);
-            Assert.AreEqual(false, _testRegion.Scanned);
-            Assert.AreEqual(0, _testRegion.X);
-            Assert.AreEqual(0, _testRegion.Y);
-            Assert.AreEqual(true, _testRegion.Empty);
+            //UnitTests.ShipTests.MapTests.MapTests.NoInitializeAsserts(_testSector.Map);
+            Assert.AreEqual(string.Empty, _testSector.Name);
+            Assert.IsInstanceOf<Coordinates>(_testSector.Coordinates);
+            Assert.AreEqual(false, _testSector.Scanned);
+            Assert.AreEqual(0, _testSector.X);
+            Assert.AreEqual(0, _testSector.Y);
+            Assert.AreEqual(true, _testSector.Empty);
 
-            Assert.IsNotNull(_testRegion.Coordinates);
+            Assert.IsNotNull(_testSector.Coordinates);
         }
 
         [Test]
@@ -72,22 +72,22 @@ namespace UnitTests.Playfield.SectorTests
             var names = new Stack<string>(name);
 
             int index;
-            var newRegion = new Sector(_setup.Game.Map);
-            newRegion.Create(names,
+            var newSector = new Sector(_setup.Game.Map);
+            newSector.Create(names,
                                new Stack<string>(klingonShipNames), null, 
                                new Point(1, 1), out index, null);
 
-            Assert.IsInstanceOf(typeof (Map), _testRegion.Map);
+            Assert.IsInstanceOf(typeof (Map), _testSector.Map);
 
             //todo: make sure that map is not set up with anyting
 
-            Assert.AreEqual(0, newRegion.GetHostiles().Count);
-            Assert.IsInstanceOf<Coordinates>(newRegion.Coordinates);
-            Assert.AreEqual(false, newRegion.Scanned);
-            Assert.AreEqual(1, newRegion.X);
-            Assert.AreEqual(1, newRegion.Y);
-            Assert.AreEqual(true, newRegion.Empty);
-            Assert.AreEqual("Ariel", newRegion.Name);
+            Assert.AreEqual(0, newSector.GetHostiles().Count);
+            Assert.IsInstanceOf<Coordinates>(newSector.Coordinates);
+            Assert.AreEqual(false, newSector.Scanned);
+            Assert.AreEqual(1, newSector.X);
+            Assert.AreEqual(1, newSector.Y);
+            Assert.AreEqual(true, newSector.Empty);
+            Assert.AreEqual("Ariel", newSector.Name);
         }
 
         //When implemented:
@@ -99,7 +99,7 @@ namespace UnitTests.Playfield.SectorTests
         //GetItem
         //OutOfBounds
 
-        public void SetUpNewRegionWith(CoordinateItem item)
+        public void SetUpNewSectorWith(CoordinateItem item)
         {
             //throws in a random number of CoordinateItem
         }

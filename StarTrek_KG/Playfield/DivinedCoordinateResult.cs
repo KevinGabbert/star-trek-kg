@@ -5,8 +5,8 @@ namespace StarTrek_KG.Playfield
         public string Direction { get; set; }
         public int CurrentLocationX { get; set; }
         public int CurrentLocationY { get; set; }
-        public Point RegionCoordinateToGet { get; set; }
         public Point SectorCoordinateToGet { get; set; }
+        public Point CoordinatePointToGet { get; set; }
 
         public DivinedCoordinateResult Get(string direction,
                                         int regionX,
@@ -21,7 +21,7 @@ namespace StarTrek_KG.Playfield
             this.CurrentLocationX = currentX;
             this.CurrentLocationY = currentY; 
 
-            this.RegionCoordinateToGet = new Point(regionX, regionY);
+            this.SectorCoordinateToGet = new Point(regionX, regionY);
             this.SectorCoordinateToGet = new Point(sectorX, sectorY);
 
             return this;

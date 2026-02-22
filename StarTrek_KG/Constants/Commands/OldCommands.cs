@@ -19,7 +19,7 @@ namespace StarTrek_KG.Constants.Commands
             public const string Status = "sta";
 
             public const string TorpedoCalculator = "tor";
-            public const string TargetObjectInRegion = "toq";
+            public const string TargetObjectInSector = "toq";
 
             public const string StarbaseCalculator = "bas";
             public const string NavigationCalculator = "wrp";

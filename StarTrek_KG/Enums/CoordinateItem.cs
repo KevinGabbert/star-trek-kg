@@ -5,7 +5,7 @@ namespace StarTrek_KG.Enums
     {
         Empty,
         Star,
-        HostileShip, //make this go away
+        HostileShip, //make this go away. The goal here is that a ship can be hostile or not, and even change its mind upon negotiations or being fired upon.
         FriendlyShip,
         PlayerShip, 
         Starbase,

@@ -38,9 +38,9 @@ namespace StarTrek_KG.Interfaces
             bool makeNebulae = false);
 
         Coordinate AddStar(Sector Sector);
-        IEnumerable<Coordinate> AddStars(Sector Sector, int totalStarsInRegion);
+        IEnumerable<Coordinate> AddStars(Sector Sector, int totalStarsInSector);
 
-        string CreateStars(Sector Sector, int totalStarsInRegion, CoordinateType starSectorType = CoordinateType.StarSystem);
+        string CreateStars(Sector Sector, int totalStarsInSector, CoordinateType starSectorType = CoordinateType.StarSystem);
 
         void PopulateMatchingItem(Sector Sector, ICollection<Coordinate> itemsToPopulate, int x, int y,
             Stack<string> baddieNames, FactionName stockBaddieFaction, bool makeNebulae);

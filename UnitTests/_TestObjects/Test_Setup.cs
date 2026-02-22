@@ -60,9 +60,9 @@ namespace UnitTests.TestObjects
             var hostileShip = new Ship(FactionName.Klingon, "ship1", new Coordinate(new LocationDef(new Point(0, 0), new Point(2, 7))), this.TestMap);
             var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Coordinate(new LocationDef(new Point(0, 0), new Point(2, 5))), this.TestMap);
 
-            var activeRegion = this.TestMap.Sectors.GetActive();
-            activeRegion.AddShip(hostileShip, hostileShip.Coordinate);
-            activeRegion.AddShip(hostileShip2, hostileShip2.Coordinate);
+            var activeSector = this.TestMap.Sectors.GetActive();
+            activeSector.AddShip(hostileShip, hostileShip.Coordinate);
+            activeSector.AddShip(hostileShip2, hostileShip2.Coordinate);
 
             this.VerifyMap();
         }
@@ -220,8 +220,8 @@ namespace UnitTests.TestObjects
             ////add a ship
             //var starbase = new Starbase("starbaseAlpha", _testMap, new Coordinate(new LocationDef(new Point(0, 0), new Point(2, 7))));
 
-            //var activeRegion = _testMap.Sectors.GetActive();
-            //activeRegion.AddShip(starbase, starbase.Coordinate);
+            //var activeSector = _testMap.Sectors.GetActive();
+            //activeSector.AddShip(starbase, starbase.Coordinate);
             this.VerifyMap();
         }
 

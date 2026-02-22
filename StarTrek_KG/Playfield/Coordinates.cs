@@ -77,11 +77,11 @@ namespace StarTrek_KG.Playfield
             StartOverQ:
             if (sectorDef.SectorDef == null)
             {
-                var randomRegion = Point.GetRandom();
+                var randomSector = Point.GetRandom();
 
-                if (Sectors.NotFound(randomRegion))
+                if (Sectors.NotFound(randomSector))
                 {
-                    sectorDef.SectorDef = randomRegion;
+                    sectorDef.SectorDef = randomSector;
                 }
                 else
                 {

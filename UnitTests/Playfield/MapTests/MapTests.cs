@@ -36,7 +36,7 @@ namespace UnitTests.MapTests
         }
 
         [Test]
-        public void InitializeSectors()
+        public void InitializeCoordinates()
         {
             _setup.SetupMapWith1Friendly();
 
@@ -66,7 +66,7 @@ namespace UnitTests.MapTests
 
 
         [Test]
-        public void InitializeRegions()
+        public void InitializeSectors()
         {
             var klingonShipNames = new StarTrekKGSettings().ShipNames(FactionName.Klingon);
             var systemNames = new StarTrekKGSettings().GetStarSystems();
@@ -282,7 +282,7 @@ namespace UnitTests.MapTests
 
         [Ignore("")] //todo: fix this.
         [Test]
-        public void IsSectorRegionEmpty()
+        public void IsSectorSectorEmpty()
         {
             _setup.TestMap = new Map(null, this.Game.Interact, this.Game.Config, this.Game);
 
@@ -295,7 +295,7 @@ namespace UnitTests.MapTests
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    //_setup.TestMap.IsSectorRegionEmpty(i, j, _setup.TestMap.Sectors.Active.Coordinates);
+                    //_setup.TestMap.IsSectorSectorEmpty(i, j, _setup.TestMap.Sectors.Active.Coordinates);
                 }
             }
         }
@@ -318,20 +318,20 @@ namespace UnitTests.MapTests
 
             //todo: refactor this into CreateHostile  //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
 
-            const int testRegionX = 0;
-            const int testRegionY = 1;
+            const int testSectorX = 0;
+            const int testSectorY = 1;
             const int testSectX = 2;
             const int testSectY = 7;
 
             //add a ship to remove
-            var sector = new Coordinate(new LocationDef(new Point(testRegionX, testRegionY), new Point(testSectX, testSectY)));
+            var sector = new Coordinate(new LocationDef(new Point(testSectorX, testSectorY), new Point(testSectX, testSectY)));
             var hostileShip = new Ship(FactionName.Klingon, "this is the ship", sector, this.Game.Map);
 
             _setup.TestMap.Sectors.Single(q => q.X == hostileShip.Point.X &&
                                            q.Y == hostileShip.Point.Y).AddShip(hostileShip, sector);
 
-            _setup.TestMap.Sectors.Single(q => q.X == testRegionX &&
-                                           q.Y == testRegionY).Coordinates.Single(s => s.X == testSectX &&
+            _setup.TestMap.Sectors.Single(q => q.X == testSectorX &&
+                                           q.Y == testSectorY).Coordinates.Single(s => s.X == testSectX &&
                                                                                  s.Y == testSectY).Item = CoordinateItem.HostileShip;
             //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
 
@@ -341,7 +341,7 @@ namespace UnitTests.MapTests
             var verifiedShip = hostiles1.Single(s => s.Coordinate.X == sector.X && s.Coordinate.Y == sector.Y && s.Name == "this is the ship");
             Assert.IsNotNull(verifiedShip);
 
-            var sectorItemBefore = _setup.TestMap.GetItem(testRegionX, testRegionY, testSectX, testSectY);
+            var sectorItemBefore = _setup.TestMap.GetItem(testSectorX, testSectorY, testSectX, testSectY);
             Assert.AreEqual(CoordinateItem.HostileShip, sectorItemBefore); //verify our newly added ship is on the map
 
             //verify our newly added ship is in the Hostiles list
@@ -356,7 +356,7 @@ namespace UnitTests.MapTests
             //todo: verify with assert that map is set up with sectors and Sectors
             _setup.TestMap.Sectors.Remove(hostileShip);
 
-            var sectorItemAfter = _setup.TestMap.GetItem(testRegionX, testRegionY, testSectX, testSectY);
+            var sectorItemAfter = _setup.TestMap.GetItem(testSectorX, testSectorY, testSectX, testSectY);
             Assert.AreEqual(CoordinateItem.Empty, sectorItemAfter);
 
             //todo: Sector.Hostiles not sync'd or something?
@@ -468,8 +468,8 @@ namespace UnitTests.MapTests
             Assert.AreEqual(1.0, Utility.ComputeDirection(0, 0, 0, 2));
             Assert.AreEqual(7.0, Utility.ComputeDirection(0, 0, 2, 0));
 
-            Assert.AreEqual(8.40966552939827d, Utility.ComputeDirection(0, 0, 2, 4));
-            Assert.AreEqual(6.40966552939827d, Utility.ComputeDirection(0, 1, 2, 0));
+            Assert.That(Utility.ComputeDirection(0, 0, 2, 4), Is.EqualTo(8.40966552939827d).Within(1e-12));
+            Assert.That(Utility.ComputeDirection(0, 1, 2, 0), Is.EqualTo(6.40966552939827d).Within(1e-12));
 
             Assert.AreEqual(2.0, Utility.ComputeDirection(2, 0, 1, 1));
         }
@@ -496,7 +496,7 @@ namespace UnitTests.MapTests
         {
             this.VerifyGlobalInfoSettings();
             
-            this.InitializeRegions();
+            this.InitializeSectors();
 
             this.VerifyPlayerShipSettings();
         }

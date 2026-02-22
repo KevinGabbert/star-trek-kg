@@ -53,7 +53,7 @@ namespace UnitTests.Subsystem
             for (int i = 0; i < 100; i++)
             {
                 this.Game.Interact.Output.Write("-");
-                this.CheckStarsInRegion();
+                this.CheckStarsInSector();
             }
         }
 
@@ -61,7 +61,7 @@ namespace UnitTests.Subsystem
         public void GetStarInfoFromScanner()
         {
             this.CheckStarsWithScanner();
-            this.CheckStarsInRegion();
+            this.CheckStarsInSector();
         }
 
         [Test]
@@ -261,7 +261,7 @@ namespace UnitTests.Subsystem
         }
 
         [Test]
-        public void CheckStarsInRegion()
+        public void CheckStarsInSector()
         {
             this.Game.Map = new Map(new SetupOptions
             {

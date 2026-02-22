@@ -12,7 +12,7 @@ namespace StarTrek_KG.Playfield
     /// <summary>
     /// A Coordinate in this game is an empty XY position in a Sector.  Only 1 item can occupy a sector at a time.
     /// </summary>
-    public class Coordinate : Point, ICoordinate //todo: this should be called SectorItems (or RegionItems)
+    public class Coordinate : Point, ICoordinate //todo: this should be called SectorItems (or SectorItems)
     {
         #region Properties
 
@@ -62,17 +62,17 @@ namespace StarTrek_KG.Playfield
 
         public static Coordinate GetFrom(IShip shipToGetFrom)
         {
-            Sector shipRegion = shipToGetFrom.GetSector();
-            List<Coordinate> gotSectors = shipRegion.Coordinates.Where(s => s.X == shipToGetFrom.Coordinate.X && s.Y == shipToGetFrom.Coordinate.Y).ToList();
+            Sector shipSector = shipToGetFrom.GetSector();
+            List<Coordinate> gotSectors = shipSector.Coordinates.Where(s => s.X == shipToGetFrom.Coordinate.X && s.Y == shipToGetFrom.Coordinate.Y).ToList();
 
             if (!gotSectors.Any())
             {
-                throw new GameConfigException("Coordinate not found:  X: " + shipToGetFrom.Coordinate.X + " Y: " + shipToGetFrom.Coordinate.Y + " Total Coordinates: " + shipRegion.Coordinates.Count);
+                throw new GameConfigException("Coordinate not found:  X: " + shipToGetFrom.Coordinate.X + " Y: " + shipToGetFrom.Coordinate.Y + " Total Coordinates: " + shipSector.Coordinates.Count);
             }
 
             if (gotSectors.Count > 1)
             {
-                throw new GameConfigException("Multiple sectors found. X: " + shipToGetFrom.Coordinate.X + " Y: " + shipToGetFrom.Coordinate.Y + " Total Coordinates: " + shipRegion.Coordinates.Count);
+                throw new GameConfigException("Multiple sectors found. X: " + shipToGetFrom.Coordinate.X + " Y: " + shipToGetFrom.Coordinate.Y + " Total Coordinates: " + shipSector.Coordinates.Count);
             }
 
             //There can only be one active sector
@@ -177,7 +177,7 @@ namespace StarTrek_KG.Playfield
             return invalid;
         }
 
-        public void IncrementForNewRegion()
+        public void IncrementForNewSector()
         {
             int currentX = this.X;
             int currentY = this.Y;

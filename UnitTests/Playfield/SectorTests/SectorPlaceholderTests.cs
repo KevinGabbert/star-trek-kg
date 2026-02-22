@@ -14,8 +14,8 @@ namespace UnitTests.Playfield.SectorTests
 
         //    var shipLocation = Navigation.For(_testMap.Playership);
 
-        //    var shipX = shipLocation.RegionX;
-        //    var shipY = shipLocation.RegionY;
+        //    var shipX = shipLocation.SectorX;
+        //    var shipY = shipLocation.SectorY;
 
         //    foreach (var sector in gotSectors)
         //    {
@@ -24,7 +24,7 @@ namespace UnitTests.Playfield.SectorTests
 
         //    }
 
-        //    foreach (var mapRegion in _testMap.Sectors)
+        //    foreach (var mapSector in _testMap.Sectors)
         //    {
                 
 

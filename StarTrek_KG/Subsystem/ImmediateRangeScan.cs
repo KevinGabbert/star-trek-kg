@@ -87,10 +87,10 @@ namespace StarTrek_KG.Subsystem
 
             //todo: perform scan on location passed
 
-            var shipRegion = this.ShipConnectedTo.GetSector();
+            var shipSector = this.ShipConnectedTo.GetSector();
 
             //locationToScan.Sector is divined to the new one when crossing barrier
-            IRSResult divinedResult = shipRegion.GetSectorInfo(locationToScan.Sector, locationToScan.Coordinate, outOfBounds, this.ShipConnectedTo.Map.Game);
+            IRSResult divinedResult = shipSector.GetSectorInfo(locationToScan.Sector, locationToScan.Coordinate, outOfBounds, this.ShipConnectedTo.Map.Game);
 
             return divinedResult;
         }
@@ -102,7 +102,7 @@ namespace StarTrek_KG.Subsystem
                 return new IRSResult
                 {
                     GalacticBarrier = locationToScan?.Sector?.Type == SectorType.GalacticBarrier,
-                    RegionName = locationToScan?.Sector?.Name,
+                    SectorName = locationToScan?.Sector?.Name,
                     Point = locationToScan?.Sector == null ? null : new Point(locationToScan.Sector.X, locationToScan.Sector.Y),
                     Unknown = locationToScan?.Sector == null
                 };
@@ -113,7 +113,7 @@ namespace StarTrek_KG.Subsystem
                 Point = locationToScan.Coordinate.GetPoint(),
                 Item = locationToScan.Coordinate.Item,
                 Object = locationToScan.Coordinate.Object,
-                RegionName = locationToScan.Sector.Name
+                SectorName = locationToScan.Sector.Name
             };
 
             //todo: support sector level nebulae

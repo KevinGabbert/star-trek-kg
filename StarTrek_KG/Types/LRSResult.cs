@@ -5,7 +5,7 @@ namespace StarTrek_KG.Types
 {
     public class LRSResult: IScanResult
     {
-        public string RegionName
+        public string SectorName
         {
             get { return Name; }
             set { this.Name = value; }

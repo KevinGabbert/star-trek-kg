@@ -17,7 +17,7 @@ namespace StarTrek_KG.Interfaces
         void DestroyStarbase(IMap map, int newY, int newX, ICoordinate qLocation);
         void ALLHostilesAttack(IMap map);
         bool Auto_Raise_Shields(IMap map, ISector Sector);
-        void MoveTimeForward(IMap map, Point lastRegion, Point Sector);
+        void MoveTimeForward(IMap map, Point lastSector, Point Sector);
         void ShowRandomTitle();
     }
 }

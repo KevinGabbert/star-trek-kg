@@ -296,7 +296,7 @@ namespace StarTrek_KG.Actors
             }
         }
 
-        //todo: create a GetLastRegion & GetLastSector
+        //todo: create a GetLastSector & GetLastSector
         public Playfield.Sector GetSector()
         {
             //todo: get rid of this.Map ?
@@ -366,14 +366,14 @@ namespace StarTrek_KG.Actors
 
         public string GetConditionAndSetIcon()
         {
-            var currentRegion = this.GetSector();
+            var currentSector = this.GetSector();
             var condition = this.Map.Config.GetText("ConditionNormal");
 
-            if (currentRegion.GetHostiles().Count > 0)
+            if (currentSector.GetHostiles().Count > 0)
             {
                 condition = this.Map.Config.GetText("ConditionAlert");
             }
-            else if (this.AtLowEnergyLevel() || currentRegion.IsNebulae())
+            else if (this.AtLowEnergyLevel() || currentSector.IsNebulae())
             {
                 condition = this.Map.Config.GetText("ConditionElevated");
                 
@@ -449,7 +449,7 @@ namespace StarTrek_KG.Actors
 
                             if (nullSector)
                             {
-                                var currentRegion = myLocation.Sector;
+                                var currentSector = myLocation.Sector;
 
                                 //todo: debug: fix this.
                                 if (sectorT == 8 || sectorT == -1)
@@ -459,11 +459,11 @@ namespace StarTrek_KG.Actors
                                     //int i;
                                 }
 
-                                var sectorToExamine = new Coordinate(new LocationDef(currentRegion, new Point(sectorT, sectorL)));
-                                var locationToExamine = new Location(currentRegion, sectorToExamine);
+                                var sectorToExamine = new Coordinate(new LocationDef(currentSector, new Point(sectorT, sectorL)));
+                                var locationToExamine = new Location(currentSector, sectorToExamine);
 
-                                //todo: this could be currentRegion.GetDivinedSector()
-                                Location neighborSectorLocation = myLocation.Sector.DivineSectorOnMap(locationToExamine, this.Map);
+                                //todo: this could be currentSector.GetDivinedSector()
+                                Location neighborSectorLocation = myLocation.Sector.DivineCoordinateOnMap(locationToExamine, this.Map);
 
                                 if (neighborSectorLocation.Sector.Type != SectorType.GalacticBarrier)
                                 {

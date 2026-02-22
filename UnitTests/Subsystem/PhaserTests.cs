@@ -121,10 +121,10 @@ namespace UnitTests.Subsystem
             _setup.SetupMapWith1HostileAtSector(new Point(2, 1), new Point(2,6), true);
 
             //todo: why active? are hostiles in the same sector?
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
-            activeRegion.Type = SectorType.GalacticSpace; // for testing purposes.
+            var activeSector = _setup.TestMap.Sectors.GetActive();
+            activeSector.Type = SectorType.GalacticSpace; // for testing purposes.
 
-            var beforeHostiles = activeRegion.GetHostiles();
+            var beforeHostiles = activeSector.GetHostiles();
             var countOfHostiles = beforeHostiles.Count;
 
             Assert.AreEqual(1, countOfHostiles);
@@ -134,7 +134,7 @@ namespace UnitTests.Subsystem
             Assert.AreEqual(6, beforeHostiles[0].Coordinate.Y);
 
             //verify position on map.
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[22].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[22].Item);
 
             //set badguy energy
             var badGuyShields = Shields.For(beforeHostiles[0]);
@@ -167,13 +167,13 @@ namespace UnitTests.Subsystem
 
             this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1743);
 
-            var afterHostiles = activeRegion.GetHostiles();
+            var afterHostiles = activeSector.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;
 
             //in space. no one can hear you scream.
             Assert.AreEqual(0, afterHostilesCount);
-            Assert.AreEqual(null, activeRegion.Coordinates[22].Object);
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[22].Item);
+            Assert.AreEqual(null, activeSector.Coordinates[22].Object);
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[22].Item);
         }
 
         [Test]
@@ -184,10 +184,10 @@ namespace UnitTests.Subsystem
             Game.RandomFactorForTesting = 123;
 
             //todo: why active? are hostiles in the same sector?
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
-            activeRegion.Type = SectorType.Nebulae; // for testing purposes.
+            var activeSector = _setup.TestMap.Sectors.GetActive();
+            activeSector.Type = SectorType.Nebulae; // for testing purposes.
 
-            var beforeHostiles = activeRegion.GetHostiles();
+            var beforeHostiles = activeSector.GetHostiles();
             var countOfHostiles = beforeHostiles.Count;
 
             Assert.AreEqual(1, countOfHostiles);
@@ -197,7 +197,7 @@ namespace UnitTests.Subsystem
             Assert.AreEqual(6, beforeHostiles[0].Coordinate.Y);
 
             //verify position on map.
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[22].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[22].Item);
 
             //set badguy energy
             var badGuyShields = Shields.For(beforeHostiles[0]);
@@ -228,13 +228,13 @@ namespace UnitTests.Subsystem
 
             this.VerifyFiringShipIntegrity(playershipAfter, startingEnergy, testBoltEnergy, 1524);
 
-            var afterHostiles = activeRegion.GetHostiles();
+            var afterHostiles = activeSector.GetHostiles();
             var afterHostilesCount = afterHostiles.Count;
 
             //in space. no one can hear you scream.
             Assert.AreEqual(0, afterHostilesCount);
-            Assert.AreEqual(null, activeRegion.Coordinates[22].Object);
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[22].Item);
+            Assert.AreEqual(null, activeSector.Coordinates[22].Object);
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[22].Item);
         }
 
         [Ignore("")]

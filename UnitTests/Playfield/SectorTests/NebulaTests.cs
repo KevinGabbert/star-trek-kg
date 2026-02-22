@@ -15,7 +15,7 @@ namespace UnitTests.Playfield.SectorTests
         [SetUp]
         public void Setup()
         {
-            _testRegion =
+            _testSector =
                 new Sector(this.Game.Map)
                 {
                     Map = new Map(null, this.Game.Interact, this.Game.Config, this.Game),
@@ -41,45 +41,45 @@ namespace UnitTests.Playfield.SectorTests
         public void New()
         {
             //*************** sector not being created with new Sector
-            _testRegion = new Sector(this.Game.Map, true);
+            _testSector = new Sector(this.Game.Map, true);
 
-            Assert.IsInstanceOf<Map>(_testRegion.Map);
+            Assert.IsInstanceOf<Map>(_testSector.Map);
             
             this.SectorNewAsserts();
 
-            Assert.AreEqual(SectorType.Nebulae, _testRegion.Type);
+            Assert.AreEqual(SectorType.Nebulae, _testSector.Type);
         }
 
         [Test]
         public void NewWithMap()
         {
             var baddieNames = new Stack<string>(new StarTrekKGSettings().ShipNames(FactionName.Klingon));
-            var RegionNames = new Stack<string>(new StarTrekKGSettings().GetStarSystems());
+            var SectorNames = new Stack<string>(new StarTrekKGSettings().GetStarSystems());
 
             _setup.SetupMapWith1Friendly();
 
             int nameIndex;
-            _testRegion = new Sector(_setup.TestMap, RegionNames, baddieNames, null, out nameIndex, false, true);
+            _testSector = new Sector(_setup.TestMap, SectorNames, baddieNames, null, out nameIndex, false, true);
 
             //todo: make sure that map is not set up with anyting
 
-            Assert.IsInstanceOf(typeof(Map), _testRegion.Map);
-            Assert.AreEqual(SectorType.Nebulae, _testRegion.Type);
+            Assert.IsInstanceOf(typeof(Map), _testSector.Map);
+            Assert.AreEqual(SectorType.Nebulae, _testSector.Type);
 
-            Assert.AreEqual("Zeta Alpha", _testRegion.Name);
-            Assert.IsInstanceOf<Coordinates>(_testRegion.Coordinates);
-            Assert.AreEqual(false, _testRegion.Scanned);
-            Assert.AreEqual(0, _testRegion.X);
-            Assert.AreEqual(0, _testRegion.Y);
-            Assert.AreEqual(true, _testRegion.Empty);
-            Assert.IsNotNull(_testRegion.Coordinates);
+            Assert.AreEqual("Zeta Alpha", _testSector.Name);
+            Assert.IsInstanceOf<Coordinates>(_testSector.Coordinates);
+            Assert.AreEqual(false, _testSector.Scanned);
+            Assert.AreEqual(0, _testSector.X);
+            Assert.AreEqual(0, _testSector.Y);
+            Assert.AreEqual(true, _testSector.Empty);
+            Assert.IsNotNull(_testSector.Coordinates);
         }
 
         [Test]
         public void LRSOutputWithNebula()
         {
             const bool setupNebula = true;
-            this.SetupRegion(setupNebula);
+            this.SetupSector(setupNebula);
 
             _setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership);
 
@@ -99,7 +99,7 @@ namespace UnitTests.Playfield.SectorTests
             //to fix this we might need to do the pattern in test_shipobject
 
             //const bool setupNebula = true;
-            //this.SetupRegion(setupNebula);
+            //this.SetupSector(setupNebula);
 
             //_setup.TestLongRangeScan = new LongRangeScan(_setup.Game.Map.Playership, _setup.Game);
 
@@ -115,11 +115,11 @@ namespace UnitTests.Playfield.SectorTests
         public void LRSScanNebulaCountsOnly()
         {
             const bool setupNebula = true;
-            this.SetupRegion(setupNebula); 
+            this.SetupSector(setupNebula); 
 
-            Assert.AreEqual(SectorType.Nebulae, _testRegion.Type);
+            Assert.AreEqual(SectorType.Nebulae, _testSector.Type);
 
-            foreach (var sector in _testRegion.Coordinates)
+            foreach (var sector in _testSector.Coordinates)
             {
                 Assert.AreEqual(CoordinateType.Nebula, sector.Type, "Expected Nebula at Coordinate[" + sector.X + "," + sector.Y + "]");
             }
@@ -132,11 +132,11 @@ namespace UnitTests.Playfield.SectorTests
         public void LRSScanNonNebulaCountsOnly()
         {
             const bool setupNebula = false;
-            this.SetupRegion(setupNebula); 
+            this.SetupSector(setupNebula); 
 
-            Assert.AreEqual(SectorType.GalacticSpace, _testRegion.Type);
+            Assert.AreEqual(SectorType.GalacticSpace, _testSector.Type);
 
-            foreach (var sector in _testRegion.Coordinates)
+            foreach (var sector in _testSector.Coordinates)
             {
                 Assert.AreEqual(CoordinateType.Space, sector.Type, "Expected Empty Space at Coordinate[" + sector.X + "," + sector.Y + "]");
             }
@@ -146,27 +146,27 @@ namespace UnitTests.Playfield.SectorTests
 
         private void VerifyScanResults(int? expectedBaddies)
         {
-            var hostilesReallyInRegion = _testRegion.GetHostiles().Count;
-            Assert.AreEqual(1, hostilesReallyInRegion);
+            var hostilesReallyInSector = _testSector.GetHostiles().Count;
+            Assert.AreEqual(1, hostilesReallyInSector);
 
             _setup.TestLongRangeScan = new LongRangeScan(_setup.TestMap.Playership);
 
-            LRSResult scanResult = LongRangeScan.Execute(_testRegion);
+            LRSResult scanResult = LongRangeScan.Execute(_testSector);
 
             Assert.AreEqual(expectedBaddies, scanResult.Hostiles);
         }
 
-        private void SetupRegion(bool withNebula)
+        private void SetupSector(bool withNebula)
         {
             _setup.SetupMapWith1Hostile();
 
             //Assert.AreEqual(1, _setup.TestMap.Sectors.GetActive());
 
-            _testRegion = _setup.TestMap.Playership.GetSector();
+            _testSector = _setup.TestMap.Playership.GetSector();
 
             if (withNebula)
             {
-                _testRegion.TransformIntoNebulae();
+                _testSector.TransformIntoNebulae();
             }
         }
     }

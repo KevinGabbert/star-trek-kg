@@ -33,12 +33,12 @@ namespace StarTrek_KG.Actors
             this.SystemPrompt = shipConnectedTo.Map.Game.Interact;
         }
 
-        public void Execute(MovementType movementType, NavDirection direction, int distance, out int lastRegionX, out int lastRegionY)
+        public void Execute(MovementType movementType, NavDirection direction, int distance, out int lastSectorX, out int lastSectorY)
         {
-            Sector playershipRegion = this.ShipConnectedTo.GetSector();
+            Sector playershipSector = this.ShipConnectedTo.GetSector();
 
-            lastRegionY = playershipRegion.Y;
-            lastRegionX = playershipRegion.X;
+            lastSectorY = playershipSector.Y;
+            lastSectorX = playershipSector.X;
 
             Coordinate.GetFrom(this.ShipConnectedTo).Item = CoordinateItem.Empty; //Clear Old Coordinate
 
@@ -47,11 +47,11 @@ namespace StarTrek_KG.Actors
             switch (movementType)
             {
                 case MovementType.Impulse:
-                    this.TravelThroughSectors(distance, direction, this.ShipConnectedTo);
+                    this.TravelThroughCoordinates(distance, direction, this.ShipConnectedTo);
                     break;
 
                 case MovementType.Warp:
-                    Sector newLocation = this.TravelThroughRegions(Convert.ToInt32(distance), direction, this.ShipConnectedTo);
+                    Sector newLocation = this.TravelThroughSectors(Convert.ToInt32(distance), direction, this.ShipConnectedTo);
 
                     this.ShipConnectedTo.Point = new Point(newLocation.X, newLocation.Y);
 
@@ -59,7 +59,7 @@ namespace StarTrek_KG.Actors
                     {
                         newLocation.SetActive();
                         game.Map.SetPlayershipInActiveSector(game.Map); //sets friendly in Active Sector 
-                        game.MoveTimeForward(game.Map, playershipRegion, newLocation);
+                        game.MoveTimeForward(game.Map, playershipSector, newLocation);
                     }
 
                     break;
@@ -75,30 +75,30 @@ namespace StarTrek_KG.Actors
         }
 
         //todo: for warp-to-Sector
-        public void Execute(string destinationRegionName, out int lastRegionX, out int lastRegionY)
+        public void Execute(string destinationSectorName, out int lastSectorX, out int lastSectorY)
         {
-            Sector playershipRegion = this.ShipConnectedTo.GetSector();
+            Sector playershipSector = this.ShipConnectedTo.GetSector();
 
-            lastRegionY = playershipRegion.Y;
-            lastRegionX = playershipRegion.X;
+            lastSectorY = playershipSector.Y;
+            lastSectorX = playershipSector.X;
 
             IMap map = this.ShipConnectedTo.Map;
 
-            Sector destinationRegion = map.Sectors.Get(destinationRegionName);
+            Sector destinationSector = map.Sectors.Get(destinationSectorName);
 
-            //destinationRegion.Active = true;
-            destinationRegion.SetActive();
+            //destinationSector.Active = true;
+            destinationSector.SetActive();
 
             map.SetPlayershipInActiveSector(map); //sets friendly in Active Sector  
 
-            this.ShipConnectedTo.Map.Game.MoveTimeForward(map, new Point(lastRegionX, lastRegionY), destinationRegion);
+            this.ShipConnectedTo.Map.Game.MoveTimeForward(map, new Point(lastSectorX, lastSectorY), destinationSector);
         }
 
         #region Coordinates
 
-        private void TravelThroughSectors(int distance, NavDirection impulseTravelDirection, IShip travellingShip)
+        private void TravelThroughCoordinates(int distance, NavDirection impulseTravelDirection, IShip travellingShip)
         {
-            Sector currentRegion = travellingShip.GetSector();
+            Sector currentSector = travellingShip.GetSector();
 
             for (int sector = 0; sector < distance; sector++)
             {
@@ -110,17 +110,17 @@ namespace StarTrek_KG.Actors
                     newCoordinate.Y < 0 || newCoordinate.Y >= DEFAULTS.COORDINATE_MAX)
                 {
                     // Move to next region
-                    Sector nextRegion = Sectors.GetNext(this.ShipConnectedTo.Map, currentRegion, impulseTravelDirection);
+                    Sector nextSector = Sectors.GetNext(this.ShipConnectedTo.Map, currentSector, impulseTravelDirection);
 
                     // If barrier hit, stop
-                    if (this.ShipConnectedTo.Map.Sectors.IsGalacticBarrier(nextRegion))
+                    if (this.ShipConnectedTo.Map.Sectors.IsGalacticBarrier(nextSector))
                     {
                         this.ApplyGalacticBarrierPenalty();
                         break;
                     }
 
                     // Update region and wrap coordinates
-                    currentRegion = nextRegion;
+                    currentSector = nextSector;
 
                     if (newCoordinate.X < 0) newCoordinate.X = DEFAULTS.COORDINATE_MAX - 1;
                     else if (newCoordinate.X >= DEFAULTS.COORDINATE_MAX) newCoordinate.X = 0;
@@ -134,7 +134,7 @@ namespace StarTrek_KG.Actors
                 Location newLocation = this.GetNewLocation(
                     impulseTravelDirection,
                     travellingShip,
-                    currentRegion,
+                    currentSector,
                     newCoordinate,
                     out stopNavigation
                 );
@@ -250,24 +250,24 @@ namespace StarTrek_KG.Actors
 
         #region Sectors
 
-        private Sector TravelThroughRegions(int distance, NavDirection warpDirection, IShip playership)
+        private Sector TravelThroughSectors(int distance, NavDirection warpDirection, IShip playership)
         {
-            Sector currentRegion = playership.GetSector();
-            Sector newRegion = currentRegion;
+            Sector currentSector = playership.GetSector();
+            Sector newSector = currentSector;
 
             //todo: get rid of this double-stuff. I'm only doing this so that IsGalacticBarrier can be used by both Sector and Coordinate Navigation.
             Sectors regions = this.ShipConnectedTo.Map.Sectors;
 
             for (int i = 0; i < distance; i++)
             {
-                Sector futureShipRegion = this.GetNewCoordinate(warpDirection, currentRegion).ToSector();
-                currentRegion = futureShipRegion;
+                Sector futureShipSector = this.GetNewCoordinate(warpDirection, currentSector).ToSector();
+                currentSector = futureShipSector;
 
                 //todo: refactor this with sector stuff
 
                 //todo: check if Sector is nebula or out of bounds
 
-                bool barrierHit = regions.IsGalacticBarrier(futureShipRegion);  //XY will be set to safe value in here
+                bool barrierHit = regions.IsGalacticBarrier(futureShipSector);  //XY will be set to safe value in here
                 this.BlockedByGalacticBarrier = barrierHit;
 
                 if (barrierHit)
@@ -280,9 +280,9 @@ namespace StarTrek_KG.Actors
                 else
                 {
                     //set ship location to the new location
-                    newRegion = this.ShipConnectedTo.Map.Sectors[futureShipRegion];
+                    newSector = this.ShipConnectedTo.Map.Sectors[futureShipSector];
 
-                    bool nebulaEncountered = Sectors.IsNebula(this.ShipConnectedTo.Map, newRegion);
+                    bool nebulaEncountered = Sectors.IsNebula(this.ShipConnectedTo.Map, newSector);
                     if (nebulaEncountered)
                     {
                         this.ShipConnectedTo.OutputLine(this.NEBULA_ENCOUNTERED);
@@ -292,7 +292,7 @@ namespace StarTrek_KG.Actors
 
             } //for loop end
 
-            return newRegion;
+            return newSector;
 
             //todo: once we have found Sector..
             //is target location blocked?
@@ -356,24 +356,20 @@ namespace StarTrek_KG.Actors
             return new Point(currentCoordinateX, currentCoordinateY);
         }
 
-        private Location GetNewLocation(NavDirection impulseTravelDirection, ICoordinateObject travellingShip, Sector currentRegion, Point newCoordinate, out bool stopNavigation)
+        private Location GetNewLocation(NavDirection impulseTravelDirection, ICoordinateObject travellingShip, Sector currentSector, Point newCoordinate, out bool stopNavigation)
         {
             //if on the edge of a Sector, newSector will have negative numbers
-            var newSectorCandidate = new Coordinate(new LocationDef(currentRegion.X, currentRegion.Y, newCoordinate.X, newCoordinate.Y));
+            var newCoordinateCandidate = new Coordinate(new LocationDef(currentSector.X, currentSector.Y, newCoordinate.X, newCoordinate.Y));
 
-            Sector newRegionCandidate = null;
+            Sector newSectorCandidate = this.ShipConnectedTo.GetSector();
 
-            if (newSectorCandidate.Invalid())
+            if (newCoordinateCandidate.Invalid())
             {
-                newRegionCandidate = Sectors.GetNext(this.ShipConnectedTo.Map, currentRegion, impulseTravelDirection);
-                newSectorCandidate.IncrementForNewRegion();
-            }
-            else
-            {
-                newRegionCandidate = this.ShipConnectedTo.GetSector();
+                newSectorCandidate = Sectors.GetNext(this.ShipConnectedTo.Map, currentSector, impulseTravelDirection);
+                newCoordinateCandidate.IncrementForNewSector();
             }
 
-            var locationToScan = new Location(newRegionCandidate, newSectorCandidate);
+            var locationToScan = new Location(newSectorCandidate, newCoordinateCandidate);
 
             //run IRS on sector we are moving into
             IRSResult scanResult = ImmediateRangeScan.For(this.ShipConnectedTo).Scan(locationToScan);
@@ -388,7 +384,11 @@ namespace StarTrek_KG.Actors
             else
             {
                 //todo: how we gonna check for obstacles if scanresult has bad numbers in it?
-                bool obstacleEncountered = this.SublightObstacleCheck(new Point(travellingShip.Coordinate.X, travellingShip.Coordinate.Y), new Point(newSectorCandidate.X, newSectorCandidate.Y), currentRegion.Coordinates);
+                bool obstacleEncountered = this.SublightObstacleCheck(
+                    new Point(travellingShip.Coordinate.X, travellingShip.Coordinate.Y),
+                    new Point(newCoordinate.X, newCoordinate.Y),
+                    currentSector.Coordinates
+                );
 
                 if (obstacleEncountered)
                 {
@@ -416,7 +416,7 @@ namespace StarTrek_KG.Actors
             }
             else
             {
-                newLocation.Sector = this.ShipConnectedTo.Map.Sectors.Where(r => r.Name == scanResult.RegionName).Single();
+                newLocation.Sector = this.ShipConnectedTo.Map.Sectors.Where(r => r.Name == scanResult.SectorName).Single();
             }
 
             return newLocation;
@@ -425,29 +425,29 @@ namespace StarTrek_KG.Actors
         //private Sector SetShipLocation(double vectorX, double vectorY)
         //{
         //    var shipSector = this.ShipConnectedTo.Coordinate;
-        //    var shipRegion = this.ShipConnectedTo.Point;
+        //    var shipSector = this.ShipConnectedTo.Point;
 
         //    shipSector.X = ((int)Math.Round(vectorX)) % 8; //sector info is in the vector
         //    shipSector.Y = ((int)Math.Round(vectorY)) % 8;
 
-        //    var RegionX = ((int)Math.Round(vectorX)) / 8; //Sector info is in the vector
-        //    var RegionY = ((int)Math.Round(vectorY)) / 8;
+        //    var SectorX = ((int)Math.Round(vectorX)) / 8; //Sector info is in the vector
+        //    var SectorY = ((int)Math.Round(vectorY)) / 8;
 
-        //    shipRegion.X = RegionX;
-        //    shipRegion.Y = RegionY;
+        //    shipSector.X = SectorX;
+        //    shipSector.Y = SectorY;
 
-        //    Sector newActiveRegion = this.ShipConnectedTo.GetSector();
+        //    Sector newActiveSector = this.ShipConnectedTo.GetSector();
 
-        //    if (newActiveRegion == null)
+        //    if (newActiveSector == null)
         //    {
         //        throw new GameException("No Sector to make active");
         //    }
 
-        //    newActiveRegion.SetActive();
+        //    newActiveSector.SetActive();
 
         //    this.Game.Map.SetActiveSectorAsFriendly(this.Game.Map); //sets friendly in Active Sector  
 
-        //    return newActiveRegion; //contains the newly set sector in it
+        //    return newActiveSector; //contains the newly set sector in it
         //}
 
         //This prompt needs to be exposed to the user as an event

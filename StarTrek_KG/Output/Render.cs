@@ -26,9 +26,9 @@ namespace StarTrek_KG.Output
             this.Interact.Config = config;
         }
 
-        public void CreateSRSViewScreen(ISector Sector, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
+        public void CreateSRSViewScreen(ISector Sector, IMap map, Location shipLocation, int totalHostiles, string SectorDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
-            this.Interact.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSSector"), RegionDisplayName);
+            this.Interact.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSSector"), SectorDisplayName);
 
             int srsRows = Convert.ToInt32(this.GetConfigText("SRSRows"));
             for (int i = 0; i < srsRows; i++) //todo: resource out
@@ -39,13 +39,13 @@ namespace StarTrek_KG.Output
             this.Interact.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
         }
 
-        public void CreateCRSViewScreen(ISector Sector, IMap map, Location shipLocation, int totalHostiles, string RegionDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
+        public void CreateCRSViewScreen(ISector Sector, IMap map, Location shipLocation, int totalHostiles, string SectorDisplayName, bool isNebula, StringBuilder sectorScanStringBuilder)
         {
             List<string> lrsResults = LongRangeScan.For(map.Playership).RunLRSScan(shipLocation);
 
             var topBorder = this.Config.GetText("CRSTopBorder");
 
-            this.CRS_Region_ScanLine(RegionDisplayName, topBorder, shipLocation);
+            this.CRS_Sector_ScanLine(SectorDisplayName, topBorder, shipLocation);
             this.ScanLine(topBorder, $" Energy: {map.Playership.Energy}   Shields: {Shields.For(map.Playership).Energy}");
 
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
@@ -117,17 +117,17 @@ namespace StarTrek_KG.Output
             this.Interact.SingleLine(srsLine.ToString());
         }
 
-        private void CRS_Region_ScanLine(string RegionName, string topBorder, Location location)
+        private void CRS_Sector_ScanLine(string SectorName, string topBorder, Location location)
         {
             int topBorderAreaMeasurement = topBorder.Length + 1;
-            var regionLineBuilder = new StringBuilder($"Sector: {RegionName}".PadRight(topBorderAreaMeasurement));
+            var regionLineBuilder = new StringBuilder($"Sector: {SectorName}".PadRight(topBorderAreaMeasurement));
 
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - topBorderAreaMeasurement);
 
-            string RegionIndicator =
+            string SectorIndicator =
                 $" Coord: [{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}]  Sec: §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
 
-            regionLineBuilder.Insert(topBorderAreaMeasurement, RegionIndicator);
+            regionLineBuilder.Insert(topBorderAreaMeasurement, SectorIndicator);
 
             this.Interact.SingleLine(regionLineBuilder.ToString());
         }

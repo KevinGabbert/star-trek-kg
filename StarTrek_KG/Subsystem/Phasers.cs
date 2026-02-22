@@ -231,7 +231,7 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo.OutputLine("");
             this.ShipConnectedTo.OutputLine("Objects to Target:");
 
-            List<KeyValuePair<int, Coordinate>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
+            List<KeyValuePair<int, Coordinate>> sectorsWithObjects = Computer.For(this.ShipConnectedTo).ListObjectsInSector();
 
             string userReply;
             this.ShipConnectedTo.OutputLine("");

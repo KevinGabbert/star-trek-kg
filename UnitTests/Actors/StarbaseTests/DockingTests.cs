@@ -11,13 +11,13 @@ namespace UnitTests.Actors.StarbaseTests
     {
         Map _testMapNoObjects;
         //Movement _testMovement;
-        //Point _startingRegion;
+        //Point _startingSector;
 
         //int _startingSectorX;
         //int _startingSectorY;
 
-        //private int _lastRegionX;
-        //private int _lastRegionY;
+        //private int _lastSectorX;
+        //private int _lastSectorY;
 
         [SetUp]
         public void SetUp()
@@ -53,8 +53,8 @@ namespace UnitTests.Actors.StarbaseTests
             ////add a ship
             //var starbase = new Starbase("starbaseAlpha", _testMap, new Coordinate(new LocationDef(new Point(0, 0), new Point(2, 7))));
 
-            //var activeRegion = _testMap.Sectors.GetActive();
-            //activeRegion.AddShip(starbase, starbase.Coordinate);
+            //var activeSector = _testMap.Sectors.GetActive();
+            //activeSector.AddShip(starbase, starbase.Coordinate);
         }
 
         [Test]
@@ -77,9 +77,9 @@ namespace UnitTests.Actors.StarbaseTests
 
         //private void Move_Sector(string direction, int distance)
         //{
-        //    var playershipRegion = _testMapNoObjects.Playership.GetSector();
+        //    var playershipSector = _testMapNoObjects.Playership.GetSector();
 
-        //    _startingRegion = new Point(playershipRegion.X, playershipRegion.Y);
+        //    _startingSector = new Point(playershipSector.X, playershipSector.Y);
 
         //    _startingSectorX = _testMapNoObjects.Playership.Coordinate.X;
         //    _startingSectorY = _testMapNoObjects.Playership.Coordinate.Y;
@@ -97,7 +97,7 @@ namespace UnitTests.Actors.StarbaseTests
         //                                                               _testMovement.Game.Map.Playership.Coordinate.Y).Item;
         //    Assert.AreEqual(CoordinateItem.Friendly, sectorItem);
 
-        //    _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastRegionX, out _lastRegionY);
+        //    _testMovement.Execute(Convert.ToInt32(direction), distance, distance / 8, out _lastSectorX, out _lastSectorY);
 
         //    //EnergySubtracted changes an entered value of .1 to .8
         //    //todo: measure time passed

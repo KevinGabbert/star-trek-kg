@@ -228,7 +228,7 @@ namespace StarTrek_KG.Subsystem
             return torpedoLastPosition.X != newTorpedoLocation.Coordinate.X || torpedoLastPosition.Y != newTorpedoLocation.Coordinate.Y;
         }
 
-        //private static bool IsInRegion(VectorCoordinate torpedoLocation)
+        //private static bool IsInSector(VectorCoordinate torpedoLocation)
         //{
         //    var torpedoXIsNotMin = torpedoLocation.X >= Constants.SECTOR_MIN;
         //    var torpedoYIsNotMIN = torpedoLocation.Y >= Constants.SECTOR_MIN;
@@ -273,8 +273,8 @@ namespace StarTrek_KG.Subsystem
         {
             IGame game = this.ShipConnectedTo.Map.Game;
 
-            var thisRegion = game.Map.Sectors.GetActive();
-            var targetCoordinate = thisRegion.Coordinates.GetNoError(new Point(newX, newY));
+            var thisSector = game.Map.Sectors.GetActive();
+            var targetCoordinate = thisSector.Coordinates.GetNoError(new Point(newX, newY));
             var hostileInSector = targetCoordinate?.Object as IShip;
 
             if (targetCoordinate?.Item == CoordinateItem.HostileShip && hostileInSector != null)
@@ -386,11 +386,11 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo.OutputLine("");
 
-            var thisRegion = this.ShipConnectedTo.GetSector();
-            var thisRegionHostiles = thisRegion.GetHostiles();
+            var thisSector = this.ShipConnectedTo.GetSector();
+            var thisSectorHostiles = thisSector.GetHostiles();
 
             //todo: once starbases are an object, then they are merely another hostile.  Delete this IF and the rest of the code should work fine.
-            if (thisRegion.GetStarbaseCount() > 0)
+            if (thisSector.GetStarbaseCount() > 0)
             {
                 if (this.ShipConnectedTo.Map.Game.PlayerNowEnemyToFederation)
                 {
@@ -398,7 +398,7 @@ namespace StarTrek_KG.Subsystem
                 }
             }
 
-            if (thisRegionHostiles.Count == 0)
+            if (thisSectorHostiles.Count == 0)
             {
                 this.ShipConnectedTo.OutputLine("There are no Hostile ships in this Sector.");
                 this.ShipConnectedTo.OutputLine("");
@@ -407,13 +407,13 @@ namespace StarTrek_KG.Subsystem
 
             Location location = this.ShipConnectedTo.GetLocation();
 
-            foreach (var ship in thisRegionHostiles)
+            foreach (var ship in thisSectorHostiles)
             {
                 string shipSectorX = ship.Coordinate.X.ToString();
                 string shipSectorY = ship.Coordinate.Y.ToString();
                 string direction = $"{Utility.Utility.ComputeDirection(location.Coordinate.X, location.Coordinate.Y, ship.Coordinate.X, ship.Coordinate.Y):#.##}";
 
-                direction = Utility.Utility.AdjustIfNebula(thisRegion, direction, ref shipSectorX, ref shipSectorY);
+                direction = Utility.Utility.AdjustIfNebula(thisSector, direction, ref shipSectorX, ref shipSectorY);
 
                 this.ShipConnectedTo.OutputLine($"Hostile ship in sector [{shipSectorX},{shipSectorY}]. Direction {direction}: ");
             }
@@ -434,7 +434,7 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo.OutputLine("");
             this.ShipConnectedTo.OutputLine("Objects to Target:");
 
-            Computer.For(this.ShipConnectedTo).ListObjectsInRegion();
+            Computer.For(this.ShipConnectedTo).ListObjectsInSector();
 
             string userReply = null;
             this.ShipConnectedTo.OutputLine("");

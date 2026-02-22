@@ -160,7 +160,7 @@ namespace StarTrek_KG.Output
 
         #region Rendering
 
-        public void RenderRegionCounts(bool renderingMyLocation, int? starbaseCount, int? starCount, int? hostileCount)
+        public void RenderSectorCounts(bool renderingMyLocation, int? starbaseCount, int? starCount, int? hostileCount)
         {
             if (renderingMyLocation)
             {
@@ -177,7 +177,7 @@ namespace StarTrek_KG.Output
             }
         }
 
-        public string RenderRegionCounts(int? starbaseCount, int? starCount, int? hostileCount)
+        public string RenderSectorCounts(int? starbaseCount, int? starCount, int? hostileCount)
         {
             string counts = "";
 
@@ -199,7 +199,7 @@ namespace StarTrek_KG.Output
             return counts;
         }
 
-        public void RenderUnscannedRegion(bool renderingMyLocation)
+        public void RenderUnscannedSector(bool renderingMyLocation)
         {
             if (renderingMyLocation)
             {
@@ -316,19 +316,19 @@ namespace StarTrek_KG.Output
 
         private static string BuildLRSInterior(IGame game, IScanResult dataPoint, string currentLRSScanLine, ICollection<string> renderedResults, ref int scanColumn)
         {
-            string currentRegionResult = null;
+            string currentSectorResult = null;
 
             if (dataPoint.Unknown)
             {
-                currentRegionResult = Utility.Utility.DamagedScannerUnit(dataPoint.Point);
+                currentSectorResult = Utility.Utility.DamagedScannerUnit(dataPoint.Point);
             }
             else if (dataPoint.GalacticBarrier)
             {
-                currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+                currentSectorResult = game.Config.GetSetting<string>("GalacticBarrier");
             }
             else
             {
-                currentRegionResult += dataPoint;
+                currentSectorResult += dataPoint;
             }
 
             var verticalBoxLine = game.Config.Setting("VerticalBoxLine");
@@ -337,7 +337,7 @@ namespace StarTrek_KG.Output
             var middleRight = game.Config.Setting("SingleLineMiddleRight");
             var cellLine = new string(Convert.ToChar(game.Config.Setting("SingleLineCellLine")), 5);
 
-            currentLRSScanLine += $" {currentRegionResult} " + verticalBoxLine;
+            currentLRSScanLine += $" {currentSectorResult} " + verticalBoxLine;
 
             if (scanColumn == 2 || scanColumn == 5)
             {
@@ -366,22 +366,22 @@ namespace StarTrek_KG.Output
 
         //    foreach (IRSResult dataPoint in irsData)
         //    {
-        //        string currentRegionResult = null;
+        //        string currentSectorResult = null;
 
         //        if (dataPoint.Unknown)
         //        {
-        //            currentRegionResult = Utility.Utility.DamagedScannerUnit();
+        //            currentSectorResult = Utility.Utility.DamagedScannerUnit();
         //        }
         //        else if (dataPoint.GalacticBarrier)
         //        {
-        //            currentRegionResult = game.Config.GetSetting<string>("GalacticBarrier");
+        //            currentSectorResult = game.Config.GetSetting<string>("GalacticBarrier");
         //        }
         //        else
         //        {
-        //            currentRegionResult += dataPoint;
+        //            currentSectorResult += dataPoint;
         //        }
 
-        //        currentLRSScanLine += " " + currentRegionResult + " " + "¦";
+        //        currentLRSScanLine += " " + currentSectorResult + " " + "¦";
 
         //        if (scanColumn == 2 || scanColumn == 5)
         //        {
@@ -461,8 +461,8 @@ namespace StarTrek_KG.Output
 
             foreach (IScanResult scanDataPoint in data)
             {
-                string currentRegionName = "";
-                string currentRegionResult = null;
+                string currentSectorName = "";
+                string currentSectorResult = null;
                 string regionCoordinate = "";
 
                 if (scanDataPoint.Point != null)
@@ -470,28 +470,28 @@ namespace StarTrek_KG.Output
                     regionCoordinate = DEFAULTS.SECTOR_INDICATOR + scanDataPoint.Point.X + "." +
                                        scanDataPoint.Point.Y + "";
 
-                    currentRegionName += scanDataPoint.RegionName;
+                    currentSectorName += scanDataPoint.SectorName;
                 }
 
                 if (scanDataPoint.Unknown)
                 {
-                    currentRegionResult = Utility.Utility.DamagedScannerUnit(scanDataPoint.Point);
+                    currentSectorResult = Utility.Utility.DamagedScannerUnit(scanDataPoint.Point);
                 }
                 else if (scanDataPoint.GalacticBarrier)
                 {
-                    currentRegionName += barrierID;
-                    currentRegionResult = galacticBarrierText;
+                    currentSectorName += barrierID;
+                    currentSectorResult = galacticBarrierText;
                 }
                 else
                 {
-                    currentRegionResult += scanDataPoint.ToScanString();
+                    currentSectorResult += scanDataPoint.ToScanString();
                 }
 
                 //breaks because coordinate is not populated when nebula
 
                 currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
-                currentLRSScanLine1 += " " + currentRegionName.PadCenter(cellLength) + verticalBoxLine;
-                currentLRSScanLine2 += currentRegionResult.PadCenter(cellLength + 1) + verticalBoxLine; //todo resource this
+                currentLRSScanLine1 += " " + currentSectorName.PadCenter(cellLength) + verticalBoxLine;
+                currentLRSScanLine2 += currentSectorResult.PadCenter(cellLength + 1) + verticalBoxLine; //todo resource this
 
                 if (scanColumn == 2 || scanColumn == 5) //todo resource this
                 {
@@ -1404,10 +1404,10 @@ namespace StarTrek_KG.Output
 
         public string ShipHitMessage(IShip attacker, int attackingEnergy)
         {
-            Sector attackerRegion = attacker.GetSector();
-            OutputPoint attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Coordinate.X.ToString(), attacker.Coordinate.Y.ToString());
+            Sector attackerSector = attacker.GetSector();
+            OutputPoint attackerPoint = Utility.Utility.HideXorYIfNebula(attackerSector, attacker.Coordinate.X.ToString(), attacker.Coordinate.Y.ToString());
 
-            string attackerName = attackerRegion.Type == SectorType.Nebulae ? "Unknown Ship" : attacker.Name;
+            string attackerName = attackerSector.Type == SectorType.Nebulae ? "Unknown Ship" : attacker.Name;
 
             if (attacker.Faction == FactionName.Federation)
             {
@@ -1421,17 +1421,17 @@ namespace StarTrek_KG.Output
             }
 
             string shipHitBy = this.GetConfigText("shipHitBy");
-            string message = string.Format(shipHitBy, attackerName, attackerSector.X, attackerSector.Y, attackingEnergy);
+            string message = string.Format(shipHitBy, attackerName, attackerPoint.X, attackerPoint.Y, attackingEnergy);
 
             return message;
         }
 
         public string MisfireMessage(IShip attacker)
         {
-            var attackerRegion = attacker.GetSector();
-            var attackerSector = Utility.Utility.HideXorYIfNebula(attackerRegion, attacker.Coordinate.X.ToString(), attacker.Coordinate.Y.ToString());
+            var attackerSector = attacker.GetSector();
+            var attackerPoint = Utility.Utility.HideXorYIfNebula(attackerSector, attacker.Coordinate.X.ToString(), attacker.Coordinate.Y.ToString());
 
-            string attackerName = attackerRegion.Type == SectorType.Nebulae ? "Unknown Ship" : attacker.Name;
+            string attackerName = attackerSector.Type == SectorType.Nebulae ? "Unknown Ship" : attacker.Name;
 
             if (attacker.Faction == FactionName.Federation)
             {
@@ -1448,7 +1448,7 @@ namespace StarTrek_KG.Output
             string misfireBy = this.GetConfigText("misfireBy");
             string misfireAtCoordinate = this.GetConfigText("misfireAtCoordinate");
 
-            return string.Format(misfireBy + attackerName + misfireAtCoordinate, attackerSector.X, attackerSector.Y);
+            return string.Format(misfireBy + attackerName + misfireAtCoordinate, attackerPoint.X, attackerPoint.Y);
         }
 
         public void OutputConditionAndWarnings(IShip ship, int shieldsDownLevel)
@@ -1491,9 +1491,9 @@ namespace StarTrek_KG.Output
 
             foreach (IScanResult result in data)
             {
-                if (result?.RegionName != null)
+                if (result?.SectorName != null)
                 {
-                    longestName = longestName.Length > result.RegionName.Length ? longestName : result.RegionName;
+                    longestName = longestName.Length > result.SectorName.Length ? longestName : result.SectorName;
                 }
             }
 
@@ -1506,9 +1506,9 @@ namespace StarTrek_KG.Output
 
             foreach (IScanResult result in data)
             {
-                if (result?.RegionName != null && result.RegionName.Length > longest)
+                if (result?.SectorName != null && result.SectorName.Length > longest)
                 {
-                    longest = result.RegionName.Length;
+                    longest = result.SectorName.Length;
                 }
 
                 if (result != null)

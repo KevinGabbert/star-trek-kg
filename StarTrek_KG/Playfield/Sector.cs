@@ -128,15 +128,15 @@ namespace StarTrek_KG.Playfield
             this.X = sectorPoint.X;
             this.Y = sectorPoint.Y;
 
-            var itemsInRegion = new List<Coordinate>();
+            var itemsInSector = new List<Coordinate>();
 
             if (itemsToPopulate != null)
             {
-                itemsInRegion =
+                itemsInSector =
                     itemsToPopulate.Where(i => i.SectorDef.X == this.X && i.SectorDef.Y == this.Y).ToList();
             }
 
-            this.InitializeCoordinates(this, itemsInRegion, baddieNames, stockBaddieFaction, addStars, isNebulae);
+            this.InitializeCoordinates(this, itemsInSector, baddieNames, stockBaddieFaction, addStars, isNebulae);
         }
 
         public void InitializeCoordinates(Sector Sector,
@@ -186,11 +186,11 @@ namespace StarTrek_KG.Playfield
             //    }
         }
 
-        public IEnumerable<Coordinate> AddStars(Sector Sector, int totalStarsInRegion)
+        public IEnumerable<Coordinate> AddStars(Sector Sector, int totalStarsInSector)
         {
             Utility.Utility.ResetGreekLetterStack();
 
-            this.CreateStars(Sector, totalStarsInRegion);
+            this.CreateStars(Sector, totalStarsInSector);
 
             return Sector.Coordinates.Where(s => s.Item == CoordinateItem.Star);
         }
@@ -199,19 +199,19 @@ namespace StarTrek_KG.Playfield
         {
             Utility.Utility.ResetGreekLetterStack();
 
-            const int totalStarsInRegion = 1;
+            const int totalStarsInSector = 1;
 
-            var currentStarName = this.CreateStars(Sector, totalStarsInRegion);
+            var currentStarName = this.CreateStars(Sector, totalStarsInSector);
 
             return Sector.Coordinates.Single(s => s.Item == CoordinateItem.Star && ((Star) s.Object).Name == currentStarName);
         }
 
-        public string CreateStars(Sector Sector, int totalStarsInRegion,
+        public string CreateStars(Sector Sector, int totalStarsInSector,
             CoordinateType starSectorType = CoordinateType.StarSystem)
         {
             string currentStarName = "";
 
-            while (totalStarsInRegion > 0)
+            while (totalStarsInSector > 0)
             {
                 var x = Utility.Utility.Random.Next(DEFAULTS.COORDINATE_MAX);
                 var y = Utility.Utility.Random.Next(DEFAULTS.COORDINATE_MAX);
@@ -222,7 +222,7 @@ namespace StarTrek_KG.Playfield
 
                 if (sectorEmpty)
                 {
-                    if (totalStarsInRegion > 0)
+                    if (totalStarsInSector > 0)
                     {
                         var newStar = new Star();
                         bool foundStarName = false;
@@ -235,11 +235,11 @@ namespace StarTrek_KG.Playfield
                             counter++;
                             var newNameLetter = Utility.Utility.RandomGreekLetter.Pop();
 
-                            var starsInRegion =
+                            var starsInSector =
                                 Sector.Coordinates.Where(s => s.Object != null && s.Object.Type.Name == "Star").ToList();
 
                             var allStarsDontHaveNewDesignation =
-                                starsInRegion.All(s => ((Star) s.Object).Designation != newNameLetter);
+                                starsInSector.All(s => ((Star) s.Object).Designation != newNameLetter);
 
                             if (allStarsDontHaveNewDesignation)
                             {
@@ -259,7 +259,7 @@ namespace StarTrek_KG.Playfield
                                 sector.Type = starSectorType;
 
                                 sector.Object = newStar;
-                                totalStarsInRegion--;
+                                totalStarsInSector--;
                             }
 
                             //Assuming we are using the greek alphabet for star names, we don't want to create a lockup.
@@ -592,10 +592,10 @@ namespace StarTrek_KG.Playfield
             var inTheNegative = coordinate.X < 0 || coordinate.Y < 0;
             var maxxed = coordinate.X == DEFAULTS.COORDINATE_MAX || coordinate.Y == DEFAULTS.COORDINATE_MAX;
 
-            var yInRegion = coordinate.Y >= 0 && coordinate.Y < DEFAULTS.COORDINATE_MAX;
-            var xInRegion = coordinate.X >= 0 && coordinate.X < DEFAULTS.COORDINATE_MAX;
+            var yInSector = coordinate.Y >= 0 && coordinate.Y < DEFAULTS.COORDINATE_MAX;
+            var xInSector = coordinate.X >= 0 && coordinate.X < DEFAULTS.COORDINATE_MAX;
 
-            return (inTheNegative || maxxed) && !(yInRegion && xInRegion);
+            return (inTheNegative || maxxed) && !(yInSector && xInSector);
         }
 
         /// <summary>
@@ -626,7 +626,7 @@ namespace StarTrek_KG.Playfield
 
             int locationX = location.Sector.X;
             int locationY = location.Sector.Y;
-            List<Sector> thisRegionAndThoseNextToThisOne = new List<Sector>
+            List<Sector> thisSectorAndThoseNextToThisOne = new List<Sector>
             {
                 // Row-major order: top-left to bottom-right, so current location is centered.
                 this.Item(currentlyInNebula, game, locationX - 1, locationY - 1),
@@ -643,7 +643,7 @@ namespace StarTrek_KG.Playfield
             };
 
             //build map
-            IEnumerable<LRSResult> scanData = thisRegionAndThoseNextToThisOne.Select(this.GetRegionData).ToList();
+            IEnumerable<LRSResult> scanData = thisSectorAndThoseNextToThisOne.Select(this.GetSectorData).ToList();
 
             //todo: set up galactic barrier space orr
             scanData.Single(r => r.Point.X == location.Sector.X && r.Point.Y == location.Sector.Y).MyLocation = true;
@@ -679,21 +679,21 @@ namespace StarTrek_KG.Playfield
             return region;
         }
 
-        public IRSResult GetSectorInfo(Sector currentRegion, IPoint sector, bool outOfBounds, IGame game)
+        public IRSResult GetSectorInfo(Sector currentSector, IPoint sector, bool outOfBounds, IGame game)
         {
             var currentResult = new IRSResult();
 
             if (!outOfBounds)
             {
-                if (!currentRegion.IsNebulae())
+                if (!currentSector.IsNebulae())
                 {
-                    currentResult = this.GetSectorData(currentRegion, sector, game);
+                    currentResult = this.GetSectorData(currentSector, sector, game);
                 }
                 else
                 {
-                    //currentResult.RegionName = "Unknown";
+                    //currentResult.SectorName = "Unknown";
                     currentResult.Unknown = true;
-                    currentResult.Point = new Point(currentRegion.X, currentRegion.Y);
+                    currentResult.Point = new Point(currentSector.X, currentSector.Y);
                 }
             }
             else
@@ -705,7 +705,7 @@ namespace StarTrek_KG.Playfield
             return currentResult;
         }
 
-        private LRSResult GetRegionData(Sector region)
+        private LRSResult GetSectorData(Sector region)
         {
             //Sector regionToScan; // = Sectors.Get(game.Map, this.CoordinateToScan(region.X, region.Y, game.Config));
             var regionResult = new LRSResult();
@@ -736,16 +736,16 @@ namespace StarTrek_KG.Playfield
             return regionResult;
         }
 
-        private IRSResult GetSectorData(Sector currentRegion, IPoint sector, IGame game)
+        private IRSResult GetSectorData(Sector currentSector, IPoint sector, IGame game)
         {
             Coordinate sectorToScan = this.Coordinates.GetNoError(sector);
 
             Point xx = sectorToScan ?? new Point(sector.X, sector.Y);
 
-            ICoordinate coordinateToExamine = new Coordinate(new LocationDef(currentRegion, xx));
-            var locationToExamine = new Location(currentRegion, coordinateToExamine);
+            ICoordinate coordinateToExamine = new Coordinate(new LocationDef(currentSector, xx));
+            var locationToExamine = new Location(currentSector, coordinateToExamine);
 
-            Location divinedLocationOnMap = currentRegion.DivineSectorOnMap(locationToExamine, this.Map);
+            Location divinedLocationOnMap = currentSector.DivineCoordinateOnMap(locationToExamine, this.Map);
 
             if (divinedLocationOnMap.Sector.Type != SectorType.GalacticBarrier)
             {
@@ -766,52 +766,52 @@ namespace StarTrek_KG.Playfield
             var max = config.GetSetting<int>("SECTOR_MAX") - 1;
             var min = config.GetSetting<int>("SECTOR_MIN");
 
-            int divinedRegionX = regionX;
-            int divinedRegionY = regionY;
+            int divinedSectorX = regionX;
+            int divinedSectorY = regionY;
 
             if (regionX - 1 < min)
             {
-                divinedRegionX = min;
+                divinedSectorX = min;
             }
 
             if (regionX > max)
             {
-                divinedRegionX = max;
+                divinedSectorX = max;
             }
 
             if (regionX + 1 > max)
             {
-                divinedRegionX = max;
+                divinedSectorX = max;
             }
 
             if (regionY - 1 < min)
             {
-                divinedRegionY = min;
+                divinedSectorY = min;
             }
 
             if (regionY > max)
             {
-                divinedRegionY = max;
+                divinedSectorY = max;
             }
 
-            var RegionToScan = new Point(divinedRegionX, divinedRegionY);
+            var SectorToScan = new Point(divinedSectorX, divinedSectorY);
 
-            return RegionToScan;
+            return SectorToScan;
         }
 
         /// <summary>
         /// Returns map Location info on the location Requested.
-        /// If passed an area not in region passed, example: {ThisRegion}.[-1, 0], then the proper location will be divined & returned.
+        /// If passed an area not in sector passed, example: {ThisCoordinate}.[-1, 0], then the proper location will be divined & returned.
         /// </summary>
         /// <param name="locationToExamine"></param>
         /// <param name="map"></param>
         /// <returns></returns>
-        public Location DivineSectorOnMap(Location locationToExamine, IMap map)
+        public Location DivineCoordinateOnMap(Location locationToExamine, IMap map)
         {
             var result = new DivinedCoordinateResult
             {
-                RegionCoordinateToGet = locationToExamine.Sector,
-                SectorCoordinateToGet = new Point(locationToExamine.Coordinate.X, locationToExamine.Coordinate.Y),
+                SectorCoordinateToGet = locationToExamine.Sector,
+                CoordinatePointToGet = new Point(locationToExamine.Coordinate.X, locationToExamine.Coordinate.Y),
                 CurrentLocationX = locationToExamine.Coordinate.X,
                 CurrentLocationY = locationToExamine.Coordinate.Y,
                 Direction = "Here"
@@ -834,12 +834,12 @@ namespace StarTrek_KG.Playfield
             result = this.GetTopLeftEdgeResult(locationToExamine, result, regionCoordinateToGet);
             result = this.GetBottomLeftEdgeResult(locationToExamine, result, regionCoordinateToGet);
 
-            if (result.RegionCoordinateToGet == null)
+            if (result.SectorCoordinateToGet == null)
             {
                 throw new ArgumentException();
             }
 
-            locationToGet.Sector = map.Sectors[new Point(result.RegionCoordinateToGet.X, result.RegionCoordinateToGet.Y)];
+            locationToGet.Sector = map.Sectors[new Point(result.SectorCoordinateToGet.X, result.SectorCoordinateToGet.Y)];
 
             if (locationToGet.Sector.Type != SectorType.GalacticBarrier)
             {
@@ -1120,15 +1120,15 @@ namespace StarTrek_KG.Playfield
 
 //    ////todo: a hostile was made, but he is not in any Sector yet..
 
-//    //List<Ship> allbadGuysInRegion = Sector.Hostiles.Where(s => s.Allegiance == Allegiance.BadGuy).ToList();
+//    //List<Ship> allbadGuysInSector = Sector.Hostiles.Where(s => s.Allegiance == Allegiance.BadGuy).ToList();
 
-//    //var k = allbadGuysInRegion[0];
+//    //var k = allbadGuysInSector[0];
 
 //    ////fixme
 
 //    ////all hostiles have the same XY.  this is rightfully failing
 
-//    //var badGuy = allbadGuysInRegion.Where(s =>  
+//    //var badGuy = allbadGuysInSector.Where(s =>  
 //    //                            s.Coordinate.X == x && 
 //    //                            s.Coordinate.Y == y).Single();
 

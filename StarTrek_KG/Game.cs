@@ -449,10 +449,10 @@ namespace StarTrek_KG
             //this is called from torpedo control/phaser control, and navigation control
 
             var returnValue = false;
-            var activeRegion = map.Sectors.GetActive();
-            var hostilesAttacking = activeRegion.GetHostiles();
+            var activeSector = map.Sectors.GetActive();
+            var hostilesAttacking = activeSector.GetHostiles();
 
-            this.HostileStarbasesAttack(map, activeRegion);
+            this.HostileStarbasesAttack(map, activeSector);
 
             returnValue = this.HostileShipsAttack(map, hostilesAttacking, returnValue);
         }
@@ -475,13 +475,13 @@ namespace StarTrek_KG
             return returnValue;
         }
 
-        private void HostileStarbasesAttack(IMap map, ISector activeRegion)
+        private void HostileStarbasesAttack(IMap map, ISector activeSector)
         {
             if (this.PlayerNowEnemyToFederation)
             {
-                if (activeRegion.Type != SectorType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
+                if (activeSector.Type != SectorType.Nebulae) //starbases don't belong in Nebulae.  If some dummy put one here intentionally, then it will do no damage.  Why? because if you have no shields, a hostile starbase will disable you with the first shot and kill you with the second. 
                 {
-                    var starbasesAttacking = activeRegion.GetStarbaseCount();
+                    var starbasesAttacking = activeSector.GetStarbaseCount();
 
                     for (int i = 0; i < starbasesAttacking; i++)
                     {
@@ -561,8 +561,8 @@ namespace StarTrek_KG
         public void EnemiesWillNowTaunt()
         {
             //todo: move this to communications subsystem eventually
-            var currentRegion = this.Map.Playership.GetSector();
-            var HostilesInSector = currentRegion.GetHostiles();
+            var currentSector = this.Map.Playership.GetSector();
+            var HostilesInSector = currentSector.GetHostiles();
 
             this.LatestTaunts = new List<FactionThreat>();
 
@@ -854,9 +854,9 @@ namespace StarTrek_KG
             this.Interact.PrintMissionResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
         }
 
-        public void MoveTimeForward(IMap map, Point lastRegion, Point Sector)
+        public void MoveTimeForward(IMap map, Point lastSector, Point Sector)
         {
-            if (lastRegion.X != Sector.X || lastRegion.Y != Sector.Y)
+            if (lastSector.X != Sector.X || lastSector.Y != Sector.Y)
             {
                 map.timeRemaining--;
                 map.Stardate++;

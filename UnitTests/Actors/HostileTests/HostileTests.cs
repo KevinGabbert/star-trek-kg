@@ -217,9 +217,9 @@ namespace UnitTests.Actors.HostileTests
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            var activeSector = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            Assert.AreEqual(64, activeSector.Coordinates.Count);
             Assert.AreEqual(0, _setup.TestMap.Sectors.GetHostileCount()); //no hostiles
             Assert.AreEqual(null, _setup.TestMap.Playership); //no friendly
             
@@ -245,21 +245,21 @@ namespace UnitTests.Actors.HostileTests
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            var activeSector = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            Assert.AreEqual(64, activeSector.Coordinates.Count);
 
             //Playership's Sector has been set correctly..
-            Assert.AreEqual(_setup.TestMap.Playership.Point.X, activeRegion.X);
-            Assert.AreEqual(_setup.TestMap.Playership.Point.Y, activeRegion.Y);
+            Assert.AreEqual(_setup.TestMap.Playership.Point.X, activeSector.X);
+            Assert.AreEqual(_setup.TestMap.Playership.Point.Y, activeSector.Y);
 
             //Check to see if Playership has been assigned to a sector in the active Sector.
 
             //indirectly..
-            Assert.AreEqual(1, activeRegion.Coordinates.Count(s => s.Item == CoordinateItem.PlayerShip));
+            Assert.AreEqual(1, activeSector.Coordinates.Count(s => s.Item == CoordinateItem.PlayerShip));
 
             //directly.
-            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates.Single(s => s.X == _setup.TestMap.Playership.Coordinate.X && s.Y == _setup.TestMap.Playership.Coordinate.Y).Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeSector.Coordinates.Single(s => s.X == _setup.TestMap.Playership.Coordinate.X && s.Y == _setup.TestMap.Playership.Coordinate.Y).Item);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -383,32 +383,32 @@ namespace UnitTests.Actors.HostileTests
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            var activeSector = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            Assert.AreEqual(64, activeSector.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
-            //var activeRegion = _setup.TestMap.Sectors.GetActive();
+            //var activeSector = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates[17].Item);
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[22].Item);
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[23].Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeSector.Coordinates[17].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[22].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[23].Item);
 
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[24].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[24].Item);
 
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[36].Item);
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[37].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[36].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[37].Item);
 
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
+            Assert.AreEqual(3, activeSector.GetHostiles().Count);
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Coordinate.X);
-            Assert.AreEqual(6, activeRegion.GetHostiles()[0].Coordinate.Y);
+            Assert.AreEqual(2, activeSector.GetHostiles()[0].Coordinate.X);
+            Assert.AreEqual(6, activeSector.GetHostiles()[0].Coordinate.Y);
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[1].Coordinate.X);
-            Assert.AreEqual(7, activeRegion.GetHostiles()[1].Coordinate.Y);
+            Assert.AreEqual(2, activeSector.GetHostiles()[1].Coordinate.X);
+            Assert.AreEqual(7, activeSector.GetHostiles()[1].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.X);
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.Y);
+            Assert.AreEqual(4, activeSector.GetHostiles()[2].Coordinate.X);
+            Assert.AreEqual(4, activeSector.GetHostiles()[2].Coordinate.Y);
         }
 
         /// <summary>
@@ -434,31 +434,31 @@ namespace UnitTests.Actors.HostileTests
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            var activeSector = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            Assert.AreEqual(64, activeSector.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
-            //var activeRegion = activeRegion;
+            //var activeSector = activeSector;
 
-            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates[37].Item);
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[38].Item);
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[23].Item);
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[24].Item);
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[36].Item);
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[39].Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeSector.Coordinates[37].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[38].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[23].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[24].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[36].Item);
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[39].Item);
 
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
+            Assert.AreEqual(3, activeSector.GetHostiles().Count);
+            Assert.AreEqual(3, activeSector.GetHostiles().Count);
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Coordinate.X);
-            Assert.AreEqual(7, activeRegion.GetHostiles()[0].Coordinate.Y);
+            Assert.AreEqual(2, activeSector.GetHostiles()[0].Coordinate.X);
+            Assert.AreEqual(7, activeSector.GetHostiles()[0].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.X);
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.Y);
+            Assert.AreEqual(4, activeSector.GetHostiles()[1].Coordinate.X);
+            Assert.AreEqual(4, activeSector.GetHostiles()[1].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.X);
-            Assert.AreEqual(6, activeRegion.GetHostiles()[2].Coordinate.Y);
+            Assert.AreEqual(4, activeSector.GetHostiles()[2].Coordinate.X);
+            Assert.AreEqual(6, activeSector.GetHostiles()[2].Coordinate.Y);
         }
 
         /// <summary>
@@ -478,30 +478,30 @@ namespace UnitTests.Actors.HostileTests
 
             _setup.TestMap = this.SetUp3Hostiles();
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            var activeSector = _setup.TestMap.Sectors.GetActive();
 
-            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            Assert.AreEqual(64, activeSector.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
-            //var activeRegion = activeRegion;
+            //var activeSector = activeSector;
 
-            Assert.AreEqual(CoordinateItem.PlayerShip, activeRegion.Coordinates[1].Item);
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[38].Item, "Expected Hostile at activeRegion.Coordinates[38]");
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[23].Item, "Expected Hostile at activeRegion.Coordinates[23]");
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[24].Item);
-            Assert.AreEqual(CoordinateItem.HostileShip, activeRegion.Coordinates[36].Item, "Expected Hostile at activeRegion.Coordinates[39]");
-            Assert.AreEqual(CoordinateItem.Empty, activeRegion.Coordinates[39].Item);
+            Assert.AreEqual(CoordinateItem.PlayerShip, activeSector.Coordinates[1].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[38].Item, "Expected Hostile at activeSector.Coordinates[38]");
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[23].Item, "Expected Hostile at activeSector.Coordinates[23]");
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[24].Item);
+            Assert.AreEqual(CoordinateItem.HostileShip, activeSector.Coordinates[36].Item, "Expected Hostile at activeSector.Coordinates[39]");
+            Assert.AreEqual(CoordinateItem.Empty, activeSector.Coordinates[39].Item);
 
 
             //when the following code is run after this, when the full test harness is run, this errors.
-            //Assert.AreEqual(2, activeRegion.Hostiles[0].Coordinate.X);
-            //Assert.AreEqual(7, activeRegion.Hostiles[0].Coordinate.Y);
+            //Assert.AreEqual(2, activeSector.Hostiles[0].Coordinate.X);
+            //Assert.AreEqual(7, activeSector.Hostiles[0].Coordinate.Y);
 
-            //Assert.AreEqual(4, activeRegion.Hostiles[1].Coordinate.X, "SectorX location expected to be a 4");
-            //Assert.AreEqual(6, activeRegion.Hostiles[1].Coordinate.Y, "SectorY location expected to be a 6"); //when run with a lot of tests, this is 6.  if run by itself, its 4
+            //Assert.AreEqual(4, activeSector.Hostiles[1].Coordinate.X, "SectorX location expected to be a 4");
+            //Assert.AreEqual(6, activeSector.Hostiles[1].Coordinate.Y, "SectorY location expected to be a 6"); //when run with a lot of tests, this is 6.  if run by itself, its 4
 
-            //Assert.AreEqual(4, activeRegion.Hostiles[2].Coordinate.X);
-            //Assert.AreEqual(6, activeRegion.Hostiles[2].Coordinate.Y);
+            //Assert.AreEqual(4, activeSector.Hostiles[2].Coordinate.X);
+            //Assert.AreEqual(6, activeSector.Hostiles[2].Coordinate.Y);
         }
 
         private Map SetUp3Hostiles()
@@ -532,14 +532,14 @@ namespace UnitTests.Actors.HostileTests
 
             _setup.TestMap = this.SetUp3Hostiles();
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
-            Assert.AreEqual(64, activeRegion.Coordinates.Count);
+            var activeSector = _setup.TestMap.Sectors.GetActive();
+            Assert.AreEqual(64, activeSector.Coordinates.Count);
 
             //todo: why active? are hostiles in the same sector?
-            //var activeRegion = activeRegion;
+            //var activeSector = activeSector;
 
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
-            Assert.AreEqual(3, activeRegion.GetHostiles().Count);
+            Assert.AreEqual(3, activeSector.GetHostiles().Count);
+            Assert.AreEqual(3, activeSector.GetHostiles().Count);
         }
 
         /// <summary>
@@ -550,18 +550,18 @@ namespace UnitTests.Actors.HostileTests
         {
             _setup.TestMap = this.SetUp3Hostiles();
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
+            var activeSector = _setup.TestMap.Sectors.GetActive();
             //todo: why active? are hostiles in the same sector?
-            //var activeRegion = activeRegion;
+            //var activeSector = activeSector;
 
-            Assert.AreEqual(2, activeRegion.GetHostiles()[0].Coordinate.X);
-            Assert.AreEqual(7, activeRegion.GetHostiles()[0].Coordinate.Y);
+            Assert.AreEqual(2, activeSector.GetHostiles()[0].Coordinate.X);
+            Assert.AreEqual(7, activeSector.GetHostiles()[0].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.X);
-            Assert.AreEqual(4, activeRegion.GetHostiles()[1].Coordinate.Y);
+            Assert.AreEqual(4, activeSector.GetHostiles()[1].Coordinate.X);
+            Assert.AreEqual(4, activeSector.GetHostiles()[1].Coordinate.Y);
 
-            Assert.AreEqual(4, activeRegion.GetHostiles()[2].Coordinate.X);
-            Assert.AreEqual(6, activeRegion.GetHostiles()[2].Coordinate.Y);
+            Assert.AreEqual(4, activeSector.GetHostiles()[2].Coordinate.X);
+            Assert.AreEqual(6, activeSector.GetHostiles()[2].Coordinate.Y);
         }
 
         //Maybe you want to add/remove hostiles on the fly or something, during the game 
@@ -579,18 +579,18 @@ namespace UnitTests.Actors.HostileTests
                 }
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var activeRegion = _setup.TestMap.Sectors.GetActive();
-            //var activeRegion = activeRegion;
+            var activeSector = _setup.TestMap.Sectors.GetActive();
+            //var activeSector = activeSector;
 
             //add a ship
-            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Coordinate(new LocationDef(activeRegion, new Point(1, 7))), this.Game.Map);
-            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Coordinate(new LocationDef(activeRegion, new Point(1, 6))), this.Game.Map);
+            var hostileShip = new Ship(FactionName.Klingon, "ship1", new Coordinate(new LocationDef(activeSector, new Point(1, 7))), this.Game.Map);
+            var hostileShip2 = new Ship(FactionName.Klingon, "ship2", new Coordinate(new LocationDef(activeSector, new Point(1, 6))), this.Game.Map);
 
-            activeRegion.AddShip(hostileShip, hostileShip.Coordinate);
-            activeRegion.AddShip(hostileShip2, hostileShip2.Coordinate);
+            activeSector.AddShip(hostileShip, hostileShip.Coordinate);
+            activeSector.AddShip(hostileShip2, hostileShip2.Coordinate);
 
-            var activeRegionAfterAdding = _setup.TestMap.Sectors.GetActive();
-            var hostiles = activeRegionAfterAdding.GetHostiles();
+            var activeSectorAfterAdding = _setup.TestMap.Sectors.GetActive();
+            var hostiles = activeSectorAfterAdding.GetHostiles();
 
             Assert.AreEqual(2, hostiles.Count);
 

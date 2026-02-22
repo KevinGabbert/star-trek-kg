@@ -37,9 +37,9 @@ namespace StarTrek_KG.Subsystem
                 return new List<Coordinate>(); //todo: is this correct?
             }
 
-            var thisRegion = this.ShipConnectedTo.GetSector();
+            var thisSector = this.ShipConnectedTo.GetSector();
 
-            IEnumerable<Coordinate> sectorsWithObjects = thisRegion.Coordinates.Where(s => s.Item != CoordinateItem.Empty);
+            IEnumerable<Coordinate> sectorsWithObjects = thisSector.Coordinates.Where(s => s.Item != CoordinateItem.Empty);
 
             return sectorsWithObjects;
         }
