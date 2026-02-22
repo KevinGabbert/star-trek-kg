@@ -23,7 +23,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[3, 3].Item = CoordinateItem.Star; //northwest
             this.Game.Map.Sectors.GetActive().Coordinates[3, 5].Item = CoordinateItem.Star; //northeast
 
-            this.Move_Region("7", 1 * 8);
+            this.Move_Region("1", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
 
@@ -46,7 +46,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[3, 3].Item = CoordinateItem.Star; //northwest
             this.Game.Map.Sectors.GetActive().Coordinates[3, 5].Item = CoordinateItem.Star; //northeast
 
-            this.Move_Region("3", 1 * 8);
+            this.Move_Region("5", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -66,7 +66,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[3, 3].Item = CoordinateItem.Star; //northwest
             this.Game.Map.Sectors.GetActive().Coordinates[3, 5].Item = CoordinateItem.Star; //northeast
 
-            this.Move_Region("5", 1 * 8);
+            this.Move_Region("3", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -86,7 +86,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[3, 3].Item = CoordinateItem.Star; //northwest
             this.Game.Map.Sectors.GetActive().Coordinates[3, 5].Item = CoordinateItem.Star; //northeast
 
-            this.Move_Region("1", 1 * 8);
+            this.Move_Region("7", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -106,7 +106,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[4, 3].Item = CoordinateItem.Star; //to the west
             this.Game.Map.Sectors.GetActive().Coordinates[5, 4].Item = CoordinateItem.Star; //to the south
 
-            this.Move_Region("6", 1 * 8);
+            this.Move_Region("2", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -126,7 +126,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[4, 3].Item = CoordinateItem.Star; //to the west
             this.Game.Map.Sectors.GetActive().Coordinates[5, 4].Item = CoordinateItem.Star; //to the south
 
-            this.Move_Region("4", 1 * 8);
+            this.Move_Region("8", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -146,7 +146,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[4, 3].Item = CoordinateItem.Star; //to the west
             this.Game.Map.Sectors.GetActive().Coordinates[5, 4].Item = CoordinateItem.Star; //to the south
 
-            this.Move_Region("2", 1 * 8);
+            this.Move_Region("6", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -166,7 +166,7 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.Game.Map.Sectors.GetActive().Coordinates[4, 3].Item = CoordinateItem.Star; //to the west
             this.Game.Map.Sectors.GetActive().Coordinates[5, 4].Item = CoordinateItem.Star; //to the south
 
-            this.Move_Region("8", 1 * 8);
+            this.Move_Region("4", 1 * 8);
 
             Assert.IsFalse(_testMovement.BlockedByObstacle, "Failed to hit Obstacle");
         }
@@ -189,8 +189,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
 
             var newRegion = this.Game.Map.Playership.GetSector();
 
-            Assert.AreEqual(_startingRegion.X, newRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y + 1, newRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X + 1, newRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y, newRegion.Y, "(c)startingRegionY");
         }
 
         [Test]
@@ -217,8 +217,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.CheckRegionsAfterMovement(true);
 
             var playershipRegion = this.Game.Map.Playership.GetSector();
-            Assert.AreEqual(_startingRegion.X + 1, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y + 1, playershipRegion.Y, "(c)startingRegionY");
         }
 
         [Test]
@@ -231,8 +231,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             var playershipRegion = this.Game.Map.Playership.GetSector();
 
             //todo: why is this +- 2?
-            Assert.AreEqual(_startingRegion.X + 1, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y - 1, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X - 1, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y + 1, playershipRegion.Y, "(c)startingRegionY");
 
             //verify that ship has not changed its sector
             Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X, "this.Game.Map.Playership.Coordinate.X");
@@ -255,8 +255,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.CheckRegionsAfterMovement(true);
 
             var playershipRegion = this.Game.Map.Playership.GetSector();
-            Assert.AreEqual(_startingRegion.X, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y - 1, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X - 1, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y, playershipRegion.Y, "(c)startingRegionY");
         }
 
         [Test]
@@ -283,8 +283,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.CheckRegionsAfterMovement(true);
 
             var playershipRegion = this.Game.Map.Playership.GetSector();
-            Assert.AreEqual(_startingRegion.X - 1, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y - 1, playershipRegion.Y, "(c)startingRegionY");
         }
 
         [Test]
@@ -295,8 +295,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.CheckRegionsAfterMovement(true);
 
             var playershipRegion = this.Game.Map.Playership.GetSector();
-            Assert.AreEqual(_startingRegion.X - 1, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y + 1, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X + 1, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y - 1, playershipRegion.Y, "(c)startingRegionY");
 
             //verify that ship has not changed its sector
             Assert.AreEqual(_startingSectorX, _testShip.Coordinate.X, "this.Game.Map.Playership.Coordinate.X");
@@ -335,8 +335,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.CheckRegionsAfterMovement(false);
 
             var playershipRegion = this.Game.Map.Playership.GetSector();
-            Assert.AreEqual(0, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(0, playershipRegion.Y, "(c)startingRegionY");
         }
 
         [Test]
@@ -349,8 +349,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.CheckRegionsAfterMovement(false);
 
             var playershipRegion = this.Game.Map.Playership.GetSector();
-            Assert.AreEqual(7, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(_startingRegion.Y, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(_startingRegion.X, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(7, playershipRegion.Y, "(c)startingRegionY");
         }
 
         [Test]
@@ -364,8 +364,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
 
             var endingRegion = this.Game.Map.Playership.GetSector();
 
-            Assert.AreEqual(_startingRegion.X, endingRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(7, endingRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(7, endingRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y, endingRegion.Y, "(c)startingRegionY");
         }
 
         [Test]
@@ -378,8 +378,8 @@ namespace UnitTests.Actors.MovementTests.MoveRegionTests
             this.CheckRegionsAfterMovement(false);
 
             var playershipRegion = this.Game.Map.Playership.GetSector();
-            Assert.AreEqual(_startingRegion.X, playershipRegion.X, "(c)startingRegionX");
-            Assert.AreEqual(0, playershipRegion.Y, "(c)startingRegionY");
+            Assert.AreEqual(0, playershipRegion.X, "(c)startingRegionX");
+            Assert.AreEqual(_startingRegion.Y, playershipRegion.Y, "(c)startingRegionY");
         }
 
         #endregion

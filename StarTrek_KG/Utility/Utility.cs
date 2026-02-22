@@ -71,25 +71,30 @@ namespace StarTrek_KG.Utility
          
         public static double ComputeDirection(int x1, int y1, int x2, int y2)
         {
-            //Todo:  to place this in the right place, resolve StarbaseCalculator
+            // Swap axes so course directions align with the displayed grid:
+            // right = +X, down = +Y.
+            var sx1 = y1;
+            var sy1 = x1;
+            var sx2 = y2;
+            var sy2 = x2;
 
             double direction;
-            if (x1 == x2)
+            if (sx1 == sx2)
             {
-                direction = y1 < y2 ? 7 : 3;
+                direction = sy1 < sy2 ? 7 : 3;
             }
-            else if (y1 == y2)
+            else if (sy1 == sy2)
             {
-                direction = x1 < x2 ? 1 : 5;
+                direction = sx1 < sx2 ? 1 : 5;
             }
             else
             {
-                double dy = Math.Abs(y2 - y1);
-                double dx = Math.Abs(x2 - x1);
+                double dy = Math.Abs(sy2 - sy1);
+                double dx = Math.Abs(sx2 - sx1);
                 var angle = Math.Atan2(dy, dx);
-                if (x1 < x2)
+                if (sx1 < sx2)
                 {
-                    if (y1 < y2)
+                    if (sy1 < sy2)
                     {
                         direction = 9.0 - 4.0 * angle / Math.PI;
                     }
@@ -100,7 +105,7 @@ namespace StarTrek_KG.Utility
                 }
                 else
                 {
-                    if (y1 < y2)
+                    if (sy1 < sy2)
                     {
                         direction = 5.0 + 4.0 * angle / Math.PI;
                     }

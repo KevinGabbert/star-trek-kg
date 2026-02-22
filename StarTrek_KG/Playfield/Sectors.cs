@@ -228,6 +228,7 @@ namespace StarTrek_KG.Playfield
 
                 case NavDirection.LeftUp:
                     newRegionX = currentRegion.X - 1;
+                    newRegionY = currentRegion.Y - 1;
                     break;
 
                 case NavDirection.Up:
@@ -235,8 +236,8 @@ namespace StarTrek_KG.Playfield
                     break;
 
                 case NavDirection.RightUp:
-                    newRegionY = currentRegion.Y - 1;
                     newRegionX = currentRegion.X + 1;
+                    newRegionY = currentRegion.Y - 1;
                     break;
 
                 default:

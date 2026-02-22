@@ -182,19 +182,19 @@ namespace StarTrek_KG.Subsystem
             switch ((int)Math.Round(direction))
             {
                 case 1: // down
-                    return new Point(1, 0);
+                    return new Point(0, 1);
                 case 2: // down-left
-                    return new Point(1, -1);
+                    return new Point(-1, 1);
                 case 3: // left
-                    return new Point(0, -1);
+                    return new Point(-1, 0);
                 case 4: // up-left
                     return new Point(-1, -1);
                 case 5: // up
-                    return new Point(-1, 0);
+                    return new Point(0, -1);
                 case 6: // up-right
-                    return new Point(-1, 1);
+                    return new Point(1, -1);
                 case 7: // right
-                    return new Point(0, 1);
+                    return new Point(1, 0);
                 case 8: // down-right
                     return new Point(1, 1);
                 default:

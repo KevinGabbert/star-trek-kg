@@ -465,13 +465,13 @@ namespace UnitTests.MapTests
         {
             //Covering the rest of the paths
 
-            Assert.AreEqual(7.0, Utility.ComputeDirection(0, 0, 0, 2));
-            Assert.AreEqual(1.0, Utility.ComputeDirection(0, 0, 2, 0));
+            Assert.AreEqual(1.0, Utility.ComputeDirection(0, 0, 0, 2));
+            Assert.AreEqual(7.0, Utility.ComputeDirection(0, 0, 2, 0));
 
-            Assert.AreEqual(7.5903344706017331d, Utility.ComputeDirection(0, 0, 2, 4));
-            Assert.AreEqual(1.5903344706017331d, Utility.ComputeDirection(0, 1, 2, 0));
+            Assert.AreEqual(8.40966552939827d, Utility.ComputeDirection(0, 0, 2, 4));
+            Assert.AreEqual(6.40966552939827d, Utility.ComputeDirection(0, 1, 2, 0));
 
-            Assert.AreEqual(6.0, Utility.ComputeDirection(2, 0, 1, 1));
+            Assert.AreEqual(2.0, Utility.ComputeDirection(2, 0, 1, 1));
         }
 
         [Ignore("")]
