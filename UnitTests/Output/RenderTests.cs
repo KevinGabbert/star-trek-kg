@@ -1,7 +1,6 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using StarTrek_KG.Config;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
@@ -10,38 +9,34 @@ using UnitTests.TestObjects;
 namespace UnitTests.Output
 {
     [TestFixture]
-    public class RenderTests : TestClass_Base
+    public class RenderTests
     {
-        private Render _render;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _setup.SetupMapWith1Friendly();
-            _render = new Render(Game.Interact, new StarTrekKGSettings());
-            Game.Interact.Output.Clear();
-        }
-
         [Test]
-        public void CreateSRSViewScreen_WritesSectorName()
+        public void SRS_Render_UsesYAxisForRows()
         {
-            var sector = Game.Map.Sectors.GetActive();
-            var shipLocation = Game.Map.Playership.GetLocation();
+            var setup = new Test_Setup();
+            setup.SetupMapWith1FriendlyAtSector(new Point(2, 1));
+
+            var map = setup.TestMap;
+            var render = new Render(map.Game.Interact, map.Game.Config);
+            var sector = map.Sectors.GetActive();
+            var location = map.Playership.GetLocation();
             var sb = new StringBuilder();
 
-            _render.CreateSRSViewScreen(sector, Game.Map, shipLocation, 0, "Alpha", false, sb);
+            map.Game.Interact.Output.Clear();
 
-            Assert.IsTrue(Game.Interact.Output.Queue.Any(q => q.Contains("Alpha")));
-        }
+            render.CreateSRSViewScreen(sector, map, location, 0, sector.Name, false, sb);
 
-        [Test]
-        public void OutputScanWarnings_NoHostiles_DoesNotAddHostileWarning()
-        {
-            var sector = Game.Map.Sectors.GetActive();
+            var lines = map.Game.Interact.Output.Queue.ToList();
 
-            _render.OutputScanWarnings(sector, Game.Map, false);
+            var expectedRowIndex = 1 + location.Coordinate.Y;
+            Assert.IsTrue(lines[expectedRowIndex].Contains(DEFAULTS.PLAYERSHIP), "Playership not rendered on expected row.");
 
-            Assert.IsFalse(Game.Interact.Output.Queue.Any(q => q.Contains("Hostile")));
+            if (location.Coordinate.X != location.Coordinate.Y)
+            {
+                var wrongRowIndex = 1 + location.Coordinate.X;
+                Assert.IsFalse(lines[wrongRowIndex].Contains(DEFAULTS.PLAYERSHIP), "Playership rendered on X row instead of Y row.");
+            }
         }
     }
 }

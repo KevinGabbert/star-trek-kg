@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using StarTrek_KG.Enums;
@@ -125,7 +125,7 @@ namespace StarTrek_KG.Output
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - topBorderAreaMeasurement);
 
             string SectorIndicator =
-                $" Coord: [{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}]  Sec: �{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
+                $" Coord: [{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}]  Sec: §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
 
             regionLineBuilder.Insert(topBorderAreaMeasurement, SectorIndicator);
 
@@ -172,7 +172,7 @@ namespace StarTrek_KG.Output
         {
             for (var column = 0; column < DEFAULTS.COORDINATE_MAX; column++)
             {
-                Coordinate sector = sectors[row, column];
+                Coordinate sector = sectors[column, row];
 
                 switch (sector.Item)
                 {
