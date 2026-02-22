@@ -324,7 +324,16 @@ namespace StarTrek_KG.Output
             }
             else if (dataPoint.GalacticBarrier)
             {
-                currentSectorResult = game.Config.GetSetting<string>("GalacticBarrier");
+                string barrierCrs;
+                try
+                {
+                    barrierCrs = game.Config.GetSetting<string>("GalacticBarrierCRS");
+                }
+                catch
+                {
+                    barrierCrs = "XXX";
+                }
+                currentSectorResult = barrierCrs;
             }
             else
             {
@@ -374,7 +383,7 @@ namespace StarTrek_KG.Output
         //        }
         //        else if (dataPoint.GalacticBarrier)
         //        {
-        //            currentSectorResult = game.Config.GetSetting<string>("GalacticBarrier");
+        //            currentSectorResult = game.Config.GetSetting<string>("GalacticBarrierCRS");
         //        }
         //        else
         //        {
@@ -479,7 +488,7 @@ namespace StarTrek_KG.Output
                 }
                 else if (scanDataPoint.GalacticBarrier)
                 {
-                    currentSectorName += barrierID;
+                    currentSectorName = barrierID;
                     currentSectorResult = galacticBarrierText;
                 }
                 else

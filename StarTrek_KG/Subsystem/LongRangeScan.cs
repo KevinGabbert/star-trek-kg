@@ -75,6 +75,7 @@ namespace StarTrek_KG.Subsystem
             sectorResult.Hostiles = 0;
             sectorResult.Starbases = 0;
             sectorResult.Stars = 0;
+            sectorResult.GalacticBarrier = sectorToScan.Type == SectorType.GalacticBarrier;
 
             if (sectorToScan.Type != SectorType.Nebulae)
             {
@@ -83,7 +84,7 @@ namespace StarTrek_KG.Subsystem
                 sectorResult.Stars = sectorToScan.GetStarCount();
             }
 
-            var barrierID = "Galactic Barrier"; //todo: resource this
+            var barrierID = this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("GalacticBarrierText");
             sectorResult.Name = sectorResult.GalacticBarrier ? barrierID : sectorToScan.Name;
 
             sectorToScan.Scanned = true;
@@ -97,13 +98,16 @@ namespace StarTrek_KG.Subsystem
             {
                 Point = sectorToScan.GetPoint()
             };
+            sectorResult.GalacticBarrier = sectorToScan.Type == SectorType.GalacticBarrier;
 
             if (sectorToScan.Type != SectorType.Nebulae)
             {
                 sectorResult.Hostiles = sectorToScan.GetHostiles().Count;
                 sectorResult.Starbases = sectorToScan.GetStarbaseCount();
                 sectorResult.Stars = sectorToScan.GetStarCount();
-                sectorResult.Name = sectorToScan.Name;
+                sectorResult.Name = sectorResult.GalacticBarrier
+                    ? sectorToScan.Map.Game.Config.GetSetting<string>("GalacticBarrierText")
+                    : sectorToScan.Name;
             }
             else
             {
