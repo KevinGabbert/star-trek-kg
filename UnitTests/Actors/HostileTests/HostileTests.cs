@@ -146,6 +146,18 @@ namespace UnitTests.Actors.HostileTests
             Assert.AreEqual(new StarTrekKGSettings().GetSetting<int>("energy"), _setup.TestMap.Playership.Energy, "Ship energy not at expected amount"); //ship has no damage
         }
 
+        [Test]
+        public void Hostile_Shields_Are_In_Expected_Range()
+        {
+            _setup.SetupMapWith1Hostile();
+
+            var hostile = _setup.TestMap.Sectors.GetHostiles().Single();
+            var hostileShields = Shields.For(hostile).Energy;
+
+            Assert.GreaterOrEqual(hostileShields, 300);
+            Assert.LessOrEqual(hostileShields, 500);
+        }
+
         [Ignore("This is a long running test intended to suss out a problem (which is now fixed)")]
         [Test]
         public void ALLHostilesAttack_Check_Subsystems()

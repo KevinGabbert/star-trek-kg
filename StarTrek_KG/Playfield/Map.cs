@@ -199,6 +199,142 @@ namespace StarTrek_KG.Playfield
                     }
                 }
             }
+
+            this.PopulateDeuteriumPockets();
+            this.PopulateGraviticMines();
+        }
+
+        private void PopulateDeuteriumPockets()
+        {
+            var percent = this.Config?.GetSetting<int>("DeuteriumSectorPercent") ?? 0;
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var candidates = this.Sectors?
+                .Where(sector => sector?.Coordinates != null && sector.Coordinates.Any(c => c.Item == CoordinateItem.Empty))
+                .ToList();
+
+            if (candidates == null || candidates.Count == 0)
+            {
+                return;
+            }
+
+            var totalSectors = candidates.Count;
+            var targetCount = (int)Math.Round(totalSectors * (percent / 100.0));
+            if (targetCount <= 0)
+            {
+                return;
+            }
+
+            if (targetCount > totalSectors)
+            {
+                targetCount = totalSectors;
+            }
+
+            var selected = new List<Sector>(targetCount);
+            const int hostileWeight = 3;
+
+            while (selected.Count < targetCount && candidates.Count > 0)
+            {
+                var index = this.PickWeightedSectorIndex(candidates, hostileWeight);
+                var chosen = candidates[index];
+                candidates.RemoveAt(index);
+                selected.Add(chosen);
+            }
+
+            foreach (var sector in selected)
+            {
+                var emptyCoordinates = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+                if (emptyCoordinates.Count == 0)
+                {
+                    continue;
+                }
+
+                var pickedCoordinate = emptyCoordinates[Utility.Utility.Random.Next(emptyCoordinates.Count)];
+                this.PlaceDeuteriumAt(pickedCoordinate);
+            }
+        }
+
+        private void PopulateGraviticMines()
+        {
+            var hostileSectors = this.Sectors?
+                .Where(sector => sector?.Coordinates != null && sector.Coordinates.Any(c => c.Item == CoordinateItem.HostileShip))
+                .ToList();
+
+            if (hostileSectors == null || hostileSectors.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var sector in hostileSectors)
+            {
+                var emptyCoordinates = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+                if (emptyCoordinates.Count == 0)
+                {
+                    continue;
+                }
+
+                var pickedCoordinate = emptyCoordinates[Utility.Utility.Random.Next(emptyCoordinates.Count)];
+                pickedCoordinate.Item = CoordinateItem.GraviticMine;
+                pickedCoordinate.Object = new GraviticMine();
+            }
+        }
+
+        private int PickWeightedSectorIndex(IReadOnlyList<Sector> sectors, int hostileWeight)
+        {
+            var totalWeight = 0;
+            var weights = new int[sectors.Count];
+
+            for (var i = 0; i < sectors.Count; i++)
+            {
+                var hasHostiles = sectors[i].Coordinates.Any(c => c.Item == CoordinateItem.HostileShip);
+                var weight = hasHostiles ? hostileWeight : 1;
+                weights[i] = weight;
+                totalWeight += weight;
+            }
+
+            var roll = Utility.Utility.Random.Next(totalWeight);
+            var cumulative = 0;
+
+            for (var i = 0; i < weights.Length; i++)
+            {
+                cumulative += weights[i];
+                if (roll < cumulative)
+                {
+                    return i;
+                }
+            }
+
+            return weights.Length - 1;
+        }
+
+        private void PlaceDeuteriumAt(Coordinate coordinate)
+        {
+            if (coordinate == null)
+            {
+                return;
+            }
+
+            var min = this.Config?.GetSetting<int>("DeuteriumMin") ?? 1;
+            var max = this.Config?.GetSetting<int>("DeuteriumMax") ?? 75;
+
+            if (max < min)
+            {
+                var temp = min;
+                min = max;
+                max = temp;
+            }
+
+            var amount = Utility.Utility.Random.Next(min, max + 1);
+            coordinate.Item = CoordinateItem.Deuterium;
+            coordinate.Object = new Deuterium(amount);
         }
 
         public IEnumerable<Coordinate> AddStarbases()
@@ -473,7 +609,9 @@ namespace StarTrek_KG.Playfield
 
             var activeSector = map.Sectors.GetActive();
 
-            var newActiveSector = activeSector.Coordinates[map.Playership.Coordinate.X, map.Playership.Coordinate.Y].Item = CoordinateItem.PlayerShip;
+            var targetCoordinate = activeSector.Coordinates[map.Playership.Coordinate.X, map.Playership.Coordinate.Y];
+            this.ConsumeDeuteriumIfPresent(map.Playership, targetCoordinate);
+            var newActiveSector = targetCoordinate.Item = CoordinateItem.PlayerShip;
         }
 
         /// <summary>
@@ -489,10 +627,45 @@ namespace StarTrek_KG.Playfield
             newLocation.Sector.SetActive();
 
             Coordinate foundSector = this.LookupSector(shipToSet.GetSector(), newLocation);
+            this.ConsumeDeuteriumIfPresent(shipToSet, foundSector);
             foundSector.Item = CoordinateItem.PlayerShip;
 
             shipToSet.Point = new Point(newLocation.Sector.X, newLocation.Sector.Y);
             shipToSet.Coordinate = foundSector;
+        }
+
+        private void ConsumeDeuteriumIfPresent(IShip shipToSet, Coordinate coordinate)
+        {
+            if (coordinate == null || shipToSet == null)
+            {
+                return;
+            }
+
+            if (coordinate.Item == CoordinateItem.Deuterium)
+            {
+                var deuterium = coordinate.Object as Deuterium;
+                var amount = deuterium?.Amount ?? 0;
+                if (amount > 0)
+                {
+                    shipToSet.Energy += amount;
+                }
+
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
+
+                this.Write?.Line("Bussard collectors have been charged with deuterium.");
+            }
+
+            if (coordinate.Item == CoordinateItem.GraviticMine)
+            {
+                var damage = this.Config?.GetSetting<int>("GraviticMineDamage") ?? 200;
+                shipToSet.Energy -= damage;
+
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
+
+                this.Write?.Line("Gravitic mine detonated and damaged the playership.");
+            }
         }
 
         private Coordinate LookupSector(Sector oldSector, Location newLocation)

@@ -9,6 +9,8 @@ namespace StarTrek_KG.Enums
         FriendlyShip,
         PlayerShip, 
         Starbase,
+        Deuterium,
+        GraviticMine,
         Debug
     };
 }

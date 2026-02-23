@@ -338,6 +338,13 @@ namespace StarTrek_KG.Subsystem
 
             switch (qLocation.Item)
             {
+                case CoordinateItem.Deuterium:
+                    this.ApplyDeuteriumBlast(game.Map, qLocation, newX, newY);
+                    qLocation.Item = CoordinateItem.Empty;
+                    qLocation.Object = null;
+                    game.Interact.Line($"Deuterium pocket detonated at sector [{newX},{newY}].");
+                    return true;
+
                 case CoordinateItem.Starbase:
 
                     game.DestroyStarbase(map, newY, newX, qLocation);
@@ -364,6 +371,41 @@ namespace StarTrek_KG.Subsystem
             }
 
             return false;
+        }
+
+        private void ApplyDeuteriumBlast(IMap map, Coordinate origin, int originX, int originY)
+        {
+            if (map?.Playership == null || origin == null)
+            {
+                return;
+            }
+
+            var sector = map.Sectors.GetActive();
+            if (sector == null)
+            {
+                return;
+            }
+
+            var shipsToCheck = sector.GetHostiles().Cast<IShip>().ToList();
+            shipsToCheck.Add(map.Playership);
+
+            foreach (var ship in shipsToCheck.Distinct())
+            {
+                if (ship.Point.X != origin.SectorDef.X || ship.Point.Y != origin.SectorDef.Y)
+                {
+                    continue;
+                }
+
+                var dx = Math.Abs(ship.Coordinate.X - originX);
+                var dy = Math.Abs(ship.Coordinate.Y - originY);
+                if (dx <= 1 && dy <= 1)
+                {
+                    if (ship is Ship concreteShip)
+                    {
+                        concreteShip.AbsorbHitFrom(map.Playership, 200);
+                    }
+                }
+            }
         }
 
         private bool Exhausted()

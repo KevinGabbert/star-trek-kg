@@ -179,6 +179,11 @@ namespace StarTrek_KG.Actors
 
                 if (currentItem != CoordinateItem.Empty)
                 {
+                    if (currentItem == CoordinateItem.Deuterium)
+                    {
+                        return false;
+                    }
+
                     mySector.X = lastSector.X;
                     mySector.Y = lastSector.Y;
 

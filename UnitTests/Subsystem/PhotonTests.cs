@@ -5,6 +5,8 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Actors;
+using StarTrek_KG.TypeSafeEnums;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Subsystem
@@ -228,6 +230,91 @@ namespace UnitTests.Subsystem
         public void ShootHostileOutfSector()
         {
             this.ShootHostileAt(new Point(4, 4), new Point(3, 5), 2, true);
+        }
+
+        [Test]
+        public void ShootDeuterium_Explodes_And_Clears()
+        {
+            _setup.SetupMapWith1Friendly();
+
+            _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
+            _testSector = _setup.TestMap.Playership.GetSector();
+
+            var target = _testSector.Coordinates[0, 1];
+            target.Item = CoordinateItem.Deuterium;
+            target.Object = new Deuterium(25);
+
+            var startingCount = _photonsToTest.Count;
+
+            _photonsToTest.Shoot(1); // down
+
+            Assert.AreEqual(startingCount - 1, _photonsToTest.Count);
+            Assert.AreEqual(CoordinateItem.Empty, target.Item);
+            Assert.IsNull(target.Object);
+            Assert.IsTrue(_setup.TestMap.Playership.OutputQueue().Any(line => line.Contains("Deuterium pocket detonated")));
+        }
+
+        [Test]
+        public void ShootDeuterium_Blast_Damages_Ship_Within_One_Coordinate()
+        {
+            _setup.SetupMapWith1Friendly();
+
+            _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
+            _testSector = _setup.TestMap.Playership.GetSector();
+
+            var target = _testSector.Coordinates[1, 1];
+            target.Item = CoordinateItem.Deuterium;
+            target.Object = new Deuterium(25);
+
+            var startingEnergy = _setup.TestMap.Playership.Energy;
+
+            _photonsToTest.Shoot(8); // down-right from [0,0] -> [1,1]
+
+            Assert.Less(_setup.TestMap.Playership.Energy, startingEnergy);
+        }
+
+        [Test]
+        public void ShootDeuterium_Blast_Does_Not_Damage_Ship_Outside_One_Coordinate()
+        {
+            _setup.SetupMapWith1Friendly();
+
+            _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
+            _testSector = _setup.TestMap.Playership.GetSector();
+
+            var target = _testSector.Coordinates[2, 0];
+            target.Item = CoordinateItem.Deuterium;
+            target.Object = new Deuterium(25);
+
+            var startingEnergy = _setup.TestMap.Playership.Energy;
+
+            _photonsToTest.Shoot(7); // right from [0,0] -> [1,0] then [2,0]
+
+            Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
+        }
+
+        [Test]
+        public void ShootDeuterium_Blast_Damages_Hostile_Within_One_Coordinate()
+        {
+            _setup.SetupMapWith1Friendly();
+
+            _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
+            _testSector = _setup.TestMap.Playership.GetSector();
+
+            var hostileCoordinate = _testSector.Coordinates[1, 1];
+            var hostile = new Ship(FactionName.Klingon, "TestHostile", hostileCoordinate, _setup.TestMap);
+            Shields.For(hostile).SetEnergy(400);
+            hostile.Energy = 500;
+            _testSector.AddShip(hostile, hostileCoordinate);
+
+            var target = _testSector.Coordinates[1, 0];
+            target.Item = CoordinateItem.Deuterium;
+            target.Object = new Deuterium(25);
+
+            var startingHostileShields = Shields.For(hostile).Energy;
+
+            _photonsToTest.Shoot(7); // right from [0,0] -> [1,0]
+
+            Assert.Less(Shields.For(hostile).Energy, startingHostileShields);
         }
 
         public void ShootHostileAt(Point friendlySector, Point hostileSector, int directionToShoot, bool debugMode)

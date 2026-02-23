@@ -334,6 +334,28 @@ namespace StarTrek_KG.Playfield
                 var newShip = this.CreateHostileShip(newlyCreatedSector, stockBaddieNames, stockBaddieFaction, this.Map.Game);
                 Sector.AddShip(newShip, newlyCreatedSector);
             }
+            else if (itemToPopulate == CoordinateItem.Deuterium)
+            {
+                var min = this.Map?.Config?.GetSetting<int>("DeuteriumMin") ?? 1;
+                var max = this.Map?.Config?.GetSetting<int>("DeuteriumMax") ?? 75;
+                if (max < min)
+                {
+                    max = min;
+                }
+
+                var amount = Utility.Utility.Random.Next(min, max + 1);
+                newlyCreatedSector.Item = CoordinateItem.Deuterium;
+                newlyCreatedSector.Object = new Deuterium(amount);
+            }
+            else if (itemToPopulate == CoordinateItem.GraviticMine)
+            {
+                newlyCreatedSector.Item = CoordinateItem.GraviticMine;
+                var mine = new GraviticMine
+                {
+                    Coordinate = newlyCreatedSector
+                };
+                newlyCreatedSector.Object = mine;
+            }
             else
             {
                 newlyCreatedSector.Item = itemToPopulate;
@@ -363,6 +385,30 @@ namespace StarTrek_KG.Playfield
 
             try
             {
+                if (addToSector.Item == CoordinateItem.GraviticMine)
+                {
+                    var damage = this.Map?.Config?.GetSetting<int>("GraviticMineDamage") ?? 200;
+                    ship.Energy -= damage;
+
+                    addToSector.Item = CoordinateItem.Empty;
+                    addToSector.Object = null;
+
+                    this.Map?.Write?.Line($"Enemy ship {ship.Name} has taken damage from a gravitic mine.");
+                }
+
+                if (addToSector.Item == CoordinateItem.Deuterium)
+                {
+                    var deuterium = addToSector.Object as Deuterium;
+                    var amount = deuterium?.Amount ?? 0;
+                    if (amount > 0)
+                    {
+                        ship.Energy += amount;
+                    }
+
+                    addToSector.Item = CoordinateItem.Empty;
+                    addToSector.Object = null;
+                }
+
                 addToSector.Object = ship;
 
                 switch (ship.Allegiance)
@@ -412,7 +458,7 @@ namespace StarTrek_KG.Playfield
             var hostileShipShields = Shields.For(hostileShip);
 
             //var testinghostileShipShields = hostileShipShields.Game.RandomFactorForTesting;
-            int hostileShipShieldsRandom = Utility.Utility.TestableRandom(hostileShipShields.ShipConnectedTo.Map.Game); //testinghostileShipShields == 0 ? Utility.Utility.Random.Next(200) : testinghostileShipShields;
+            int hostileShipShieldsRandom = Utility.Utility.TestableRandom(hostileShipShields.ShipConnectedTo.Map.Game, 200, 200); //testinghostileShipShields == 0 ? Utility.Utility.Random.Next(200) : testinghostileShipShields;
 
             hostileShipShields.Energy = 300 + hostileShipShieldsRandom; //todo: resource this out
 
@@ -800,7 +846,7 @@ namespace StarTrek_KG.Playfield
 
             Point xx = new Point(scanX, scanY);
 
-            ICoordinate coordinateToExamine = new Coordinate(new LocationDef(targetSector, xx));
+            ICoordinate coordinateToExamine = sectorToScan;
             var locationToExamine = new Location(targetSector, coordinateToExamine);
 
             Location divinedLocationOnMap = locationToExamine;

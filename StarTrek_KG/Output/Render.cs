@@ -229,6 +229,14 @@ namespace StarTrek_KG.Output
                         sb.Append(DEFAULTS.STARBASE);
                         break;
 
+                    case CoordinateItem.Deuterium:
+                        sb.Append(" . ");
+                        break;
+
+                    case CoordinateItem.GraviticMine:
+                        sb.Append(DEFAULTS.EMPTY);
+                        break;
+
                     case CoordinateItem.Debug:
                         sb.Append(DEFAULTS.DEBUG_MARKER);
                         break;

@@ -19,7 +19,7 @@ namespace StarTrek_KG.Types
         public string ToScanString()
         {
             string returnVal;
-
+            //todo; resource these names out to config file.
             switch (this.Item)
             {
                 case CoordinateItem.Empty:
@@ -36,6 +36,14 @@ namespace StarTrek_KG.Types
 
                 case CoordinateItem.Starbase:
                     returnVal = "Starbase"; //todo:  When starbases have names then combine with above
+                    break;
+
+                case CoordinateItem.Deuterium:
+                    returnVal = "Deuterium";
+                    break;
+
+                case CoordinateItem.GraviticMine:
+                    returnVal = "Gravitic Mine";
                     break;
 
                 case CoordinateItem.PlayerShip:
