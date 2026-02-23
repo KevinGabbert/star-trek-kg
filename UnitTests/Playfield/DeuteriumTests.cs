@@ -76,6 +76,7 @@ namespace UnitTests.Playfield
             Assert.AreEqual(startingEnergy - 200, _setup.TestMap.Playership.Energy);
             Assert.AreEqual(CoordinateItem.PlayerShip, mineCoordinate.Item);
             Assert.IsNull(mineCoordinate.Object);
+            Assert.IsTrue(_setup.TestMap.Playership.OutputQueue().Any(line => line.Contains("Gravitic mine detonated and damaged the playership.")));
         }
 
         [Test]
@@ -97,6 +98,26 @@ namespace UnitTests.Playfield
             Assert.AreEqual(startingEnergy + 30, hostile.Energy);
             Assert.AreEqual(CoordinateItem.HostileShip, targetCoordinate.Item);
             Assert.AreSame(hostile, targetCoordinate.Object);
+        }
+
+        [Test]
+        public void GraviticMine_Damages_Hostile_And_Outputs_Message()
+        {
+            var activeSector = _setup.TestMap.Sectors.GetActive();
+            var mineCoordinate = activeSector.Coordinates[1, 0];
+            mineCoordinate.Item = CoordinateItem.GraviticMine;
+            mineCoordinate.Object = new GraviticMine();
+
+            var hostile = new StarTrek_KG.Actors.Ship(StarTrek_KG.TypeSafeEnums.FactionName.Klingon, "TestHostile", mineCoordinate, _setup.TestMap)
+            {
+                Energy = 400
+            };
+
+            var startingEnergy = hostile.Energy;
+            activeSector.AddShip(hostile, mineCoordinate);
+
+            Assert.Less(hostile.Energy, startingEnergy);
+            Assert.IsTrue(_setup.TestMap.Playership.OutputQueue().Any(line => line.Contains($"Enemy ship {hostile.Name} has taken damage from a gravitic mine.")));
         }
     }
 }
