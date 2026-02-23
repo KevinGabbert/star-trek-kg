@@ -10,6 +10,8 @@ namespace StarTrek_KG.Settings
         public bool Initialize { get; set; }
         public bool AddStars { get; set; } = true;
         public bool AddNebulae { get; set; } = true;
+        public bool AddDeuterium { get; set; } = true;
+        public bool AddGraviticMines { get; set; } = true;
 
         /// <summary>
         /// The plan here is to be able to start the game by throwing in all objects required for game with XY values

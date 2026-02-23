@@ -226,7 +226,9 @@ namespace UnitTests.Actors.HostileTests
             {
                 Initialize = true,
                 CoordinateDefs = new CoordinateDefs(),
-                AddStars = false
+                AddStars = false,
+                AddDeuterium = false,
+                AddGraviticMines = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
             var activeSector = _setup.TestMap.Sectors.GetActive();

@@ -200,8 +200,15 @@ namespace StarTrek_KG.Playfield
                 }
             }
 
-            this.PopulateDeuteriumPockets();
-            this.PopulateGraviticMines();
+            if (this.GameConfig?.AddDeuterium ?? true)
+            {
+                this.PopulateDeuteriumPockets();
+            }
+
+            if (this.GameConfig?.AddGraviticMines ?? true)
+            {
+                this.PopulateGraviticMines();
+            }
         }
 
         private void PopulateDeuteriumPockets()
