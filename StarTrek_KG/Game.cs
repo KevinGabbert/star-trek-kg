@@ -39,6 +39,7 @@ namespace StarTrek_KG
 
         public bool Started { get; set; }
         public bool GameOver { get; private set; }
+        public bool IsWarGamesMode { get; private set; }
 
         public int RandomFactorForTesting
         {
@@ -53,6 +54,11 @@ namespace StarTrek_KG
         /// and some unsorted crap at the moment..
         /// </summary>
         public Game(IStarTrekKGSettings config, bool startup = true)
+            : this(config, null, startup)
+        {
+        }
+
+        public Game(IStarTrekKGSettings config, SetupOptions startConfigOverride, bool startup = true)
         {
             this.RandomFactorForTesting = 0;
             this.PlayerNowEnemyToFederation = false;  //todo: resource this out.
@@ -88,37 +94,47 @@ namespace StarTrek_KG
 
             if (startup)
             {
-                this.LatestTaunts = new List<FactionThreat>();
-
-                //These constants need to be localized to Game:
-                this.GetConstants();
-
-                this.PrintSector = new Render(this.Interact, this.Config);
-
-                var startConfig = new SetupOptions
-                {
-                    Initialize = true,
-                    AddNebulae = true,
-                    AddDeuterium = this.GetOptionalFeatureFlag("enable-deuterium-sectors"),
-                    AddGraviticMines = this.GetOptionalFeatureFlag("enable-gravitic-mines"),
-                    CoordinateDefs = this.SectorSetup()
-                };
-
-                this.InitMap(startConfig, this);
-
-                //We don't want to start game without hostiles
-                if (this.HostileCheck(this.Map))
-                {
-                    return; //todo: unless we want to have a mode that allows it for some reason.
-                }
-
-                //Set initial color scheme
-                this.Interact.HighlightTextBW(false);
-
-                //todo: why are we creating this PrintSector() class a second time??
-                this.Interact = new Interaction(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
-                this.PrintSector = new Render(this.Interact, this.Config);
+                this.InitializeStartup(startConfigOverride);
             }
+        }
+
+        private void InitializeStartup(SetupOptions startConfigOverride)
+        {
+            this.LatestTaunts = new List<FactionThreat>();
+
+            //These constants need to be localized to Game:
+            this.GetConstants();
+
+            this.PrintSector = new Render(this.Interact, this.Config);
+
+            var startConfig = startConfigOverride ?? this.BuildDefaultSetupOptions();
+            this.IsWarGamesMode = startConfig.IsWarGamesMode;
+            this.InitMap(startConfig, this);
+
+            //We don't want to start game without hostiles (unless deterministic scenario mode explicitly allows it).
+            if (!startConfig.StrictDeterministic && this.HostileCheck(this.Map))
+            {
+                return; //todo: unless we want to have a mode that allows it for some reason.
+            }
+
+            //Set initial color scheme
+            this.Interact.HighlightTextBW(false);
+
+            //todo: why are we creating this PrintSector() class a second time??
+            this.Interact = new Interaction(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
+            this.PrintSector = new Render(this.Interact, this.Config);
+        }
+
+        private SetupOptions BuildDefaultSetupOptions()
+        {
+            return new SetupOptions
+            {
+                Initialize = true,
+                AddNebulae = true,
+                AddDeuterium = this.GetOptionalFeatureFlag("enable-deuterium-sectors"),
+                AddGraviticMines = this.GetOptionalFeatureFlag("enable-gravitic-mines"),
+                CoordinateDefs = this.SectorSetup()
+            };
         }
 
         private void InitMap(SetupOptions startConfig, IGame game)
@@ -368,6 +384,20 @@ namespace StarTrek_KG
 
         private void RandomPicture()
         {
+            var forcedPictureKey = this.Map?.GameConfig?.OpeningPictureKey;
+            if (!string.IsNullOrWhiteSpace(forcedPictureKey))
+            {
+                var forcedPicture = this.GetAppTitlePictureDefs()
+                    .FirstOrDefault(p => string.Equals(p.Item1, forcedPictureKey, StringComparison.OrdinalIgnoreCase));
+
+                if (forcedPicture != null)
+                {
+                    this._lastTitlePictureKey = forcedPicture.Item1;
+                    this.AppTitleItem(forcedPicture.Item1, forcedPicture.Item2);
+                    return;
+                }
+            }
+
             List<Tuple<string, int>> pictures = this.GetAppTitlePictureDefs();
             if (pictures.Count == 0)
             {

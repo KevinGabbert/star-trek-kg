@@ -25,6 +25,9 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly SubsystemType Warp = new SubsystemType(13, "Warp Drive", "wrp");
         public static readonly SubsystemType Impulse = new SubsystemType(14, "Impulse Engines", "imp");
 
+        //todo: refactor this to a new method to call war games.
+        public static readonly SubsystemType WarGames = new SubsystemType(15, "War Games", "wgm");
+
         private static Dictionary<string, SubsystemType> instance = new Dictionary<string, SubsystemType>();
 
         private SubsystemType(int value, string name, string abbreviation)

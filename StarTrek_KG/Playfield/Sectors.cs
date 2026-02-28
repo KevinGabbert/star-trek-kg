@@ -321,7 +321,10 @@ namespace StarTrek_KG.Playfield
             if (shipToRemove.Faction == FactionName.Federation)
             {
                 shipToRemoveName = shipToRemove.Name;
-                this.Map.AddACoupleHostileFederationShipsToExistingMap(); //todo: this needs to be configurable
+                if (!(this.Map?.GameConfig?.StrictDeterministic ?? false))
+                {
+                    this.Map.AddACoupleHostileFederationShipsToExistingMap(); //todo: this needs to be configurable
+                }
             }
 
             this.Write.Line(string.Format("{2} {3} [{0},{1}].", shipToRemove.Coordinate.X, shipToRemove.Coordinate.Y, shipToRemoveName, this.Map.Config.GetText("shipDestroyed")));

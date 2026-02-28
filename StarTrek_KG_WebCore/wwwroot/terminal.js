@@ -133,9 +133,12 @@ async function fetchClientSettings() {
   try {
     const res = await fetch('/api/settings', { method: 'GET' });
     const data = await res.json();
-    return { autoStart: !!(data && data.autoStart) };
+    const autoStartMode = data && typeof data.autoStartMode === 'string'
+      ? data.autoStartMode.toLowerCase()
+      : 'game';
+    return { autoStart: !!(data && data.autoStart), autoStartMode };
   } catch {
-    return { autoStart: false };
+    return { autoStart: false, autoStartMode: 'game' };
   }
 }
 
@@ -211,7 +214,7 @@ jQuery(function ($) {
     const greetings =
       'Star Trek KG\n\n' +
       'A modern, C# rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :)\n\n' +
-      (settings.autoStart ? '' : 'Type "start" to begin, or "term menu" for terminal commands\n') +
+      (settings.autoStart ? '' : 'Type "start" or "war games" to begin, or "term menu" for terminal commands\n') +
       'This application is currently under construction.\n';
 
     const terminalWindow = termHost.terminalWindow(async function (command, term) {
@@ -228,7 +231,8 @@ jQuery(function ($) {
     terminal.set_prompt(prompt);
 
     if (settings.autoStart && prompt.trim() === 'Terminal:') {
-      await processCommand('start', terminal);
+      const startCommand = settings.autoStartMode === 'war games' ? 'war games' : 'start';
+      await processCommand(startCommand, terminal);
     }
   })();
 });

@@ -84,6 +84,46 @@ namespace UnitTests.GameTests
             Assert.AreEqual(0, map.Stardate);
         }
 
+        [Test]
+        public void StrictDeterministicStartup_AllowsNoHostiles()
+        {
+            var setup = new StarTrek_KG.Settings.SetupOptions
+            {
+                Initialize = true,
+                AddStars = false,
+                AddNebulae = false,
+                StrictDeterministic = true,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 0)), StarTrek_KG.Enums.CoordinateItem.PlayerShip)
+                }
+            };
+
+            var game = new Game(new StarTrekKGSettings(), setup);
+
+            Assert.False(game.GameOver);
+        }
+
+        [Test]
+        public void NonDeterministicStartup_WithNoHostiles_IsGameOver()
+        {
+            var setup = new StarTrek_KG.Settings.SetupOptions
+            {
+                Initialize = true,
+                AddStars = false,
+                AddNebulae = false,
+                StrictDeterministic = false,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 0)), StarTrek_KG.Enums.CoordinateItem.PlayerShip)
+                }
+            };
+
+            var game = new Game(new StarTrekKGSettings(), setup);
+
+            Assert.True(game.GameOver);
+        }
+
         /// <summary>
         /// Tests code in context with surrounding code
         /// </summary>

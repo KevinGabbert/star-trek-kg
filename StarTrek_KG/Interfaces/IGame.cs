@@ -11,6 +11,7 @@ namespace StarTrek_KG.Interfaces
         IMap Map { get; set; }
         int RandomFactorForTesting { get; set; }
         bool PlayerNowEnemyToFederation { get; set; }
+        bool IsWarGamesMode { get; }
         List<FactionThreat> LatestTaunts { get; set; }
         Game._promptFunc<string, bool> Prompt { get; set; }
 

@@ -31,6 +31,7 @@ namespace StarTrek_KG.TypeSafeEnums
         //todo: support these commands
         public static readonly Menu ver = new Menu(16, "ver", "");
         public static readonly Menu clear = new Menu(17, "clear", "");
+        public static readonly Menu wgm = new Menu(18, "wgm", "War Games Actor Control");
 
         private static Dictionary<string, Menu> instance = new Dictionary<string, Menu>();
 

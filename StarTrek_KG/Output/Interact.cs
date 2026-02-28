@@ -708,6 +708,10 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  she   Shields"));
                     retVal.AddRange(this.Output.WriteLine("  com   Computer"));
                     retVal.AddRange(this.Output.WriteLine("  dmg   Damage control"));
+                    if (playerShip.Map?.Game?.IsWarGamesMode == true)
+                    {
+                        retVal.AddRange(this.Output.WriteLine("  wgm   War Games actor control"));
+                    }
                     retVal.AddRange(this.Output.WriteLine(""));
                     retVal.AddRange(this.Output.WriteLine("NATURAL LANGUAGE EXAMPLES"));
                     retVal.AddRange(this.Output.WriteLine("  add 500 to shields"));
@@ -787,6 +791,11 @@ namespace StarTrek_KG.Output
 
         public void CreateCommandPanel()
         {
+            this.CreateCommandPanelFor(null);
+        }
+
+        private void CreateCommandPanelFor(IShip playerShip)
+        {
             //todo: resource out this menu
             SHIP_PANEL = new List<string>
             {
@@ -807,6 +816,11 @@ namespace StarTrek_KG.Output
                 "com = Access Computer",
                 "dmg = Damage Control"
             };
+
+            if (playerShip?.Map?.Game?.IsWarGamesMode == true)
+            {
+                SHIP_PANEL.Add("wgm = War Games Actor Control");
+            }
 
             if (DEFAULTS.DEBUG_MODE)
             {
@@ -909,6 +923,18 @@ namespace StarTrek_KG.Output
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Debug;
                 retVal = this.DebugMenu(playerShip).ToList();
             }
+            else if (menuCommand == Menu.wgm.ToString())
+            {
+                if (playerShip.Map?.Game?.IsWarGamesMode == true)
+                {
+                    this.Subscriber.PromptInfo.SubSystem = SubsystemType.WarGames;
+                    retVal = this.WarGamesMenu(playerShip).ToList();
+                }
+                else
+                {
+                    retVal = this.Output.WriteLine("War Games Actor Control is only available in war games mode.");
+                }
+            }
             else if (menuCommand == Menu.ver.ToString())
             {
                 retVal = this.Output.WriteLine("Application Version: " + this.GetConfigText("AppVersion").Remove(1,1)); //todo: resource this
@@ -921,7 +947,7 @@ namespace StarTrek_KG.Output
                 }
 
                 this.ResetPrompt();
-                this.CreateCommandPanel();
+                this.CreateCommandPanelFor(playerShip);
 
                 var panel = this.Panel(this.GetPanelHead(playerShip.Name), SHIP_PANEL).ToList();
                 retVal.AddRange(panel);
@@ -944,6 +970,13 @@ namespace StarTrek_KG.Output
             {
                 ISubsystem navSubsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
                 retVal = navSubsystem.Controls(playerEnteredText);
+                return retVal?.ToList();
+            }
+
+            if (this.Subscriber.PromptInfo.SubSystem == SubsystemType.WarGames &&
+                this.Subscriber.PromptInfo.Level > 0)
+            {
+                retVal = this.EvalWarGamesCommand(playerShip, playerEnteredText);
                 return retVal?.ToList();
             }
 
@@ -1003,6 +1036,119 @@ namespace StarTrek_KG.Output
                 this.Output.Queue,
                 1);
 
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> WarGamesMenu(IShip playerShip)
+        {
+            this.Output.WriteLine("");
+            this.Output.WriteLine("--- War Games Actor Control ---");
+            this.Output.WriteLine("hst = Add hostile ship");
+            this.Output.WriteLine("str = Add star");
+            this.Output.WriteLine("stb = Add starbase");
+            this.Output.WriteLine("deu = Add deuterium");
+            this.Output.WriteLine("gmn = Add gravitic mine");
+            this.Output.WriteLine("ship = Exit back to Ship Panel");
+            this.Output.WriteLine("");
+
+            string promptReply;
+            this.PromptUser(
+                SubsystemType.WarGames,
+                $"{this.Subscriber.PromptInfo.DefaultPrompt}War Games -> ",
+                null,
+                out promptReply,
+                this.Output.Queue,
+                1);
+
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> EvalWarGamesCommand(IShip playerShip, string command)
+        {
+            switch (command)
+            {
+                case "hst":
+                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.HostileShip);
+                case "str":
+                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.Star);
+                case "stb":
+                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.Starbase);
+                case "deu":
+                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.Deuterium);
+                case "gmn":
+                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.GraviticMine);
+                case "back":
+                    return this.WarGamesMenu(playerShip);
+                default:
+                    this.Output.WriteLine("Unrecognized war games actor command.");
+                    return this.Output.Queue.ToList();
+            }
+        }
+
+        private IEnumerable<string> AddRandomActorToCurrentSector(IShip playerShip, CoordinateItem item)
+        {
+            var sector = playerShip.GetSector();
+            if (sector == null)
+            {
+                this.Output.WriteLine("No active sector available.");
+                return this.Output.Queue.ToList();
+            }
+
+            var empties = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+            if (!empties.Any())
+            {
+                this.Output.WriteLine($"Nothing can be added to sector [{sector.X},{sector.Y}] because it is full.");
+                return this.Output.Queue.ToList();
+            }
+
+            var coordinate = empties[Utility.Utility.Random.Next(empties.Count)];
+
+            switch (item)
+            {
+                case CoordinateItem.HostileShip:
+                    var names = playerShip.Map.Config.ShipNames(FactionName.Klingon);
+                    var name = names != null && names.Any()
+                        ? names[Utility.Utility.Random.Next(names.Count)]
+                        : "Klingon Raider";
+                    var hostile = new Actors.Ship(FactionName.Klingon, name, coordinate, playerShip.Map);
+                    sector.AddShip(hostile, coordinate);
+                    break;
+
+                case CoordinateItem.Star:
+                    coordinate.Item = CoordinateItem.Star;
+                    coordinate.Object = new Actors.Star
+                    {
+                        Name = $"{sector.Name} Star",
+                        Designation = "*"
+                    };
+                    break;
+
+                case CoordinateItem.Starbase:
+                    coordinate.Item = CoordinateItem.Starbase;
+                    coordinate.Object = null;
+                    break;
+
+                case CoordinateItem.Deuterium:
+                    var min = this.Config.GetSetting<int>("DeuteriumMin");
+                    var max = this.Config.GetSetting<int>("DeuteriumMax");
+                    if (max < min)
+                    {
+                        max = min;
+                    }
+                    coordinate.Item = CoordinateItem.Deuterium;
+                    coordinate.Object = new Deuterium(Utility.Utility.Random.Next(min, max + 1));
+                    break;
+
+                case CoordinateItem.GraviticMine:
+                    coordinate.Item = CoordinateItem.GraviticMine;
+                    coordinate.Object = new GraviticMine
+                    {
+                        Coordinate = coordinate
+                    };
+                    break;
+            }
+
+            this.Output.WriteLine($"{item} added at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
             return this.Output.Queue.ToList();
         }
 

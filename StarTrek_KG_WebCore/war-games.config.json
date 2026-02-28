@@ -1,0 +1,38 @@
+{
+  "scenarioName": "single-sector-debug",
+  "strictDeterministic": true,
+  "features": {
+    "addStars": false,
+    "addNebulae": false,
+    "addDeuterium": false,
+    "addGraviticMines": false
+  },
+  "player": {
+    "faction": "Federation",
+    "name": "Enterprise",
+    "sector": { "x": 0, "y": 0 },
+    "coordinate": { "x": 0, "y": 0 }
+  },
+  "actors": [
+    {
+      "type": "HostileShip",
+      "sector": { "x": 0, "y": 0 },
+      "coordinate": { "x": 0, "y": 1 }
+    },
+    {
+      "type": "Star",
+      "sector": { "x": 0, "y": 0 },
+      "coordinate": { "x": 0, "y": 2 }
+    },
+    {
+      "type": "Star",
+      "sector": { "x": 0, "y": 0 },
+      "coordinate": { "x": 0, "y": 3 }
+    },
+    {
+      "type": "Starbase",
+      "sector": { "x": 0, "y": 0 },
+      "coordinate": { "x": 0, "y": 4 }
+    }
+  ]
+}
