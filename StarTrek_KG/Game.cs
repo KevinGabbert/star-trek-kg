@@ -99,6 +99,8 @@ namespace StarTrek_KG
                 {
                     Initialize = true,
                     AddNebulae = true,
+                    AddDeuterium = this.GetOptionalFeatureFlag("enable-deuterium-sectors"),
+                    AddGraviticMines = this.GetOptionalFeatureFlag("enable-gravitic-mines"),
                     CoordinateDefs = this.SectorSetup()
                 };
 
@@ -242,6 +244,19 @@ namespace StarTrek_KG
             DEFAULTS.STAR = this.Config.GetSetting<string>("StarGlyph");
             DEFAULTS.STARBASE = this.Config.GetSetting<string>("StarbaseGlyph");
             DEFAULTS.ALLY = this.Config.GetSetting<string>("AllyGlyph");
+        }
+
+        private bool GetOptionalFeatureFlag(string settingName)
+        {
+            try
+            {
+                return this.Config.GetSetting<bool>(settingName);
+            }
+            catch
+            {
+                // Missing feature key defaults to disabled.
+                return false;
+            }
         }
 
         private CoordinateDefs SectorSetup()
