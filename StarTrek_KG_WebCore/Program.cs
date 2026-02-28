@@ -18,6 +18,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 var games = new ConcurrentDictionary<string, Game>(StringComparer.OrdinalIgnoreCase);
+var autoStartEnabled = IsAutoStartEnabled();
 
 app.MapPost("/api/start", (StartRequest request) =>
 {
@@ -110,6 +111,11 @@ app.MapPost("/api/prompt", (PromptRequest request) =>
     return Results.Ok(new PromptResponse(sessionId, prompt));
 });
 
+app.MapGet("/api/settings", () =>
+{
+    return Results.Ok(new SettingsResponse(autoStartEnabled));
+});
+
 app.Run();
 
 static void EnsureConfigFile()
@@ -129,6 +135,19 @@ static Game CreateGame()
 {
     var settings = new StarTrekKGSettings();
     return new Game(settings);
+}
+
+static bool IsAutoStartEnabled()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        return settings.GetSetting<bool>("auto-start");
+    }
+    catch
+    {
+        return false;
+    }
 }
 
 static CommandResponse StartSession(ConcurrentDictionary<string, Game> games, string sessionId)
@@ -183,3 +202,4 @@ record CommandRequest(string SessionId, string Command);
 record PromptRequest(string SessionId);
 record CommandResponse(string SessionId, List<string> Lines);
 record PromptResponse(string SessionId, string Prompt);
+record SettingsResponse(bool AutoStart);

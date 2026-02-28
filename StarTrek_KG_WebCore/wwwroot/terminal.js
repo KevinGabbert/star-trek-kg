@@ -129,24 +129,27 @@ async function sendTerminalCommand(command) {
   return data && data.lines ? data.lines : [];
 }
 
+async function fetchClientSettings() {
+  try {
+    const res = await fetch('/api/settings', { method: 'GET' });
+    const data = await res.json();
+    return { autoStart: !!(data && data.autoStart) };
+  } catch {
+    return { autoStart: false };
+  }
+}
+
 jQuery(function ($) {
   if (!$('#termWindow').length || !$.fn.terminalWindow) {
     return;
   }
 
-    const greetings =
-        'Star Trek KG\n\n' +
-        'A modern, C# rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :)\n\n' +
-        'Type "start" to begin, or "term menu" for terminal commands\n' +
-        'This application is currently under construction.\n';
-
   const termHost = $('#termWindow');
   let lastCondition = null;
   let lastInNebula = false;
 
-  const terminal = termHost.terminalWindow(async function (command, term) {
+  async function processCommand(command, term) {
     if (!command) return;
-
     const lines = await sendTerminalCommand(command);
     const result = splitHeader(lines);
 
@@ -201,12 +204,31 @@ jQuery(function ($) {
 
     const prompt = await fetchPrompt(getTerminalSessionId());
     term.set_prompt(prompt);
-  }, {
-    prompt: 'Terminal: ',
-    name: 'termWindow',
-    height: $(window).height(),
-    greetings: greetings
-  });
+  }
 
-  fetchPrompt(getTerminalSessionId()).then(prompt => terminal.set_prompt(prompt));
+  (async function initializeTerminal() {
+    const settings = await fetchClientSettings();
+    const greetings =
+      'Star Trek KG\n\n' +
+      'A modern, C# rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :)\n\n' +
+      (settings.autoStart ? '' : 'Type "start" to begin, or "term menu" for terminal commands\n') +
+      'This application is currently under construction.\n';
+
+    const terminalWindow = termHost.terminalWindow(async function (command, term) {
+      await processCommand(command, term);
+    }, {
+      prompt: 'Terminal: ',
+      name: 'termWindow',
+      height: $(window).height(),
+      greetings: greetings
+    });
+    const terminal = terminalWindow.terminal || terminalWindow;
+
+    const prompt = await fetchPrompt(getTerminalSessionId());
+    terminal.set_prompt(prompt);
+
+    if (settings.autoStart && prompt.trim() === 'Terminal:') {
+      await processCommand('start', terminal);
+    }
+  })();
 });
