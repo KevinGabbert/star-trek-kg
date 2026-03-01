@@ -2473,7 +2473,14 @@ namespace StarTrek_KG.Output
 
         public void PrintMissionResult(IShip ship, bool starbasesAreHostile, int starbasesLeft)
         {
+            if (ship?.Map == null)
+            {
+                return;
+            }
+
             var commandResult = string.Empty;
+            var hostilesLeft = ship.Map.Sectors.GetHostileCount();
+            var timeRemaining = ship.Map.timeRemaining;
 
             string missionFailed = this.GetConfigText("MissionFailed");
             string shipDestroyed = this.GetConfigText("ShipDestroyed");
@@ -2494,18 +2501,21 @@ namespace StarTrek_KG.Output
             {
                 commandResult = $"{allFedShipsDestroyed}";
             }
-            else if (this.TotalHostiles == 0)
+            else if (hostilesLeft == 0)
             {
                 commandResult = $"{missionAccomplished}";
             }
-            else if (this.TimeRemaining == 0)
+            else if (timeRemaining == 0)
             {
                 commandResult = $"{missionFailed} {ship.Name.ToUpper()} {timeOver}";
             }
 
             //else - No status to report.  Game continues
 
-            this.Line(commandResult);
+            if (!string.IsNullOrWhiteSpace(commandResult))
+            {
+                this.Line(commandResult);
+            }
         }
 
         public void PrintMission()
