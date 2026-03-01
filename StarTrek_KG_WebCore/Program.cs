@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using StarTrek_KG;
+using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
@@ -151,6 +152,13 @@ static CommandResponse StartSession(ConcurrentDictionary<string, SessionState> s
 
     var lines = WrapResponseText(requestedMode == SessionMode.WarGames ? "War Games Session Started.." : "Game Started..");
     lines.AddRange(state.Game.Interact.Output.Queue.ToList());
+
+    if (requestedMode == SessionMode.WarGames)
+    {
+        var postStartLines = WarGamesStartup.ExecuteConfiguredPostStartCommand(state.Game, state.Game.Config);
+        lines.AddRange(postStartLines);
+    }
+
     return new CommandResponse(id, lines);
 }
 

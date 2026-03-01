@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using StarTrek_KG.Commands;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
@@ -595,6 +596,13 @@ namespace StarTrek_KG.Output
                 return null;
             }
 
+            if (this.Subscriber.PromptInfo.Level == 0 &&
+                playerShip?.Map?.Game?.IsWarGamesMode == true &&
+                this.TryParseWarGamesNaturalLanguage(playerShip, userCommand, out var warGamesAction))
+            {
+                return this.ExecuteWarGamesNaturalLanguageAction(playerShip, warGamesAction).ToList();
+            }
+
             if (this.Subscriber.PromptInfo.Level == 0)
             {
                 string nlCommand = NaturalLanguageRouter.TryParse(userCommand);
@@ -1043,11 +1051,21 @@ namespace StarTrek_KG.Output
         {
             this.Output.WriteLine("");
             this.Output.WriteLine("--- War Games Actor Control ---");
-            this.Output.WriteLine("hst = Add hostile ship");
+            this.Output.WriteLine("hst = Add klingon ship");
+            this.Output.WriteLine("fed = Add federation ship");
             this.Output.WriteLine("str = Add star");
             this.Output.WriteLine("stb = Add starbase");
             this.Output.WriteLine("deu = Add deuterium");
             this.Output.WriteLine("gmn = Add gravitic mine");
+            this.Output.WriteLine("nl examples:");
+            this.Output.WriteLine("  add 1 hostile to sector");
+            this.Output.WriteLine("  add 3 klingons");
+            this.Output.WriteLine("  add ikc nastaj");
+            this.Output.WriteLine("  add 1 federation ship");
+            this.Output.WriteLine("  add 3 starbases");
+            this.Output.WriteLine("  destroy ikc nivdup");
+            this.Output.WriteLine("  destroy 1 klingon");
+            this.Output.WriteLine("  destroy 2 stars");
             this.Output.WriteLine("ship = Exit back to Ship Panel");
             this.Output.WriteLine("");
 
@@ -1065,27 +1083,75 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> EvalWarGamesCommand(IShip playerShip, string command)
         {
-            switch (command)
+            var normalizedCommand = (command ?? string.Empty).Trim();
+            switch (normalizedCommand.ToLowerInvariant())
             {
                 case "hst":
-                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.HostileShip);
+                    return this.AddRandomHostileShipsToCurrentSector(playerShip, 1);
+                case "fed":
+                    return this.AddRandomActorsToCurrentSector(playerShip, WarGamesActorKind.FactionShip, 1, FactionName.Federation);
                 case "str":
-                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.Star);
+                    return this.AddRandomActorsToCurrentSector(playerShip, WarGamesActorKind.Star, 1);
                 case "stb":
-                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.Starbase);
+                    return this.AddRandomActorsToCurrentSector(playerShip, WarGamesActorKind.Starbase, 1);
                 case "deu":
-                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.Deuterium);
+                    return this.AddRandomActorsToCurrentSector(playerShip, WarGamesActorKind.Deuterium, 1);
                 case "gmn":
-                    return this.AddRandomActorToCurrentSector(playerShip, CoordinateItem.GraviticMine);
+                    return this.AddRandomActorsToCurrentSector(playerShip, WarGamesActorKind.GraviticMine, 1);
                 case "back":
                     return this.WarGamesMenu(playerShip);
                 default:
+                    if (this.TryParseWarGamesNaturalLanguage(playerShip, normalizedCommand, out var action))
+                    {
+                        return this.ExecuteWarGamesNaturalLanguageAction(playerShip, action);
+                    }
+
                     this.Output.WriteLine("Unrecognized war games actor command.");
                     return this.Output.Queue.ToList();
             }
         }
 
-        private IEnumerable<string> AddRandomActorToCurrentSector(IShip playerShip, CoordinateItem item)
+        private IEnumerable<string> ExecuteWarGamesNaturalLanguageAction(IShip playerShip, WarGamesAction action)
+        {
+            if (action.Mode == WarGamesActionMode.Add)
+            {
+                if (!string.IsNullOrWhiteSpace(action.TargetName))
+                {
+                    return this.AddNamedShipToCurrentSector(playerShip, action.TargetName, action.Faction);
+                }
+
+                if (action.ActorKind == WarGamesActorKind.HostileShip)
+                {
+                    return this.AddRandomHostileShipsToCurrentSector(playerShip, action.Count);
+                }
+
+                if (action.ActorKind == WarGamesActorKind.FactionShip && action.Faction != null)
+                {
+                    return this.AddRandomActorsToCurrentSector(playerShip, action.ActorKind, action.Count, action.Faction);
+                }
+
+                return this.AddRandomActorsToCurrentSector(playerShip, action.ActorKind, action.Count);
+            }
+
+            if (action.Mode == WarGamesActionMode.DestroyByName)
+            {
+                return this.DestroyActorByNameInCurrentSector(playerShip, action.TargetName);
+            }
+
+            if (action.ActorKind == WarGamesActorKind.HostileShip)
+            {
+                return this.DestroyActorsInCurrentSector(playerShip, action.ActorKind, action.Count);
+            }
+
+            if (action.ActorKind == WarGamesActorKind.FactionShip && action.Faction != null)
+            {
+                return this.DestroyActorsInCurrentSector(playerShip, action.ActorKind, action.Count, action.Faction);
+            }
+
+            return this.DestroyActorsInCurrentSector(playerShip, action.ActorKind, action.Count);
+        }
+
+        private IEnumerable<string> AddNamedShipToCurrentSector(IShip playerShip, string requestedName, FactionName requestedFaction = null)
         {
             var sector = playerShip.GetSector();
             if (sector == null)
@@ -1100,56 +1166,774 @@ namespace StarTrek_KG.Output
                 this.Output.WriteLine($"Nothing can be added to sector [{sector.X},{sector.Y}] because it is full.");
                 return this.Output.Queue.ToList();
             }
+            var emptyCoordinate = empties[Utility.Utility.Random.Next(empties.Count)];
 
-            var coordinate = empties[Utility.Utility.Random.Next(empties.Count)];
-
-            switch (item)
+            var exactName = requestedName?.Trim();
+            if (string.IsNullOrWhiteSpace(exactName))
             {
-                case CoordinateItem.HostileShip:
-                    var names = playerShip.Map.Config.ShipNames(FactionName.Klingon);
-                    var name = names != null && names.Any()
-                        ? names[Utility.Utility.Random.Next(names.Count)]
-                        : "Klingon Raider";
-                    var hostile = new Actors.Ship(FactionName.Klingon, name, coordinate, playerShip.Map);
-                    sector.AddShip(hostile, coordinate);
-                    break;
+                this.Output.WriteLine("A ship name is required.");
+                return this.Output.Queue.ToList();
+            }
 
-                case CoordinateItem.Star:
+            if (!this.TryResolveShipNameAndFaction(playerShip, exactName, requestedFaction, out var resolvedName, out var resolvedFaction))
+            {
+                this.Output.WriteLine($"Ship '{exactName}' was not found in config ship lists.");
+                return this.Output.Queue.ToList();
+            }
+
+            this.AddShipToCoordinate(playerShip, sector, emptyCoordinate, resolvedFaction, resolvedName);
+            this.Output.WriteLine($"{resolvedFaction} ship {resolvedName} added at coordinate [{emptyCoordinate.X},{emptyCoordinate.Y}] in sector [{sector.X},{sector.Y}].");
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> AddRandomHostileShipsToCurrentSector(IShip playerShip, int count)
+        {
+            var hostileFactions = this.GetHostileShipFactions(playerShip).ToList();
+            if (!hostileFactions.Any())
+            {
+                this.Output.WriteLine("No hostile factions are configured.");
+                return this.Output.Queue.ToList();
+            }
+
+            var sector = playerShip.GetSector();
+            if (sector == null)
+            {
+                this.Output.WriteLine("No active sector available.");
+                return this.Output.Queue.ToList();
+            }
+
+            if (count <= 0)
+            {
+                this.Output.WriteLine("Count must be greater than zero.");
+                return this.Output.Queue.ToList();
+            }
+
+            var empties = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+            if (!empties.Any())
+            {
+                this.Output.WriteLine($"Nothing can be added to sector [{sector.X},{sector.Y}] because it is full.");
+                return this.Output.Queue.ToList();
+            }
+
+            var itemsToAdd = Math.Min(count, empties.Count);
+            var omitted = count - itemsToAdd;
+
+            for (var i = 0; i < itemsToAdd; i++)
+            {
+                var coordinate = empties[Utility.Utility.Random.Next(empties.Count)];
+                empties.Remove(coordinate);
+                var faction = hostileFactions[Utility.Utility.Random.Next(hostileFactions.Count)];
+                this.AddActorToCoordinate(playerShip, sector, coordinate, WarGamesActorKind.FactionShip, faction);
+                var shipName = (coordinate.Object as IShip)?.Name ?? "unknown";
+                this.Output.WriteLine($"{faction} hostile {shipName} added at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
+            }
+
+            if (omitted > 0)
+            {
+                this.Output.WriteLine($"{omitted} actor(s) were not added because sector [{sector.X},{sector.Y}] is full.");
+            }
+
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> AddRandomActorsToCurrentSector(IShip playerShip, WarGamesActorKind actorKind, int count, FactionName faction = null)
+        {
+            var sector = playerShip.GetSector();
+            if (sector == null)
+            {
+                this.Output.WriteLine("No active sector available.");
+                return this.Output.Queue.ToList();
+            }
+
+            if (count <= 0)
+            {
+                this.Output.WriteLine("Count must be greater than zero.");
+                return this.Output.Queue.ToList();
+            }
+
+            var empties = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+            if (!empties.Any())
+            {
+                this.Output.WriteLine($"Nothing can be added to sector [{sector.X},{sector.Y}] because it is full.");
+                return this.Output.Queue.ToList();
+            }
+
+            var itemsToAdd = Math.Min(count, empties.Count);
+            var omitted = count - itemsToAdd;
+
+            for (var i = 0; i < itemsToAdd; i++)
+            {
+                var coordinate = empties[Utility.Utility.Random.Next(empties.Count)];
+                empties.Remove(coordinate);
+                this.AddActorToCoordinate(playerShip, sector, coordinate, actorKind, faction);
+
+                if (actorKind == WarGamesActorKind.FactionShip)
+                {
+                    var shipName = (coordinate.Object as IShip)?.Name ?? "unknown";
+                    this.Output.WriteLine($"{faction} ship {shipName} added at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
+                }
+                else
+                {
+                    this.Output.WriteLine($"{this.GetWarGamesActorDisplayName(actorKind)} added at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
+                }
+            }
+
+            if (omitted > 0)
+            {
+                this.Output.WriteLine($"{omitted} actor(s) were not added because sector [{sector.X},{sector.Y}] is full.");
+            }
+
+            return this.Output.Queue.ToList();
+        }
+
+        private void AddActorToCoordinate(IShip playerShip, ISector sector, Coordinate coordinate, WarGamesActorKind actorKind, FactionName faction = null)
+        {
+            switch (actorKind)
+            {
+                case WarGamesActorKind.HostileShip:
+                    var hostileFactions = this.GetHostileShipFactions(playerShip).ToList();
+                    var hostileFaction = hostileFactions.Any()
+                        ? hostileFactions[Utility.Utility.Random.Next(hostileFactions.Count)]
+                        : FactionName.Klingon;
+                    this.AddShipToCoordinate(playerShip, sector, coordinate, hostileFaction, null);
+                    return;
+
+                case WarGamesActorKind.FactionShip:
+                    var useFaction = faction ?? FactionName.Klingon;
+                    this.AddShipToCoordinate(playerShip, sector, coordinate, useFaction, null);
+                    return;
+
+                case WarGamesActorKind.Star:
                     coordinate.Item = CoordinateItem.Star;
                     coordinate.Object = new Actors.Star
                     {
                         Name = $"{sector.Name} Star",
                         Designation = "*"
                     };
-                    break;
+                    return;
 
-                case CoordinateItem.Starbase:
+                case WarGamesActorKind.Starbase:
                     coordinate.Item = CoordinateItem.Starbase;
                     coordinate.Object = null;
-                    break;
+                    return;
 
-                case CoordinateItem.Deuterium:
+                case WarGamesActorKind.Deuterium:
                     var min = this.Config.GetSetting<int>("DeuteriumMin");
                     var max = this.Config.GetSetting<int>("DeuteriumMax");
                     if (max < min)
                     {
                         max = min;
                     }
+
                     coordinate.Item = CoordinateItem.Deuterium;
                     coordinate.Object = new Deuterium(Utility.Utility.Random.Next(min, max + 1));
-                    break;
+                    return;
 
-                case CoordinateItem.GraviticMine:
+                case WarGamesActorKind.GraviticMine:
                     coordinate.Item = CoordinateItem.GraviticMine;
                     coordinate.Object = new GraviticMine
                     {
                         Coordinate = coordinate
                     };
-                    break;
+                    return;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(actorKind), actorKind, null);
+            }
+        }
+
+        private void AddShipToCoordinate(IShip playerShip, ISector sector, Coordinate coordinate, FactionName faction, string fallbackName = null)
+        {
+            var names = playerShip.Map.Config.ShipNames(faction);
+            var name = names != null && names.Any()
+                ? names[Utility.Utility.Random.Next(names.Count)]
+                : fallbackName;
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = $"{faction} Patrol";
             }
 
-            this.Output.WriteLine($"{item} added at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
+            var ship = new Actors.Ship(faction, name, coordinate, playerShip.Map);
+            sector.AddShip(ship, coordinate);
+        }
+
+        private IEnumerable<string> DestroyActorByNameInCurrentSector(IShip playerShip, string targetName)
+        {
+            var sector = playerShip.GetSector();
+            if (sector == null)
+            {
+                this.Output.WriteLine("No active sector available.");
+                return this.Output.Queue.ToList();
+            }
+
+            if (string.IsNullOrWhiteSpace(targetName))
+            {
+                this.Output.WriteLine("A target name is required.");
+                return this.Output.Queue.ToList();
+            }
+
+            var coordinate = sector.Coordinates.FirstOrDefault(c =>
+                c.Object != null &&
+                !string.IsNullOrWhiteSpace(c.Object.Name) &&
+                string.Equals(c.Object.Name, targetName, StringComparison.OrdinalIgnoreCase));
+
+            if (coordinate == null)
+            {
+                this.Output.WriteLine($"No actor named '{targetName}' found in sector [{sector.X},{sector.Y}].");
+                return this.Output.Queue.ToList();
+            }
+
+            var destroyedName = coordinate.Object?.Name ?? targetName;
+            coordinate.Item = CoordinateItem.Empty;
+            coordinate.Object = null;
+            this.Output.WriteLine($"Destroyed {destroyedName} at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
             return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> DestroyActorsInCurrentSector(IShip playerShip, WarGamesActorKind actorKind, int count, FactionName faction = null)
+        {
+            var sector = playerShip.GetSector();
+            if (sector == null)
+            {
+                this.Output.WriteLine("No active sector available.");
+                return this.Output.Queue.ToList();
+            }
+
+            if (count <= 0)
+            {
+                this.Output.WriteLine("Count must be greater than zero.");
+                return this.Output.Queue.ToList();
+            }
+
+            var matches = this.GetMatchingCoordinatesForActor(sector, actorKind, faction).ToList();
+            if (!matches.Any())
+            {
+                var actorDisplay = actorKind == WarGamesActorKind.FactionShip && faction != null
+                    ? $"{faction} ship"
+                    : this.GetWarGamesActorDisplayName(actorKind);
+                this.Output.WriteLine($"No {actorDisplay} found in sector [{sector.X},{sector.Y}].");
+                return this.Output.Queue.ToList();
+            }
+
+            var toRemove = Math.Min(count, matches.Count);
+            var omitted = count - toRemove;
+
+            for (var i = 0; i < toRemove; i++)
+            {
+                var coordinate = matches[Utility.Utility.Random.Next(matches.Count)];
+                matches.Remove(coordinate);
+                var destroyedName = coordinate.Object?.Name;
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
+
+                if (!string.IsNullOrWhiteSpace(destroyedName))
+                {
+                    this.Output.WriteLine($"Destroyed {destroyedName} at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
+                }
+                else
+                {
+                    this.Output.WriteLine($"Destroyed {this.GetWarGamesActorDisplayName(actorKind)} at coordinate [{coordinate.X},{coordinate.Y}] in sector [{sector.X},{sector.Y}].");
+                }
+            }
+
+            if (omitted > 0)
+            {
+                this.Output.WriteLine($"{omitted} actor(s) could not be destroyed because only {toRemove} matched in sector [{sector.X},{sector.Y}].");
+            }
+
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<Coordinate> GetMatchingCoordinatesForActor(ISector sector, WarGamesActorKind actorKind, FactionName faction = null)
+        {
+            switch (actorKind)
+            {
+                case WarGamesActorKind.HostileShip:
+                    return sector.Coordinates.Where(c => c.Item == CoordinateItem.HostileShip &&
+                                                         c.Object is IShip);
+                case WarGamesActorKind.FactionShip:
+                    if (faction == null)
+                    {
+                        return Enumerable.Empty<Coordinate>();
+                    }
+
+                    return sector.Coordinates.Where(c => c.Item == CoordinateItem.HostileShip &&
+                                                         c.Object is IShip ship &&
+                                                         ship.Faction == faction);
+                case WarGamesActorKind.Star:
+                    return sector.Coordinates.Where(c => c.Item == CoordinateItem.Star);
+                case WarGamesActorKind.Starbase:
+                    return sector.Coordinates.Where(c => c.Item == CoordinateItem.Starbase);
+                case WarGamesActorKind.Deuterium:
+                    return sector.Coordinates.Where(c => c.Item == CoordinateItem.Deuterium);
+                case WarGamesActorKind.GraviticMine:
+                    return sector.Coordinates.Where(c => c.Item == CoordinateItem.GraviticMine);
+                default:
+                    return Enumerable.Empty<Coordinate>();
+            }
+        }
+
+        private string GetWarGamesActorDisplayName(WarGamesActorKind actorKind)
+        {
+            switch (actorKind)
+            {
+                case WarGamesActorKind.HostileShip:
+                    return "hostile ship";
+                case WarGamesActorKind.FactionShip:
+                    return "faction ship";
+                case WarGamesActorKind.Star:
+                    return "star";
+                case WarGamesActorKind.Starbase:
+                    return "starbase";
+                case WarGamesActorKind.Deuterium:
+                    return "deuterium";
+                case WarGamesActorKind.GraviticMine:
+                    return "gravitic mine";
+                default:
+                    return "actor";
+            }
+        }
+
+        private bool TryParseWarGamesNaturalLanguage(IShip playerShip, string command, out WarGamesAction action)
+        {
+            action = null;
+
+            if (string.IsNullOrWhiteSpace(command))
+            {
+                return false;
+            }
+
+            var normalized = Regex.Replace(command.Trim(), @"\s+", " ");
+
+            var addMatch = Regex.Match(normalized, @"^add\s+(?<count>\d+)\s+(?<actor>.+?)(?:\s+(?:to|in)\s+sector)?$", RegexOptions.IgnoreCase);
+            if (addMatch.Success)
+            {
+                if (!int.TryParse(addMatch.Groups["count"].Value, out var addCount))
+                {
+                    return false;
+                }
+
+                var actorText = this.TrimWarGamesSectorQualifier(addMatch.Groups["actor"].Value);
+
+                if (this.TryMapWarGamesActorType(actorText, out var actorKind))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.Add,
+                        ActorKind = actorKind,
+                        Count = addCount
+                    };
+                    return true;
+                }
+
+                if (this.TryMapFaction(actorText, out var faction))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.Add,
+                        ActorKind = WarGamesActorKind.FactionShip,
+                        Faction = faction,
+                        Count = addCount
+                    };
+                    return true;
+                }
+
+                if (addCount == 1 &&
+                    this.TryResolveShipNameAndFaction(playerShip, actorText, null, out var resolvedName, out var resolvedFaction))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.Add,
+                        ActorKind = WarGamesActorKind.FactionShip,
+                        Faction = resolvedFaction,
+                        TargetName = resolvedName,
+                        Count = 1
+                    };
+                    return true;
+                }
+
+                return false;
+            }
+
+            var addSingleMatch = Regex.Match(normalized, @"^add\s+(?<actor>.+?)(?:\s+(?:to|in)\s+sector)?$", RegexOptions.IgnoreCase);
+            if (addSingleMatch.Success)
+            {
+                var actorText = this.TrimWarGamesSectorQualifier(addSingleMatch.Groups["actor"].Value);
+
+                if (this.TryMapWarGamesActorType(actorText, out var actorKind))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.Add,
+                        ActorKind = actorKind,
+                        Count = 1
+                    };
+                    return true;
+                }
+
+                if (this.TryMapFaction(actorText, out var faction))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.Add,
+                        ActorKind = WarGamesActorKind.FactionShip,
+                        Faction = faction,
+                        Count = 1
+                    };
+                    return true;
+                }
+
+                if (this.TryResolveShipNameAndFaction(playerShip, actorText, null, out var resolvedName, out var resolvedFaction))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.Add,
+                        ActorKind = WarGamesActorKind.FactionShip,
+                        Faction = resolvedFaction,
+                        TargetName = resolvedName,
+                        Count = 1
+                    };
+                    return true;
+                }
+
+                return false;
+            }
+
+            var destroyCountMatch = Regex.Match(normalized, @"^destroy\s+(?<count>\d+)\s+(?<actor>.+?)(?:\s+(?:from|in)\s+sector)?$", RegexOptions.IgnoreCase);
+            if (destroyCountMatch.Success)
+            {
+                if (!int.TryParse(destroyCountMatch.Groups["count"].Value, out var destroyCount))
+                {
+                    return false;
+                }
+
+                var actorText = this.TrimWarGamesSectorQualifier(destroyCountMatch.Groups["actor"].Value);
+
+                if (this.TryMapWarGamesActorType(actorText, out var actorKind))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.DestroyByActor,
+                        ActorKind = actorKind,
+                        Count = destroyCount
+                    };
+                    return true;
+                }
+
+                if (this.TryMapFaction(actorText, out var faction))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.DestroyByActor,
+                        ActorKind = WarGamesActorKind.FactionShip,
+                        Faction = faction,
+                        Count = destroyCount
+                    };
+                    return true;
+                }
+
+                if (destroyCount == 1 &&
+                    this.TryResolveShipNameAndFaction(playerShip, actorText, null, out var resolvedName, out _))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.DestroyByName,
+                        TargetName = resolvedName
+                    };
+                    return true;
+                }
+
+                return false;
+            }
+
+            var destroySingleTypeMatch = Regex.Match(normalized, @"^destroy\s+(?<actor>.+?)(?:\s+(?:from|in)\s+sector)?$", RegexOptions.IgnoreCase);
+            if (destroySingleTypeMatch.Success)
+            {
+                var actorText = this.TrimWarGamesSectorQualifier(destroySingleTypeMatch.Groups["actor"].Value);
+                if (this.TryMapWarGamesActorType(actorText, out var actorKind))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.DestroyByActor,
+                        ActorKind = actorKind,
+                        Count = 1
+                    };
+                    return true;
+                }
+
+                if (this.TryMapFaction(actorText, out var faction))
+                {
+                    action = new WarGamesAction
+                    {
+                        Mode = WarGamesActionMode.DestroyByActor,
+                        ActorKind = WarGamesActorKind.FactionShip,
+                        Faction = faction,
+                        Count = 1
+                    };
+                    return true;
+                }
+
+                action = new WarGamesAction
+                {
+                    Mode = WarGamesActionMode.DestroyByName,
+                    TargetName = actorText
+                };
+                return true;
+            }
+
+            return false;
+        }
+
+        private string TrimWarGamesSectorQualifier(string text)
+        {
+            var normalized = Regex.Replace((text ?? string.Empty).Trim(), @"\s+", " ");
+            normalized = Regex.Replace(normalized, @"\s+(to|in|from)\s+sector$", string.Empty, RegexOptions.IgnoreCase);
+            return normalized.Trim();
+        }
+
+        private bool TryMapWarGamesActorType(string actorText, out WarGamesActorKind actorKind)
+        {
+            actorKind = WarGamesActorKind.Star;
+            if (string.IsNullOrWhiteSpace(actorText))
+            {
+                return false;
+            }
+
+            var normalized = actorText.Trim().ToLowerInvariant();
+            normalized = Regex.Replace(normalized, @"\s+", " ");
+
+            switch (normalized)
+            {
+                case "hostile":
+                case "hostiles":
+                case "hostile ship":
+                case "hostile ships":
+                case "ship":
+                case "ships":
+                    actorKind = WarGamesActorKind.HostileShip;
+                    return true;
+
+                case "star":
+                case "stars":
+                    actorKind = WarGamesActorKind.Star;
+                    return true;
+
+                case "starbase":
+                case "starbases":
+                    actorKind = WarGamesActorKind.Starbase;
+                    return true;
+
+                case "deuterium":
+                case "deuterium sector":
+                case "deuterium sectors":
+                    actorKind = WarGamesActorKind.Deuterium;
+                    return true;
+
+                case "gravitic mine":
+                case "gravitic mines":
+                case "mine":
+                case "mines":
+                    actorKind = WarGamesActorKind.GraviticMine;
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        private bool TryMapFaction(string factionText, out FactionName faction)
+        {
+            faction = null;
+            if (string.IsNullOrWhiteSpace(factionText))
+            {
+                return false;
+            }
+
+            var normalized = factionText.Trim().ToLowerInvariant();
+            normalized = Regex.Replace(normalized, @"\s+", " ");
+
+            switch (normalized)
+            {
+                case "fed":
+                case "feds":
+                case "federation":
+                case "federations":
+                case "federation ship":
+                case "federation ships":
+                    faction = FactionName.Federation;
+                    return true;
+                case "klingon":
+                case "klingons":
+                case "klingon ship":
+                case "klingon ships":
+                    faction = FactionName.Klingon;
+                    return true;
+                case "romulan":
+                case "romulans":
+                case "romulan ship":
+                case "romulan ships":
+                    faction = FactionName.Romulan;
+                    return true;
+                case "vulcan":
+                case "vulcans":
+                case "vulcan ship":
+                case "vulcan ships":
+                    faction = FactionName.Vulcan;
+                    return true;
+                case "gorn":
+                case "gorns":
+                case "gorn ship":
+                case "gorn ships":
+                    faction = FactionName.Gorn;
+                    return true;
+                case "other":
+                case "other ship":
+                case "other ships":
+                    faction = FactionName.Other;
+                    return true;
+                case "testfaction":
+                case "test faction":
+                case "testfactions":
+                case "test faction ship":
+                case "test faction ships":
+                    faction = FactionName.TestFaction;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private bool TryResolveShipNameAndFaction(
+            IShip playerShip,
+            string requestedName,
+            FactionName preferredFaction,
+            out string resolvedName,
+            out FactionName resolvedFaction)
+        {
+            resolvedName = null;
+            resolvedFaction = null;
+
+            if (playerShip?.Map?.Config == null || string.IsNullOrWhiteSpace(requestedName))
+            {
+                return false;
+            }
+
+            var candidateFactions = new List<FactionName>();
+            if (preferredFaction != null)
+            {
+                candidateFactions.Add(preferredFaction);
+            }
+
+            candidateFactions.AddRange(this.GetKnownShipFactions().Where(f => preferredFaction == null || f != preferredFaction));
+
+            foreach (var faction in candidateFactions)
+            {
+                List<string> names;
+                try
+                {
+                    names = playerShip.Map.Config.ShipNames(faction);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                var match = names?.FirstOrDefault(n => string.Equals(n?.Trim(), requestedName.Trim(), StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrWhiteSpace(match))
+                {
+                    resolvedName = match.Trim();
+                    resolvedFaction = faction;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private IEnumerable<FactionName> GetHostileShipFactions(IShip playerShip)
+        {
+            var factions = this.GetKnownShipFactions();
+            var hostileFactions = new List<FactionName>();
+
+            foreach (var faction in factions)
+            {
+                if (!this.IsHostileFaction(playerShip, faction))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    var names = playerShip.Map.Config.ShipNames(faction);
+                    if (names != null && names.Any())
+                    {
+                        hostileFactions.Add(faction);
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            return hostileFactions;
+        }
+
+        private bool IsHostileFaction(IShip playerShip, FactionName faction)
+        {
+            try
+            {
+                var factionElement = playerShip?.Map?.Config?.Factions?[faction.ToString()];
+                if (factionElement != null)
+                {
+                    return string.Equals(factionElement.allegiance, "Hostile", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+            catch
+            {
+            }
+
+            return faction != FactionName.Vulcan;
+        }
+
+        private List<FactionName> GetKnownShipFactions()
+        {
+            return new List<FactionName>
+            {
+                FactionName.Klingon,
+                FactionName.Federation,
+                FactionName.Romulan,
+                FactionName.Gorn,
+                FactionName.Vulcan,
+                FactionName.Other,
+                FactionName.TestFaction
+            };
+        }
+
+        private enum WarGamesActionMode
+        {
+            Add,
+            DestroyByActor,
+            DestroyByName
+        }
+
+        private enum WarGamesActorKind
+        {
+            HostileShip,
+            FactionShip,
+            Star,
+            Starbase,
+            Deuterium,
+            GraviticMine
+        }
+
+        private sealed class WarGamesAction
+        {
+            public WarGamesActionMode Mode { get; set; }
+            public WarGamesActorKind ActorKind { get; set; }
+            public FactionName Faction { get; set; }
+            public int Count { get; set; }
+            public string TargetName { get; set; }
         }
 
         private IEnumerable<string> ComputerMenu(IShip playerShip)
