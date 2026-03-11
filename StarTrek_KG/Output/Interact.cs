@@ -107,6 +107,18 @@ namespace StarTrek_KG.Output
             return string.Format(this.GetConfigText(configTextToWrite), param1, param2);
         }
 
+        private int GetSettingOrDefault(string settingName, int defaultValue)
+        {
+            try
+            {
+                return this.Config.GetSetting<int>(settingName);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
         public void FormattedConfigLine(string configTextToWrite, object param1)
         {
             this.Output.Write(string.Format(this.GetConfigText(configTextToWrite), param1));
@@ -417,6 +429,12 @@ namespace StarTrek_KG.Output
         public IEnumerable<string> RenderScanWithNames(ScanRenderType scanRenderType, string title, List<IScanResult> data, IGame game)
         {
             int scanColumn = 0;  //todo resource this
+            var gridSize = (int)Math.Round(Math.Sqrt(data?.Count ?? 0));
+            if (gridSize < 1)
+            {
+                gridSize = 1;
+            }
+
             int longestText = Interaction.GetLongestScanText(data);
 
             var galacticBarrierText = this.Config.GetSetting<string>("GalacticBarrierText");
@@ -439,15 +457,31 @@ namespace StarTrek_KG.Output
             var renderedResults = new List<string>
             {
                 "",
-                title.PadCenter((cellLength + cellPadding)*3 + 5), //*3 because of borders, +5 to line it up better.   //todo resource this
-                topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight
+                title.PadCenter((cellLength + cellPadding) * gridSize + gridSize + 2),
+                this.BuildBorderLine(topLeft, topMiddle, topRight, cellLine, gridSize)
             };
   
-            this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine, game);
+            this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine, gridSize, game);
 
-            renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
+            renderedResults.Add(this.BuildBorderLine(bottomLeft, bottomMiddle, bottomRight, cellLine, gridSize));
 
             return renderedResults;
+        }
+
+        private string BuildBorderLine(string left, string middle, string right, string cellLine, int gridSize)
+        {
+            var pieces = new List<string> { left };
+            for (var i = 0; i < gridSize; i++)
+            {
+                pieces.Add(cellLine);
+                if (i < gridSize - 1)
+                {
+                    pieces.Add(middle);
+                }
+            }
+
+            pieces.Add(right);
+            return string.Concat(pieces);
         }
 
         private void RenderMiddle(ScanRenderType scanRenderType,
@@ -458,6 +492,7 @@ namespace StarTrek_KG.Output
                                   int scanColumn,
                                   ICollection<string> renderedResults,
                                   string cellLine,
+                                  int gridSize,
                                   IGame game = null)
         {
             var verticalBoxLine = this.Config.Setting("VerticalBoxLine");
@@ -519,20 +554,20 @@ namespace StarTrek_KG.Output
                 currentLRSScanLine1 += " " + currentSectorName.PadCenter(cellLength) + verticalBoxLine;
                 currentLRSScanLine2 += " " + currentSectorResult.PadCenter(cellLength) + verticalBoxLine; //todo resource this
 
-                if (scanColumn == 2 || scanColumn == 5) //todo resource this
+                if (((scanColumn + 1) % gridSize) == 0 && scanColumn != (gridSize * gridSize) - 1)
                 {
                     renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
                     renderedResults.Add(currentLRSScanLine2);
 
-                    renderedResults.Add(middleLeft + cellLine + middle + cellLine + middle + cellLine + middleRight);
+                    renderedResults.Add(this.BuildBorderLine(middleLeft, middle, middleRight, cellLine, gridSize));
 
                     currentLRSScanLine0 = verticalBoxLine;
                     currentLRSScanLine1 = verticalBoxLine;
                     currentLRSScanLine2 = verticalBoxLine;
                 }
 
-                if (scanColumn == 8) //todo resource this
+                if (scanColumn == (gridSize * gridSize) - 1)
                 {
                     renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
@@ -713,6 +748,7 @@ namespace StarTrek_KG.Output
             {
                 //we only care about the last returnVal
                 returnVal = this.OutputMenu(playerShip, commands.Dequeue());
+                previousCommandWasIssuedAndValid = this.Subscriber.PromptInfo.Level > 0;
             }
 
             return returnVal;
@@ -744,6 +780,9 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine(""));
                     retVal.AddRange(this.Output.WriteLine("SCANNERS"));
                     retVal.AddRange(this.Output.WriteLine("  irs   Immediate range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  irs+  Extended immediate scan (4x4)"));
+                    retVal.AddRange(this.Output.WriteLine("  irs++ Deep immediate scan (5x5)"));
+                    retVal.AddRange(this.Output.WriteLine("  irs+++ Full sector immediate scan (8x8)"));
                     retVal.AddRange(this.Output.WriteLine("  srs   Short range scan"));
                     retVal.AddRange(this.Output.WriteLine("  lrs   Long range scan"));
                     retVal.AddRange(this.Output.WriteLine("  crs   Combined range scan"));
@@ -868,6 +907,9 @@ namespace StarTrek_KG.Output
                 "nto = Navigate To Object",
                 "-----------------------------",
                 "irs = Immediate Range Scan",
+                "irs+ = Extended Immediate Range Scan (4x4)",
+                "irs++ = Deep Immediate Range Scan (5x5)",
+                "irs+++ = Full Sector Immediate Range Scan (8x8)",
                 "srs = Short Range Scan",
                 "lrs = Long Range Scan",
                 "crs = Combined Range Scan",
@@ -941,6 +983,26 @@ namespace StarTrek_KG.Output
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.ImmediateRangeScan;
                 retVal = ImmediateRangeScan.For(playerShip).Controls().ToList();
+            }
+            else if (string.Equals(menuCommand, "irs+", StringComparison.OrdinalIgnoreCase))
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.ImmediateRangeScan;
+                var cost = this.GetSettingOrDefault("IRSPlusEnergyCost", 100);
+                retVal = ImmediateRangeScan.For(playerShip).ControlsPlus(4, cost, "*** Immediate Range Scan + ***").ToList();
+            }
+            else if (string.Equals(menuCommand, "irs++", StringComparison.OrdinalIgnoreCase))
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.ImmediateRangeScan;
+                var cost = this.GetSettingOrDefault("IRSPlusPlusEnergyCost", 500);
+                retVal = ImmediateRangeScan.For(playerShip).ControlsPlus(5, cost, "*** Immediate Range Scan ++ ***").ToList();
+            }
+            else if (string.Equals(menuCommand, "irs+++", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(menuCommand, "irs++++", StringComparison.OrdinalIgnoreCase))
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.ImmediateRangeScan;
+                var cost = this.GetSettingOrDefault("IRSPlusPlusPlusEnergyCost",
+                    this.GetSettingOrDefault("IRSPlusPlusPlusPlusEnergyCost", 1000));
+                retVal = ImmediateRangeScan.For(playerShip).ControlsPlus(DEFAULTS.COORDINATE_MAX, cost, "*** Immediate Range Scan +++ ***").ToList();
             }
             else if (menuCommand == Menu.srs.ToString())
             {
@@ -1056,6 +1118,14 @@ namespace StarTrek_KG.Output
             {
                 ISubsystem weaponSubsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
                 retVal = weaponSubsystem.Controls(playerEnteredText);
+                return retVal?.ToList();
+            }
+
+            if (this.Subscriber.PromptInfo.SubSystem == SubsystemType.Shields &&
+                this.Subscriber.PromptInfo.Level > 0)
+            {
+                ISubsystem shieldSubsystem = SubSystem_Base.GetSubsystemFor(playerShip, this.Subscriber.PromptInfo.SubSystem);
+                retVal = shieldSubsystem.Controls(playerEnteredText);
                 return retVal?.ToList();
             }
 

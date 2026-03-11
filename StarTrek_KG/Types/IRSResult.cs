@@ -42,6 +42,10 @@ namespace StarTrek_KG.Types
                     returnVal = "Deuterium";
                     break;
 
+                case CoordinateItem.DeuteriumCloud:
+                    returnVal = "Deuterium Cloud";
+                    break;
+
                 case CoordinateItem.GraviticMine:
                     returnVal = "Gravitic Mine";
                     break;

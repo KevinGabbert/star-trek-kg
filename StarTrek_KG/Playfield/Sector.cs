@@ -347,6 +347,21 @@ namespace StarTrek_KG.Playfield
                 newlyCreatedSector.Item = CoordinateItem.Deuterium;
                 newlyCreatedSector.Object = new Deuterium(amount);
             }
+            else if (itemToPopulate == CoordinateItem.DeuteriumCloud)
+            {
+                var min = this.Map?.Config?.GetSetting<int>("DeuteriumMin") ?? 1;
+                var max = this.Map?.Config?.GetSetting<int>("DeuteriumMax") ?? 75;
+                if (max < min)
+                {
+                    var swap = min;
+                    min = max;
+                    max = swap;
+                }
+
+                var amount = Utility.Utility.Random.Next(min, max + 1);
+                newlyCreatedSector.Item = CoordinateItem.DeuteriumCloud;
+                newlyCreatedSector.Object = new DeuteriumCloud(amount);
+            }
             else if (itemToPopulate == CoordinateItem.GraviticMine)
             {
                 newlyCreatedSector.Item = CoordinateItem.GraviticMine;
@@ -400,6 +415,19 @@ namespace StarTrek_KG.Playfield
                 {
                     var deuterium = addToSector.Object as Deuterium;
                     var amount = deuterium?.Amount ?? 0;
+                    if (amount > 0)
+                    {
+                        ship.Energy += amount;
+                    }
+
+                    addToSector.Item = CoordinateItem.Empty;
+                    addToSector.Object = null;
+                }
+
+                if (addToSector.Item == CoordinateItem.DeuteriumCloud)
+                {
+                    var cloud = addToSector.Object as DeuteriumCloud;
+                    var amount = cloud?.Amount ?? 0;
                     if (amount > 0)
                     {
                         ship.Energy += amount;
@@ -603,23 +631,35 @@ namespace StarTrek_KG.Playfield
         //todo: refactor this with GetLRSFullData.  Pay attention to OutOfBounds
         public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, IGame game)
         {
+            return this.GetIRSFullData(shipLocation, game, 3);
+        }
+
+        public IEnumerable<IRSResult> GetIRSFullData(Location shipLocation, IGame game, int gridSize)
+        {
             var scanData = new List<IRSResult>();
-
-            //todo:  //bool currentlyInNebula = shipLocation.Coordinate.Type == SectorType.Nebulae;
-
-            for (var sectorY = shipLocation.Coordinate.Y - 1;
-                sectorY <= shipLocation.Coordinate.Y + 1;
-                sectorY++)
+            if (gridSize < 1)
             {
-                for (var sectorX = shipLocation.Coordinate.X - 1;
-                    sectorX <= shipLocation.Coordinate.X + 1;
-                    sectorX++)
+                gridSize = 1;
+            }
+
+            var startOffset = (gridSize - 1) / 2;
+            var startX = shipLocation.Coordinate.X - startOffset;
+            var startY = shipLocation.Coordinate.Y - startOffset;
+            var endX = startX + gridSize - 1;
+            var endY = startY + gridSize - 1;
+
+            for (var sectorY = startY; sectorY <= endY; sectorY++)
+            {
+                for (var sectorX = startX; sectorX <= endX; sectorX++)
                 {
-                    var outOfBounds = Sector.OutOfBounds(shipLocation.Coordinate);
+                    var outOfBounds = sectorX < 0 ||
+                                      sectorY < 0 ||
+                                      sectorX >= DEFAULTS.COORDINATE_MAX ||
+                                      sectorY >= DEFAULTS.COORDINATE_MAX;
 
                     var currentResult = new IRSResult
                     {
-                        Point = new Point(sectorX, sectorY)//todo: breaks here when regionX or regionY is 8
+                        Point = new Point(sectorX, sectorY)
                     };
 
                     currentResult = this.GetSectorInfo(shipLocation.Sector, new Point(sectorX, sectorY), outOfBounds, game);

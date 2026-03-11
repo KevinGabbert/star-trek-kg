@@ -179,7 +179,7 @@ namespace StarTrek_KG.Actors
 
                 if (currentItem != CoordinateItem.Empty)
                 {
-                    if (currentItem == CoordinateItem.Deuterium)
+                    if (currentItem == CoordinateItem.Deuterium || currentItem == CoordinateItem.DeuteriumCloud)
                     {
                         return false;
                     }

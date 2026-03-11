@@ -12,6 +12,7 @@ using StarTrek_KG;
 using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 
@@ -26,6 +27,15 @@ app.UseStaticFiles();
 var sessions = new ConcurrentDictionary<string, SessionState>(StringComparer.OrdinalIgnoreCase);
 var autoStartEnabled = IsAutoStartEnabled();
 var autoStartMode = GetAutoStartMode();
+var terminalMenuColor = GetTerminalMenuColor();
+var deuteriumColor = GetDeuteriumColor();
+var hostileColor = GetHostileColor();
+var starbaseColor = GetStarbaseColor();
+var starColor = GetStarColor();
+var galacticBarrierColor = GetGalacticBarrierColor();
+var autoActionScanEnabled = IsAutoActionScanEnabled();
+var autoActionScanCommand = GetAutoActionScanCommand();
+var autoActionScanAfterStart = IsAutoActionScanAfterStartEnabled();
 
 app.MapPost("/api/start", (StartRequest request) =>
 {
@@ -33,7 +43,7 @@ app.MapPost("/api/start", (StartRequest request) =>
         ? Guid.NewGuid().ToString("N")
         : request.SessionId;
 
-    return Results.Ok(StartSession(sessions, sessionId, SessionMode.Game));
+    return Results.Ok(StartSession(sessions, sessionId, SessionMode.Game, autoActionScanEnabled, autoActionScanCommand, autoActionScanAfterStart));
 });
 
 app.MapPost("/api/command", (CommandRequest request) =>
@@ -49,32 +59,24 @@ app.MapPost("/api/command", (CommandRequest request) =>
     switch (command.ToLowerInvariant())
     {
         case "start":
-            return Results.Ok(StartSession(sessions, sessionId, SessionMode.Game));
+            return Results.Ok(StartSession(sessions, sessionId, SessionMode.Game, autoActionScanEnabled, autoActionScanCommand, autoActionScanAfterStart));
 
         case "war games":
-            return Results.Ok(StartSession(sessions, sessionId, SessionMode.WarGames));
+            return Results.Ok(StartSession(sessions, sessionId, SessionMode.WarGames, autoActionScanEnabled, autoActionScanCommand, autoActionScanAfterStart));
         case "systems cascade":
-            return Results.Ok(StartSession(sessions, sessionId, SessionMode.SystemsCascade));
+            return Results.Ok(StartSession(sessions, sessionId, SessionMode.SystemsCascade, autoActionScanEnabled, autoActionScanCommand, autoActionScanAfterStart));
 
         case "end session":
         case "stop":
+        case "exit":
+        case "quit":
             return Results.Ok(StopSession(sessions, sessionId));
 
         case "clear session":
             return Results.Ok(ClearSession(sessions, sessionId));
 
         case "term menu":
-            return Results.Ok(new CommandResponse(sessionId, WrapResponseList(new List<string>
-            {
-                " --- Terminal Menu ---",
-                "start - starts a normal game session",
-                "war games - starts a deterministic scenario session",
-                "systems cascade - starts systems failure survival mode",
-                "end session - ends the currently running game",
-                "reset config - reloads config",
-                "release notes - see the latest release notes",
-                "clear - clear the screen"
-            })));
+            return Results.Ok(new CommandResponse(sessionId, WrapResponseList(GetTerminalMenuLines())));
 
         case "release notes":
             return Results.Ok(new CommandResponse(sessionId, WrapResponseText("Under Construction")));
@@ -93,6 +95,16 @@ app.MapPost("/api/command", (CommandRequest request) =>
     }
 
     var turnResponse = state.Game.SubscriberSendAndGetResponse(command);
+
+    if (autoActionScanEnabled && ShouldRunAutoActionScan(state, command, autoActionScanCommand, turnResponse))
+    {
+        var autoScanResponse = state.Game.SubscriberSendAndGetResponse(autoActionScanCommand);
+        if (autoScanResponse != null)
+        {
+            turnResponse.AddRange(autoScanResponse);
+        }
+    }
+
     return Results.Ok(new CommandResponse(sessionId, WrapResponseList(turnResponse)));
 });
 
@@ -111,7 +123,15 @@ app.MapPost("/api/prompt", (PromptRequest request) =>
 
 app.MapGet("/api/settings", () =>
 {
-    return Results.Ok(new SettingsResponse(autoStartEnabled, autoStartMode.ToModeString()));
+    return Results.Ok(new SettingsResponse(
+        autoStartEnabled,
+        autoStartMode.ToModeString(),
+        terminalMenuColor,
+        deuteriumColor,
+        hostileColor,
+        starbaseColor,
+        starColor,
+        galacticBarrierColor));
 });
 
 app.Run();
@@ -129,7 +149,13 @@ static void EnsureConfigFile()
     ConfigurationManager.RefreshSection("Commands");
 }
 
-static CommandResponse StartSession(ConcurrentDictionary<string, SessionState> sessions, string sessionId, SessionMode requestedMode)
+static CommandResponse StartSession(
+    ConcurrentDictionary<string, SessionState> sessions,
+    string sessionId,
+    SessionMode requestedMode,
+    bool autoActionScanEnabled,
+    string autoActionScanCommand,
+    bool autoActionScanAfterStart)
 {
     var id = string.IsNullOrWhiteSpace(sessionId) ? Guid.NewGuid().ToString("N") : sessionId;
 
@@ -170,6 +196,15 @@ static CommandResponse StartSession(ConcurrentDictionary<string, SessionState> s
     {
         var postStartLines = state.Game.SubscriberSendAndGetResponse("srs");
         lines.AddRange(postStartLines);
+    }
+
+    if (autoActionScanEnabled && autoActionScanAfterStart && requestedMode == SessionMode.Game)
+    {
+        var postStartAutoScan = state.Game.SubscriberSendAndGetResponse(autoActionScanCommand);
+        if (postStartAutoScan != null)
+        {
+            lines.AddRange(postStartAutoScan);
+        }
     }
 
     return new CommandResponse(id, lines);
@@ -364,6 +399,227 @@ static SessionMode GetAutoStartMode()
     }
 }
 
+static string GetTerminalMenuColor()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        var configured = settings.GetSetting<string>("terminal-menu-color");
+        if (string.IsNullOrWhiteSpace(configured))
+        {
+            return "#4da3ff";
+        }
+
+        return configured.Trim();
+    }
+    catch
+    {
+        return "#4da3ff";
+    }
+}
+
+static string GetDeuteriumColor()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        var configured = settings.GetSetting<string>("deuterium-color");
+        if (string.IsNullOrWhiteSpace(configured))
+        {
+            return "#00ff00";
+        }
+
+        return configured.Trim();
+    }
+    catch
+    {
+        return "#00ff00";
+    }
+}
+
+static string GetHostileColor()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        var configured = settings.GetSetting<string>("hostile-color");
+        if (string.IsNullOrWhiteSpace(configured))
+        {
+            return "#ff0000";
+        }
+
+        return configured.Trim();
+    }
+    catch
+    {
+        return "#ff0000";
+    }
+}
+
+static string GetStarbaseColor()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        var configured = settings.GetSetting<string>("starbase-color");
+        if (string.IsNullOrWhiteSpace(configured))
+        {
+            return "#ffff00";
+        }
+
+        return configured.Trim();
+    }
+    catch
+    {
+        return "#ffff00";
+    }
+}
+
+static string GetStarColor()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        var configured = settings.GetSetting<string>("star-color");
+        if (string.IsNullOrWhiteSpace(configured))
+        {
+            return "#ffffff";
+        }
+
+        return configured.Trim();
+    }
+    catch
+    {
+        return "#ffffff";
+    }
+}
+
+static string GetGalacticBarrierColor()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        var configured = settings.GetSetting<string>("galactic-barrier-color");
+        if (string.IsNullOrWhiteSpace(configured))
+        {
+            return "#ffffff";
+        }
+
+        return configured.Trim();
+    }
+    catch
+    {
+        return "#ffffff";
+    }
+}
+
+static bool IsAutoActionScanEnabled()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        return settings.GetSetting<bool>("auto-action-scan-enabled");
+    }
+    catch
+    {
+        return true;
+    }
+}
+
+static string GetAutoActionScanCommand()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        var configured = settings.GetSetting<string>("auto-action-scan-command");
+        if (string.Equals(configured, "srs", StringComparison.OrdinalIgnoreCase))
+        {
+            return "srs";
+        }
+    }
+    catch
+    {
+    }
+
+    return "crs";
+}
+
+static bool IsAutoActionScanAfterStartEnabled()
+{
+    try
+    {
+        var settings = new StarTrekKGSettings();
+        return settings.GetSetting<bool>("auto-action-scan-after-start");
+    }
+    catch
+    {
+        return true;
+    }
+}
+
+static bool ShouldRunAutoActionScan(SessionState state, string command, string autoScanCommand, IList<string> turnResponse)
+{
+    if (state?.Game == null || string.IsNullOrWhiteSpace(command) || string.IsNullOrWhiteSpace(autoScanCommand))
+    {
+        return false;
+    }
+
+    var interaction = state.Game.Interact as Interaction;
+    if (interaction?.Subscriber?.PromptInfo == null)
+    {
+        return false;
+    }
+
+    // Only run auto scan when the player is back at top-level command prompt.
+    if (interaction.Subscriber.PromptInfo.Level != 0)
+    {
+        return false;
+    }
+
+    var trimmed = command.Trim().ToLowerInvariant();
+    if (trimmed == autoScanCommand || trimmed == "crs" || trimmed == "srs" || trimmed == "lrs" || trimmed == "irs")
+    {
+        return false;
+    }
+
+    if (trimmed == "?" || trimmed == "help" || trimmed == "level" || trimmed == "title" || trimmed == "ship" || trimmed == "out" || trimmed == "back")
+    {
+        return false;
+    }
+
+    if (turnResponse != null && turnResponse.Any(line =>
+            !string.IsNullOrWhiteSpace(line) &&
+            (line.IndexOf("Invalid Command", StringComparison.OrdinalIgnoreCase) >= 0 ||
+             line.IndexOf("Unrecognized Command", StringComparison.OrdinalIgnoreCase) >= 0)))
+    {
+        return false;
+    }
+
+    if (turnResponse != null)
+    {
+        var containsNamedScanHeader = turnResponse.Any(line =>
+            !string.IsNullOrWhiteSpace(line) &&
+            (line.IndexOf("Short Range Scan", StringComparison.OrdinalIgnoreCase) >= 0 ||
+             line.IndexOf("Combined Range", StringComparison.OrdinalIgnoreCase) >= 0 ||
+             line.IndexOf("Immediate Range Scan", StringComparison.OrdinalIgnoreCase) >= 0 ||
+             line.IndexOf("Long Range Scan", StringComparison.OrdinalIgnoreCase) >= 0));
+
+        var containsSectorPanel = turnResponse.Any(line =>
+            !string.IsNullOrWhiteSpace(line) &&
+            line.IndexOf("Hostiles Left:", StringComparison.OrdinalIgnoreCase) >= 0)
+            && turnResponse.Any(line =>
+                !string.IsNullOrWhiteSpace(line) &&
+                line.IndexOf("Sec:", StringComparison.OrdinalIgnoreCase) >= 0);
+
+        if (containsNamedScanHeader || containsSectorPanel)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 static SessionMode ParseMode(string mode)
 {
     if (string.Equals(mode, "war games", StringComparison.OrdinalIgnoreCase) ||
@@ -389,7 +645,10 @@ static CommandResponse StopSession(ConcurrentDictionary<string, SessionState> se
     {
         sessions.TryRemove(sessionId, out _);
     }
-    return new CommandResponse(sessionId, WrapResponseText("-- Session Terminated --"));
+
+    var lines = WrapResponseText("-- Session Terminated --");
+    lines.AddRange(GetTerminalMenuLines());
+    return new CommandResponse(sessionId, lines);
 }
 
 static CommandResponse ClearSession(ConcurrentDictionary<string, SessionState> sessions, string sessionId)
@@ -398,7 +657,9 @@ static CommandResponse ClearSession(ConcurrentDictionary<string, SessionState> s
     {
         sessions.TryRemove(sessionId, out _);
     }
-    return new CommandResponse(sessionId, WrapResponseText("Session Cleared.."));
+    var lines = WrapResponseText("Session Cleared..");
+    lines.AddRange(GetTerminalMenuLines());
+    return new CommandResponse(sessionId, lines);
 }
 
 static List<string> WrapResponseText(string text)
@@ -417,6 +678,22 @@ static List<string> WrapResponseList(IList<string> text)
     list.Insert(0, Environment.NewLine);
     list.Add(Environment.NewLine);
     return list;
+}
+
+static List<string> GetTerminalMenuLines()
+{
+    return new List<string>
+    {
+        " --- Terminal Menu ---",
+        "start - starts a normal game session",
+        "war games - starts a deterministic scenario session",
+        "systems cascade - starts systems failure survival mode",
+        "stop | exit | quit - ends the currently running game",
+        "clear session - clears the active session id",
+        "term menu - show terminal commands",
+        "release notes - see the latest release notes",
+        "clear - clear the screen"
+    };
 }
 
 enum SessionMode
@@ -484,7 +761,15 @@ record CommandRequest(string SessionId, string Command);
 record PromptRequest(string SessionId);
 record CommandResponse(string SessionId, List<string> Lines);
 record PromptResponse(string SessionId, string Prompt);
-record SettingsResponse(bool AutoStart, string AutoStartMode);
+record SettingsResponse(
+    bool AutoStart,
+    string AutoStartMode,
+    string TerminalMenuColor,
+    string DeuteriumColor,
+    string HostileColor,
+    string StarbaseColor,
+    string StarColor,
+    string GalacticBarrierColor);
 
 static class SystemsCascadeSetupLoader
 {

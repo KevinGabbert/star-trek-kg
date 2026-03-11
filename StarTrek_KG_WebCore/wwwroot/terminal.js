@@ -136,9 +136,36 @@ async function fetchClientSettings() {
     const autoStartMode = data && typeof data.autoStartMode === 'string'
       ? data.autoStartMode.toLowerCase()
       : 'game';
-    return { autoStart: !!(data && data.autoStart), autoStartMode };
+    const terminalMenuColor = data && typeof data.terminalMenuColor === 'string' && data.terminalMenuColor.trim()
+      ? data.terminalMenuColor.trim()
+      : '#4da3ff';
+    const deuteriumColor = data && typeof data.deuteriumColor === 'string' && data.deuteriumColor.trim()
+      ? data.deuteriumColor.trim()
+      : '#00ff00';
+    const hostileColor = data && typeof data.hostileColor === 'string' && data.hostileColor.trim()
+      ? data.hostileColor.trim()
+      : '#ff0000';
+    const starbaseColor = data && typeof data.starbaseColor === 'string' && data.starbaseColor.trim()
+      ? data.starbaseColor.trim()
+      : '#ffff00';
+    const starColor = data && typeof data.starColor === 'string' && data.starColor.trim()
+      ? data.starColor.trim()
+      : '#ffffff';
+    const galacticBarrierColor = data && typeof data.galacticBarrierColor === 'string' && data.galacticBarrierColor.trim()
+      ? data.galacticBarrierColor.trim()
+      : '#ffffff';
+    return { autoStart: !!(data && data.autoStart), autoStartMode, terminalMenuColor, deuteriumColor, hostileColor, starbaseColor, starColor, galacticBarrierColor };
   } catch {
-    return { autoStart: false, autoStartMode: 'game' };
+    return {
+      autoStart: false,
+      autoStartMode: 'game',
+      terminalMenuColor: '#4da3ff',
+      deuteriumColor: '#00ff00',
+      hostileColor: '#ff0000',
+      starbaseColor: '#ffff00',
+      starColor: '#ffffff',
+      galacticBarrierColor: '#ffffff'
+    };
   }
 }
 
@@ -150,6 +177,111 @@ jQuery(function ($) {
   const termHost = $('#termWindow');
   let lastCondition = null;
   let lastInNebula = false;
+  let clientSettings = {
+    autoStart: false,
+    autoStartMode: 'game',
+    terminalMenuColor: '#4da3ff',
+    deuteriumColor: '#00ff00',
+    hostileColor: '#ff0000',
+    starbaseColor: '#ffff00',
+    starColor: '#ffffff',
+    galacticBarrierColor: '#ffffff'
+  };
+
+  function isTerminalMenuHeader(line) {
+    return line && line.trim() === '--- Terminal Menu ---';
+  }
+
+  function formatMenuLine(line) {
+    return `[[;${clientSettings.terminalMenuColor};]${line}]`;
+  }
+
+  function clampColorChannel(value) {
+    return Math.max(0, Math.min(255, value));
+  }
+
+  function parseHexColor(hex) {
+    const normalized = String(hex || '').trim().replace(/^#/, '');
+    if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
+      return { r: 0, g: 255, b: 0 };
+    }
+
+    return {
+      r: parseInt(normalized.slice(0, 2), 16),
+      g: parseInt(normalized.slice(2, 4), 16),
+      b: parseInt(normalized.slice(4, 6), 16)
+    };
+  }
+
+  function shadeDeuteriumColor() {
+    const base = parseHexColor(clientSettings.deuteriumColor);
+    const delta = randomInt(-45, 45);
+    const r = clampColorChannel(base.r + delta);
+    const g = clampColorChannel(base.g + delta);
+    const b = clampColorChannel(base.b + delta);
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
+  function colorizeDeuteriumGlyphs(line) {
+    if (!line || line.indexOf('.') < 0) {
+      return { text: line, formatted: false };
+    }
+
+    const boundaries = '[\\s\\u2500-\\u257F]';
+    const pattern = new RegExp(`(^|${boundaries})\\.(?=$|${boundaries})`, 'g');
+    let formatted = false;
+    const replaced = line.replace(pattern, (match, prefix) => {
+      formatted = true;
+      return `${prefix}[[;${shadeDeuteriumColor()};].]`;
+    });
+
+    return { text: replaced, formatted };
+  }
+
+  function reverseColor(text, color) {
+    return `[[;#000000;${color}]${text}]`;
+  }
+
+  function colorizeImmediateScanEntities(line) {
+    if (!line) {
+      return { text: line, formatted: false };
+    }
+
+    let formatted = false;
+    let updated = line;
+
+    const applyWord = (target, color) => {
+      const regex = new RegExp(`\\b${target}\\b`, 'g');
+      updated = updated.replace(regex, (match) => {
+        formatted = true;
+        return reverseColor(match, color);
+      });
+    };
+
+    applyWord('Deuterium Cloud', clientSettings.deuteriumColor);
+    applyWord('Deuterium', clientSettings.deuteriumColor);
+    applyWord('Starbase', clientSettings.starbaseColor);
+    applyWord('Galactic Barrier', clientSettings.galacticBarrierColor);
+
+    // Hostile ship names (default Klingon style name in IRS).
+    updated = updated.replace(/\bIKC [A-Za-z'’`\-]+/g, (match) => {
+      formatted = true;
+      return reverseColor(match, clientSettings.hostileColor);
+    });
+
+    // Star names are currently rendered as uppercase names in IRS cells.
+    updated = updated.replace(/\b[A-Z]{3,}(?: [A-Z]{3,})+\b/g, (match) => {
+      // Skip already-special system labels.
+      if (match === 'EMPTY SPACE' || match === 'GALACTIC BARRIER') {
+        return match;
+      }
+
+      formatted = true;
+      return reverseColor(match, clientSettings.starColor);
+    });
+
+    return { text: updated, formatted };
+  }
 
   async function processCommand(command, term) {
     if (!command) return;
@@ -184,18 +316,51 @@ jQuery(function ($) {
       });
     } else {
       let inLrsBlock = false;
+      let inImmediateScanBlock = false;
+      let inTerminalMenu = false;
       result.lines.forEach(item => {
         if (item.includes('*** Long Range Scan ***')) {
           inLrsBlock = true;
         } else if (item.trim().startsWith('NCC ')) {
           inLrsBlock = false;
         }
+
+        if (item.includes('Immediate Range Scan')) {
+          inImmediateScanBlock = true;
+        } else if (inImmediateScanBlock && item.trim().startsWith('NCC ')) {
+          inImmediateScanBlock = false;
+        }
+
+        if (isTerminalMenuHeader(item)) {
+          inTerminalMenu = true;
+        } else if (inTerminalMenu && item.trim() === '') {
+          inTerminalMenu = false;
+        }
+
+        if (inTerminalMenu && item.trim() !== '') {
+          term.echo(formatMenuLine(item), { raw: false });
+          return;
+        }
+
+        const immediateScanStyled = colorizeImmediateScanEntities(item);
+        if (immediateScanStyled.formatted) {
+          term.echo(immediateScanStyled.text, { raw: false });
+          return;
+        }
+
         const borderCondition = lastInNebula ? 'blue' : lastCondition;
         const coloredBorder = colorizeConditionBorder(item, borderCondition);
         if (coloredBorder.formatted) {
           term.echo(coloredBorder.text, { raw: false });
           return;
         }
+
+        const deuteriumColored = colorizeDeuteriumGlyphs(item);
+        if (deuteriumColored.formatted) {
+          term.echo(deuteriumColored.text, { raw: false });
+          return;
+        }
+
         if (!inLrsBlock && shouldColorizeNebulaLine(item, hasNebulaContext)) {
           const colored = colorizeNebulaLine(item);
           term.echo(colored.text, { raw: false });
@@ -210,11 +375,22 @@ jQuery(function ($) {
   }
 
   (async function initializeTerminal() {
-    const settings = await fetchClientSettings();
+    clientSettings = await fetchClientSettings();
+    const terminalMenuText =
+      formatMenuLine(' --- Terminal Menu ---') + '\n' +
+      formatMenuLine('start - starts a normal game session') + '\n' +
+      formatMenuLine('war games - starts a deterministic scenario session') + '\n' +
+      formatMenuLine('systems cascade - starts systems failure survival mode') + '\n' +
+      formatMenuLine('stop | exit | quit - ends the currently running game') + '\n' +
+      formatMenuLine('clear session - clears the active session id') + '\n' +
+      formatMenuLine('term menu - show terminal commands') + '\n' +
+      formatMenuLine('release notes - see the latest release notes') + '\n' +
+      formatMenuLine('clear - clear the screen') + '\n';
+
     const greetings =
       'Star Trek KG\n\n' +
       'A modern, C# rewrite of the original 1971 Star Trek game by Mike Mayfield, with additional features... :)\n\n' +
-      (settings.autoStart ? '' : 'Type "start", "war games", or "systems cascade" to begin, or "term menu" for terminal commands\n') +
+      (clientSettings.autoStart ? '' : terminalMenuText + '\n') +
       'This application is currently under construction.\n';
 
     const terminalWindow = termHost.terminalWindow(async function (command, term) {
@@ -230,11 +406,11 @@ jQuery(function ($) {
     const prompt = await fetchPrompt(getTerminalSessionId());
     terminal.set_prompt(prompt);
 
-    if (settings.autoStart && prompt.trim() === 'Terminal:') {
+    if (clientSettings.autoStart && prompt.trim() === 'Terminal:') {
       const startCommand =
-        settings.autoStartMode === 'war games'
+        clientSettings.autoStartMode === 'war games'
           ? 'war games'
-          : (settings.autoStartMode === 'systems cascade' ? 'systems cascade' : 'start');
+          : (clientSettings.autoStartMode === 'systems cascade' ? 'systems cascade' : 'start');
       await processCommand(startCommand, terminal);
     }
   })();

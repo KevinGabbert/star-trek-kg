@@ -203,6 +203,7 @@ namespace StarTrek_KG.Playfield
             if (this.GameConfig?.AddDeuterium ?? true)
             {
                 this.PopulateDeuteriumPockets();
+                this.PopulateDeuteriumClouds();
             }
 
             if (this.GameConfig?.AddGraviticMines ?? true)
@@ -309,6 +310,194 @@ namespace StarTrek_KG.Playfield
                     this.PlaceDeuteriumAt(pickedCoordinate);
                 }
             }
+        }
+
+        private void PopulateDeuteriumClouds()
+        {
+            var percent = this.Config?.GetSetting<int>("DeuteriumCloudSectorPercent") ?? 0;
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var minSize = this.Config?.GetSetting<int>("DeuteriumCloudMinSize") ?? 1;
+            var maxSize = this.Config?.GetSetting<int>("DeuteriumCloudMaxSize") ?? 4;
+            if (minSize < 1) minSize = 1;
+            if (maxSize < minSize) maxSize = minSize;
+            if (maxSize > 4) maxSize = 4;
+
+            var candidates = this.Sectors?
+                .Where(sector => sector?.Coordinates != null && sector.Type != SectorType.GalacticBarrier)
+                .ToList();
+
+            if (candidates == null || candidates.Count == 0)
+            {
+                return;
+            }
+
+            var targetCount = (int)Math.Round(candidates.Count * (percent / 100.0));
+            if (targetCount <= 0)
+            {
+                targetCount = 1;
+            }
+
+            targetCount = Math.Min(targetCount, candidates.Count);
+
+            while (targetCount > 0 && candidates.Count > 0)
+            {
+                var pickIndex = Utility.Utility.Random.Next(candidates.Count);
+                var sector = candidates[pickIndex];
+                candidates.RemoveAt(pickIndex);
+
+                if (this.TryPlaceDeuteriumCloudInSector(sector, minSize, maxSize))
+                {
+                    targetCount--;
+                }
+            }
+        }
+
+        private bool TryPlaceDeuteriumCloudInSector(Sector sector, int minSize, int maxSize)
+        {
+            var size = Utility.Utility.Random.Next(minSize, maxSize + 1);
+            var maxStartX = DEFAULTS.COORDINATE_MAX - size;
+            var maxStartY = DEFAULTS.COORDINATE_MAX - size;
+            if (maxStartX < 0 || maxStartY < 0)
+            {
+                return false;
+            }
+
+            const int maxPlacementAttempts = 40;
+            for (var attempt = 0; attempt < maxPlacementAttempts; attempt++)
+            {
+                var startX = Utility.Utility.Random.Next(0, maxStartX + 1);
+                var startY = Utility.Utility.Random.Next(0, maxStartY + 1);
+
+                var cloudCells = new List<Coordinate>();
+                var fits = true;
+
+                for (var y = startY; y < startY + size && fits; y++)
+                {
+                    for (var x = startX; x < startX + size; x++)
+                    {
+                        var coordinate = sector.Coordinates.GetNoError(new Point(x, y));
+                        if (coordinate == null || coordinate.Item != CoordinateItem.Empty)
+                        {
+                            fits = false;
+                            break;
+                        }
+
+                        cloudCells.Add(coordinate);
+                    }
+                }
+
+                if (!fits || cloudCells.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (var cell in cloudCells)
+                {
+                    this.PlaceDeuteriumCloudAt(cell);
+                }
+
+                this.PlaceCloudGuardsAndMines(sector, startX, startY, size);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void PlaceCloudGuardsAndMines(Sector sector, int startX, int startY, int size)
+        {
+            var perimeter = this.GetCloudPerimeterEmptyCoordinates(sector, startX, startY, size);
+            if (perimeter.Count == 0)
+            {
+                return;
+            }
+
+            var guardCount = this.Config?.GetSetting<int>("DeuteriumCloudGuardCount") ?? 2;
+            if (guardCount < 0) guardCount = 0;
+            if (guardCount > 2) guardCount = 2; // Guards naturally pair up.
+
+            for (var i = 0; i < guardCount && perimeter.Count > 0; i++)
+            {
+                var idx = Utility.Utility.Random.Next(perimeter.Count);
+                var guardCoordinate = perimeter[idx];
+                perimeter.RemoveAt(idx);
+                this.PlaceCloudGuardAt(sector, guardCoordinate);
+            }
+
+            var mineChance = this.Config?.GetSetting<int>("DeuteriumCloudMineChancePercent") ?? 50;
+            if (mineChance < 0) mineChance = 0;
+            if (mineChance > 100) mineChance = 100;
+
+            foreach (var coordinate in perimeter.Where(c => c.Item == CoordinateItem.Empty))
+            {
+                if (Utility.Utility.Random.Next(100) < mineChance)
+                {
+                    coordinate.Item = CoordinateItem.GraviticMine;
+                    coordinate.Object = new GraviticMine();
+                }
+            }
+        }
+
+        private List<Coordinate> GetCloudPerimeterEmptyCoordinates(Sector sector, int startX, int startY, int size)
+        {
+            var candidates = new List<Coordinate>();
+            var endX = startX + size - 1;
+            var endY = startY + size - 1;
+
+            for (var y = startY - 1; y <= endY + 1; y++)
+            {
+                for (var x = startX - 1; x <= endX + 1; x++)
+                {
+                    if (x < 0 || y < 0 || x >= DEFAULTS.COORDINATE_MAX || y >= DEFAULTS.COORDINATE_MAX)
+                    {
+                        continue;
+                    }
+
+                    var insideCloud = x >= startX && x <= endX && y >= startY && y <= endY;
+                    if (insideCloud)
+                    {
+                        continue;
+                    }
+
+                    var coordinate = sector.Coordinates.GetNoError(new Point(x, y));
+                    if (coordinate != null && coordinate.Item == CoordinateItem.Empty)
+                    {
+                        candidates.Add(coordinate);
+                    }
+                }
+            }
+
+            return candidates;
+        }
+
+        private void PlaceCloudGuardAt(Sector sector, Coordinate coordinate)
+        {
+            if (sector == null || coordinate == null || coordinate.Item != CoordinateItem.Empty)
+            {
+                return;
+            }
+
+            var names = this.Config.ShipNames(FactionName.Klingon);
+            if (names == null || names.Count == 0)
+            {
+                return;
+            }
+
+            var randomName = names[Utility.Utility.Random.Next(names.Count)];
+            var hostile = new Ship(FactionName.Klingon, randomName, coordinate, this);
+            var hostileShields = Shields.For(hostile);
+            hostileShields.Energy = 300 + Utility.Utility.TestableRandom(this.Game, 200, 200);
+            hostile.Energy = 300;
+
+            sector.AddShip(hostile, coordinate);
         }
 
         private void PopulateEnergyAnomalies()
@@ -444,6 +633,28 @@ namespace StarTrek_KG.Playfield
             var amount = Utility.Utility.Random.Next(min, max + 1);
             coordinate.Item = CoordinateItem.Deuterium;
             coordinate.Object = new Deuterium(amount);
+        }
+
+        private void PlaceDeuteriumCloudAt(Coordinate coordinate)
+        {
+            if (coordinate == null)
+            {
+                return;
+            }
+
+            var min = this.Config?.GetSetting<int>("DeuteriumMin") ?? 1;
+            var max = this.Config?.GetSetting<int>("DeuteriumMax") ?? 75;
+
+            if (max < min)
+            {
+                var temp = min;
+                min = max;
+                max = temp;
+            }
+
+            var amount = Utility.Utility.Random.Next(min, max + 1);
+            coordinate.Item = CoordinateItem.DeuteriumCloud;
+            coordinate.Object = new DeuteriumCloud(amount);
         }
 
         public IEnumerable<Coordinate> AddStarbases()
@@ -763,6 +974,21 @@ namespace StarTrek_KG.Playfield
                 coordinate.Object = null;
 
                 this.Write?.Line("Bussard collectors have been charged with deuterium.");
+            }
+
+            if (coordinate.Item == CoordinateItem.DeuteriumCloud)
+            {
+                var cloud = coordinate.Object as DeuteriumCloud;
+                var amount = cloud?.Amount ?? 0;
+                if (amount > 0)
+                {
+                    shipToSet.Energy += amount;
+                }
+
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
+
+                this.Write?.Line("Bussard collectors have been charged with deuterium from a cloud.");
             }
 
             if (coordinate.Item == CoordinateItem.GraviticMine)

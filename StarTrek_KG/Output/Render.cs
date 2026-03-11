@@ -261,6 +261,10 @@ namespace StarTrek_KG.Output
                         sb.Append(" . ");
                         break;
 
+                    case CoordinateItem.DeuteriumCloud:
+                        sb.Append(" . ");
+                        break;
+
                     case CoordinateItem.GraviticMine:
                         sb.Append(DEFAULTS.EMPTY);
                         break;

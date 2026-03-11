@@ -4,6 +4,7 @@ using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -25,7 +26,7 @@ namespace StarTrek_KG.Subsystem
             //todo: refactor this pattern with LRS
 
             Location myLocation = this.ShipConnectedTo.GetLocation();
-            var renderedResults = this.RunFullIRSScan(myLocation);
+            var renderedResults = this.RunFullIRSScan(myLocation, 3, "*** Immediate Range Scan ***");
 
             foreach (string line in renderedResults)
             {
@@ -37,11 +38,70 @@ namespace StarTrek_KG.Subsystem
             return this.ShipConnectedTo.OutputQueue();
         }
 
-        private IEnumerable<string> RunFullIRSScan(Location shipLocation)
+        public IEnumerable<string> ControlsPlus(int gridSize, int energyCost, string title)
+        {
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
+
+            if (this.Damaged()) return this.ShipConnectedTo.OutputQueue();
+
+            if (energyCost > 0)
+            {
+                if (this.ShipConnectedTo.Energy < energyCost)
+                {
+                    this.ShipConnectedTo.OutputLine($"Insufficient energy for scan. Required: {energyCost}. Current: {this.ShipConnectedTo.Energy}.");
+                    return this.ShipConnectedTo.OutputQueue();
+                }
+
+                this.ShipConnectedTo.Energy -= energyCost;
+            }
+
+            Location myLocation = this.ShipConnectedTo.GetLocation();
+            IEnumerable<string> renderedResults;
+            if (gridSize >= DEFAULTS.COORDINATE_MAX)
+            {
+                renderedResults = this.RunFullSectorIRSScan(myLocation, title);
+            }
+            else
+            {
+                renderedResults = this.RunFullIRSScan(myLocation, gridSize, title);
+            }
+
+            foreach (string line in renderedResults)
+            {
+                this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
+            }
+
+            this.ShipConnectedTo.OutputLine("");
+
+            return this.ShipConnectedTo.OutputQueue();
+        }
+
+        private IEnumerable<string> RunFullSectorIRSScan(Location shipLocation, string title)
+        {
+            var irsData = new List<IScanResult>();
+            var sector = shipLocation.Sector;
+            for (var y = 0; y < DEFAULTS.COORDINATE_MAX; y++)
+            {
+                for (var x = 0; x < DEFAULTS.COORDINATE_MAX; x++)
+                {
+                    var result = sector.GetSectorInfo(sector, new Point(x, y), false, this.ShipConnectedTo.Map.Game);
+                    result.MyLocation = shipLocation.Coordinate.X == x && shipLocation.Coordinate.Y == y;
+                    irsData.Add(result);
+                }
+            }
+
+            return this.ShipConnectedTo.Map.Game.Interact.RenderScanWithNames(
+                ScanRenderType.DoubleSingleLine,
+                title,
+                irsData.ToList(),
+                this.ShipConnectedTo.Map.Game);
+        }
+
+        private IEnumerable<string> RunFullIRSScan(Location shipLocation, int gridSize, string title)
         {
             //todo: if inefficiency ever becomes a problem this this could be split out into just getting names
-            IEnumerable<IScanResult> irsData = shipLocation.Sector.GetIRSFullData(shipLocation, this.ShipConnectedTo.Map.Game);
-            IEnumerable<string> renderedData = this.ShipConnectedTo.Map.Game.Interact.RenderScanWithNames(ScanRenderType.DoubleSingleLine, "*** Immediate Range Scan ***", irsData.ToList(), this.ShipConnectedTo.Map.Game);
+            IEnumerable<IScanResult> irsData = shipLocation.Sector.GetIRSFullData(shipLocation, this.ShipConnectedTo.Map.Game, gridSize);
+            IEnumerable<string> renderedData = this.ShipConnectedTo.Map.Game.Interact.RenderScanWithNames(ScanRenderType.DoubleSingleLine, title, irsData.ToList(), this.ShipConnectedTo.Map.Game);
 
             return renderedData;
         }

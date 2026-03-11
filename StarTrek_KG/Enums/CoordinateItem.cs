@@ -10,6 +10,7 @@ namespace StarTrek_KG.Enums
         PlayerShip, 
         Starbase,
         Deuterium,
+        DeuteriumCloud,
         GraviticMine,
         EnergyAnomaly,
         Debug

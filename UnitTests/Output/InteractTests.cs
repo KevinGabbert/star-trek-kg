@@ -134,5 +134,36 @@ namespace UnitTests.Output
             Assert.IsTrue(course.Contains("1"));
             Assert.IsTrue(course.Contains("8"));
         }
+
+        [Test]
+        public void ReadAndOutput_ShieldsAddWithAmountAtShieldPrompt_TransfersEnergy()
+        {
+            var ship = Game.Map.Playership;
+            var shields = StarTrek_KG.Subsystem.Shields.For(ship);
+            var startingShipEnergy = ship.Energy;
+
+            _interact.ReadAndOutput(ship, "map", "she");
+            var output = _interact.ReadAndOutput(ship, "map", "add 500");
+
+            Assert.AreEqual(500, shields.Energy);
+            Assert.AreEqual(startingShipEnergy - 500, ship.Energy);
+            Assert.IsFalse(output.Any(line => line.Contains("Invalid Command")));
+            Assert.AreEqual(0, _interact.Subscriber.PromptInfo.Level);
+        }
+
+        [Test]
+        public void ReadAndOutput_ShieldsAddAsSingleCommandChain_TransfersEnergy()
+        {
+            var ship = Game.Map.Playership;
+            var shields = StarTrek_KG.Subsystem.Shields.For(ship);
+            var startingShipEnergy = ship.Energy;
+
+            var output = _interact.ReadAndOutput(ship, "map", "she add 500");
+
+            Assert.AreEqual(500, shields.Energy);
+            Assert.AreEqual(startingShipEnergy - 500, ship.Energy);
+            Assert.IsFalse(output.Any(line => line.Contains("Invalid Command")));
+            Assert.AreEqual(0, _interact.Subscriber.PromptInfo.Level);
+        }
     }
 }

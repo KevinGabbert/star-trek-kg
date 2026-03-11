@@ -1125,6 +1125,8 @@ namespace StarTrek_KG
             //todo: the -1 should be the ship energy you want to allocate
             var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula);
 
+            this.Interact.Line($"{badGuy.Name} fires on you.");
+
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
             map.Playership.AbsorbHitFrom(badGuy, attackingEnergy);

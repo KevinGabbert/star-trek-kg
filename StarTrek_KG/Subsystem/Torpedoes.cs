@@ -344,6 +344,12 @@ namespace StarTrek_KG.Subsystem
                     qLocation.Object = null;
                     game.Interact.Line($"Deuterium pocket detonated at sector [{newX},{newY}].");
                     return true;
+                case CoordinateItem.DeuteriumCloud:
+                    this.ApplyDeuteriumBlast(game.Map, qLocation, newX, newY);
+                    qLocation.Item = CoordinateItem.Empty;
+                    qLocation.Object = null;
+                    game.Interact.Line($"Deuterium cloud detonated at sector [{newX},{newY}].");
+                    return true;
 
                 case CoordinateItem.Starbase:
 
