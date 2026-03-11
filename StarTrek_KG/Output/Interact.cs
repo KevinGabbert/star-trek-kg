@@ -443,7 +443,7 @@ namespace StarTrek_KG.Output
                 topLeft + cellLine + topMiddle + cellLine + topMiddle + cellLine + topRight
             };
   
-            this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine);
+            this.RenderMiddle(scanRenderType, data, barrierID, galacticBarrierText, cellLength, scanColumn, renderedResults, cellLine, game);
 
             renderedResults.Add(bottomLeft + cellLine + bottomMiddle + cellLine + bottomMiddle + cellLine + bottomRight);
 
@@ -457,7 +457,8 @@ namespace StarTrek_KG.Output
                                   int cellLength,
                                   int scanColumn,
                                   ICollection<string> renderedResults,
-                                  string cellLine)
+                                  string cellLine,
+                                  IGame game = null)
         {
             var verticalBoxLine = this.Config.Setting("VerticalBoxLine");
 
@@ -505,6 +506,13 @@ namespace StarTrek_KG.Output
                     currentSectorResult = "YOU";
                 }
 
+                if (scanRenderType == ScanRenderType.SingleLine && game is Game cascadeGame && cascadeGame.IsSystemsCascadeMode)
+                {
+                    var noisePercent = cascadeGame.GetSystemsCascadeLrsNoiseLevel();
+                    currentSectorName = this.ApplyLrsNoiseText(currentSectorName, noisePercent);
+                    currentSectorResult = this.ApplyLrsNoiseText(currentSectorResult, noisePercent);
+                }
+
                 //breaks because coordinate is not populated when nebula
 
                 currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
@@ -533,6 +541,31 @@ namespace StarTrek_KG.Output
 
                 scanColumn++;
             }
+        }
+
+        private string ApplyLrsNoiseText(string input, int noisePercent)
+        {
+            if (string.IsNullOrWhiteSpace(input) || noisePercent <= 0)
+            {
+                return input;
+            }
+
+            var chars = input.ToCharArray();
+            const string noise = "~=-";
+            for (var i = 0; i < chars.Length; i++)
+            {
+                if (!char.IsLetterOrDigit(chars[i]))
+                {
+                    continue;
+                }
+
+                if (Utility.Utility.Random.Next(100) < noisePercent)
+                {
+                    chars[i] = noise[Utility.Utility.Random.Next(noise.Length)];
+                }
+            }
+
+            return new string(chars);
         }
 
         //todo: resource out
@@ -601,6 +634,14 @@ namespace StarTrek_KG.Output
                 this.TryParseWarGamesNaturalLanguage(playerShip, userCommand, out var warGamesAction))
             {
                 return this.ExecuteWarGamesNaturalLanguageAction(playerShip, warGamesAction).ToList();
+            }
+
+            if (this.Subscriber.PromptInfo.Level == 0 &&
+                playerShip?.Map?.Game is Game concreteGame &&
+                concreteGame.IsSystemsCascadeMode &&
+                concreteGame.TryHandleSystemsCascadeCommand(userCommand, out var cascadeOutput))
+            {
+                return cascadeOutput;
             }
 
             if (this.Subscriber.PromptInfo.Level == 0)
@@ -716,6 +757,11 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  she   Shields"));
                     retVal.AddRange(this.Output.WriteLine("  com   Computer"));
                     retVal.AddRange(this.Output.WriteLine("  dmg   Damage control"));
+                    if (playerShip.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
+                    {
+                        retVal.AddRange(this.Output.WriteLine("  pwr   Systems Cascade power routing"));
+                        retVal.AddRange(this.Output.WriteLine("  cascade status   Systems Cascade mission/status"));
+                    }
                     if (playerShip.Map?.Game?.IsWarGamesMode == true)
                     {
                         retVal.AddRange(this.Output.WriteLine("  wgm   War Games actor control"));
@@ -729,6 +775,16 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  long range scan"));
                     retVal.AddRange(this.Output.WriteLine("  fire phasers 200"));
                     retVal.AddRange(this.Output.WriteLine("  fire torpedo at 3 4"));
+                    if (playerShip.Map?.Game is Game cascadeGame && cascadeGame.IsSystemsCascadeMode)
+                    {
+                        retVal.AddRange(this.Output.WriteLine(""));
+                        retVal.AddRange(this.Output.WriteLine("SYSTEMS CASCADE QUICK START"));
+                        retVal.AddRange(this.Output.WriteLine("  cascade status"));
+                        retVal.AddRange(this.Output.WriteLine("  pwr status"));
+                        retVal.AddRange(this.Output.WriteLine("  pwr transfer 20 she srs"));
+                        retVal.AddRange(this.Output.WriteLine("  pwr transfer 20 she crs"));
+                        retVal.AddRange(this.Output.WriteLine("  Tip: move to nebula sectors to stabilize systems faster"));
+                    }
                     retVal.AddRange(this.Output.WriteLine(""));
                     return retVal;
 
@@ -828,6 +884,12 @@ namespace StarTrek_KG.Output
             if (playerShip?.Map?.Game?.IsWarGamesMode == true)
             {
                 SHIP_PANEL.Add("wgm = War Games Actor Control");
+            }
+
+            if (playerShip?.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
+            {
+                SHIP_PANEL.Add("pwr = Systems Cascade Power Routing");
+                SHIP_PANEL.Add("cascade status = Systems Cascade Status");
             }
 
             if (DEFAULTS.DEBUG_MODE)

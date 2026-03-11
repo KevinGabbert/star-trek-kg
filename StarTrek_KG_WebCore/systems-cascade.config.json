@@ -1,0 +1,23 @@
+{
+  "destinationDistance": 5,
+  "anomalyDensityPercent": 8,
+  "emergencyPowerTurns": 6,
+  "emergencyPowerPerTurn": 120,
+  "nebulaDeuteriumMultiplier": 3,
+  "escalationChancePercent": 25,
+  "graceTurns": 3,
+  "anomalyEnergyHit": 60,
+  "anomalyScannerNoisePerHit": 2,
+  "anomalyLrsNoisePerHit": 20,
+  "addNebulae": true,
+  "addStars": true,
+  "playerSector": { "x": 0, "y": 0 },
+  "playerStart": { "x": 0, "y": 0 },
+  "powerHelpText": "Reroute power toward scanners, navigation, and shields as needed. Use nebulas for safer repairs.",
+  "introLines": [
+    "Engineering has unlocked temporary emergency generation.",
+    "Energy anomalies can trigger cascading subsystem faults.",
+    "Route power aggressively and use nebula cover to recover.",
+    "Anti-cascade damping will soften failures during opening turns."
+  ]
+}

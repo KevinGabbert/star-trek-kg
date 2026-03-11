@@ -53,6 +53,8 @@ app.MapPost("/api/command", (CommandRequest request) =>
 
         case "war games":
             return Results.Ok(StartSession(sessions, sessionId, SessionMode.WarGames));
+        case "systems cascade":
+            return Results.Ok(StartSession(sessions, sessionId, SessionMode.SystemsCascade));
 
         case "end session":
         case "stop":
@@ -67,6 +69,7 @@ app.MapPost("/api/command", (CommandRequest request) =>
                 " --- Terminal Menu ---",
                 "start - starts a normal game session",
                 "war games - starts a deterministic scenario session",
+                "systems cascade - starts systems failure survival mode",
                 "end session - ends the currently running game",
                 "reset config - reloads config",
                 "release notes - see the latest release notes",
@@ -79,14 +82,14 @@ app.MapPost("/api/command", (CommandRequest request) =>
 
     if (!sessions.TryGetValue(sessionId, out var state) || !state.Game.Started)
     {
-        var lines = WrapResponseText("Unrecognized Command. Game is not running. Type 'start' or 'war games' to start game");
+        var lines = WrapResponseText("Unrecognized Command. Game is not running. Type 'start', 'war games', or 'systems cascade' to start game");
         lines.Insert(1, "Err:");
         return Results.Ok(new CommandResponse(sessionId, lines));
     }
 
     if (state.Game.GameOver)
     {
-        return Results.Ok(new CommandResponse(sessionId, WrapResponseText("Game Over. Type 'start' or 'war games' to start again.")));
+        return Results.Ok(new CommandResponse(sessionId, WrapResponseText("Game Over. Type 'start', 'war games', or 'systems cascade' to start again.")));
     }
 
     var turnResponse = state.Game.SubscriberSendAndGetResponse(command);
@@ -150,12 +153,22 @@ static CommandResponse StartSession(ConcurrentDictionary<string, SessionState> s
     sessions[id] = state;
     state.Game.RunSubscriber();
 
-    var lines = WrapResponseText(requestedMode == SessionMode.WarGames ? "War Games Session Started.." : "Game Started..");
+    var lines = WrapResponseText(requestedMode switch
+    {
+        SessionMode.WarGames => "War Games Session Started..",
+        SessionMode.SystemsCascade => "Systems Cascade Session Started..",
+        _ => "Game Started.."
+    });
     lines.AddRange(state.Game.Interact.Output.Queue.ToList());
 
     if (requestedMode == SessionMode.WarGames)
     {
         var postStartLines = WarGamesStartup.ExecuteConfiguredPostStartCommand(state.Game, state.Game.Config);
+        lines.AddRange(postStartLines);
+    }
+    else if (requestedMode == SessionMode.SystemsCascade)
+    {
+        var postStartLines = state.Game.SubscriberSendAndGetResponse("srs");
         lines.AddRange(postStartLines);
     }
 
@@ -171,14 +184,27 @@ static (Game game, string errorMessage) CreateGameForMode(SessionMode mode)
         return (new Game(settings), null);
     }
 
+    if (mode == SessionMode.WarGames)
+    {
+        try
+        {
+            var setup = LoadWarGamesSetup(settings);
+            return (new Game(settings, setup), null);
+        }
+        catch (Exception ex)
+        {
+            return (null, $"War games initialization failed: {ex.Message}");
+        }
+    }
+
     try
     {
-        var setup = LoadWarGamesSetup(settings);
+        var setup = SystemsCascadeSetupLoader.Load(settings);
         return (new Game(settings, setup), null);
     }
     catch (Exception ex)
     {
-        return (null, $"War games initialization failed: {ex.Message}");
+        return (null, $"Systems Cascade initialization failed: {ex.Message}");
     }
 }
 
@@ -347,6 +373,13 @@ static SessionMode ParseMode(string mode)
         return SessionMode.WarGames;
     }
 
+    if (string.Equals(mode, "systems cascade", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(mode, "systems-cascade", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(mode, "systemscascade", StringComparison.OrdinalIgnoreCase))
+    {
+        return SessionMode.SystemsCascade;
+    }
+
     return SessionMode.Game;
 }
 
@@ -389,14 +422,20 @@ static List<string> WrapResponseList(IList<string> text)
 enum SessionMode
 {
     Game,
-    WarGames
+    WarGames,
+    SystemsCascade
 }
 
 static class SessionModeExtensions
 {
     public static string ToModeString(this SessionMode mode)
     {
-        return mode == SessionMode.WarGames ? "war games" : "game";
+        return mode switch
+        {
+            SessionMode.WarGames => "war games",
+            SessionMode.SystemsCascade => "systems cascade",
+            _ => "game"
+        };
     }
 }
 
@@ -446,3 +485,115 @@ record PromptRequest(string SessionId);
 record CommandResponse(string SessionId, List<string> Lines);
 record PromptResponse(string SessionId, string Prompt);
 record SettingsResponse(bool AutoStart, string AutoStartMode);
+
+static class SystemsCascadeSetupLoader
+{
+    public static SetupOptions Load(StarTrekKGSettings settings)
+    {
+        var scenarioPath = Path.Combine(AppContext.BaseDirectory, "systems-cascade.config.json");
+        if (!File.Exists(scenarioPath))
+        {
+            throw new InvalidOperationException($"Missing scenario file '{scenarioPath}'.");
+        }
+
+        var json = File.ReadAllText(scenarioPath);
+        var scenario = JsonSerializer.Deserialize<SystemsCascadeScenario>(json, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (scenario == null)
+        {
+            throw new InvalidOperationException("Systems cascade config is empty or invalid JSON.");
+        }
+
+        var destinationDistance = scenario.DestinationDistance ?? 5;
+        if (destinationDistance < 1)
+        {
+            destinationDistance = 1;
+        }
+
+        var anomalyDensity = scenario.AnomalyDensityPercent ?? 10;
+        if (anomalyDensity < 1)
+        {
+            anomalyDensity = 1;
+        }
+        if (anomalyDensity > 100)
+        {
+            anomalyDensity = 100;
+        }
+
+        var playerLocation = scenario.PlayerStart ?? new WarGamesPoint { X = 0, Y = 0 };
+        var playerSector = scenario.PlayerSector ?? new WarGamesPoint { X = 0, Y = 0 };
+
+        var defs = new CoordinateDefs
+        {
+            new CoordinateDef(new LocationDef(new Point(playerSector.X, playerSector.Y), new Point(playerLocation.X, playerLocation.Y)), CoordinateItem.PlayerShip)
+        };
+
+        var starbaseCount = 12;
+        try
+        {
+            starbaseCount = settings.GetSetting<int>("starbases");
+        }
+        catch
+        {
+        }
+
+        if (starbaseCount < 1)
+        {
+            starbaseCount = 1;
+        }
+
+        for (var i = 0; i < starbaseCount; i++)
+        {
+            defs.Add(new CoordinateDef(CoordinateItem.Starbase));
+        }
+
+        return new SetupOptions
+        {
+            Initialize = true,
+            IsSystemsCascadeMode = true,
+            StrictDeterministic = true,
+            OpeningPictureKey = "D-4",
+            AddStars = scenario.AddStars ?? true,
+            AddNebulae = scenario.AddNebulae ?? true,
+            AddDeuterium = true,
+            AddGraviticMines = false,
+            AddEnergyAnomalies = true,
+            SystemsCascadeAnomalyDensityPercent = anomalyDensity,
+            SystemsCascadeDestinationDistance = destinationDistance,
+            SystemsCascadeEmergencyPowerTurns = scenario.EmergencyPowerTurns ?? 6,
+            SystemsCascadeEmergencyPowerPerTurn = scenario.EmergencyPowerPerTurn ?? 120,
+            SystemsCascadeNebulaDeuteriumMultiplier = scenario.NebulaDeuteriumMultiplier ?? 3,
+            SystemsCascadeEscalationChancePercent = scenario.EscalationChancePercent ?? 25,
+            SystemsCascadeGraceTurns = scenario.GraceTurns ?? 3,
+            SystemsCascadeAnomalyEnergyHit = scenario.AnomalyEnergyHit ?? 60,
+            SystemsCascadeAnomalyScannerNoisePerHit = scenario.AnomalyScannerNoisePerHit ?? 2,
+            SystemsCascadeAnomalyLrsNoisePerHit = scenario.AnomalyLrsNoisePerHit ?? 20,
+            SystemsCascadeIntroLines = scenario.IntroLines ?? new List<string>(),
+            SystemsCascadePowerHelpText = scenario.PowerHelpText,
+            CoordinateDefs = defs
+        };
+    }
+}
+
+sealed class SystemsCascadeScenario
+{
+    public int? DestinationDistance { get; set; }
+    public int? AnomalyDensityPercent { get; set; }
+    public int? EmergencyPowerTurns { get; set; }
+    public int? EmergencyPowerPerTurn { get; set; }
+    public int? NebulaDeuteriumMultiplier { get; set; }
+    public int? EscalationChancePercent { get; set; }
+    public int? GraceTurns { get; set; }
+    public int? AnomalyEnergyHit { get; set; }
+    public int? AnomalyScannerNoisePerHit { get; set; }
+    public int? AnomalyLrsNoisePerHit { get; set; }
+    public bool? AddNebulae { get; set; }
+    public bool? AddStars { get; set; }
+    public WarGamesPoint PlayerSector { get; set; }
+    public WarGamesPoint PlayerStart { get; set; }
+    public List<string> IntroLines { get; set; }
+    public string PowerHelpText { get; set; }
+}

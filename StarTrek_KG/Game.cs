@@ -40,6 +40,10 @@ namespace StarTrek_KG
         public bool Started { get; set; }
         public bool GameOver { get; private set; }
         public bool IsWarGamesMode { get; private set; }
+        public bool IsSystemsCascadeMode { get; private set; }
+        public Point SystemsCascadeDestinationSector { get; private set; }
+
+        private CascadeStatus _cascadeStatus;
 
         public int RandomFactorForTesting
         {
@@ -48,6 +52,18 @@ namespace StarTrek_KG
         }
 
         #endregion
+
+        private sealed class CascadeStatus
+        {
+            public bool Triggered { get; set; }
+            public int TurnsSinceTriggered { get; set; }
+            public int EmergencyTurnsRemaining { get; set; }
+            public int EmergencyPowerPerTurn { get; set; }
+            public int SrsNoiseLines { get; set; }
+            public int CrsNoiseLines { get; set; }
+            public int LrsNoiseLevel { get; set; }
+            public Dictionary<string, int> PowerLevels { get; } = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         /// todo: all game workflow functions go here (currently, workflow is ensconced within actors)
@@ -109,7 +125,13 @@ namespace StarTrek_KG
 
             var startConfig = startConfigOverride ?? this.BuildDefaultSetupOptions();
             this.IsWarGamesMode = startConfig.IsWarGamesMode;
+            this.IsSystemsCascadeMode = startConfig.IsSystemsCascadeMode;
             this.InitMap(startConfig, this);
+
+            if (this.IsSystemsCascadeMode)
+            {
+                this.InitializeSystemsCascadeState(startConfig);
+            }
 
             //We don't want to start game without hostiles (unless deterministic scenario mode explicitly allows it).
             if (!startConfig.StrictDeterministic && this.HostileCheck(this.Map))
@@ -141,6 +163,499 @@ namespace StarTrek_KG
         {
             this.Map = new Map(startConfig, new Interaction(this.Config), this.Config, game);
             this.Interact = new Interaction(this.Config);
+        }
+
+        private void InitializeSystemsCascadeState(SetupOptions setup)
+        {
+            this._cascadeStatus = new CascadeStatus
+            {
+                Triggered = false,
+                TurnsSinceTriggered = 0,
+                EmergencyTurnsRemaining = Math.Max(0, setup.SystemsCascadeEmergencyPowerTurns),
+                EmergencyPowerPerTurn = Math.Max(0, setup.SystemsCascadeEmergencyPowerPerTurn),
+                SrsNoiseLines = 0,
+                CrsNoiseLines = 0,
+                LrsNoiseLevel = 0
+            };
+
+            this.InitializeCascadePowerLevels();
+            this.SetSystemsCascadeDestination(setup.SystemsCascadeDestinationDistance);
+        }
+
+        private void InitializeCascadePowerLevels()
+        {
+            if (this._cascadeStatus == null)
+            {
+                return;
+            }
+
+            this._cascadeStatus.PowerLevels.Clear();
+            var systems = new[] { "nav", "srs", "crs", "lrs", "she", "com", "tor", "pha", "dmg" };
+            foreach (var system in systems)
+            {
+                this._cascadeStatus.PowerLevels[system] = 100;
+            }
+        }
+
+        private void SetSystemsCascadeDestination(int requestedDistance)
+        {
+            var distance = requestedDistance < 1 ? 1 : requestedDistance;
+            var start = this.Map?.Playership?.Point;
+            if (start == null)
+            {
+                this.SystemsCascadeDestinationSector = new Point(0, 0);
+                return;
+            }
+
+            var candidates = new List<Point>();
+            for (var x = DEFAULTS.SECTOR_MIN; x < DEFAULTS.SECTOR_MAX; x++)
+            {
+                for (var y = DEFAULTS.SECTOR_MIN; y < DEFAULTS.SECTOR_MAX; y++)
+                {
+                    var candidate = new Point(x, y);
+                    var manhattan = Math.Abs(candidate.X - start.X) + Math.Abs(candidate.Y - start.Y);
+                    if (manhattan == distance)
+                    {
+                        candidates.Add(candidate);
+                    }
+                }
+            }
+
+            if (!candidates.Any())
+            {
+                var fallbackX = Math.Min(DEFAULTS.SECTOR_MAX - 1, start.X + distance);
+                this.SystemsCascadeDestinationSector = new Point(fallbackX, start.Y);
+                return;
+            }
+
+            this.SystemsCascadeDestinationSector = candidates[Utility.Utility.Random.Next(candidates.Count)];
+        }
+
+        public int GetSystemsCascadeSrsNoiseLines()
+        {
+            return this._cascadeStatus?.SrsNoiseLines ?? 0;
+        }
+
+        public int GetSystemsCascadeCrsNoiseLines()
+        {
+            return this._cascadeStatus?.CrsNoiseLines ?? 0;
+        }
+
+        public int GetSystemsCascadeLrsNoiseLevel()
+        {
+            return this._cascadeStatus?.LrsNoiseLevel ?? 0;
+        }
+
+        public bool TryHandleSystemsCascadeCommand(string command, out List<string> output)
+        {
+            output = null;
+
+            if (!this.IsSystemsCascadeMode || string.IsNullOrWhiteSpace(command))
+            {
+                return false;
+            }
+
+            var normalized = command.Trim().ToLowerInvariant();
+
+            if (normalized == "cascade status")
+            {
+                this.PrintSystemsCascadeStatus();
+                output = this.Map.Playership.OutputQueue();
+                return true;
+            }
+
+            if (normalized == "pwr" || normalized == "pwr help")
+            {
+                this.PrintSystemsCascadePowerHelp();
+                output = this.Map.Playership.OutputQueue();
+                return true;
+            }
+
+            if (normalized == "pwr status")
+            {
+                this.PrintSystemsCascadePowerStatus();
+                output = this.Map.Playership.OutputQueue();
+                return true;
+            }
+
+            var transferMatch = Regex.Match(normalized, @"^pwr\s+transfer\s+(?<amount>\d+)\s+(?<from>[a-z]+)\s+(?<to>[a-z]+)$", RegexOptions.IgnoreCase);
+            if (transferMatch.Success)
+            {
+                var amount = int.Parse(transferMatch.Groups["amount"].Value);
+                var from = transferMatch.Groups["from"].Value;
+                var to = transferMatch.Groups["to"].Value;
+                this.TransferCascadePower(from, to, amount);
+                output = this.Map.Playership.OutputQueue();
+                return true;
+            }
+
+            return false;
+        }
+
+        private void PrintSystemsCascadePowerHelp()
+        {
+            this.Interact.Line("Systems Cascade Power Routing");
+            this.Interact.Line("Commands:");
+            this.Interact.Line("  pwr status");
+            this.Interact.Line("  pwr transfer [amount] [from] [to]");
+            this.Interact.Line("Examples:");
+            this.Interact.Line("  pwr transfer 25 she srs");
+            this.Interact.Line("  pwr transfer 20 tor nav");
+            this.Interact.Line(this.Map?.GameConfig?.SystemsCascadePowerHelpText ?? "Shift power to scanners or repairs while managing anomalies.");
+        }
+
+        private void PrintSystemsCascadePowerStatus()
+        {
+            if (this._cascadeStatus == null)
+            {
+                return;
+            }
+
+            this.Interact.Line("--- Power Allocation ---");
+            foreach (var kv in this._cascadeStatus.PowerLevels.OrderBy(k => k.Key))
+            {
+                this.Interact.Line($"{kv.Key}: {kv.Value}");
+            }
+
+            this.Interact.Line($"SRS Noise Lines: {this._cascadeStatus.SrsNoiseLines}");
+            this.Interact.Line($"CRS Noise Lines: {this._cascadeStatus.CrsNoiseLines}");
+            this.Interact.Line($"LRS Brownout: {this._cascadeStatus.LrsNoiseLevel}%");
+        }
+
+        private void TransferCascadePower(string from, string to, int amount)
+        {
+            if (this._cascadeStatus == null)
+            {
+                return;
+            }
+
+            if (amount <= 0)
+            {
+                this.Interact.Line("Power transfer amount must be greater than zero.");
+                return;
+            }
+
+            if (!this._cascadeStatus.PowerLevels.ContainsKey(from) || !this._cascadeStatus.PowerLevels.ContainsKey(to))
+            {
+                this.Interact.Line("Unknown system. Use pwr status to see valid system keys.");
+                return;
+            }
+
+            if (from == to)
+            {
+                this.Interact.Line("Source and destination systems must be different.");
+                return;
+            }
+
+            if (this._cascadeStatus.PowerLevels[from] < amount)
+            {
+                this.Interact.Line($"{from} does not have enough allocated power to transfer {amount}.");
+                return;
+            }
+
+            this._cascadeStatus.PowerLevels[from] -= amount;
+            this._cascadeStatus.PowerLevels[to] += amount;
+            this.Interact.Line($"Transferred {amount} power from {from} to {to}.");
+
+            this.RepairSubsystemFromPower(to, amount);
+            this.PrintSystemsCascadePowerStatus();
+        }
+
+        private void RepairSubsystemFromPower(string targetSystem, int amount)
+        {
+            if (amount < 15 || this.Map?.Playership == null)
+            {
+                return;
+            }
+
+            switch (targetSystem)
+            {
+                case "srs":
+                    this._cascadeStatus.SrsNoiseLines = Math.Max(0, this._cascadeStatus.SrsNoiseLines - 1);
+                    if (this._cascadeStatus.SrsNoiseLines < this.GetScannerRows("SRSRows"))
+                    {
+                        ShortRangeScan.For(this.Map.Playership).Damage = 0;
+                    }
+                    break;
+                case "crs":
+                    this._cascadeStatus.CrsNoiseLines = Math.Max(0, this._cascadeStatus.CrsNoiseLines - 1);
+                    if (this._cascadeStatus.CrsNoiseLines < this.GetScannerRows("CRSRows"))
+                    {
+                        CombinedRangeScan.For(this.Map.Playership).Damage = 0;
+                    }
+                    break;
+                case "lrs":
+                    this._cascadeStatus.LrsNoiseLevel = Math.Max(0, this._cascadeStatus.LrsNoiseLevel - 20);
+                    if (this._cascadeStatus.LrsNoiseLevel < 100)
+                    {
+                        LongRangeScan.For(this.Map.Playership).Damage = 0;
+                    }
+                    break;
+                case "she":
+                    Shields.For(this.Map.Playership).Damage = Math.Max(0, Shields.For(this.Map.Playership).Damage - 1);
+                    break;
+                case "nav":
+                    Navigation.For(this.Map.Playership).Damage = Math.Max(0, Navigation.For(this.Map.Playership).Damage - 1);
+                    break;
+                case "com":
+                    Computer.For(this.Map.Playership).Damage = Math.Max(0, Computer.For(this.Map.Playership).Damage - 1);
+                    break;
+                case "tor":
+                    Torpedoes.For(this.Map.Playership).Damage = Math.Max(0, Torpedoes.For(this.Map.Playership).Damage - 1);
+                    break;
+                case "pha":
+                    Phasers.For(this.Map.Playership).Damage = Math.Max(0, Phasers.For(this.Map.Playership).Damage - 1);
+                    break;
+                case "dmg":
+                    DamageControl.For(this.Map.Playership).Damage = Math.Max(0, DamageControl.For(this.Map.Playership).Damage - 1);
+                    break;
+            }
+        }
+
+        private void ApplySystemsCascadeTurnEffects(string command)
+        {
+            if (!this.IsSystemsCascadeMode || this._cascadeStatus == null || this.Map?.Playership == null)
+            {
+                return;
+            }
+
+            if (this._cascadeStatus.EmergencyTurnsRemaining > 0)
+            {
+                this.Map.Playership.Energy += this._cascadeStatus.EmergencyPowerPerTurn;
+                this._cascadeStatus.EmergencyTurnsRemaining--;
+                this.Interact.Line($"Engineering emergency generation added {this._cascadeStatus.EmergencyPowerPerTurn} power. Remaining boost turns: {this._cascadeStatus.EmergencyTurnsRemaining}");
+            }
+
+            var activeSector = this.Map.Sectors.GetActive();
+            if (activeSector?.Type == SectorType.Nebulae)
+            {
+                this.ApplyNebulaRepairTick();
+            }
+            else if (this._cascadeStatus.Triggered)
+            {
+                var graceTurns = Math.Max(0, this.Map.GameConfig?.SystemsCascadeGraceTurns ?? 0);
+                if (this._cascadeStatus.TurnsSinceTriggered >= graceTurns)
+                {
+                    var escalationChance = this.Map.GameConfig?.SystemsCascadeEscalationChancePercent ?? 25;
+                    if (escalationChance < 0)
+                    {
+                        escalationChance = 0;
+                    }
+                    if (escalationChance > 100)
+                    {
+                        escalationChance = 100;
+                    }
+
+                    if (Utility.Utility.Random.Next(100) < escalationChance)
+                    {
+                        this.ApplyRandomCascadeEscalation();
+                    }
+                }
+                else
+                {
+                    this.Interact.Line($"Cascade grace window active ({graceTurns - this._cascadeStatus.TurnsSinceTriggered} turn(s) remaining).");
+                }
+
+                this._cascadeStatus.TurnsSinceTriggered++;
+            }
+
+            this.ApplyCascadeScannerOfflineRules();
+            this.PrintSystemsCascadeTurnSummary();
+        }
+
+        private void ApplyNebulaRepairTick()
+        {
+            if (this._cascadeStatus == null || this.Map?.Playership == null)
+            {
+                return;
+            }
+
+            this._cascadeStatus.SrsNoiseLines = Math.Max(0, this._cascadeStatus.SrsNoiseLines - 1);
+            this._cascadeStatus.CrsNoiseLines = Math.Max(0, this._cascadeStatus.CrsNoiseLines - 1);
+            this._cascadeStatus.LrsNoiseLevel = Math.Max(0, this._cascadeStatus.LrsNoiseLevel - 10);
+
+            foreach (var subsystem in this.Map.Playership.Subsystems.Where(s => s.Damage > 0))
+            {
+                subsystem.Damage = Math.Max(0, subsystem.Damage - 1);
+            }
+
+            this.Interact.Line("Nebula cover is allowing engineering teams to stabilize damaged systems.");
+        }
+
+        private void ApplyRandomCascadeEscalation()
+        {
+            var roll = Utility.Utility.Random.Next(6);
+            switch (roll)
+            {
+                case 0:
+                    this._cascadeStatus.SrsNoiseLines++;
+                    this.Interact.Line("Cascade ripple: SRS scan-lines increased.");
+                    break;
+                case 1:
+                    this._cascadeStatus.CrsNoiseLines++;
+                    this.Interact.Line("Cascade ripple: CRS scan-lines increased.");
+                    break;
+                case 2:
+                    this._cascadeStatus.LrsNoiseLevel = Math.Min(100, this._cascadeStatus.LrsNoiseLevel + 15);
+                    this.Interact.Line("Cascade ripple: LRS signal brownout intensified.");
+                    break;
+                case 3:
+                    Shields.For(this.Map.Playership).Damage++;
+                    this.Interact.Line("Cascade ripple: Shield control destabilized.");
+                    break;
+                case 4:
+                    Navigation.For(this.Map.Playership).Damage++;
+                    this.Interact.Line("Cascade ripple: Navigation matrix drifted out of tolerance.");
+                    break;
+                default:
+                    Computer.For(this.Map.Playership).Damage++;
+                    this.Interact.Line("Cascade ripple: Computer core timing fault detected.");
+                    break;
+            }
+        }
+
+        private void ApplyCascadeScannerOfflineRules()
+        {
+            if (this._cascadeStatus == null || this.Map?.Playership == null)
+            {
+                return;
+            }
+
+            var srsRows = this.GetScannerRows("SRSRows");
+            var crsRows = this.GetScannerRows("CRSRows");
+
+            if (this._cascadeStatus.SrsNoiseLines >= srsRows)
+            {
+                this._cascadeStatus.SrsNoiseLines = srsRows;
+                ShortRangeScan.For(this.Map.Playership).Damage = 1;
+                this.Interact.Line("SRS is now offline due to full-spectrum scan-line corruption.");
+            }
+
+            if (this._cascadeStatus.CrsNoiseLines >= crsRows)
+            {
+                this._cascadeStatus.CrsNoiseLines = crsRows;
+                CombinedRangeScan.For(this.Map.Playership).Damage = 1;
+                this.Interact.Line("CRS is now offline due to full-spectrum scan-line corruption.");
+            }
+
+            if (this._cascadeStatus.LrsNoiseLevel >= 100)
+            {
+                this._cascadeStatus.LrsNoiseLevel = 100;
+                LongRangeScan.For(this.Map.Playership).Damage = 1;
+                this.Interact.Line("LRS is now offline due to extreme signal brownout.");
+            }
+        }
+
+        private int GetScannerRows(string configName)
+        {
+            try
+            {
+                return this.Config.GetSetting<int>(configName);
+            }
+            catch
+            {
+                return 8;
+            }
+        }
+
+        public void TriggerSystemsCascadeFromAnomaly(string glyph)
+        {
+            if (!this.IsSystemsCascadeMode || this._cascadeStatus == null || this.Map?.Playership == null)
+            {
+                return;
+            }
+
+            this._cascadeStatus.Triggered = true;
+            if (this._cascadeStatus.TurnsSinceTriggered == 0)
+            {
+                this.Interact.Line("Engineering note: temporary anti-cascade damping engaged while systems recalibrate.");
+            }
+            this.Interact.Line($"Energy anomaly '{glyph}' impacted the ship and initiated a systems cascade event.");
+
+            var scannerNoisePerHit = Math.Max(1, this.Map.GameConfig?.SystemsCascadeAnomalyScannerNoisePerHit ?? 2);
+            var lrsNoisePerHit = Math.Max(5, this.Map.GameConfig?.SystemsCascadeAnomalyLrsNoisePerHit ?? 20);
+            var anomalyEnergyHit = Math.Max(0, this.Map.GameConfig?.SystemsCascadeAnomalyEnergyHit ?? 60);
+
+            switch (glyph)
+            {
+                case "&":
+                    this._cascadeStatus.SrsNoiseLines += scannerNoisePerHit;
+                    this.Interact.Line("Effect: SRS scan-line distortion increased.");
+                    break;
+                case "%":
+                    this._cascadeStatus.CrsNoiseLines += scannerNoisePerHit;
+                    this.Interact.Line("Effect: CRS scan-line distortion increased.");
+                    break;
+                case "$":
+                    Shields.For(this.Map.Playership).Damage += 1;
+                    this.Map.Playership.Energy -= anomalyEnergyHit;
+                    this.Interact.Line("Effect: Shield grid surge and reactor power bleed.");
+                    break;
+                case "@":
+                    Navigation.For(this.Map.Playership).Damage += 1;
+                    this.Interact.Line("Effect: Navigation subsystem destabilized.");
+                    break;
+                case "~":
+                    this._cascadeStatus.LrsNoiseLevel = Math.Min(100, this._cascadeStatus.LrsNoiseLevel + lrsNoisePerHit);
+                    this.Interact.Line("Effect: Long-range sensor brownout escalated.");
+                    break;
+                case "-":
+                    var weaponSubsystem = Utility.Utility.Random.Next(2) == 0
+                        ? (ISubsystem)Torpedoes.For(this.Map.Playership)
+                        : Phasers.For(this.Map.Playership);
+                    weaponSubsystem.Damage += 1;
+                    this.Interact.Line($"Effect: {weaponSubsystem.Type} suffered a harmonic fault.");
+                    break;
+            }
+
+            if (this._cascadeStatus.EmergencyTurnsRemaining > 0 && this.Map.Playership.Energy < 150)
+            {
+                this.Map.Playership.Energy = 150;
+                this.Interact.Line("Emergency generation prevented a catastrophic power collapse.");
+            }
+
+            this.ApplyCascadeScannerOfflineRules();
+        }
+
+        private void PrintSystemsCascadeStatus()
+        {
+            if (!this.IsSystemsCascadeMode)
+            {
+                return;
+            }
+
+            var shipSector = this.Map.Playership?.Point;
+            var destination = this.SystemsCascadeDestinationSector;
+            this.Interact.Line("--- Systems Cascade Status ---");
+            this.Interact.Line($"Current Sector: [{shipSector?.X},{shipSector?.Y}]");
+            this.Interact.Line($"Destination Sector: [{destination?.X},{destination?.Y}]");
+            this.Interact.Line($"Ship Energy: {this.Map.Playership?.Energy}");
+            this.Interact.Line($"Cascade Triggered: {(this._cascadeStatus?.Triggered == true ? "Yes" : "No")}");
+            this.PrintSystemsCascadePowerStatus();
+        }
+
+        private void PrintSystemsCascadeTurnSummary()
+        {
+            if (!this.IsSystemsCascadeMode || this.Map?.Playership == null || this._cascadeStatus == null || this.SystemsCascadeDestinationSector == null)
+            {
+                return;
+            }
+
+            var ship = this.Map.Playership;
+            var destination = this.SystemsCascadeDestinationSector;
+            var distance = Math.Abs(ship.Point.X - destination.X) + Math.Abs(ship.Point.Y - destination.Y);
+            var cascadeState = this._cascadeStatus.Triggered ? "ACTIVE" : "IDLE";
+
+            this.Interact.Line($"Cascade HUD: Dest[{destination.X},{destination.Y}] Dist={distance} Energy={ship.Energy} Cascade={cascadeState}");
+            this.Interact.Line($"Cascade HUD: SRS lines={this._cascadeStatus.SrsNoiseLines} CRS lines={this._cascadeStatus.CrsNoiseLines} LRS brownout={this._cascadeStatus.LrsNoiseLevel}%");
+
+            var tip = "Use 'pwr status' and 'pwr transfer 20 she srs'.";
+            if (ship.GetSector().Type != SectorType.Nebulae)
+            {
+                tip += " Find a nebula to stabilize systems faster.";
+            }
+
+            this.Interact.Line("Cascade HUD Tip: " + tip);
         }
 
         #region Turn System
@@ -180,6 +695,7 @@ namespace StarTrek_KG
                 }
                 else
                 {
+                    this.ApplySystemsCascadeTurnEffects(command);
                     this.ReportGameStatus();
                     retVal = this.Map.Playership.OutputQueue();
                 }
@@ -347,8 +863,35 @@ namespace StarTrek_KG
             this.RandomAppTitle(); //Printing the title at this point is really a debug step. (it shows that the game is started.  Otherwise, it could go after initialization)
 
             this.Interact.ResourceLine(this.Config.GetText("AppVersion").TrimStart(' '), "UnderConstructionMessage");
+            if (this.IsSystemsCascadeMode)
+            {
+                this.PrintSystemsCascadeBriefing();
+            }
+            else
+            {
+                this.Interact.PrintMission();
+            }
+        }
 
-            this.Interact.PrintMission();
+        private void PrintSystemsCascadeBriefing()
+        {
+            this.Interact.Line("SYSTEMS CASCADE MODE");
+            this.Interact.Line($"Destination Sector: [{this.SystemsCascadeDestinationSector.X},{this.SystemsCascadeDestinationSector.Y}]");
+            this.Interact.Line("Objective: Reach destination while surviving cascade failures.");
+            this.Interact.Line("Use scans to locate deuterium and avoid/prepare for energy anomalies.");
+            this.Interact.Line("Nebula sectors contain no anomalies and support field repairs.");
+            this.Interact.Line("Shields are ineffective in nebulae.");
+            this.Interact.Line("Power transfer: pwr transfer [amount] [from] [to]");
+            this.Interact.Line("Power status: pwr status");
+
+            var introLines = this.Map?.GameConfig?.SystemsCascadeIntroLines;
+            if (introLines != null)
+            {
+                foreach (var introLine in introLines.Where(line => !string.IsNullOrWhiteSpace(line)))
+                {
+                    this.Interact.Line(introLine);
+                }
+            }
         }
 
         private void RandomAppTitle()
@@ -879,6 +1422,12 @@ namespace StarTrek_KG
 
         private void ReportGameStatus()
         {
+            if (this.IsSystemsCascadeMode)
+            {
+                this.ReportSystemsCascadeGameStatus();
+                return;
+            }
+
             int starbasesLeft = this.Map.Sectors.GetStarbaseCount();
 
             if (this.PlayerNowEnemyToFederation)
@@ -897,6 +1446,47 @@ namespace StarTrek_KG
             }
 
             this.Interact.PrintMissionResult(this.Map.Playership, this.PlayerNowEnemyToFederation, starbasesLeft);
+        }
+
+        private void ReportSystemsCascadeGameStatus()
+        {
+            var ship = this.Map?.Playership;
+            if (ship == null)
+            {
+                this.GameOver = true;
+                return;
+            }
+
+            var destinationReached = this.SystemsCascadeDestinationSector != null &&
+                                     ship.Point != null &&
+                                     ship.Point.X == this.SystemsCascadeDestinationSector.X &&
+                                     ship.Point.Y == this.SystemsCascadeDestinationSector.Y;
+
+            if (destinationReached)
+            {
+                this.GameOver = true;
+                this.Interact.Line("SYSTEMS CASCADE COMPLETE: Destination reached. Command crew survived the cascade.");
+                return;
+            }
+
+            this.GameOver = ship.Destroyed || ship.Energy <= 0 || this.Map.timeRemaining <= 0;
+            if (!this.GameOver)
+            {
+                return;
+            }
+
+            if (ship.Destroyed)
+            {
+                this.Interact.Line("SYSTEMS CASCADE FAILURE: Ship destroyed.");
+            }
+            else if (ship.Energy <= 0)
+            {
+                this.Interact.Line("SYSTEMS CASCADE FAILURE: Reactor energy depleted.");
+            }
+            else
+            {
+                this.Interact.Line("SYSTEMS CASCADE FAILURE: Time has run out before reaching destination.");
+            }
         }
 
         public void MoveTimeForward(IMap map, Point lastSector, Point Sector)

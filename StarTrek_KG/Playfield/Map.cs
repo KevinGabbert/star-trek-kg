@@ -209,6 +209,16 @@ namespace StarTrek_KG.Playfield
             {
                 this.PopulateGraviticMines();
             }
+
+            if (this.GameConfig?.AddEnergyAnomalies ?? false)
+            {
+                this.PopulateEnergyAnomalies();
+            }
+
+            if (this.GameConfig?.IsSystemsCascadeMode ?? false)
+            {
+                this.PopulateNebulaDeuteriumBonus();
+            }
         }
 
         private void PopulateDeuteriumPockets()
@@ -266,6 +276,98 @@ namespace StarTrek_KG.Playfield
 
                 var pickedCoordinate = emptyCoordinates[Utility.Utility.Random.Next(emptyCoordinates.Count)];
                 this.PlaceDeuteriumAt(pickedCoordinate);
+            }
+        }
+
+        private void PopulateNebulaDeuteriumBonus()
+        {
+            var multiplier = this.GameConfig?.SystemsCascadeNebulaDeuteriumMultiplier ?? 1;
+            if (multiplier <= 1)
+            {
+                return;
+            }
+
+            foreach (var sector in this.Sectors.Where(s => s.Type == SectorType.Nebulae))
+            {
+                var emptyCoordinates = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+                if (!emptyCoordinates.Any())
+                {
+                    continue;
+                }
+
+                var additions = Math.Min(multiplier, emptyCoordinates.Count);
+                for (var i = 0; i < additions; i++)
+                {
+                    if (!emptyCoordinates.Any())
+                    {
+                        break;
+                    }
+
+                    var pickedIndex = Utility.Utility.Random.Next(emptyCoordinates.Count);
+                    var pickedCoordinate = emptyCoordinates[pickedIndex];
+                    emptyCoordinates.RemoveAt(pickedIndex);
+                    this.PlaceDeuteriumAt(pickedCoordinate);
+                }
+            }
+        }
+
+        private void PopulateEnergyAnomalies()
+        {
+            var densityPercent = this.GameConfig?.SystemsCascadeAnomalyDensityPercent ?? 10;
+            if (densityPercent <= 0)
+            {
+                return;
+            }
+
+            if (densityPercent > 100)
+            {
+                densityPercent = 100;
+            }
+
+            var anomalyGlyphs = new[] { "&", "%", "$", "@", "~", "-" };
+
+            foreach (var sector in this.Sectors)
+            {
+                if (sector.Type == SectorType.Nebulae)
+                {
+                    continue;
+                }
+
+                var empties = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+                if (!empties.Any())
+                {
+                    continue;
+                }
+
+                var targetCount = (int)Math.Round(empties.Count * (densityPercent / 100.0));
+                if (targetCount <= 0)
+                {
+                    continue;
+                }
+
+                targetCount = Math.Min(targetCount, empties.Count);
+
+                for (var i = 0; i < targetCount; i++)
+                {
+                    if (!empties.Any())
+                    {
+                        break;
+                    }
+
+                    var emptyIndex = Utility.Utility.Random.Next(empties.Count);
+                    var coordinate = empties[emptyIndex];
+                    empties.RemoveAt(emptyIndex);
+
+                    var glyph = anomalyGlyphs[Utility.Utility.Random.Next(anomalyGlyphs.Length)];
+                    coordinate.Item = CoordinateItem.EnergyAnomaly;
+                    coordinate.Object = new EnergyAnomaly
+                    {
+                        Coordinate = coordinate,
+                        Glyph = glyph,
+                        EffectKey = glyph,
+                        Name = $"Energy Anomaly {glyph}"
+                    };
+                }
             }
         }
 
@@ -672,6 +774,17 @@ namespace StarTrek_KG.Playfield
                 coordinate.Object = null;
 
                 this.Write?.Line("Gravitic mine detonated and damaged the playership.");
+            }
+
+            if (coordinate.Item == CoordinateItem.EnergyAnomaly)
+            {
+                var anomaly = coordinate.Object as EnergyAnomaly;
+                var glyph = anomaly?.Glyph ?? "~";
+
+                this.Game?.TriggerSystemsCascadeFromAnomaly(glyph);
+
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
             }
         }
 

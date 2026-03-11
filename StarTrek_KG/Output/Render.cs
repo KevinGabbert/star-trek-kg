@@ -7,6 +7,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Actors;
 
 namespace StarTrek_KG.Output
 {
@@ -31,9 +32,12 @@ namespace StarTrek_KG.Output
             this.Interact.Output.WriteLine(this.Config.GetText("SRSTopBorder", "SRSSector"), SectorDisplayName);
 
             int srsRows = Convert.ToInt32(this.GetConfigText("SRSRows"));
+            var game = map.Game as Game;
+            var noiseRows = game?.IsSystemsCascadeMode == true ? game.GetSystemsCascadeSrsNoiseLines() : 0;
             for (int i = 0; i < srsRows; i++) //todo: resource out
             {
-                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Sector.Coordinates, totalHostiles, isNebula);
+                var forceNoise = noiseRows > 0 && i >= srsRows - noiseRows;
+                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Sector.Coordinates, totalHostiles, isNebula, forceNoise);
             }
 
             this.Interact.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
@@ -49,10 +53,17 @@ namespace StarTrek_KG.Output
             this.ScanLine(topBorder, $" Energy: {map.Playership.Energy}   Shields: {Shields.For(map.Playership).Energy}");
 
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
+            var game = map.Game as Game;
+            var noiseRows = game?.IsSystemsCascadeMode == true ? game.GetSystemsCascadeCrsNoiseLines() : 0;
             for (int i = 0; i < crsRows; i++) 
             {
                 var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults, totalHostiles);
-                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, Sector.Coordinates, totalHostiles, isNebula);
+                if (game?.IsSystemsCascadeMode == true)
+                {
+                    rowIndicator = this.ApplyLrsBrownoutNoise(rowIndicator, game.GetSystemsCascadeLrsNoiseLevel());
+                }
+                var forceNoise = noiseRows > 0 && i >= crsRows - noiseRows;
+                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, Sector.Coordinates, totalHostiles, isNebula, forceNoise);
             }
 
             string lrsBottom = null;
@@ -168,8 +179,25 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Coordinates sectors, int totalHostiles, bool isNebula)
+        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Coordinates sectors, int totalHostiles, bool isNebula, bool forceNoise = false)
         {
+            if (forceNoise)
+            {
+                for (var column = 0; column < DEFAULTS.COORDINATE_MAX; column++)
+                {
+                    sb.Append(this.GetNoiseCell());
+                }
+
+                if (suffix != null)
+                {
+                    sb.Append(suffix);
+                }
+
+                this.ScanLine(sb.ToString());
+                sb.Length = 0;
+                return;
+            }
+
             for (var column = 0; column < DEFAULTS.COORDINATE_MAX; column++)
             {
                 Coordinate sector = sectors[column, row];
@@ -237,6 +265,17 @@ namespace StarTrek_KG.Output
                         sb.Append(DEFAULTS.EMPTY);
                         break;
 
+                    case CoordinateItem.EnergyAnomaly:
+                        var anomaly = sector.Object as EnergyAnomaly;
+                        var glyph = anomaly?.Glyph;
+                        if (string.IsNullOrWhiteSpace(glyph))
+                        {
+                            glyph = "~";
+                        }
+
+                        sb.Append($" {glyph} ");
+                        break;
+
                     case CoordinateItem.Debug:
                         sb.Append(DEFAULTS.DEBUG_MARKER);
                         break;
@@ -253,6 +292,40 @@ namespace StarTrek_KG.Output
 
             this.ScanLine(sb.ToString());
             sb.Length = 0;
+        }
+
+        private string GetNoiseCell()
+        {
+            var noise = "~=-";
+            var c1 = noise[Utility.Utility.Random.Next(noise.Length)];
+            var c2 = noise[Utility.Utility.Random.Next(noise.Length)];
+            var c3 = noise[Utility.Utility.Random.Next(noise.Length)];
+            return $"{c1}{c2}{c3}";
+        }
+
+        private string ApplyLrsBrownoutNoise(string input, int noisePercent)
+        {
+            if (string.IsNullOrWhiteSpace(input) || noisePercent <= 0)
+            {
+                return input;
+            }
+
+            var chars = input.ToCharArray();
+            const string noisePool = "~=-";
+            for (var i = 0; i < chars.Length; i++)
+            {
+                if (!char.IsLetterOrDigit(chars[i]))
+                {
+                    continue;
+                }
+
+                if (Utility.Utility.Random.Next(100) < noisePercent)
+                {
+                    chars[i] = noisePool[Utility.Utility.Random.Next(noisePool.Length)];
+                }
+            }
+
+            return new string(chars);
         }
 
         private void AppendShipDesignator(StringBuilder sb, int totalHostiles, ICoordinate sector)

@@ -12,6 +12,7 @@ namespace StarTrek_KG.Interfaces
         int RandomFactorForTesting { get; set; }
         bool PlayerNowEnemyToFederation { get; set; }
         bool IsWarGamesMode { get; }
+        bool IsSystemsCascadeMode { get; }
         List<FactionThreat> LatestTaunts { get; set; }
         Game._promptFunc<string, bool> Prompt { get; set; }
 
@@ -19,6 +20,7 @@ namespace StarTrek_KG.Interfaces
         void ALLHostilesAttack(IMap map);
         bool Auto_Raise_Shields(IMap map, ISector Sector);
         void MoveTimeForward(IMap map, Point lastSector, Point Sector);
+        void TriggerSystemsCascadeFromAnomaly(string glyph);
         void ShowRandomTitle();
     }
 }

@@ -1,4 +1,5 @@
 using StarTrek_KG.Playfield;
+using System.Collections.Generic;
 
 namespace StarTrek_KG.Settings
 {
@@ -14,7 +15,21 @@ namespace StarTrek_KG.Settings
         public bool AddGraviticMines { get; set; } = true;
         public bool StrictDeterministic { get; set; } = false;
         public bool IsWarGamesMode { get; set; } = false;
+        public bool IsSystemsCascadeMode { get; set; } = false;
         public string OpeningPictureKey { get; set; }
+        public bool AddEnergyAnomalies { get; set; } = false;
+        public int SystemsCascadeAnomalyDensityPercent { get; set; } = 10;
+        public int SystemsCascadeDestinationDistance { get; set; } = 5;
+        public int SystemsCascadeEmergencyPowerTurns { get; set; } = 6;
+        public int SystemsCascadeEmergencyPowerPerTurn { get; set; } = 120;
+        public int SystemsCascadeNebulaDeuteriumMultiplier { get; set; } = 3;
+        public int SystemsCascadeEscalationChancePercent { get; set; } = 25;
+        public int SystemsCascadeGraceTurns { get; set; } = 3;
+        public int SystemsCascadeAnomalyEnergyHit { get; set; } = 60;
+        public int SystemsCascadeAnomalyScannerNoisePerHit { get; set; } = 2;
+        public int SystemsCascadeAnomalyLrsNoisePerHit { get; set; } = 20;
+        public List<string> SystemsCascadeIntroLines { get; set; }
+        public string SystemsCascadePowerHelpText { get; set; }
 
         /// <summary>
         /// The plan here is to be able to start the game by throwing in all objects required for game with XY values
