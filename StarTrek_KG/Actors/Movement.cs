@@ -277,6 +277,10 @@ namespace StarTrek_KG.Actors
                     this.SystemPrompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     this.ApplyCollisionDamage("StarbaseCollisionDamage", 900, "Collision with starbase caused massive structural damage.");
                     break;
+                case CoordinateItem.HostileOutpost:
+                    this.SystemPrompt.Line($"Hostile outpost encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.ApplyCollisionDamage("StarbaseCollisionDamage", 900, "Collision with hostile outpost caused massive structural damage.");
+                    break;
 
                 case CoordinateItem.BlackHole:
                     this.SystemPrompt.Line($"Black hole event horizon detected at sector: [{sector.X},{sector.Y}]. Navigation halted.");
@@ -475,7 +479,7 @@ namespace StarTrek_KG.Actors
 
             //If newSectorCandidate had negative numbers, then scanResult will have the newly updated region in it
 
-            if (scanResult.GalacticBarrier)
+            if (scanResult?.GalacticBarrier == true)
             {
                 this.ApplyGalacticBarrierPenalty();
                 stopNavigation = true;

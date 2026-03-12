@@ -210,6 +210,7 @@ namespace StarTrek_KG.Playfield
             this.PopulateTemporalRifts();
             this.PopulateSporeFields();
             this.PopulateBlackHoles();
+            this.PopulateHostileOutposts();
 
             if (this.GameConfig?.AddGraviticMines ?? true)
             {
@@ -289,6 +290,52 @@ namespace StarTrek_KG.Playfield
 
                 var pickedCoordinate = emptyCoordinates[Utility.Utility.Random.Next(emptyCoordinates.Count)];
                 this.PlaceDeuteriumAt(pickedCoordinate);
+            }
+        }
+
+        private void PopulateHostileOutposts()
+        {
+            var percent = this.GetSettingOrDefault("HostileOutpostSectorPercent", 8);
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var candidates = this.Sectors?
+                .Where(sector => sector?.Coordinates != null)
+                .Where(sector => sector.Coordinates.Any(c => c.Item == CoordinateItem.Empty))
+                .ToList();
+
+            if (candidates == null || candidates.Count == 0)
+            {
+                return;
+            }
+
+            var targetCount = (int)Math.Round(candidates.Count * (percent / 100.0));
+            targetCount = Math.Max(1, Math.Min(targetCount, candidates.Count));
+
+            foreach (var sector in candidates.Shuffle().Take(targetCount))
+            {
+                var coordinate = sector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Empty)
+                    .OrderBy(_ => Utility.Utility.Random.Next())
+                    .FirstOrDefault();
+
+                if (coordinate == null)
+                {
+                    continue;
+                }
+
+                coordinate.Item = CoordinateItem.HostileOutpost;
+                coordinate.Object = new HostileOutpost
+                {
+                    Coordinate = coordinate
+                };
             }
         }
 
@@ -1526,6 +1573,15 @@ namespace StarTrek_KG.Playfield
                 coordinate.Item = CoordinateItem.Empty;
                 coordinate.Object = null;
             }
+        }
+
+        public List<Coordinate> GetHostileOutposts()
+        {
+            return this.Sectors
+                .Where(s => s?.Coordinates != null)
+                .SelectMany(s => s.Coordinates)
+                .Where(c => c.Item == CoordinateItem.HostileOutpost)
+                .ToList();
         }
 
         /// <summary>

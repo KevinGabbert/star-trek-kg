@@ -38,6 +38,14 @@ namespace StarTrek_KG.Actors
             public List<LocationDef> TurnHistory { get; set; }
             public int MaxEnergy { get; set; }
             public int Prisoners { get; set; }
+            public string TargetSubsystemMnemonic { get; set; }
+            public string TargetShipName { get; set; }
+            public int TargetSubsystemLockStreak { get; set; }
+            public int TacticsManualUses { get; set; }
+            public int RetreatTurns { get; set; }
+            public int RetreatAttempts { get; set; }
+            public int RetreatSuppressedTurns { get; set; }
+            public bool HasRetreatedAndRearmed { get; set; }
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log ShipLog { get; set; } //
@@ -90,6 +98,14 @@ namespace StarTrek_KG.Actors
             this.TurnHistory = new List<LocationDef>();
             this.MaxEnergy = 0;
             this.Prisoners = 0;
+            this.TargetSubsystemMnemonic = null;
+            this.TargetShipName = null;
+            this.TargetSubsystemLockStreak = 0;
+            this.TacticsManualUses = 0;
+            this.RetreatTurns = 0;
+            this.RetreatAttempts = 0;
+            this.RetreatSuppressedTurns = 0;
+            this.HasRetreatedAndRearmed = false;
 
         }
 

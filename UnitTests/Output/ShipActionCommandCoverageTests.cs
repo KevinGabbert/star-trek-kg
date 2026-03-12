@@ -57,11 +57,13 @@ namespace UnitTests.Output
         [TestCase("pha")]
         [TestCase("tor")]
         [TestCase("brd")]
+        [TestCase("tss")]
         [TestCase("toq")]
         [TestCase("she")]
         [TestCase("com")]
         [TestCase("dmg")]
         [TestCase("inst")]
+        [TestCase("tac")]
         public void TopLevelShipCommands_DoNotThrow_AndReturnOutput(string command)
         {
             List<string> output = null;

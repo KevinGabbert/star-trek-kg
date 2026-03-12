@@ -8,6 +8,7 @@ using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Actors;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Output
@@ -147,6 +148,43 @@ namespace UnitTests.Output
             _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "3");
 
             Assert.AreEqual(startTime - 2, _game.Map.timeRemaining);
+        }
+
+        [Test]
+        public void IRSPlusPlusPlus_Consumes_One_Turn()
+        {
+            var startTime = _game.Map.timeRemaining;
+            var startStardate = _game.Map.Stardate;
+
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "irs+++");
+
+            Assert.IsNotNull(output);
+            Assert.AreEqual(startTime - 1, _game.Map.timeRemaining);
+            Assert.AreEqual(startStardate + 1, _game.Map.Stardate);
+        }
+
+        [Test]
+        public void TacticsManual_Consumes_One_Turn()
+        {
+            var startTime = _game.Map.timeRemaining;
+            var startStardate = _game.Map.Stardate;
+
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "tac");
+
+            Assert.IsNotNull(output);
+            Assert.AreEqual(startTime - 1, _game.Map.timeRemaining);
+            Assert.AreEqual(startStardate + 1, _game.Map.Stardate);
+        }
+
+        [Test]
+        public void TssCommand_Sets_Target_Lock()
+        {
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "tss tor");
+            Assert.IsTrue(output.Any(l => l.Contains("Target lock set")));
+
+            var player = (Ship)_game.Map.Playership;
+            Assert.AreEqual("tor", player.TargetSubsystemMnemonic);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(player.TargetShipName));
         }
     }
 }

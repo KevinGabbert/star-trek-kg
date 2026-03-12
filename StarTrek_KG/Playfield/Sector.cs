@@ -371,6 +371,14 @@ namespace StarTrek_KG.Playfield
                 };
                 newlyCreatedSector.Object = mine;
             }
+            else if (itemToPopulate == CoordinateItem.HostileOutpost)
+            {
+                newlyCreatedSector.Item = CoordinateItem.HostileOutpost;
+                newlyCreatedSector.Object = new HostileOutpost
+                {
+                    Coordinate = newlyCreatedSector
+                };
+            }
             else if (itemToPopulate == CoordinateItem.GaseousAnomaly)
             {
                 newlyCreatedSector.Item = CoordinateItem.GaseousAnomaly;
@@ -720,16 +728,41 @@ namespace StarTrek_KG.Playfield
             var energyVisibleMax = GetScanSetting(game, "IRSHostileEnergyVisibleDistance", 2);
             var shieldsVisibleMax = GetScanSetting(game, "IRSHostileShieldsVisibleDistance", 4);
             var nameVisibleMax = GetScanSetting(game, "IRSHostileNameVisibleDistance", 6);
+            var systemsVisibleMax = GetScanSetting(game, "IRSHostileSystemsVisibleDistance", 4);
 
             var showName = distance <= nameVisibleMax;
             var showEnergy = distance <= energyVisibleMax;
             var showShields = distance <= shieldsVisibleMax;
+            var showSystems = distance <= systemsVisibleMax && !result.Unknown;
 
             result.NameOverride = showName ? hostile.Name : "?";
 
             var energyText = showEnergy ? hostile.Energy.ToString() : "?";
             var shieldsText = showShields ? Subsystem.Shields.For(hostile).Energy.ToString() : "?";
             result.DetailLine = $"(E:{energyText}/S:{shieldsText})";
+            result.DetailLine2 = showSystems ? this.GetHostileAvailableSystems(hostile) : string.Empty;
+        }
+
+        private string GetHostileAvailableSystems(IShip hostile)
+        {
+            if (hostile?.Subsystems == null)
+            {
+                return string.Empty;
+            }
+
+            var codes = new List<string>();
+            if (!this.IsSubsystemDamaged(hostile, SubsystemType.Torpedoes)) codes.Add("tor");
+            if (!this.IsSubsystemDamaged(hostile, SubsystemType.Phasers)) codes.Add("pha");
+            if (!this.IsSubsystemDamaged(hostile, SubsystemType.Disruptors)) codes.Add("dsr");
+            if (!this.IsSubsystemDamaged(hostile, SubsystemType.Shields)) codes.Add("shd");
+            if (!this.IsSubsystemDamaged(hostile, SubsystemType.Warp)) codes.Add("wrp");
+            return string.Join("/", codes);
+        }
+
+        private bool IsSubsystemDamaged(IShip ship, SubsystemType subsystemType)
+        {
+            var subsystem = ship?.Subsystems?.SingleOrDefault(s => s.Type == subsystemType);
+            return subsystem == null || subsystem.Damage > 0;
         }
 
         private static int GetScanSetting(IGame game, string key, int fallback)

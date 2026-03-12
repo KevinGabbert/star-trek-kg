@@ -74,8 +74,24 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo.OutputLine("");
             this.OutputNebulaDegradationMessageIfNeeded();
+            if (gridSize >= DEFAULTS.COORDINATE_MAX)
+            {
+                this.ConsumeFullSectorScanTurn();
+            }
 
             return this.ShipConnectedTo.OutputQueue();
+        }
+
+        private void ConsumeFullSectorScanTurn()
+        {
+            var map = this.ShipConnectedTo?.Map;
+            if (map == null)
+            {
+                return;
+            }
+
+            map.timeRemaining = Math.Max(0, map.timeRemaining - 1);
+            map.Stardate++;
         }
 
         private void OutputNebulaDegradationMessageIfNeeded()

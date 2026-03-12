@@ -33,6 +33,8 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly Menu clear = new Menu(17, "clear", "");
         public static readonly Menu wgm = new Menu(18, "wgm", "War Games Actor Control");
         public static readonly Menu inst = new Menu(19, "inst", "Quick Instructions");
+        public static readonly Menu tss = new Menu(20, "tss", "Target Hostile Subsystem");
+        public static readonly Menu tac = new Menu(21, "tac", "Tactics Manual");
 
         private static Dictionary<string, Menu> instance = new Dictionary<string, Menu>();
 

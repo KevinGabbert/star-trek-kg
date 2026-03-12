@@ -12,6 +12,7 @@ namespace StarTrek_KG.Types
         public CoordinateItem Item { get; set; }
         public string NameOverride { get; set; }
         public string DetailLine { get; set; }
+        public string DetailLine2 { get; set; }
 
         public bool MyLocation { get; set; }
         public bool GalacticBarrier { get; set; }
@@ -45,6 +46,9 @@ namespace StarTrek_KG.Types
 
                 case CoordinateItem.Starbase:
                     returnVal = "Starbase"; //todo:  When starbases have names then combine with above
+                    break;
+                case CoordinateItem.HostileOutpost:
+                    returnVal = "Hostile Outpost";
                     break;
 
                 case CoordinateItem.Deuterium:

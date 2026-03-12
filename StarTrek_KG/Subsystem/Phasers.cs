@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -150,6 +151,89 @@ namespace StarTrek_KG.Subsystem
                 "PhaserEnergyAdjustment", inNebula);
 
             this.BadGuyTakesDamage(destroyedShips, badGuyShip, deliveredEnergy);
+            this.TryApplyTargetedSubsystemHit(badGuyShip, distance);
+        }
+
+        private void TryApplyTargetedSubsystemHit(IShip hostile, double distance)
+        {
+            if (!(this.ShipConnectedTo is Ship playerShip))
+            {
+                return;
+            }
+
+            var targetName = playerShip.TargetShipName;
+            var targetSubsystemMnemonic = playerShip.TargetSubsystemMnemonic;
+            if (string.IsNullOrWhiteSpace(targetName) || string.IsNullOrWhiteSpace(targetSubsystemMnemonic))
+            {
+                return;
+            }
+
+            if (!string.Equals(hostile?.Name, targetName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (!TryMapSubsystem(targetSubsystemMnemonic, out var subsystemType))
+            {
+                this.ShipConnectedTo.OutputLine($"Target subsystem code '{targetSubsystemMnemonic}' is invalid. Target lock cleared.");
+                playerShip.TargetSubsystemMnemonic = null;
+                playerShip.TargetShipName = null;
+                return;
+            }
+
+            var subsystem = hostile.Subsystems.SingleOrDefault(s => s.Type == subsystemType);
+            if (subsystem == null)
+            {
+                this.ShipConnectedTo.OutputLine($"Target subsystem {targetSubsystemMnemonic} not present on {hostile.Name}.");
+                return;
+            }
+
+            var shieldsUp = Shields.For(hostile).Energy > 0;
+            var baseChance = this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSBaseHitChancePercent");
+            var distancePenalty = ((int)Math.Round(distance)) * this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSDistancePenaltyPercent");
+            var shieldPenalty = shieldsUp ? this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSShieldPenaltyPercent") : 0;
+            var streakBonusPerShot = this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSLockStreakBonusPercent");
+            var streakBonusCap = this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSLockStreakBonusCapPercent");
+            var streakBonus = Math.Min(streakBonusCap, playerShip.TargetSubsystemLockStreak * streakBonusPerShot);
+            var chance = Math.Max(5, Math.Min(95, baseChance - distancePenalty - shieldPenalty + streakBonus));
+            var roll = Utility.Utility.Random.Next(1, 101);
+
+            if (roll <= chance)
+            {
+                subsystem.TakeDamage();
+                playerShip.TargetSubsystemLockStreak++;
+                this.ShipConnectedTo.OutputLine($"Targeted hit damaged {targetSubsystemMnemonic} on {hostile.Name}.");
+            }
+            else
+            {
+                playerShip.TargetSubsystemLockStreak = 0;
+                this.ShipConnectedTo.OutputLine($"Targeted shot on {hostile.Name} {targetSubsystemMnemonic} missed ({roll}>{chance}).");
+            }
+        }
+
+        private static bool TryMapSubsystem(string mnemonic, out SubsystemType subsystemType)
+        {
+            subsystemType = null;
+            switch ((mnemonic ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "tor":
+                    subsystemType = SubsystemType.Torpedoes;
+                    return true;
+                case "pha":
+                    subsystemType = SubsystemType.Phasers;
+                    return true;
+                case "dsr":
+                    subsystemType = SubsystemType.Disruptors;
+                    return true;
+                case "shd":
+                    subsystemType = SubsystemType.Shields;
+                    return true;
+                case "wrp":
+                    subsystemType = SubsystemType.Warp;
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private bool PromptUserForPhaserEnergy(out string phaserEnergy)

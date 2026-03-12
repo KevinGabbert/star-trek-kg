@@ -557,6 +557,7 @@ namespace StarTrek_KG.Output
             string currentLRSScanLine1 = verticalBoxLine;
             string currentLRSScanLine2 = verticalBoxLine;
             string currentLRSScanLine3 = verticalBoxLine;
+            string currentLRSScanLine4 = verticalBoxLine;
 
             var coordinateIndicator = scanRenderType == ScanRenderType.DoubleSingleLine ? "°" : DEFAULTS.SECTOR_INDICATOR;
 
@@ -607,11 +608,14 @@ namespace StarTrek_KG.Output
                 currentLRSScanLine1 += " " + currentSectorName.PadCenter(cellLength) + verticalBoxLine;
                 currentLRSScanLine2 += " " + currentSectorResult.PadCenter(cellLength) + verticalBoxLine; //todo resource this
                 var detailLine = "";
+                var detailLine2 = "";
                 if (scanRenderType == ScanRenderType.DoubleSingleLine && scanDataPoint is IRSResult irsResult)
                 {
                     detailLine = irsResult.DetailLine ?? "";
+                    detailLine2 = irsResult.DetailLine2 ?? "";
                 }
                 currentLRSScanLine3 += " " + detailLine.PadCenter(cellLength) + verticalBoxLine;
+                currentLRSScanLine4 += " " + detailLine2.PadCenter(cellLength) + verticalBoxLine;
 
                 if (((scanColumn + 1) % gridSize) == 0 && scanColumn != (gridSize * gridSize) - 1)
                 {
@@ -621,6 +625,7 @@ namespace StarTrek_KG.Output
                     if (scanRenderType == ScanRenderType.DoubleSingleLine)
                     {
                         renderedResults.Add(currentLRSScanLine3);
+                        renderedResults.Add(currentLRSScanLine4);
                     }
 
                     renderedResults.Add(this.BuildBorderLine(middleLeft, middle, middleRight, cellLine, gridSize));
@@ -629,6 +634,7 @@ namespace StarTrek_KG.Output
                     currentLRSScanLine1 = verticalBoxLine;
                     currentLRSScanLine2 = verticalBoxLine;
                     currentLRSScanLine3 = verticalBoxLine;
+                    currentLRSScanLine4 = verticalBoxLine;
                 }
 
                 if (scanColumn == (gridSize * gridSize) - 1)
@@ -639,6 +645,7 @@ namespace StarTrek_KG.Output
                     if (scanRenderType == ScanRenderType.DoubleSingleLine)
                     {
                         renderedResults.Add(currentLRSScanLine3);
+                        renderedResults.Add(currentLRSScanLine4);
                     }
                 }
 
@@ -756,6 +763,12 @@ namespace StarTrek_KG.Output
                 }
             }
 
+            if (this.Subscriber.PromptInfo.Level == 0 &&
+                userCommand.StartsWith("tss", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.ExecuteTargetSubsystemCommand(playerShip, userCommand).ToList();
+            }
+
             if (userCommand.Contains(" "))
             {
                 return ProcessMultiStepCommand(playerShip, userCommand);
@@ -859,6 +872,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  pha   Phasers"));
                     retVal.AddRange(this.Output.WriteLine("  tor   Photon torpedoes"));
                     retVal.AddRange(this.Output.WriteLine("  brd   Boarding action"));
+                    retVal.AddRange(this.Output.WriteLine("  tss   Target hostile subsystem"));
                     retVal.AddRange(this.Output.WriteLine("  toq   Target object in region"));
                     retVal.AddRange(this.Output.WriteLine(""));
                     retVal.AddRange(this.Output.WriteLine("SYSTEMS"));
@@ -866,6 +880,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  com   Computer"));
                     retVal.AddRange(this.Output.WriteLine("  dmg   Damage control"));
                     retVal.AddRange(this.Output.WriteLine("  inst  Quick instructions"));
+                    retVal.AddRange(this.Output.WriteLine("  tac   Tactics manual (costs 1 turn)"));
                     if (playerShip.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
                     {
                         retVal.AddRange(this.Output.WriteLine("  pwr   Systems Cascade power routing"));
@@ -987,12 +1002,14 @@ namespace StarTrek_KG.Output
                 "pha = Phaser Control",
                 "tor = Photon Torpedo Control",
                 "brd = Boarding Action",
+                "tss = Target Hostile Subsystem",
                 "toq = Target Object in this Sector",
                 "-----------------------------",
                 "she = Shield Control",
                 "com = Access Computer",
                 "dmg = Damage Control",
-                "inst = Quick Instructions"
+                "inst = Quick Instructions",
+                "tac = Tactics Manual (costs 1 turn)"
             };
 
             if (playerShip?.Map?.Game?.IsWarGamesMode == true)
@@ -1147,9 +1164,26 @@ namespace StarTrek_KG.Output
             {
                 retVal = this.Output.WriteLine("Application Version: " + this.GetConfigText("AppVersion").Remove(1,1)); //todo: resource this
             }
+            else if (menuCommand == Menu.tss.ToString())
+            {
+                retVal = this.ExecuteTargetSubsystemCommand(playerShip, menuCommand).ToList();
+            }
             else if (menuCommand == Menu.inst.ToString() || string.Equals(menuCommand, "instructions", StringComparison.OrdinalIgnoreCase))
             {
                 retVal = this.OutputQuickInstructions(playerShip).ToList();
+            }
+            else if (menuCommand == Menu.tac.ToString() || string.Equals(menuCommand, "tactics", StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = this.OutputTacticsManual(playerShip).ToList();
+                if (!(playerShip is Ship player) || player.TacticsManualUses > 0)
+                {
+                    this.ConsumeOneTurn(playerShip?.Map);
+                }
+
+                if (playerShip is Ship concretePlayer)
+                {
+                    concretePlayer.TacticsManualUses++;
+                }
             }
             else
             {
@@ -1169,6 +1203,49 @@ namespace StarTrek_KG.Output
             }
 
             return retVal.ToList();
+        }
+
+        private void ConsumeOneTurn(IMap map)
+        {
+            if (map == null)
+            {
+                return;
+            }
+
+            map.timeRemaining = Math.Max(0, map.timeRemaining - 1);
+            map.Stardate++;
+        }
+
+        private IEnumerable<string> OutputTacticsManual(IShip playerShip)
+        {
+            var output = new List<string>();
+            output.AddRange(this.Output.WriteLine("--- Tactical Field Manual ---"));
+            output.AddRange(this.Output.WriteLine("1. Situational Awareness"));
+            output.AddRange(this.Output.WriteLine("   - Run crs/srs on entry and after each major action."));
+            output.AddRange(this.Output.WriteLine("   - Use lrs for route planning and threat avoidance."));
+            output.AddRange(this.Output.WriteLine("2. Power and Survivability"));
+            output.AddRange(this.Output.WriteLine("   - Keep reserve energy for shields and emergency movement."));
+            output.AddRange(this.Output.WriteLine("   - In Systems Cascade: route power aggressively, recover in nebulae."));
+            output.AddRange(this.Output.WriteLine("3. Weapon Employment"));
+            output.AddRange(this.Output.WriteLine("   - Use phasers to soften multiple targets; torpedoes for decisive kills."));
+            output.AddRange(this.Output.WriteLine("   - Chain deuterium/mine blasts for area damage."));
+            output.AddRange(this.Output.WriteLine("4. Boarding and Capture"));
+            output.AddRange(this.Output.WriteLine("   - Boarding requires adjacent hostile with tor/pha/dsr disabled."));
+            output.AddRange(this.Output.WriteLine("   - Use tss to lock a hostile subsystem target before firing."));
+            output.AddRange(this.Output.WriteLine("   - Command formats:"));
+            output.AddRange(this.Output.WriteLine("     tss <subsystem>"));
+            output.AddRange(this.Output.WriteLine("     tss <hostile ship name> <subsystem>"));
+            output.AddRange(this.Output.WriteLine("     tss clear"));
+            output.AddRange(this.Output.WriteLine("5. Hostile Retreat Behavior"));
+            output.AddRange(this.Output.WriteLine("   - Disarmed hostiles will attempt to retreat and repair."));
+            output.AddRange(this.Output.WriteLine("   - Watch IRS detail lines for enemy system availability."));
+            output.AddRange(this.Output.WriteLine("6. Outposts"));
+            output.AddRange(this.Output.WriteLine("   - Hostile outposts are enemy repair hubs."));
+            output.AddRange(this.Output.WriteLine("   - Destroy with 3 photon torpedo hits."));
+            output.AddRange(this.Output.WriteLine(""));
+            output.AddRange(this.Output.WriteLine("Consulting this manual consumes 1 turn."));
+            output.AddRange(this.Output.WriteLine(""));
+            return output;
         }
 
         private IEnumerable<string> OutputQuickInstructions(IShip playerShip)
@@ -1203,6 +1280,117 @@ namespace StarTrek_KG.Output
             return output;
         }
 
+        private IEnumerable<string> ExecuteTargetSubsystemCommand(IShip playerShip, string commandText)
+        {
+            if (!(playerShip is Ship concretePlayer))
+            {
+                this.Output.WriteLine("Target subsystem command is only available for the playership.");
+                return this.Output.Queue.ToList();
+            }
+
+            var activeSector = playerShip.GetSector();
+            var hostiles = activeSector?.GetHostiles() ?? new List<IShip>();
+            if (!hostiles.Any())
+            {
+                this.Output.WriteLine("No hostiles in this sector.");
+                return this.Output.Queue.ToList();
+            }
+
+            var tokens = (commandText ?? string.Empty)
+                .Trim()
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            if (tokens.Count == 1)
+            {
+                this.Output.WriteLine("Usage: tss <subsystem> OR tss <ship name> <subsystem> OR tss clear");
+                this.Output.WriteLine("Subsystems: tor, pha, dsr, shd, wrp");
+                this.Output.WriteLine("Weapons subsystems: tor, pha, dsr");
+                return this.Output.Queue.ToList();
+            }
+
+            if (tokens.Count >= 2 && string.Equals(tokens[1], "clear", StringComparison.OrdinalIgnoreCase))
+            {
+                concretePlayer.TargetShipName = null;
+                concretePlayer.TargetSubsystemMnemonic = null;
+                concretePlayer.TargetSubsystemLockStreak = 0;
+                this.Output.WriteLine("Target subsystem lock cleared.");
+                return this.Output.Queue.ToList();
+            }
+
+            var subsystemMnemonic = tokens.Last().ToLowerInvariant();
+            if (!this.TryMapSubsystemMnemonic(subsystemMnemonic, out _))
+            {
+                this.Output.WriteLine($"Unsupported subsystem code '{subsystemMnemonic}'.");
+                this.Output.WriteLine("Valid: tor, pha, dsr, shd, wrp");
+                return this.Output.Queue.ToList();
+            }
+
+            IShip targetShip = null;
+            if (tokens.Count == 2)
+            {
+                targetShip = hostiles
+                    .OrderBy(h => Math.Abs(h.Coordinate.X - playerShip.Coordinate.X) + Math.Abs(h.Coordinate.Y - playerShip.Coordinate.Y))
+                    .ThenBy(h => h.Name)
+                    .FirstOrDefault();
+            }
+            else
+            {
+                var requestedName = string.Join(" ", tokens.Skip(1).Take(tokens.Count - 2)).Trim();
+                targetShip = hostiles.FirstOrDefault(h => string.Equals(h.Name?.Trim(), requestedName, StringComparison.OrdinalIgnoreCase));
+                if (targetShip == null)
+                {
+                    this.Output.WriteLine($"Hostile '{requestedName}' not found in this sector.");
+                    return this.Output.Queue.ToList();
+                }
+            }
+
+            if (targetShip == null)
+            {
+                this.Output.WriteLine("Unable to establish target ship.");
+                return this.Output.Queue.ToList();
+            }
+
+            concretePlayer.TargetShipName = targetShip.Name;
+            concretePlayer.TargetSubsystemMnemonic = subsystemMnemonic;
+            concretePlayer.TargetSubsystemLockStreak = 0;
+
+            var isWeapon = this.IsWeaponSubsystemMnemonic(subsystemMnemonic);
+            this.Output.WriteLine($"Target lock set: {targetShip.Name} -> {subsystemMnemonic}{(isWeapon ? " (weapon subsystem)" : string.Empty)}.");
+            return this.Output.Queue.ToList();
+        }
+
+        private bool TryMapSubsystemMnemonic(string mnemonic, out SubsystemType subsystemType)
+        {
+            subsystemType = null;
+            switch ((mnemonic ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "tor":
+                    subsystemType = SubsystemType.Torpedoes;
+                    return true;
+                case "pha":
+                    subsystemType = SubsystemType.Phasers;
+                    return true;
+                case "dsr":
+                    subsystemType = SubsystemType.Disruptors;
+                    return true;
+                case "shd":
+                    subsystemType = SubsystemType.Shields;
+                    return true;
+                case "wrp":
+                    subsystemType = SubsystemType.Warp;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private bool IsWeaponSubsystemMnemonic(string mnemonic)
+        {
+            var normalized = (mnemonic ?? string.Empty).Trim().ToLowerInvariant();
+            return normalized == "tor" || normalized == "pha" || normalized == "dsr";
+        }
+
         private IEnumerable<string> ExecuteBoardingAction(IShip playerShip)
         {
             if (playerShip == null)
@@ -1234,12 +1422,20 @@ namespace StarTrek_KG.Output
             if (!this.TargetWeaponsAreDown(target))
             {
                 this.Output.WriteLine($"Boarding denied. {target.Name} still has active weapons.");
+                if (target is Ship hostileShipDenied)
+                {
+                    hostileShipDenied.RetreatSuppressedTurns = Math.Max(hostileShipDenied.RetreatSuppressedTurns, 1);
+                }
                 return this.Output.Queue.ToList();
             }
 
             var roll = Utility.Utility.Random.Next(1, 7);
             var successRoll = this.GetSettingOrDefault("BoardingSuccessMinRoll", 4);
             this.Output.WriteLine($"Boarding attempt on {target.Name}: rolled {roll} on 1d6.");
+            if (target is Ship hostileShip)
+            {
+                hostileShip.RetreatSuppressedTurns = Math.Max(hostileShip.RetreatSuppressedTurns, 1);
+            }
 
             if (roll < successRoll)
             {
@@ -1694,9 +1890,13 @@ namespace StarTrek_KG.Output
         private void AddShipToCoordinate(IShip playerShip, ISector sector, Coordinate coordinate, FactionName faction, string fallbackName = null)
         {
             var names = playerShip.Map.Config.ShipNames(faction);
-            var name = names != null && names.Any()
-                ? names[Utility.Utility.Random.Next(names.Count)]
-                : fallbackName;
+            var name = fallbackName;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = names != null && names.Any()
+                    ? names[Utility.Utility.Random.Next(names.Count)]
+                    : fallbackName;
+            }
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -2840,6 +3040,10 @@ namespace StarTrek_KG.Output
                     if (result is IRSResult irs && !string.IsNullOrWhiteSpace(irs.DetailLine) && irs.DetailLine.Length > longest)
                     {
                         longest = irs.DetailLine.Length;
+                    }
+                    if (result is IRSResult irs2 && !string.IsNullOrWhiteSpace(irs2.DetailLine2) && irs2.DetailLine2.Length > longest)
+                    {
+                        longest = irs2.DetailLine2.Length;
                     }
                 }
             }

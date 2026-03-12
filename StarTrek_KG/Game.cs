@@ -1150,6 +1150,17 @@ namespace StarTrek_KG
             {
                 foreach (var badGuy in hostilesAttacking)
                 {
+                    if (badGuy?.Destroyed == true)
+                    {
+                        continue;
+                    }
+
+                    if (this.HostileShouldRetreat(badGuy))
+                    {
+                        this.HostileRepairAndRetreat(map, badGuy);
+                        continue;
+                    }
+
                     int randomHostileAttacksFactor = Utility.Utility.TestableRandom(this); //this.RandomFactorForTesting == 0 ? Utility.Utility.Random.Next() : this.RandomFactorForTesting;
 
                     this.HostileAttacks(map, badGuy, randomHostileAttacksFactor);
@@ -1160,6 +1171,231 @@ namespace StarTrek_KG
                 returnValue = true;
             }
             return returnValue;
+        }
+
+        private bool HostileShouldRetreat(IShip hostile)
+        {
+            if (hostile?.Subsystems == null)
+            {
+                return false;
+            }
+
+            if (hostile is Ship concreteHostile)
+            {
+                if (concreteHostile.RetreatSuppressedTurns > 0)
+                {
+                    concreteHostile.RetreatSuppressedTurns--;
+                    return false;
+                }
+
+                if (concreteHostile.HasRetreatedAndRearmed)
+                {
+                    return false;
+                }
+
+                var maxRetreatAttempts = this.Config.GetSetting<int>("HostileMaxRetreatAttempts");
+                if (concreteHostile.RetreatAttempts >= maxRetreatAttempts)
+                {
+                    return false;
+                }
+            }
+
+            var torDown = this.IsSubsystemDamaged(hostile, SubsystemType.Torpedoes);
+            var phaDown = this.IsSubsystemDamaged(hostile, SubsystemType.Phasers);
+            var dsrDown = this.IsSubsystemDamaged(hostile, SubsystemType.Disruptors);
+            return torDown && phaDown && dsrDown;
+        }
+
+        private bool IsSubsystemDamaged(IShip ship, SubsystemType subsystemType)
+        {
+            var subsystem = ship?.Subsystems?.SingleOrDefault(s => s.Type == subsystemType);
+            return subsystem == null || subsystem.Damage > 0;
+        }
+
+        private void HostileRepairAndRetreat(IMap map, IShip hostile)
+        {
+            var sameSectorAsPlayer = hostile.Point.X == map.Playership.Point.X && hostile.Point.Y == map.Playership.Point.Y;
+            if (hostile is Ship hostileShip)
+            {
+                hostileShip.RetreatTurns++;
+            }
+
+            if (hostile is Ship pacingHostile && pacingHostile.RetreatTurns % 2 == 0)
+            {
+                var repairedSubsystem = this.RepairOneSubsystem(hostile);
+                if (sameSectorAsPlayer && !string.IsNullOrWhiteSpace(repairedSubsystem))
+                {
+                    this.Interact.Line($"{hostile.Name} repaired subsystem: {repairedSubsystem}.");
+                }
+            }
+
+            if (this.TryWarpRetreatToOutpost(map, hostile, sameSectorAsPlayer))
+            {
+                return;
+            }
+
+            this.TryImpulseRetreat(map, hostile, sameSectorAsPlayer);
+        }
+
+        private string RepairOneSubsystem(IShip hostile)
+        {
+            var priority = new[]
+            {
+                SubsystemType.Warp,
+                SubsystemType.Shields,
+                SubsystemType.Torpedoes,
+                SubsystemType.Phasers,
+                SubsystemType.Disruptors
+            };
+
+            foreach (var subsystemType in priority)
+            {
+                var subsystem = hostile.Subsystems.SingleOrDefault(s => s.Type == subsystemType);
+                if (subsystem?.Damage > 0)
+                {
+                    subsystem.PartialRepair();
+                    return subsystemType.Name;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private bool TryWarpRetreatToOutpost(IMap map, IShip hostile, bool sameSectorAsPlayer)
+        {
+            if (!(hostile is Ship hostileShip) || hostileShip.RetreatTurns < 2)
+            {
+                return false;
+            }
+
+            var gameMap = map as Map;
+            var outposts = gameMap?.GetHostileOutposts();
+            if (outposts == null || outposts.Count == 0)
+            {
+                return false;
+            }
+
+            var nearestOutpost = outposts
+                .OrderBy(o => Math.Abs(o.SectorDef.X - hostile.Point.X) + Math.Abs(o.SectorDef.Y - hostile.Point.Y))
+                .FirstOrDefault();
+            if (nearestOutpost == null)
+            {
+                return false;
+            }
+
+            var deltaX = Math.Sign(nearestOutpost.SectorDef.X - hostile.Point.X);
+            var deltaY = Math.Sign(nearestOutpost.SectorDef.Y - hostile.Point.Y);
+
+            var nextSectorX = hostile.Point.X + deltaX;
+            var nextSectorY = hostile.Point.Y + deltaY;
+            if (nextSectorX < DEFAULTS.SECTOR_MIN || nextSectorX >= DEFAULTS.SECTOR_MAX ||
+                nextSectorY < DEFAULTS.SECTOR_MIN || nextSectorY >= DEFAULTS.SECTOR_MAX)
+            {
+                return false;
+            }
+
+            var nextSector = map.Sectors[new Point(nextSectorX, nextSectorY)];
+            if (nextSector == null || nextSector.Type == SectorType.GalacticBarrier)
+            {
+                return false;
+            }
+
+            var targetCoordinate = nextSector.Coordinates.GetNoError(new Point(hostile.Coordinate.X, hostile.Coordinate.Y));
+            if (targetCoordinate == null || targetCoordinate.Item != CoordinateItem.Empty)
+            {
+                targetCoordinate = nextSector.Coordinates.Where(c => c.Item == CoordinateItem.Empty)
+                    .OrderBy(_ => Utility.Utility.Random.Next())
+                    .FirstOrDefault();
+            }
+
+            if (targetCoordinate == null)
+            {
+                return false;
+            }
+
+            var oldSector = hostile.GetSector();
+            var oldCoordinate = oldSector.Coordinates.GetNoError(new Point(hostile.Coordinate.X, hostile.Coordinate.Y));
+            if (oldCoordinate != null && oldCoordinate.Object == hostile)
+            {
+                oldCoordinate.Item = CoordinateItem.Empty;
+                oldCoordinate.Object = null;
+            }
+
+            hostile.Point = new Point(nextSectorX, nextSectorY);
+            hostile.Coordinate = targetCoordinate;
+            targetCoordinate.Item = CoordinateItem.HostileShip;
+            targetCoordinate.Object = hostile;
+
+            if (sameSectorAsPlayer)
+            {
+                this.Interact.Line($"{hostile.Name} warps out of sector.");
+            }
+
+            var outpostCoordinate = nextSector.Coordinates.FirstOrDefault(c => c.Item == CoordinateItem.HostileOutpost);
+            if (outpostCoordinate != null)
+            {
+                var dx = Math.Abs(outpostCoordinate.X - targetCoordinate.X);
+                var dy = Math.Abs(outpostCoordinate.Y - targetCoordinate.Y);
+                if (dx <= 1 && dy <= 1)
+                {
+                    hostile.RepairEverything();
+                    if (hostile is Ship concreteHostile)
+                    {
+                        concreteHostile.Energy = Math.Max(concreteHostile.Energy, concreteHostile.MaxEnergy);
+                        concreteHostile.RetreatTurns = 0;
+                        concreteHostile.RetreatAttempts++;
+                        concreteHostile.HasRetreatedAndRearmed = true;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private void TryImpulseRetreat(IMap map, IShip hostile, bool sameSectorAsPlayer)
+        {
+            var sector = hostile.GetSector();
+            var player = map.Playership;
+            var options = new List<Point>
+            {
+                new Point(hostile.Coordinate.X - 1, hostile.Coordinate.Y - 1),
+                new Point(hostile.Coordinate.X, hostile.Coordinate.Y - 1),
+                new Point(hostile.Coordinate.X + 1, hostile.Coordinate.Y - 1),
+                new Point(hostile.Coordinate.X - 1, hostile.Coordinate.Y),
+                new Point(hostile.Coordinate.X + 1, hostile.Coordinate.Y),
+                new Point(hostile.Coordinate.X - 1, hostile.Coordinate.Y + 1),
+                new Point(hostile.Coordinate.X, hostile.Coordinate.Y + 1),
+                new Point(hostile.Coordinate.X + 1, hostile.Coordinate.Y + 1)
+            };
+
+            var candidate = options
+                .Where(p => p.X >= DEFAULTS.COORDINATE_MIN && p.X < DEFAULTS.COORDINATE_MAX &&
+                            p.Y >= DEFAULTS.COORDINATE_MIN && p.Y < DEFAULTS.COORDINATE_MAX)
+                .Select(p => sector.Coordinates.GetNoError(p))
+                .Where(c => c != null && c.Item == CoordinateItem.Empty)
+                .OrderByDescending(c => Math.Abs(c.X - player.Coordinate.X) + Math.Abs(c.Y - player.Coordinate.Y))
+                .FirstOrDefault();
+
+            if (candidate == null)
+            {
+                return;
+            }
+
+            var oldCoordinate = sector.Coordinates.GetNoError(new Point(hostile.Coordinate.X, hostile.Coordinate.Y));
+            if (oldCoordinate != null && oldCoordinate.Object == hostile)
+            {
+                oldCoordinate.Item = CoordinateItem.Empty;
+                oldCoordinate.Object = null;
+            }
+
+            hostile.Coordinate = candidate;
+            candidate.Item = CoordinateItem.HostileShip;
+            candidate.Object = hostile;
+
+            if (sameSectorAsPlayer)
+            {
+                this.Interact.Line($"{hostile.Name} uses impulse to retreat.");
+            }
         }
 
         private void HostileStarbasesAttack(IMap map, ISector activeSector)
@@ -1195,6 +1431,13 @@ namespace StarTrek_KG
 
         private void HostileAttacks(IMap map, IShip badGuy, int randomFactor)
         {
+            if (this.IsSubsystemDamaged(badGuy, SubsystemType.Torpedoes) &&
+                this.IsSubsystemDamaged(badGuy, SubsystemType.Phasers) &&
+                this.IsSubsystemDamaged(badGuy, SubsystemType.Disruptors))
+            {
+                return;
+            }
+
             if (Navigation.For(map.Playership).Docked && !this.PlayerNowEnemyToFederation)
             {
                 this.AttackDockedPlayership(badGuy, 0);

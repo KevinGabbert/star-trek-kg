@@ -374,6 +374,27 @@ namespace StarTrek_KG.Subsystem
                     game.DestroyStarbase(map, newY, newX, qLocation);
 
                     return true;
+                case CoordinateItem.HostileOutpost:
+                    var outpost = qLocation.Object as HostileOutpost;
+                    if (outpost == null)
+                    {
+                        outpost = new HostileOutpost { Coordinate = qLocation };
+                        qLocation.Object = outpost;
+                    }
+
+                    outpost.HitPoints = Math.Max(0, outpost.HitPoints - 1);
+                    if (outpost.HitPoints == 0)
+                    {
+                        qLocation.Item = CoordinateItem.Empty;
+                        qLocation.Object = null;
+                        game.Interact.Line($"Hostile outpost destroyed at sector [{newX},{newY}].");
+                    }
+                    else
+                    {
+                        game.Interact.Line($"Hostile outpost hit at sector [{newX},{newY}]. Remaining torpedo hits to destroy: {outpost.HitPoints}.");
+                    }
+
+                    return true;
 
                 case CoordinateItem.Star:
 
