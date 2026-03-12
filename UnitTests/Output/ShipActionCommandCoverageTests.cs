@@ -56,10 +56,12 @@ namespace UnitTests.Output
         [TestCase("crs")]
         [TestCase("pha")]
         [TestCase("tor")]
+        [TestCase("brd")]
         [TestCase("toq")]
         [TestCase("she")]
         [TestCase("com")]
         [TestCase("dmg")]
+        [TestCase("inst")]
         public void TopLevelShipCommands_DoNotThrow_AndReturnOutput(string command)
         {
             List<string> output = null;
@@ -122,6 +124,7 @@ namespace UnitTests.Output
             var commands = new[] { "irs", "irs+", "irs++", "irs+++", "srs", "lrs", "crs" };
             foreach (var command in commands)
             {
+                _interact.ResetPrompt();
                 var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, command);
                 Assert.IsNotNull(output, $"{command} returned null output.");
                 Assert.IsTrue(output.Any(), $"{command} should return at least one line of output.");

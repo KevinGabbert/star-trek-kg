@@ -126,6 +126,86 @@ namespace UnitTests.Playfield
         }
 
         [Test]
+        public void IRS_Hostile_Intel_Is_Range_Bounded_For_Name_Energy_And_Shields()
+        {
+            var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"IRSHostileEnergyVisibleDistance", "2"},
+                {"IRSHostileShieldsVisibleDistance", "4"},
+                {"IRSHostileNameVisibleDistance", "6"}
+            }));
+
+            var sector = game.Map.Sectors.GetActive();
+            var hostileCoordinate = sector.Coordinates[1, 0];
+            var hostile = new Ship(FactionName.Klingon, "IKC Test", hostileCoordinate, game.Map);
+            hostile.Energy = 300;
+            StarTrek_KG.Subsystem.Shields.For(hostile).Energy = 200;
+            sector.AddShip(hostile, hostileCoordinate);
+            var playerLocation = game.Map.Playership.GetLocation();
+
+            var near = new StarTrek_KG.Types.IRSResult
+            {
+                Item = CoordinateItem.HostileShip,
+                Object = hostile,
+                Point = new Point(1, 0)
+            };
+            sector.ApplyHostileScanResolution(near, playerLocation, game);
+            Assert.AreEqual(hostile.Name, near.ToScanString());
+            Assert.AreEqual($"(E:{hostile.Energy}/S:{StarTrek_KG.Subsystem.Shields.For(hostile).Energy})", near.DetailLine);
+
+            var mid = new StarTrek_KG.Types.IRSResult
+            {
+                Item = CoordinateItem.HostileShip,
+                Object = hostile,
+                Point = new Point(3, 0)
+            };
+            sector.ApplyHostileScanResolution(mid, playerLocation, game);
+            Assert.AreEqual(hostile.Name, mid.ToScanString());
+            Assert.AreEqual($"(E:?/S:{StarTrek_KG.Subsystem.Shields.For(hostile).Energy})", mid.DetailLine);
+
+            var far = new StarTrek_KG.Types.IRSResult
+            {
+                Item = CoordinateItem.HostileShip,
+                Object = hostile,
+                Point = new Point(5, 0)
+            };
+            sector.ApplyHostileScanResolution(far, playerLocation, game);
+            Assert.AreEqual(hostile.Name, far.ToScanString());
+            Assert.AreEqual("(E:?/S:?)", far.DetailLine);
+
+            var tooFar = new StarTrek_KG.Types.IRSResult
+            {
+                Item = CoordinateItem.HostileShip,
+                Object = hostile,
+                Point = new Point(7, 0)
+            };
+            sector.ApplyHostileScanResolution(tooFar, playerLocation, game);
+            Assert.AreEqual("?", tooFar.ToScanString());
+            Assert.AreEqual("(E:?/S:?)", tooFar.DetailLine);
+        }
+
+        [Test]
+        public void IRSPlus_Renders_Hostile_Detail_Line()
+        {
+            var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"IRSHostileEnergyVisibleDistance", "10"},
+                {"IRSHostileShieldsVisibleDistance", "10"},
+                {"IRSHostileNameVisibleDistance", "10"}
+            }));
+
+            var sector = game.Map.Sectors.GetActive();
+            var hostileCoordinate = sector.Coordinates[1, 0];
+            var hostile = new Ship(FactionName.Klingon, "IKC Detail", hostileCoordinate, game.Map);
+            hostile.Energy = 333;
+            StarTrek_KG.Subsystem.Shields.For(hostile).Energy = 222;
+            sector.AddShip(hostile, hostileCoordinate);
+
+            var output = game.SubscriberSendAndGetResponse("irs++");
+            Assert.IsTrue(output.Any(line => line.Contains("(E:333/S:222)")));
+        }
+
+        [Test]
         public void TemporalRift_Collision_Rewinds_To_Prior_Turn_Position()
         {
             var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

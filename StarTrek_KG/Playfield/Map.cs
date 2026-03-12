@@ -1235,6 +1235,7 @@ namespace StarTrek_KG.Playfield
                 Allegiance = Allegiance.GoodGuy,
                 Energy = this.Config.GetSetting<int>("energy")
             };
+            this.Playership.MaxEnergy = this.Playership.Energy;
 
             this.SetupPlayershipSector(playerShipDef);
 
@@ -1418,6 +1419,7 @@ namespace StarTrek_KG.Playfield
         }
         public void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips)
         {
+            this.ApplyHostileDestructionSplashDamage(destroyedShips);
             this.RemoveAllDestroyedShips(this, destroyedShips); //remove from Hostiles collection
 
             foreach (var destroyedShip in destroyedShips)
@@ -1430,6 +1432,61 @@ namespace StarTrek_KG.Playfield
             }
 
             this.Playership.UpdateDivinedSectors();
+        }
+
+        private void ApplyHostileDestructionSplashDamage(IEnumerable<IShip> destroyedShips)
+        {
+            var destroyedList = destroyedShips?.Where(s => s != null && s.Allegiance == Allegiance.BadGuy).ToList();
+            if (destroyedList == null || destroyedList.Count == 0)
+            {
+                return;
+            }
+
+            var damage = this.GetSettingOrDefault("HostileDestructionSplashDamage", 100);
+            if (damage <= 0)
+            {
+                return;
+            }
+
+            foreach (var destroyed in destroyedList)
+            {
+                var sector = destroyed.GetSector();
+                if (sector?.Coordinates == null)
+                {
+                    continue;
+                }
+
+                var nearbyTargets = sector.GetHostiles()
+                    .Where(h => !h.Destroyed && !string.Equals(h.Name, destroyed.Name, StringComparison.OrdinalIgnoreCase))
+                    .Cast<IShip>()
+                    .ToList();
+                nearbyTargets.Add(this.Playership);
+
+                foreach (var target in nearbyTargets.Distinct())
+                {
+                    if (target?.Coordinate == null || target.Destroyed)
+                    {
+                        continue;
+                    }
+
+                    var dx = Math.Abs(target.Coordinate.X - destroyed.Coordinate.X);
+                    var dy = Math.Abs(target.Coordinate.Y - destroyed.Coordinate.Y);
+                    if (dx > 1 || dy > 1)
+                    {
+                        continue;
+                    }
+
+                    if (target == this.Playership)
+                    {
+                        this.Write?.Line($"Shockwave from destroyed hostile {destroyed.Name} damaged your ship for {damage}.");
+                    }
+
+                    if (target is Ship concreteTarget)
+                    {
+                        concreteTarget.AbsorbHitFrom(destroyed, damage);
+                    }
+                }
+            }
         }
 
         public void RemoveTargetFromSector(IMap map, IShip ship)

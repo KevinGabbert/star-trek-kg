@@ -524,6 +524,7 @@ namespace StarTrek_KG.Playfield
 
             //int hostileShipEnergyRandom = Utility.Utility.TestableRandom(hostileShipShields.Game);
             hostileShip.Energy = 300; //todo: resource this out// + hostileShipEnergyRandom;
+            hostileShip.MaxEnergy = hostileShip.Energy;
 
             string shipInfo = hostileShip.ToString();
             this.Map.Write.DebugLine($"Created {shipInfo}");
@@ -697,11 +698,50 @@ namespace StarTrek_KG.Playfield
                     currentResult = this.GetSectorInfo(shipLocation.Sector, new Point(sectorX, sectorY), outOfBounds, game);
                       currentResult.MyLocation = shipLocation.Coordinate.X == sectorX &&
                                                   shipLocation.Coordinate.Y == sectorY;
+                    this.ApplyHostileScanResolution(currentResult, shipLocation, game);
 
                     scanData.Add(currentResult);
                 }
             }
             return scanData;
+        }
+
+        public void ApplyHostileScanResolution(IRSResult result, Location shipLocation, IGame game)
+        {
+            if (result == null || result.Item != CoordinateItem.HostileShip || !(result.Object is IShip hostile) || shipLocation?.Coordinate == null)
+            {
+                return;
+            }
+
+            var distance = Math.Max(
+                Math.Abs(result.Point.X - shipLocation.Coordinate.X),
+                Math.Abs(result.Point.Y - shipLocation.Coordinate.Y));
+
+            var energyVisibleMax = GetScanSetting(game, "IRSHostileEnergyVisibleDistance", 2);
+            var shieldsVisibleMax = GetScanSetting(game, "IRSHostileShieldsVisibleDistance", 4);
+            var nameVisibleMax = GetScanSetting(game, "IRSHostileNameVisibleDistance", 6);
+
+            var showName = distance <= nameVisibleMax;
+            var showEnergy = distance <= energyVisibleMax;
+            var showShields = distance <= shieldsVisibleMax;
+
+            result.NameOverride = showName ? hostile.Name : "?";
+
+            var energyText = showEnergy ? hostile.Energy.ToString() : "?";
+            var shieldsText = showShields ? Subsystem.Shields.For(hostile).Energy.ToString() : "?";
+            result.DetailLine = $"(E:{energyText}/S:{shieldsText})";
+        }
+
+        private static int GetScanSetting(IGame game, string key, int fallback)
+        {
+            try
+            {
+                return game?.Config?.GetSetting<int>(key) ?? fallback;
+            }
+            catch
+            {
+                return fallback;
+            }
         }
 
         //todo: refactor this with Game.Map.OutOfBounds

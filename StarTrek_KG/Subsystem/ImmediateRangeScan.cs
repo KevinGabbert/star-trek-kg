@@ -96,6 +96,7 @@ namespace StarTrek_KG.Subsystem
                 {
                     var result = sector.GetSectorInfo(sector, new Point(x, y), false, this.ShipConnectedTo.Map.Game);
                     result.MyLocation = shipLocation.Coordinate.X == x && shipLocation.Coordinate.Y == y;
+                    sector.ApplyHostileScanResolution(result, shipLocation, this.ShipConnectedTo.Map.Game);
                     irsData.Add(result);
                 }
             }

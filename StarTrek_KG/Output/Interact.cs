@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using StarTrek_KG.Commands;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Constants;
@@ -555,6 +556,7 @@ namespace StarTrek_KG.Output
             string currentLRSScanLine0 = verticalBoxLine;
             string currentLRSScanLine1 = verticalBoxLine;
             string currentLRSScanLine2 = verticalBoxLine;
+            string currentLRSScanLine3 = verticalBoxLine;
 
             var coordinateIndicator = scanRenderType == ScanRenderType.DoubleSingleLine ? "°" : DEFAULTS.SECTOR_INDICATOR;
 
@@ -604,18 +606,29 @@ namespace StarTrek_KG.Output
                 currentLRSScanLine0 += " " + regionCoordinate.PadCenter(cellLength) + verticalBoxLine;
                 currentLRSScanLine1 += " " + currentSectorName.PadCenter(cellLength) + verticalBoxLine;
                 currentLRSScanLine2 += " " + currentSectorResult.PadCenter(cellLength) + verticalBoxLine; //todo resource this
+                var detailLine = "";
+                if (scanRenderType == ScanRenderType.DoubleSingleLine && scanDataPoint is IRSResult irsResult)
+                {
+                    detailLine = irsResult.DetailLine ?? "";
+                }
+                currentLRSScanLine3 += " " + detailLine.PadCenter(cellLength) + verticalBoxLine;
 
                 if (((scanColumn + 1) % gridSize) == 0 && scanColumn != (gridSize * gridSize) - 1)
                 {
                     renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
                     renderedResults.Add(currentLRSScanLine2);
+                    if (scanRenderType == ScanRenderType.DoubleSingleLine)
+                    {
+                        renderedResults.Add(currentLRSScanLine3);
+                    }
 
                     renderedResults.Add(this.BuildBorderLine(middleLeft, middle, middleRight, cellLine, gridSize));
 
                     currentLRSScanLine0 = verticalBoxLine;
                     currentLRSScanLine1 = verticalBoxLine;
                     currentLRSScanLine2 = verticalBoxLine;
+                    currentLRSScanLine3 = verticalBoxLine;
                 }
 
                 if (scanColumn == (gridSize * gridSize) - 1)
@@ -623,6 +636,10 @@ namespace StarTrek_KG.Output
                     renderedResults.Add(currentLRSScanLine0);
                     renderedResults.Add(currentLRSScanLine1);
                     renderedResults.Add(currentLRSScanLine2);
+                    if (scanRenderType == ScanRenderType.DoubleSingleLine)
+                    {
+                        renderedResults.Add(currentLRSScanLine3);
+                    }
                 }
 
                 scanColumn++;
@@ -677,7 +694,7 @@ namespace StarTrek_KG.Output
             this.Output.WriteLine(panelHead);
             this.Output.WriteLine();
 
-            foreach (var str in strings)
+            foreach (var str in strings ?? Enumerable.Empty<string>())
             {
                 this.Output.WriteLine(str);
             }
@@ -841,12 +858,14 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("WEAPONS"));
                     retVal.AddRange(this.Output.WriteLine("  pha   Phasers"));
                     retVal.AddRange(this.Output.WriteLine("  tor   Photon torpedoes"));
+                    retVal.AddRange(this.Output.WriteLine("  brd   Boarding action"));
                     retVal.AddRange(this.Output.WriteLine("  toq   Target object in region"));
                     retVal.AddRange(this.Output.WriteLine(""));
                     retVal.AddRange(this.Output.WriteLine("SYSTEMS"));
                     retVal.AddRange(this.Output.WriteLine("  she   Shields"));
                     retVal.AddRange(this.Output.WriteLine("  com   Computer"));
                     retVal.AddRange(this.Output.WriteLine("  dmg   Damage control"));
+                    retVal.AddRange(this.Output.WriteLine("  inst  Quick instructions"));
                     if (playerShip.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
                     {
                         retVal.AddRange(this.Output.WriteLine("  pwr   Systems Cascade power routing"));
@@ -967,11 +986,13 @@ namespace StarTrek_KG.Output
                 "-----------------------------",
                 "pha = Phaser Control",
                 "tor = Photon Torpedo Control",
+                "brd = Boarding Action",
                 "toq = Target Object in this Sector",
                 "-----------------------------",
                 "she = Shield Control",
                 "com = Access Computer",
-                "dmg = Damage Control"
+                "dmg = Damage Control",
+                "inst = Quick Instructions"
             };
 
             if (playerShip?.Map?.Game?.IsWarGamesMode == true)
@@ -1080,6 +1101,10 @@ namespace StarTrek_KG.Output
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Torpedoes;
                 retVal = Torpedoes.For(playerShip).Controls();
             }
+            else if (string.Equals(menuCommand, "brd", StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = this.ExecuteBoardingAction(playerShip).ToList();
+            }
             else if (menuCommand == Menu.she.ToString())
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.Shields;
@@ -1122,6 +1147,10 @@ namespace StarTrek_KG.Output
             {
                 retVal = this.Output.WriteLine("Application Version: " + this.GetConfigText("AppVersion").Remove(1,1)); //todo: resource this
             }
+            else if (menuCommand == Menu.inst.ToString() || string.Equals(menuCommand, "instructions", StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = this.OutputQuickInstructions(playerShip).ToList();
+            }
             else
             {
                 if ((menuCommand != "?") && (menuCommand != "help")) //todo: resource this
@@ -1133,10 +1162,147 @@ namespace StarTrek_KG.Output
                 this.CreateCommandPanelFor(playerShip);
 
                 var panel = this.Panel(this.GetPanelHead(playerShip.Name), SHIP_PANEL).ToList();
-                retVal.AddRange(panel);
+                if (panel != null)
+                {
+                    retVal.AddRange(panel);
+                }
             }
 
             return retVal.ToList();
+        }
+
+        private IEnumerable<string> OutputQuickInstructions(IShip playerShip)
+        {
+            var output = new List<string>();
+            output.AddRange(this.Output.WriteLine("--- Quick Instructions ---"));
+            output.AddRange(this.Output.WriteLine("1) Scan first: srs or crs."));
+            output.AddRange(this.Output.WriteLine("2) Move with imp (in-sector) or wrp (between sectors)."));
+            output.AddRange(this.Output.WriteLine("3) Raise shields with she -> add <amount> when hostiles are near."));
+            output.AddRange(this.Output.WriteLine("4) Fight with pha or tor. Use toq to target objects."));
+            output.AddRange(this.Output.WriteLine("5) Use lrs to plan your next sector jump."));
+            output.AddRange(this.Output.WriteLine("6) Type ? for full command help."));
+
+            if (playerShip?.Map?.Game?.IsWarGamesMode == true)
+            {
+                output.AddRange(this.Output.WriteLine(""));
+                output.AddRange(this.Output.WriteLine("WAR GAMES"));
+                output.AddRange(this.Output.WriteLine("- Use wgm for actor control menu."));
+                output.AddRange(this.Output.WriteLine("- Natural language works: add 1 hostile, add 1 klingon, destroy <ship name>."));
+            }
+
+            if (playerShip?.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
+            {
+                output.AddRange(this.Output.WriteLine(""));
+                output.AddRange(this.Output.WriteLine("SYSTEMS CASCADE"));
+                output.AddRange(this.Output.WriteLine("- Check status: cascade status"));
+                output.AddRange(this.Output.WriteLine("- Route power: pwr status / pwr transfer <amount> <from> <to>"));
+                output.AddRange(this.Output.WriteLine("- Nebula sectors are safer for repairs."));
+            }
+
+            output.AddRange(this.Output.WriteLine(""));
+            return output;
+        }
+
+        private IEnumerable<string> ExecuteBoardingAction(IShip playerShip)
+        {
+            if (playerShip == null)
+            {
+                this.Output.WriteLine("No active playership.");
+                return this.Output.Queue.ToList();
+            }
+
+            var sector = playerShip.GetSector();
+            var adjacentHostiles = sector.GetHostiles()
+                .Where(h => h?.Coordinate != null)
+                .Where(h =>
+                {
+                    var dx = Math.Abs(h.Coordinate.X - playerShip.Coordinate.X);
+                    var dy = Math.Abs(h.Coordinate.Y - playerShip.Coordinate.Y);
+                    return dx <= 1 && dy <= 1 && !(dx == 0 && dy == 0);
+                })
+                .OrderBy(h => Math.Abs(h.Coordinate.X - playerShip.Coordinate.X) + Math.Abs(h.Coordinate.Y - playerShip.Coordinate.Y))
+                .ThenBy(h => h.Name)
+                .ToList();
+
+            if (!adjacentHostiles.Any())
+            {
+                this.Output.WriteLine("No adjacent hostile ship available for boarding.");
+                return this.Output.Queue.ToList();
+            }
+
+            var target = adjacentHostiles.First();
+            if (!this.TargetWeaponsAreDown(target))
+            {
+                this.Output.WriteLine($"Boarding denied. {target.Name} still has active weapons.");
+                return this.Output.Queue.ToList();
+            }
+
+            var roll = Utility.Utility.Random.Next(1, 7);
+            var successRoll = this.GetSettingOrDefault("BoardingSuccessMinRoll", 4);
+            this.Output.WriteLine($"Boarding attempt on {target.Name}: rolled {roll} on 1d6.");
+
+            if (roll < successRoll)
+            {
+                this.Output.WriteLine("Boarding failed. Assault teams were repelled.");
+                return this.Output.Queue.ToList();
+            }
+
+            var energyCaptured = Math.Max(0, target.Energy);
+            var torpedoesCaptured = 0;
+            try
+            {
+                torpedoesCaptured = Math.Max(0, Torpedoes.For(target).Count);
+            }
+            catch
+            {
+                torpedoesCaptured = 0;
+            }
+
+            playerShip.Energy += energyCaptured;
+            Torpedoes.For(playerShip).Count += torpedoesCaptured;
+
+            var prisonersCaptured = Utility.Utility.Random.Next(1, 101);
+            var prisonerCap = this.GetSettingOrDefault("MaxPrisoners", 500);
+            var acceptedPrisoners = prisonersCaptured;
+            if (playerShip is Ship concretePlayer)
+            {
+                var available = Math.Max(0, prisonerCap - concretePlayer.Prisoners);
+                acceptedPrisoners = Math.Min(available, prisonersCaptured);
+                concretePlayer.Prisoners += acceptedPrisoners;
+            }
+
+            target.Destroyed = true;
+            playerShip.Map.RemoveTargetFromSector(playerShip.Map, target);
+
+            this.Output.WriteLine($"Boarding successful. Captured {energyCaptured} energy and {torpedoesCaptured} torpedoes from {target.Name}.");
+            this.Output.WriteLine($"Prisoners transferred to {playerShip.Name}: {acceptedPrisoners}.");
+            if (acceptedPrisoners < prisonersCaptured)
+            {
+                this.Output.WriteLine($"Brig capacity reached. {prisonersCaptured - acceptedPrisoners} prisoners could not be transferred.");
+            }
+
+            return this.Output.Queue.ToList();
+        }
+
+        private bool TargetWeaponsAreDown(IShip target)
+        {
+            var torpedoesDown = this.SubsystemIsDamaged(target, SubsystemType.Torpedoes);
+            var phasersDown = this.SubsystemIsDamaged(target, SubsystemType.Phasers);
+            var disruptorsDown = this.SubsystemIsDamaged(target, SubsystemType.Disruptors);
+            return torpedoesDown && phasersDown && disruptorsDown;
+        }
+
+        private bool SubsystemIsDamaged(IShip ship, SubsystemType subsystemType)
+        {
+            try
+            {
+                var subsystem = ship?.Subsystems?.SingleOrDefault(s => s.Type == subsystemType);
+                return subsystem == null || subsystem.Damage > 0;
+            }
+            catch
+            {
+                return true;
+            }
         }
 
         #region Sub-Level Menus
@@ -2358,8 +2524,16 @@ namespace StarTrek_KG.Output
 
         private static void AddShipPanelOption(IEnumerable<MenuItemDef> menuItemDefs, ICollection<string> panel)
         {
-            MenuItemDef shipOption = menuItemDefs.First(m => m.name == OBJECT_TYPE.SHIP.ToLower()); //todo: resource this
-            panel.Add($"{shipOption.name} {shipOption.divider} {shipOption.description}");
+            if (menuItemDefs == null || panel == null)
+            {
+                return;
+            }
+
+            MenuItemDef shipOption = menuItemDefs.FirstOrDefault(m => m.name == OBJECT_TYPE.SHIP.ToLower()); //todo: resource this
+            if (shipOption != null)
+            {
+                panel.Add($"{shipOption.name} {shipOption.divider} {shipOption.description}");
+            }
         }
 
         #endregion
@@ -2661,6 +2835,11 @@ namespace StarTrek_KG.Output
                     if (scanText != null && scanText.Length > longest)
                     {
                         longest = scanText.Length;
+                    }
+
+                    if (result is IRSResult irs && !string.IsNullOrWhiteSpace(irs.DetailLine) && irs.DetailLine.Length > longest)
+                    {
+                        longest = irs.DetailLine.Length;
                     }
                 }
             }

@@ -36,6 +36,8 @@ namespace StarTrek_KG.Actors
             public bool Destroyed { get; set; }
             public bool SporeContaminated { get; set; }
             public List<LocationDef> TurnHistory { get; set; }
+            public int MaxEnergy { get; set; }
+            public int Prisoners { get; set; }
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log ShipLog { get; set; } //
@@ -86,6 +88,8 @@ namespace StarTrek_KG.Actors
 
             this.NavigationSubsystem = new NavigationSubsystem(this);
             this.TurnHistory = new List<LocationDef>();
+            this.MaxEnergy = 0;
+            this.Prisoners = 0;
 
         }
 

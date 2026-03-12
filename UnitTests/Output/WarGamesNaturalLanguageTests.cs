@@ -26,6 +26,8 @@ namespace UnitTests.Output
                 StrictDeterministic = true,
                 AddStars = false,
                 AddNebulae = false,
+                AddDeuterium = false,
+                AddGraviticMines = false,
                 CoordinateDefs = new CoordinateDefs
                 {
                     new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip),
@@ -66,10 +68,13 @@ namespace UnitTests.Output
         public void WarGamesNaturalLanguage_AddAndDestroyByShipName_WorksAtTopLevel()
         {
             var sector = this.Game.Map.Playership.GetSector();
-            var shipName = this.Game.Config.ShipNames(FactionName.Klingon).First();
+            var existingNames = sector.GetHostiles().Select(h => h.Name).ToHashSet();
+            var shipName = this.Game.Config
+                .ShipNames(FactionName.Klingon)
+                .First(name => !existingNames.Contains(name));
 
-            _interact.ReadAndOutput(this.Game.Map.Playership, "map", $"add {shipName}");
-            Assert.True(sector.GetHostiles().Any(h => h.Name == shipName));
+            _interact.ReadAndOutput(this.Game.Map.Playership, "map", $"add 1 {shipName}");
+            Assert.AreEqual(1, sector.GetHostiles().Count(h => h.Name == shipName));
 
             _interact.ReadAndOutput(this.Game.Map.Playership, "map", $"destroy {shipName}");
             Assert.False(sector.GetHostiles().Any(h => h.Name == shipName));

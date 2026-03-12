@@ -10,6 +10,8 @@ namespace StarTrek_KG.Types
         public Point Point { get; set; }
         public ICoordinateObject Object { get; set; }
         public CoordinateItem Item { get; set; }
+        public string NameOverride { get; set; }
+        public string DetailLine { get; set; }
 
         public bool MyLocation { get; set; }
         public bool GalacticBarrier { get; set; }
@@ -30,7 +32,14 @@ namespace StarTrek_KG.Types
                 case CoordinateItem.HostileShip:
                 case CoordinateItem.Star:
 
-                    returnVal = this.Object != null ? this.Object.Name : DEFAULTS.SECTOR_INDICATOR + " Error"; //todo: resource this out
+                    if (!string.IsNullOrWhiteSpace(this.NameOverride))
+                    {
+                        returnVal = this.NameOverride;
+                    }
+                    else
+                    {
+                        returnVal = this.Object != null ? this.Object.Name : DEFAULTS.SECTOR_INDICATOR + " Error"; //todo: resource this out
+                    }
 
                     break;
 

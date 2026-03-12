@@ -36,6 +36,8 @@ namespace UnitTests.Actors.MovementTests
                 Initialize = true,
                 AddNebulae = false,
                 AddStars = false,
+                AddDeuterium = false,
+                AddGraviticMines = false,
                 CoordinateDefs = new CoordinateDefs
                 {
                     new CoordinateDef(

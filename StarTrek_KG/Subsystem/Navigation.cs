@@ -390,8 +390,47 @@ namespace StarTrek_KG.Subsystem
             Shields.For(this.ShipConnectedTo).Damage = 0;
 
             this.ShipConnectedTo.RepairEverything();
+            this.ProcessPrisonerTransferAtStarbase();
 
             this.ShipConnectedTo.Map.Game.Interact.ResourceLine(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("PlayerShip"), "SuccessfullDock");
+        }
+
+        private void ProcessPrisonerTransferAtStarbase()
+        {
+            if (!(this.ShipConnectedTo is Ship playerShip))
+            {
+                return;
+            }
+
+            var transferred = playerShip.Prisoners;
+            if (transferred <= 0)
+            {
+                return;
+            }
+
+            playerShip.Prisoners = 0;
+            this.ShipConnectedTo.OutputLine($"Transferred {transferred} prisoners to starbase custody.");
+
+            var threshold = this.ShipConnectedTo.Map.Config.GetSetting<int>("PrisonerTransferThreshold");
+            if (transferred < threshold)
+            {
+                return;
+            }
+
+            var playerBonus = this.ShipConnectedTo.Map.Config.GetSetting<int>("PrisonerTransferPlayerMaxEnergyBonus");
+            var hostileBonus = this.ShipConnectedTo.Map.Config.GetSetting<int>("PrisonerTransferHostileMaxEnergyBonus");
+
+            playerShip.MaxEnergy += playerBonus;
+            playerShip.Energy += playerBonus;
+            this.ShipConnectedTo.OutputLine($"Starfleet reward: ship maximum energy increased by {playerBonus}.");
+
+            foreach (var hostile in this.ShipConnectedTo.Map.Sectors.GetHostiles().OfType<Ship>())
+            {
+                hostile.MaxEnergy += hostileBonus;
+                hostile.Energy += hostileBonus;
+            }
+
+            this.ShipConnectedTo.OutputLine($"Enemy fleets adapt: remaining hostiles gain {hostileBonus} maximum energy.");
         }
 
         //todo: move to Game() object

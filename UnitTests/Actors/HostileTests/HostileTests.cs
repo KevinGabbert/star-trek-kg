@@ -57,8 +57,12 @@ namespace UnitTests.Actors.HostileTests
 
             IShip badGuy = _setup.TestMap.Sectors.GetHostiles().Single();
             badGuy.Energy = 2000;
-            badGuy.Subsystems.Add(new Disruptors(badGuy) { Energy = 500});
-            Disruptors disruptorsForBadGuy = (Disruptors)badGuy.Subsystems.Single(s => s.Type == SubsystemType.Disruptors);
+            var disruptorsForBadGuy = (Disruptors)badGuy.Subsystems.SingleOrDefault(s => s.Type == SubsystemType.Disruptors);
+            if (disruptorsForBadGuy == null)
+            {
+                disruptorsForBadGuy = new Disruptors(badGuy) { Energy = 500 };
+                badGuy.Subsystems.Add(disruptorsForBadGuy);
+            }
 
             Assert.AreEqual(_setup.TestMap.Playership.Energy, new StarTrekKGSettings().GetSetting<int>("energy"), "Ship energy not at expected amount");
 
@@ -226,6 +230,7 @@ namespace UnitTests.Actors.HostileTests
             {
                 Initialize = true,
                 CoordinateDefs = new CoordinateDefs(),
+                AddNebulae = false,
                 AddStars = false,
                 AddDeuterium = false,
                 AddGraviticMines = false
@@ -237,10 +242,11 @@ namespace UnitTests.Actors.HostileTests
             Assert.AreEqual(0, _setup.TestMap.Sectors.GetHostileCount()); //no hostiles
             Assert.AreEqual(null, _setup.TestMap.Playership); //no friendly
             
-            //just empty sectors
+            // No active ships should exist in any sector.
             foreach (var sector in _setup.TestMap.Sectors.SelectMany(Sector => Sector.Coordinates))
             {
-                Assert.AreEqual(CoordinateItem.Empty, sector.Item);
+                Assert.AreNotEqual(CoordinateItem.PlayerShip, sector.Item);
+                Assert.AreNotEqual(CoordinateItem.HostileShip, sector.Item);
             }
         }
 

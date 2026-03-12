@@ -20,6 +20,7 @@ namespace StarTrek_KG.Subsystem
             this.Add(new Navigation(shipConnectedTo));
             this.Add(new Torpedoes(shipConnectedTo));
             this.Add(new Phasers(shipConnectedTo));
+            this.Add(new Disruptors(shipConnectedTo));
             this.Add(new DamageControl(shipConnectedTo));
             this.Add(new Debug(shipConnectedTo));
         }
