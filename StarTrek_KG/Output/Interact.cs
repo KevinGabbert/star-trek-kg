@@ -351,6 +351,7 @@ namespace StarTrek_KG.Output
             else
             {
                 currentSectorResult += dataPoint;
+                currentSectorResult = CompactLrsCounts(currentSectorResult);
             }
 
             var verticalBoxLine = game.Config.Setting("VerticalBoxLine");
@@ -375,6 +376,56 @@ namespace StarTrek_KG.Output
 
             scanColumn++;
             return currentLRSScanLine;
+        }
+
+        private static string CompactLrsCounts(string currentSectorResult)
+        {
+            if (string.IsNullOrWhiteSpace(currentSectorResult))
+            {
+                return "000";
+            }
+
+            if (currentSectorResult.Length <= 3)
+            {
+                return currentSectorResult.PadLeft(3, '0');
+            }
+
+            // Legacy formatting can return 4+ chars when any count exceeds 9 (e.g., "0011").
+            // Keep compact CRS cell width by encoding each bucket as one character:
+            // 0-9 => '0'..'9', 10 => 'A', 11 => 'B', etc.
+            if (currentSectorResult.All(char.IsDigit))
+            {
+                var hostiles = currentSectorResult.Length > 0 ? currentSectorResult[0] - '0' : 0;
+                var starbases = currentSectorResult.Length > 1 ? currentSectorResult[1] - '0' : 0;
+                var starsText = currentSectorResult.Length > 2 ? currentSectorResult.Substring(2) : "0";
+                var stars = 0;
+                int.TryParse(starsText, out stars);
+
+                return $"{EncodeCompactCount(hostiles)}{EncodeCompactCount(starbases)}{EncodeCompactCount(stars)}";
+            }
+
+            return currentSectorResult.Substring(0, 3);
+        }
+
+        private static char EncodeCompactCount(int value)
+        {
+            if (value <= 0)
+            {
+                return '0';
+            }
+
+            if (value <= 9)
+            {
+                return (char)('0' + value);
+            }
+
+            var alpha = value - 10;
+            if (alpha > 25)
+            {
+                alpha = 25;
+            }
+
+            return (char)('A' + alpha);
         }
 
         //public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)

@@ -31,6 +31,18 @@ namespace StarTrek_KG.Actors
             bool returnVal;
 
             var energyRequired = distance; //rounds down for values < 1, meaning a distance of .1 is free
+            var map = ship?.Map as StarTrek_KG.Playfield.Map;
+            if (map != null && map.IsPlayershipNearBlackHole(ship, map.Config.GetSetting<int>("BlackHolePullRadius")))
+            {
+                var multiplier = map.Config.GetSetting<int>("BlackHoleImpulseEnergyMultiplier");
+                if (multiplier < 1)
+                {
+                    multiplier = 1;
+                }
+
+                energyRequired *= multiplier;
+            }
+
             if (energyRequired >= ship.Energy) //todo: change this to ship.energy
             {
                 this.Interact.Line("Insufficient energy to travel that speed.");

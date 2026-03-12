@@ -58,6 +58,18 @@ namespace StarTrek_KG.Types
                     returnVal = "Gaseous Anomaly";
                     break;
 
+                case CoordinateItem.TemporalRift:
+                    returnVal = "Temporal Rift";
+                    break;
+
+                case CoordinateItem.SporeField:
+                    returnVal = "Spore Field";
+                    break;
+
+                case CoordinateItem.BlackHole:
+                    returnVal = "Black Hole";
+                    break;
+
                 case CoordinateItem.PlayerShip:
                     returnVal = "<This Ship>"; //todo: identify ship
                     break;

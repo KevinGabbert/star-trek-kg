@@ -47,6 +47,30 @@ namespace StarTrek_KG.Actors
             switch (movementType)
             {
                 case MovementType.Impulse:
+                    var concreteMap = this.ShipConnectedTo.Map as Map;
+                    if (concreteMap != null && concreteMap.IsPlayershipNearBlackHole(this.ShipConnectedTo, concreteMap.Config.GetSetting<int>("BlackHolePullRadius")))
+                    {
+                        var divisor = concreteMap.Config.GetSetting<int>("BlackHoleImpulseDistanceDivisor");
+                        if (divisor < 1)
+                        {
+                            divisor = 1;
+                        }
+
+                        var adjustedDistance = distance / divisor;
+                        if (adjustedDistance < 1)
+                        {
+                            this.ShipConnectedTo.OutputLine($"Black hole drag stalls impulse engines. Need at least {divisor} impulse for one coordinate.");
+                            break;
+                        }
+
+                        if (adjustedDistance < distance)
+                        {
+                            this.ShipConnectedTo.OutputLine("Black hole gravity well reduces impulse progress.");
+                        }
+
+                        distance = adjustedDistance;
+                    }
+
                     this.TravelThroughCoordinates(distance, direction, this.ShipConnectedTo);
                     break;
 
@@ -156,12 +180,29 @@ namespace StarTrek_KG.Actors
                     var targetCoordinate = newLocation?.Sector?.Coordinates?.GetNoError(
                         new Point(newLocation.Coordinate.X, newLocation.Coordinate.Y));
                     var hitGaseousAnomaly = targetCoordinate?.Item == CoordinateItem.GaseousAnomaly;
+                    var hitTemporalRift = targetCoordinate?.Item == CoordinateItem.TemporalRift;
                     this.ShipConnectedTo.Map.SetPlayershipInLocation(travellingShip, this.ShipConnectedTo.Map, newLocation);
 
                     if (hitGaseousAnomaly)
                     {
                         this.ApplyGaseousAnomalyTravelPenalty();
                         this.ShipConnectedTo.OutputLine("Gaseous anomaly encountered. Impulse movement halted.");
+                        break;
+                    }
+
+                    if (hitTemporalRift)
+                    {
+                        var rewindTurns = this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("TemporalRiftRewindTurns");
+                        var map = this.ShipConnectedTo.Map as Map;
+                        if (map != null && map.TrySendShipBackInTime(travellingShip, rewindTurns))
+                        {
+                            this.ShipConnectedTo.OutputLine($"Temporal rift encountered. Ship displaced to position from {rewindTurns} turns ago.");
+                        }
+                        else
+                        {
+                            this.ShipConnectedTo.OutputLine("Temporal rift encountered, but no stable historical lock was available.");
+                        }
+
                         break;
                     }
                 }
@@ -190,6 +231,8 @@ namespace StarTrek_KG.Actors
                     currentItem == CoordinateItem.DeuteriumCloud ||
                     currentItem == CoordinateItem.GraviticMine ||
                     currentItem == CoordinateItem.GaseousAnomaly ||
+                    currentItem == CoordinateItem.TemporalRift ||
+                    currentItem == CoordinateItem.SporeField ||
                     currentItem == CoordinateItem.EnergyAnomaly)
                 {
                     return false;
@@ -233,6 +276,10 @@ namespace StarTrek_KG.Actors
                 case CoordinateItem.Starbase:
                     this.SystemPrompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
                     this.ApplyCollisionDamage("StarbaseCollisionDamage", 900, "Collision with starbase caused massive structural damage.");
+                    break;
+
+                case CoordinateItem.BlackHole:
+                    this.SystemPrompt.Line($"Black hole event horizon detected at sector: [{sector.X},{sector.Y}]. Navigation halted.");
                     break;
 
                 default:
@@ -610,6 +657,18 @@ namespace StarTrek_KG.Actors
             if (currentCoordinate.Object is GaseousAnomaly)
             {
                 currentCoordinate.Item = CoordinateItem.GaseousAnomaly;
+            }
+            else if (currentCoordinate.Object is TemporalRift)
+            {
+                currentCoordinate.Item = CoordinateItem.TemporalRift;
+            }
+            else if (currentCoordinate.Object is SporeField)
+            {
+                currentCoordinate.Item = CoordinateItem.SporeField;
+            }
+            else if (currentCoordinate.Object is BlackHole)
+            {
+                currentCoordinate.Item = CoordinateItem.BlackHole;
             }
             else
             {

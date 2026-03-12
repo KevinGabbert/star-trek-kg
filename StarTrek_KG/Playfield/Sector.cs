@@ -379,6 +379,30 @@ namespace StarTrek_KG.Playfield
                     Coordinate = newlyCreatedSector
                 };
             }
+            else if (itemToPopulate == CoordinateItem.TemporalRift)
+            {
+                newlyCreatedSector.Item = CoordinateItem.TemporalRift;
+                newlyCreatedSector.Object = new TemporalRift
+                {
+                    Coordinate = newlyCreatedSector
+                };
+            }
+            else if (itemToPopulate == CoordinateItem.SporeField)
+            {
+                newlyCreatedSector.Item = CoordinateItem.SporeField;
+                newlyCreatedSector.Object = new SporeField
+                {
+                    Coordinate = newlyCreatedSector
+                };
+            }
+            else if (itemToPopulate == CoordinateItem.BlackHole)
+            {
+                newlyCreatedSector.Item = CoordinateItem.BlackHole;
+                newlyCreatedSector.Object = new BlackHole
+                {
+                    Coordinate = newlyCreatedSector
+                };
+            }
             else
             {
                 newlyCreatedSector.Item = itemToPopulate;
@@ -619,7 +643,7 @@ namespace StarTrek_KG.Playfield
 
         public int GetStarCount()
         {
-            return Coordinates?.Count(sector => sector.Item == CoordinateItem.Star) ?? 0;
+            return Coordinates?.Count(sector => sector.Item == CoordinateItem.Star || sector.Item == CoordinateItem.BlackHole) ?? 0;
         }
 
         public ICoordinate GetCoordinate(IPoint coordinate)

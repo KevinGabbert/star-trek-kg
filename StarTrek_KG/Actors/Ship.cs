@@ -34,6 +34,8 @@ namespace StarTrek_KG.Actors
             public FactionName Faction { get; set; }
             public int Energy { get; set; }
             public bool Destroyed { get; set; }
+            public bool SporeContaminated { get; set; }
+            public List<LocationDef> TurnHistory { get; set; }
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log ShipLog { get; set; } //
@@ -83,6 +85,7 @@ namespace StarTrek_KG.Actors
             //refactor from Game.GetGlobalInfo()
 
             this.NavigationSubsystem = new NavigationSubsystem(this);
+            this.TurnHistory = new List<LocationDef>();
 
         }
 

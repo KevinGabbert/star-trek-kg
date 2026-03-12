@@ -84,6 +84,15 @@ namespace StarTrek_KG.Actors
         }
         public bool Engage(NavDirection direction, int distance, out int lastSectorY, out int lastSectorX, IMap map)
         {
+            var concreteMap = map as StarTrek_KG.Playfield.Map;
+            if (concreteMap != null && concreteMap.IsPlayershipNearBlackHole(map.Playership, concreteMap.Config.GetSetting<int>("BlackHolePullRadius")))
+            {
+                this.Interact.Line("Warp drive cannot lock while inside a black hole gravity well.");
+                lastSectorX = 0;
+                lastSectorY = 0;
+                return false;
+            }
+
             var success = this.EnergySubtracted(map.Playership, ref distance);
 
             if (success)

@@ -207,6 +207,9 @@ namespace StarTrek_KG.Playfield
             }
 
             this.PopulateGaseousAnomalyFields();
+            this.PopulateTemporalRifts();
+            this.PopulateSporeFields();
+            this.PopulateBlackHoles();
 
             if (this.GameConfig?.AddGraviticMines ?? true)
             {
@@ -699,6 +702,281 @@ namespace StarTrek_KG.Playfield
             }
         }
 
+        private void PopulateTemporalRifts()
+        {
+            var percent = this.GetSettingOrDefault("TemporalRiftSectorPercent", 5);
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var candidates = this.GetFeatureCandidateSectors();
+            foreach (var sector in candidates)
+            {
+                if (Utility.Utility.Random.Next(100) >= percent)
+                {
+                    continue;
+                }
+
+                this.TryPlaceTemporalRift(sector);
+            }
+        }
+
+        private void TryPlaceTemporalRift(Sector sector)
+        {
+            // "/" diagonal has x + y = constant.
+            var sum = Utility.Utility.Random.Next(2, (DEFAULTS.COORDINATE_MAX - 1) * 2 - 1);
+            var points = new List<Coordinate>();
+
+            for (var x = 0; x < DEFAULTS.COORDINATE_MAX; x++)
+            {
+                var y = sum - x;
+                if (y < 0 || y >= DEFAULTS.COORDINATE_MAX)
+                {
+                    continue;
+                }
+
+                var coordinate = sector.Coordinates.GetNoError(new Point(x, y));
+                if (coordinate != null && coordinate.Item == CoordinateItem.Empty)
+                {
+                    points.Add(coordinate);
+                }
+            }
+
+            if (points.Count < 3)
+            {
+                return;
+            }
+
+            foreach (var coordinate in points)
+            {
+                coordinate.Item = CoordinateItem.TemporalRift;
+                coordinate.Object = new TemporalRift
+                {
+                    Coordinate = coordinate
+                };
+            }
+        }
+
+        private void PopulateSporeFields()
+        {
+            var percent = this.GetSettingOrDefault("SporeSectorPercent", 5);
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var candidates = this.GetFeatureCandidateSectors();
+            foreach (var sector in candidates)
+            {
+                if (Utility.Utility.Random.Next(100) >= percent)
+                {
+                    continue;
+                }
+
+                var empty = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+                if (!empty.Any())
+                {
+                    continue;
+                }
+
+                var coordinate = empty[Utility.Utility.Random.Next(empty.Count)];
+                coordinate.Item = CoordinateItem.SporeField;
+                coordinate.Object = new SporeField
+                {
+                    Coordinate = coordinate
+                };
+            }
+        }
+
+        private void PopulateBlackHoles()
+        {
+            var percent = this.GetSettingOrDefault("BlackHoleSectorPercent", 5);
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var candidates = this.GetFeatureCandidateSectors();
+            foreach (var sector in candidates)
+            {
+                if (Utility.Utility.Random.Next(100) >= percent)
+                {
+                    continue;
+                }
+
+                this.TryPlaceSingleBlackHole(sector);
+            }
+        }
+
+        private void TryPlaceSingleBlackHole(Sector sector)
+        {
+            if (sector == null || sector.Coordinates == null)
+            {
+                return;
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.BlackHole))
+            {
+                return;
+            }
+
+            var empty = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+            if (!empty.Any())
+            {
+                return;
+            }
+
+            var target = empty[Utility.Utility.Random.Next(empty.Count)];
+            target.Item = CoordinateItem.BlackHole;
+            target.Object = new BlackHole
+            {
+                Coordinate = target
+            };
+        }
+
+        private List<Sector> GetFeatureCandidateSectors()
+        {
+            return this.Sectors
+                .Where(s => s != null &&
+                            s.Type != SectorType.GalacticBarrier &&
+                            s.Coordinates != null &&
+                            s.Coordinates.Any(c => c.Item == CoordinateItem.Empty))
+                .ToList();
+        }
+
+        public bool IsPlayershipNearBlackHole(IShip ship = null, int radius = 2)
+        {
+            var subject = ship ?? this.Playership;
+            if (subject?.Coordinate == null)
+            {
+                return false;
+            }
+
+            var sector = subject.GetSector();
+            var blackHoles = sector?.Coordinates?.Where(c => c.Item == CoordinateItem.BlackHole).ToList();
+            if (blackHoles == null || blackHoles.Count == 0)
+            {
+                return false;
+            }
+
+            return blackHoles.Any(h =>
+                Math.Max(Math.Abs(h.X - subject.Coordinate.X), Math.Abs(h.Y - subject.Coordinate.Y)) <= radius);
+        }
+
+        public bool TryApplyBlackHolePull(IShip ship)
+        {
+            if (ship?.Coordinate == null)
+            {
+                return false;
+            }
+
+            var pullRadius = this.GetSettingOrDefault("BlackHolePullRadius", 2);
+            if (!this.IsPlayershipNearBlackHole(ship, pullRadius))
+            {
+                return false;
+            }
+
+            var currentSector = ship.GetSector();
+            var nearest = currentSector.Coordinates
+                .Where(c => c.Item == CoordinateItem.BlackHole)
+                .OrderBy(c => Math.Abs(c.X - ship.Coordinate.X) + Math.Abs(c.Y - ship.Coordinate.Y))
+                .FirstOrDefault();
+
+            if (nearest == null)
+            {
+                return false;
+            }
+
+            var dx = Math.Sign(nearest.X - ship.Coordinate.X);
+            var dy = Math.Sign(nearest.Y - ship.Coordinate.Y);
+            var direction = this.DirectionFromDelta(dx, dy);
+
+            var nextSector = Sectors.GetNext(this, currentSector, direction);
+            if (this.Sectors.IsGalacticBarrier(nextSector))
+            {
+                this.Write?.Line("Black hole gravity well strains the ship against the galactic barrier.");
+            }
+            else
+            {
+                ship.Point = new Point(nextSector.X, nextSector.Y);
+                nextSector.SetActive();
+                this.SetPlayershipInActiveSector(this);
+                this.Write?.Line("Black hole gravity pulls the ship one sector.");
+            }
+
+            var drain = this.GetSettingOrDefault("BlackHolePullEnergyDrain", 75);
+            ship.Energy -= drain;
+            if (ship.Energy <= 0)
+            {
+                ship.Energy = 0;
+                ship.Destroyed = true;
+            }
+
+            this.timeRemaining--;
+            this.Stardate++;
+            this.Write?.Line($"Black hole shear drains {drain} energy.");
+            return true;
+        }
+
+        public bool TrySendShipBackInTime(IShip ship, int turnsBack)
+        {
+            var concrete = ship as Ship;
+            if (concrete?.TurnHistory == null || concrete.TurnHistory.Count == 0)
+            {
+                return false;
+            }
+
+            if (turnsBack < 1)
+            {
+                turnsBack = 1;
+            }
+
+            var index = concrete.TurnHistory.Count - 1 - turnsBack;
+            if (index < 0 || index >= concrete.TurnHistory.Count)
+            {
+                return false;
+            }
+
+            var snapshot = concrete.TurnHistory[index];
+            var sector = this.Sectors[new Point(snapshot.Sector.X, snapshot.Sector.Y)];
+            var coordinate = sector?.Coordinates?.GetNoError(new Point(snapshot.Coordinate.X, snapshot.Coordinate.Y));
+            if (sector == null || coordinate == null)
+            {
+                return false;
+            }
+
+            this.SetPlayershipInLocation(ship, this, new Location(sector, coordinate));
+            return true;
+        }
+
+        private NavDirection DirectionFromDelta(int dx, int dy)
+        {
+            if (dx == 0 && dy > 0) return NavDirection.Down;
+            if (dx == 0 && dy < 0) return NavDirection.Up;
+            if (dx > 0 && dy == 0) return NavDirection.Right;
+            if (dx < 0 && dy == 0) return NavDirection.Left;
+            if (dx > 0 && dy > 0) return NavDirection.RightDown;
+            if (dx > 0 && dy < 0) return NavDirection.RightUp;
+            if (dx < 0 && dy > 0) return NavDirection.LeftDown;
+            return NavDirection.LeftUp;
+        }
+
         private IEnumerable<Coordinate> GetOrthogonalEmptyNeighbors(Sector sector, Coordinate coordinate)
         {
             var deltas = new[]
@@ -1174,6 +1452,18 @@ namespace StarTrek_KG.Playfield
             {
                 coordinate.Item = CoordinateItem.GaseousAnomaly;
             }
+            else if (coordinate?.Object is TemporalRift)
+            {
+                coordinate.Item = CoordinateItem.TemporalRift;
+            }
+            else if (coordinate?.Object is SporeField)
+            {
+                coordinate.Item = CoordinateItem.SporeField;
+            }
+            else if (coordinate?.Object is BlackHole)
+            {
+                coordinate.Item = CoordinateItem.BlackHole;
+            }
             else if (coordinate != null)
             {
                 coordinate.Item = CoordinateItem.Empty;
@@ -1273,6 +1563,16 @@ namespace StarTrek_KG.Playfield
 
                 coordinate.Item = CoordinateItem.Empty;
                 coordinate.Object = null;
+            }
+
+            if (coordinate.Item == CoordinateItem.SporeField)
+            {
+                if (shipToSet is Ship ship)
+                {
+                    ship.SporeContaminated = true;
+                }
+
+                this.Write?.Line("Spore contact detected. Biofilm is draining reactor efficiency.");
             }
         }
 

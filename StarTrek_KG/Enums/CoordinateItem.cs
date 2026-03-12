@@ -13,6 +13,9 @@ namespace StarTrek_KG.Enums
         DeuteriumCloud,
         GraviticMine,
         GaseousAnomaly,
+        TemporalRift,
+        SporeField,
+        BlackHole,
         EnergyAnomaly,
         Debug
     };

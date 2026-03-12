@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Enums;
@@ -30,8 +31,8 @@ namespace StarTrek_KG.Subsystem
                 return this.Controls();
             }
 
-            int directionValue;
-            if (!int.TryParse(command, out directionValue) || directionValue < 1 || directionValue > 9)
+            double directionValue;
+            if (!TryParseDirection(command, out directionValue))
             {
                 this.ShipConnectedTo.OutputLine("Invalid direction.");
                 this.PromptForDirection();
@@ -73,8 +74,8 @@ namespace StarTrek_KG.Subsystem
                 return prompt.Output.Queue.ToList();
             }
 
-            int directionValue;
-            if (!int.TryParse(direction, out directionValue) || directionValue < 1 || directionValue > 9)
+            double directionValue;
+            if (!TryParseDirection(direction, out directionValue))
             {
                 prompt.Line("Invalid direction.");
                 return prompt.Output.Queue.ToList();
@@ -102,6 +103,23 @@ namespace StarTrek_KG.Subsystem
         {
             return Output.Interaction.COURSE_GRID +
                    "Enter firing direction (1.0--9.0) ";
+        }
+
+        private static bool TryParseDirection(string input, out double direction)
+        {
+            direction = 0;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return false;
+            }
+
+            var normalized = input.Trim().Replace(',', '.');
+            if (!double.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out direction))
+            {
+                return false;
+            }
+
+            return direction >= 1.0 && direction <= 9.0;
         }
 
         public void Shoot(double direction)

@@ -13,6 +13,7 @@ using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Commands;
+using StarTrek_KG.Actors;
 
 namespace StarTrek_KG
 {
@@ -145,6 +146,7 @@ namespace StarTrek_KG
             //todo: why are we creating this PrintSector() class a second time??
             this.Interact = new Interaction(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
             this.PrintSector = new Render(this.Interact, this.Config);
+            this.RecordPlayerTurnSnapshot();
         }
 
         private SetupOptions BuildDefaultSetupOptions()
@@ -658,6 +660,101 @@ namespace StarTrek_KG
             this.Interact.Line("Cascade HUD Tip: " + tip);
         }
 
+        private void ApplyEnvironmentalTurnEffects()
+        {
+            var ship = this.Map?.Playership as Ship;
+            if (ship == null || ship.Destroyed)
+            {
+                return;
+            }
+
+            this.ApplySporeTurnEffects(ship);
+            this.ApplyBlackHoleTurnEffects(ship);
+        }
+
+        private void ApplySporeTurnEffects(Ship ship)
+        {
+            if (!ship.SporeContaminated)
+            {
+                return;
+            }
+
+            var activeSector = ship.GetSector();
+            var docked = Navigation.For(ship).Docked;
+            var nearStarbase = this.Map.IsDockingLocation(ship.Coordinate.Y, ship.Coordinate.X, activeSector.Coordinates);
+            if (docked || nearStarbase)
+            {
+                ship.SporeContaminated = false;
+                this.Interact.Line("Starbase decontamination complete. Spore biofilm cleared.");
+                return;
+            }
+
+            var drain = this.Config.GetSetting<int>("SporeDrainPerTurn");
+            if (drain < 0)
+            {
+                drain = 0;
+            }
+
+            ship.Energy -= drain;
+            this.Interact.Line($"Spore biofilm drains {drain} energy this turn.");
+
+            if (ship.Energy <= 0)
+            {
+                ship.Energy = 0;
+                ship.Destroyed = true;
+                return;
+            }
+
+            var sides = this.Config.GetSetting<int>("SporeCureRollSides");
+            if (sides < 1)
+            {
+                sides = 12;
+            }
+
+            if (Utility.Utility.Random.Next(1, sides + 1) == 1)
+            {
+                ship.SporeContaminated = false;
+                this.Interact.Line("Engineering purge successful. Spore contamination has dissipated.");
+            }
+        }
+
+        private void ApplyBlackHoleTurnEffects(Ship ship)
+        {
+            var concreteMap = this.Map as Map;
+            if (concreteMap == null)
+            {
+                return;
+            }
+
+            concreteMap.TryApplyBlackHolePull(ship);
+        }
+
+        private void RecordPlayerTurnSnapshot()
+        {
+            var ship = this.Map?.Playership as Ship;
+            if (ship?.Point == null || ship.Coordinate == null)
+            {
+                return;
+            }
+
+            ship.TurnHistory ??= new List<LocationDef>();
+
+            ship.TurnHistory.Add(new LocationDef(
+                new Point(ship.Point.X, ship.Point.Y),
+                new Point(ship.Coordinate.X, ship.Coordinate.Y)));
+
+            var maxSnapshots = this.Config.GetSetting<int>("TemporalHistoryDepth");
+            if (maxSnapshots < 1)
+            {
+                maxSnapshots = 20;
+            }
+
+            if (ship.TurnHistory.Count > maxSnapshots)
+            {
+                ship.TurnHistory.RemoveAt(0);
+            }
+        }
+
         #region Turn System
 
         #region Web
@@ -696,7 +793,9 @@ namespace StarTrek_KG
                 else
                 {
                     this.ApplySystemsCascadeTurnEffects(command);
+                    this.ApplyEnvironmentalTurnEffects();
                     this.ReportGameStatus();
+                    this.RecordPlayerTurnSnapshot();
                     retVal = this.Map.Playership.OutputQueue();
                 }
 

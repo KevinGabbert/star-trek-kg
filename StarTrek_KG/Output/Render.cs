@@ -1,5 +1,6 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
@@ -135,12 +136,25 @@ namespace StarTrek_KG.Output
 
             regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - topBorderAreaMeasurement);
 
+            var blackHoleMarker = this.GetBlackHoleSectorMarker(location?.Sector);
             string SectorIndicator =
-                $" Coord: [{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}]  Sec: Â§{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}";
+                $" Coord: [{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}]  Sec: §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}{blackHoleMarker}";
 
             regionLineBuilder.Insert(topBorderAreaMeasurement, SectorIndicator);
 
             this.Interact.SingleLine(regionLineBuilder.ToString());
+        }
+
+        private string GetBlackHoleSectorMarker(Sector sector)
+        {
+            if (sector?.Scanned != true || sector.Coordinates == null)
+            {
+                return string.Empty;
+            }
+
+            return sector.Coordinates.Any(c => c.Item == CoordinateItem.BlackHole)
+                ? this.SymbolCell("BlackHoleChar", "°").Trim()
+                : string.Empty;
         }
 
         private string GetCRSRightTextLine(int row, IMap map, IList<string> lrsResults, int totalHostiles)
@@ -273,6 +287,18 @@ namespace StarTrek_KG.Output
                         sb.Append(" ~ ");
                         break;
 
+                    case CoordinateItem.TemporalRift:
+                        sb.Append(this.SymbolCell("TemporalRiftChar", "/"));
+                        break;
+
+                    case CoordinateItem.SporeField:
+                        sb.Append(DEFAULTS.EMPTY);
+                        break;
+
+                    case CoordinateItem.BlackHole:
+                        sb.Append(this.SymbolCell("BlackHoleChar", "°"));
+                        break;
+
                     case CoordinateItem.EnergyAnomaly:
                         var anomaly = sector.Object as EnergyAnomaly;
                         var glyph = anomaly?.Glyph;
@@ -334,6 +360,25 @@ namespace StarTrek_KG.Output
             }
 
             return new string(chars);
+        }
+
+        private string SymbolCell(string key, string defaultValue)
+        {
+            try
+            {
+                var configured = this.Config?.GetSetting<string>(key);
+                if (!string.IsNullOrWhiteSpace(configured))
+                {
+                    defaultValue = configured.Trim();
+                }
+            }
+            catch
+            {
+                // Use defaultValue
+            }
+
+            var symbol = string.IsNullOrEmpty(defaultValue) ? " " : defaultValue.Substring(0, 1);
+            return $" {symbol} ";
         }
 
         private void AppendShipDesignator(StringBuilder sb, int totalHostiles, ICoordinate sector)
@@ -422,4 +467,5 @@ namespace StarTrek_KG.Output
         }
     }
 }
+
 
