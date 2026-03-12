@@ -206,6 +206,8 @@ namespace StarTrek_KG.Playfield
                 this.PopulateDeuteriumClouds();
             }
 
+            this.PopulateGaseousAnomalyFields();
+
             if (this.GameConfig?.AddGraviticMines ?? true)
             {
                 this.PopulateGraviticMines();
@@ -220,11 +222,18 @@ namespace StarTrek_KG.Playfield
             {
                 this.PopulateNebulaDeuteriumBonus();
             }
+
+            if (this.GameConfig?.AddDeuterium ?? true)
+            {
+                this.NormalizeDeuteriumTotalsPerSector();
+            }
         }
 
         private void PopulateDeuteriumPockets()
         {
-            var percent = this.Config?.GetSetting<int>("DeuteriumSectorPercent") ?? 0;
+            var percent = this.GetSettingOrDefault(
+                "DeuteriumSectorSpawnPercent",
+                this.GetSettingOrDefault("DeuteriumSectorPercent", 35));
             if (percent <= 0)
             {
                 return;
@@ -435,6 +444,12 @@ namespace StarTrek_KG.Playfield
             var mineChance = this.Config?.GetSetting<int>("DeuteriumCloudMineChancePercent") ?? 50;
             if (mineChance < 0) mineChance = 0;
             if (mineChance > 100) mineChance = 100;
+            var allowMinesInStarbaseSectors = this.GetBoolSettingOrDefault("AllowMinesInStarbaseSectors", false);
+            var sectorHasStarbase = this.SectorHasStarbase(sector);
+            if (sectorHasStarbase && !allowMinesInStarbaseSectors)
+            {
+                return;
+            }
 
             foreach (var coordinate in perimeter.Where(c => c.Item == CoordinateItem.Empty))
             {
@@ -562,8 +577,10 @@ namespace StarTrek_KG.Playfield
 
         private void PopulateGraviticMines()
         {
+            var allowMinesInStarbaseSectors = this.GetBoolSettingOrDefault("AllowMinesInStarbaseSectors", false);
             var hostileSectors = this.Sectors?
                 .Where(sector => sector?.Coordinates != null && sector.Coordinates.Any(c => c.Item == CoordinateItem.HostileShip))
+                .Where(sector => allowMinesInStarbaseSectors || !this.SectorHasStarbase(sector))
                 .ToList();
 
             if (hostileSectors == null || hostileSectors.Count == 0)
@@ -582,6 +599,130 @@ namespace StarTrek_KG.Playfield
                 var pickedCoordinate = emptyCoordinates[Utility.Utility.Random.Next(emptyCoordinates.Count)];
                 pickedCoordinate.Item = CoordinateItem.GraviticMine;
                 pickedCoordinate.Object = new GraviticMine();
+            }
+        }
+
+        private void PopulateGaseousAnomalyFields()
+        {
+            var percent = this.GetSettingOrDefault("GaseousAnomalySectorPercent", 15);
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var minGroupSize = this.GetSettingOrDefault("GaseousAnomalyGroupMin", 6);
+            var maxGroupSize = this.GetSettingOrDefault("GaseousAnomalyGroupMax", 16);
+            if (minGroupSize < 1) minGroupSize = 1;
+            if (maxGroupSize < minGroupSize) maxGroupSize = minGroupSize;
+            if (maxGroupSize > (DEFAULTS.COORDINATE_MAX * DEFAULTS.COORDINATE_MAX))
+            {
+                maxGroupSize = DEFAULTS.COORDINATE_MAX * DEFAULTS.COORDINATE_MAX;
+            }
+
+            var candidates = this.Sectors
+                .Where(s => s != null &&
+                            s.Type != SectorType.GalacticBarrier &&
+                            s.Type != SectorType.Nebulae &&
+                            s.Coordinates != null &&
+                            s.Coordinates.Any(c => c.Item == CoordinateItem.Empty))
+                .ToList();
+
+            if (!candidates.Any())
+            {
+                return;
+            }
+
+            foreach (var sector in candidates)
+            {
+                if (Utility.Utility.Random.Next(100) >= percent)
+                {
+                    continue;
+                }
+
+                this.TryPlaceGaseousAnomalyGroup(sector, minGroupSize, maxGroupSize);
+            }
+        }
+
+        private void TryPlaceGaseousAnomalyGroup(Sector sector, int minGroupSize, int maxGroupSize)
+        {
+            var empty = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+            if (!empty.Any())
+            {
+                return;
+            }
+
+            var targetSize = Utility.Utility.Random.Next(minGroupSize, maxGroupSize + 1);
+            targetSize = Math.Min(targetSize, empty.Count);
+
+            var start = empty[Utility.Utility.Random.Next(empty.Count)];
+            var group = new List<Coordinate> { start };
+            var visited = new HashSet<string> { $"{start.X},{start.Y}" };
+
+            while (group.Count < targetSize)
+            {
+                var anchor = group[Utility.Utility.Random.Next(group.Count)];
+                var neighbors = this.GetOrthogonalEmptyNeighbors(sector, anchor)
+                    .Where(n => !visited.Contains($"{n.X},{n.Y}"))
+                    .ToList();
+
+                if (!neighbors.Any())
+                {
+                    var fallback = empty.Where(c => !visited.Contains($"{c.X},{c.Y}")).ToList();
+                    if (!fallback.Any())
+                    {
+                        break;
+                    }
+
+                    var picked = fallback[Utility.Utility.Random.Next(fallback.Count)];
+                    group.Add(picked);
+                    visited.Add($"{picked.X},{picked.Y}");
+                    continue;
+                }
+
+                var next = neighbors[Utility.Utility.Random.Next(neighbors.Count)];
+                group.Add(next);
+                visited.Add($"{next.X},{next.Y}");
+            }
+
+            foreach (var coordinate in group)
+            {
+                coordinate.Item = CoordinateItem.GaseousAnomaly;
+                coordinate.Object = new GaseousAnomaly
+                {
+                    Coordinate = coordinate
+                };
+            }
+        }
+
+        private IEnumerable<Coordinate> GetOrthogonalEmptyNeighbors(Sector sector, Coordinate coordinate)
+        {
+            var deltas = new[]
+            {
+                new Point(0, -1),
+                new Point(1, 0),
+                new Point(0, 1),
+                new Point(-1, 0)
+            };
+
+            foreach (var delta in deltas)
+            {
+                var x = coordinate.X + delta.X;
+                var y = coordinate.Y + delta.Y;
+                if (x < 0 || y < 0 || x >= DEFAULTS.COORDINATE_MAX || y >= DEFAULTS.COORDINATE_MAX)
+                {
+                    continue;
+                }
+
+                var neighbor = sector.Coordinates.GetNoError(new Point(x, y));
+                if (neighbor != null && neighbor.Item == CoordinateItem.Empty)
+                {
+                    yield return neighbor;
+                }
             }
         }
 
@@ -611,6 +752,11 @@ namespace StarTrek_KG.Playfield
             }
 
             return weights.Length - 1;
+        }
+
+        private bool SectorHasStarbase(Sector sector)
+        {
+            return sector?.Coordinates != null && sector.Coordinates.Any(c => c.Item == CoordinateItem.Starbase);
         }
 
         private void PlaceDeuteriumAt(Coordinate coordinate)
@@ -655,6 +801,113 @@ namespace StarTrek_KG.Playfield
             var amount = Utility.Utility.Random.Next(min, max + 1);
             coordinate.Item = CoordinateItem.DeuteriumCloud;
             coordinate.Object = new DeuteriumCloud(amount);
+        }
+
+        private void NormalizeDeuteriumTotalsPerSector()
+        {
+            var minSectorTotal = this.GetSettingOrDefault("DeuteriumSectorTotalMin", 200);
+            var maxSectorTotal = this.GetSettingOrDefault("DeuteriumSectorTotalMax", 800);
+
+            if (maxSectorTotal < minSectorTotal)
+            {
+                var temp = minSectorTotal;
+                minSectorTotal = maxSectorTotal;
+                maxSectorTotal = temp;
+            }
+
+            foreach (var sector in this.Sectors.Where(s => s?.Coordinates != null))
+            {
+                var deuteriumCoordinates = sector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud)
+                    .ToList();
+
+                if (deuteriumCoordinates.Count == 0)
+                {
+                    continue;
+                }
+
+                var targetTotal = Utility.Utility.Random.Next(minSectorTotal, maxSectorTotal + 1);
+                this.DistributeDeuteriumAcrossCoordinates(deuteriumCoordinates, targetTotal);
+            }
+        }
+
+        private void DistributeDeuteriumAcrossCoordinates(IList<Coordinate> deuteriumCoordinates, int totalAmount)
+        {
+            if (deuteriumCoordinates == null || deuteriumCoordinates.Count == 0)
+            {
+                return;
+            }
+
+            var minCloudAmount = this.GetSettingOrDefault("DeuteriumCloudPointMin", 50);
+            if (minCloudAmount < 1)
+            {
+                minCloudAmount = 1;
+            }
+
+            var minimumTotal = deuteriumCoordinates.Sum(c =>
+                c.Item == CoordinateItem.DeuteriumCloud ? minCloudAmount : 1);
+
+            if (totalAmount < minimumTotal)
+            {
+                totalAmount = minimumTotal;
+            }
+
+            var remaining = totalAmount;
+            for (var i = 0; i < deuteriumCoordinates.Count; i++)
+            {
+                var coordinate = deuteriumCoordinates[i];
+                var minimumForThisSlot = coordinate.Item == CoordinateItem.DeuteriumCloud ? minCloudAmount : 1;
+                var minimumForRemaining = deuteriumCoordinates
+                    .Skip(i + 1)
+                    .Sum(c => c.Item == CoordinateItem.DeuteriumCloud ? minCloudAmount : 1);
+                var maximumForThisSlot = remaining - minimumForRemaining;
+
+                var assigned = i == deuteriumCoordinates.Count - 1
+                    ? remaining
+                    : Utility.Utility.Random.Next(minimumForThisSlot, maximumForThisSlot + 1);
+
+                remaining -= assigned;
+
+                if (coordinate.Item == CoordinateItem.Deuterium)
+                {
+                    coordinate.Object = new Deuterium(assigned);
+                }
+                else if (coordinate.Item == CoordinateItem.DeuteriumCloud)
+                {
+                    coordinate.Object = new DeuteriumCloud(assigned);
+                }
+            }
+        }
+
+        private int GetSettingOrDefault(string key, int defaultValue)
+        {
+            try
+            {
+                return this.Config?.GetSetting<int>(key) ?? defaultValue;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        private bool GetBoolSettingOrDefault(string key, bool defaultValue)
+        {
+            try
+            {
+                return this.Config?.GetSetting<bool>(key) ?? defaultValue;
+            }
+            catch
+            {
+                try
+                {
+                    return (this.Config?.GetSetting<int>(key) ?? (defaultValue ? 1 : 0)) != 0;
+                }
+                catch
+                {
+                    return defaultValue;
+                }
+            }
         }
 
         public IEnumerable<Coordinate> AddStarbases()
@@ -916,7 +1169,16 @@ namespace StarTrek_KG.Playfield
         /// <param name="map"></param>
         public void RemovePlayership(IMap map)
         {
-            map.Playership.Coordinate.Item = CoordinateItem.Empty;
+            var coordinate = map.Playership.Coordinate;
+            if (coordinate?.Object is GaseousAnomaly)
+            {
+                coordinate.Item = CoordinateItem.GaseousAnomaly;
+            }
+            else if (coordinate != null)
+            {
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
+            }
         }
 
         /// <summary>

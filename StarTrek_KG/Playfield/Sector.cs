@@ -371,6 +371,14 @@ namespace StarTrek_KG.Playfield
                 };
                 newlyCreatedSector.Object = mine;
             }
+            else if (itemToPopulate == CoordinateItem.GaseousAnomaly)
+            {
+                newlyCreatedSector.Item = CoordinateItem.GaseousAnomaly;
+                newlyCreatedSector.Object = new GaseousAnomaly
+                {
+                    Coordinate = newlyCreatedSector
+                };
+            }
             else
             {
                 newlyCreatedSector.Item = itemToPopulate;
@@ -692,6 +700,11 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public IEnumerable<LRSResult> GetLRSFullData(Location location, IGame game)
         {
+            return this.GetLRSFullData(location, game, 3);
+        }
+
+        public IEnumerable<LRSResult> GetLRSFullData(Location location, IGame game, int gridSize)
+        {
             bool currentlyInNebula = location.Sector.Type == SectorType.Nebulae;
 
             //todo: rewrite scanning method. this one is not very clear.
@@ -710,23 +723,28 @@ namespace StarTrek_KG.Playfield
             //+1 -1
             //+1 +1
 
+            if (gridSize < 1)
+            {
+                gridSize = 1;
+            }
+
+            if (gridSize % 2 == 0)
+            {
+                gridSize += 1;
+            }
+
             int locationX = location.Sector.X;
             int locationY = location.Sector.Y;
-            List<Sector> thisSectorAndThoseNextToThisOne = new List<Sector>
+            int half = gridSize / 2;
+            var thisSectorAndThoseNextToThisOne = new List<Sector>(gridSize * gridSize);
+
+            for (int y = locationY - half; y <= locationY + half; y++)
             {
-                // Row-major order: top-left to bottom-right, so current location is centered.
-                this.Item(currentlyInNebula, game, locationX - 1, locationY - 1),
-                this.Item(currentlyInNebula, game, locationX,     locationY - 1),
-                this.Item(currentlyInNebula, game, locationX + 1, locationY - 1),
-
-                this.Item(currentlyInNebula, game, locationX - 1, locationY),
-                this.Item(currentlyInNebula, game, locationX,     locationY),
-                this.Item(currentlyInNebula, game, locationX + 1, locationY),
-
-                this.Item(currentlyInNebula, game, locationX - 1, locationY + 1),
-                this.Item(currentlyInNebula, game, locationX,     locationY + 1),
-                this.Item(currentlyInNebula, game, locationX + 1, locationY + 1)
-            };
+                for (int x = locationX - half; x <= locationX + half; x++)
+                {
+                    thisSectorAndThoseNextToThisOne.Add(this.Item(currentlyInNebula, game, x, y));
+                }
+            }
 
             //build map
             IEnumerable<LRSResult> scanData = thisSectorAndThoseNextToThisOne.Select(this.GetSectorData).ToList();
@@ -824,6 +842,12 @@ namespace StarTrek_KG.Playfield
                 regionResult.Hostiles = null;
                 regionResult.Starbases = null;
                 regionResult.Stars = null;
+            }
+
+            if (region.Type != SectorType.GalacticBarrier && region.Coordinates != null)
+            {
+                regionResult.HasDeuterium = region.Coordinates.Any(c =>
+                    c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud);
             }
 
             return regionResult;

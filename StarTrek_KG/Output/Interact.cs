@@ -2072,7 +2072,14 @@ namespace StarTrek_KG.Output
         {
             if (Computer.For(playerShip).Damaged()) return this.Output.Queue.ToList();
 
-            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+            var menuCollection = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel");
+            if (menuCollection == null)
+            {
+                this.Output.WriteLine("Computer menu is not configured.");
+                return this.Output.Queue.ToList();
+            }
+
+            IEnumerable<MenuItemDef> menuItems = menuCollection.Cast<MenuItemDef>();
 
             Interaction.AddShipPanelOption(menuItems, Computer.CONTROL_PANEL);
 
@@ -2089,7 +2096,14 @@ namespace StarTrek_KG.Output
 
         private IEnumerable<string> DamageControlMenu(IShip playerShip)
         {
-            IEnumerable<MenuItemDef> menuItems = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel").Cast<MenuItemDef>();
+            var menuCollection = this.Config.GetMenuItems($"{this.Subscriber.PromptInfo.SubSystem}Panel");
+            if (menuCollection == null)
+            {
+                this.Output.WriteLine("Damage Control menu is not configured.");
+                return this.Output.Queue.ToList();
+            }
+
+            IEnumerable<MenuItemDef> menuItems = menuCollection.Cast<MenuItemDef>();
 
             Interaction.AddShipPanelOption(menuItems, DamageControl.DAMAGE_PANEL);
 

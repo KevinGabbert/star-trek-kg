@@ -269,6 +269,10 @@ namespace StarTrek_KG.Output
                         sb.Append(DEFAULTS.EMPTY);
                         break;
 
+                    case CoordinateItem.GaseousAnomaly:
+                        sb.Append(" ~ ");
+                        break;
+
                     case CoordinateItem.EnergyAnomaly:
                         var anomaly = sector.Object as EnergyAnomaly;
                         var glyph = anomaly?.Glyph;

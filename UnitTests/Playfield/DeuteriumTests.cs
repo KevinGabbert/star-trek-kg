@@ -33,7 +33,7 @@ namespace UnitTests.Playfield
             var result = irsData.Single(r => r.Point.X == 1 && r.Point.Y == 0);
 
             Assert.AreEqual(CoordinateItem.Deuterium, result.Item);
-            Assert.AreEqual("Deuterium", result.ToScanString());
+            Assert.AreEqual("Deuterium (10)", result.ToScanString());
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace UnitTests.Playfield
             var shipLocation = _setup.TestMap.Playership.GetLocation();
             var irsData = shipLocation.Sector.GetIRSFullData(shipLocation, _setup.Game);
             var result = irsData.Single(r => r.Point.X == 1 && r.Point.Y == 0);
-            Assert.AreEqual("Deuterium Cloud", result.ToScanString());
+            Assert.AreEqual("Deuterium Cloud (25)", result.ToScanString());
 
             var startingEnergy = _setup.TestMap.Playership.Energy;
             var newLocation = new Location(activeSector, targetCoordinate);

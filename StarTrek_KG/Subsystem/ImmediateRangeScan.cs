@@ -34,6 +34,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.ShipConnectedTo.OutputLine("");
+            this.OutputNebulaDegradationMessageIfNeeded();
 
             return this.ShipConnectedTo.OutputQueue();
         }
@@ -72,8 +73,17 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.ShipConnectedTo.OutputLine("");
+            this.OutputNebulaDegradationMessageIfNeeded();
 
             return this.ShipConnectedTo.OutputQueue();
+        }
+
+        private void OutputNebulaDegradationMessageIfNeeded()
+        {
+            if (this.ShipConnectedTo?.GetSector()?.Type == SectorType.Nebulae)
+            {
+                this.ShipConnectedTo.OutputLine("Due to nebula interference, immediate scans are degraded.");
+            }
         }
 
         private IEnumerable<string> RunFullSectorIRSScan(Location shipLocation, string title)

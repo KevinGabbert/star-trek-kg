@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
+using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
+using StarTrek_KG.Config.Collections;
+using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
+using StarTrek_KG.Types;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.Playfield
 {
@@ -51,9 +56,182 @@ namespace UnitTests.Playfield
             Assert.GreaterOrEqual(mineCount, 1);
         }
 
+        [Test]
+        public void DeuteriumClouds_Respect_Minimum_Per_Cell_Amount()
+        {
+            var overrides = new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"DeuteriumSectorPercent", "0"},
+                {"DeuteriumCloudSectorPercent", "100"},
+                {"DeuteriumCloudMinSize", "2"},
+                {"DeuteriumCloudMaxSize", "2"},
+                {"DeuteriumCloudPointMin", "50"}
+            });
+
+            var game = new Game(overrides, new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                AddDeuterium = true,
+                AddGraviticMines = false,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(0,0)), CoordinateItem.PlayerShip)
+                }
+            });
+
+            var cloudCells = game.Map.Sectors
+                .SelectMany(s => s.Coordinates)
+                .Where(c => c.Item == CoordinateItem.DeuteriumCloud)
+                .ToList();
+
+            Assert.IsNotEmpty(cloudCells);
+            Assert.That(cloudCells.All(c => ((DeuteriumCloud)c.Object).Amount >= 50));
+        }
+
+        [Test]
+        public void DeuteriumSectors_Have_Total_Within_Configured_Sector_Budget()
+        {
+            var overrides = new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"DeuteriumSectorPercent", "100"},
+                {"DeuteriumCloudSectorPercent", "0"},
+                {"DeuteriumSectorTotalMin", "200"},
+                {"DeuteriumSectorTotalMax", "800"}
+            });
+
+            var game = new Game(overrides, new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                AddDeuterium = true,
+                AddGraviticMines = false,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(0,0)), CoordinateItem.PlayerShip)
+                }
+            });
+
+            var sectorsWithDeuterium = game.Map.Sectors
+                .Where(s => s.Coordinates.Any(c => c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud))
+                .ToList();
+
+            Assert.IsNotEmpty(sectorsWithDeuterium);
+
+            foreach (var sector in sectorsWithDeuterium)
+            {
+                var total = sector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud)
+                    .Sum(c =>
+                    {
+                        if (c.Item == CoordinateItem.Deuterium)
+                        {
+                            return (c.Object as Deuterium)?.Amount ?? 0;
+                        }
+
+                        return (c.Object as DeuteriumCloud)?.Amount ?? 0;
+                    });
+
+                Assert.GreaterOrEqual(total, 200, $"Sector [{sector.X},{sector.Y}] deuterium total below minimum.");
+                Assert.LessOrEqual(total, 800, $"Sector [{sector.X},{sector.Y}] deuterium total above maximum.");
+            }
+        }
+
+        [Test]
+        public void DeuteriumSectorSpawnPercent_Config_Controls_Deuterium_Frequency()
+        {
+            var overrides = new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"DeuteriumSectorSpawnPercent", "100"},
+                {"DeuteriumSectorPercent", "0"},
+                {"DeuteriumCloudSectorPercent", "0"},
+                {"DeuteriumSectorTotalMin", "200"},
+                {"DeuteriumSectorTotalMax", "200"}
+            });
+
+            var game = new Game(overrides, new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                AddDeuterium = true,
+                AddGraviticMines = false,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(0,0)), CoordinateItem.PlayerShip)
+                }
+            });
+
+            var sectorsWithDeuterium = game.Map.Sectors.Count(s => s.Coordinates.Any(c => c.Item == CoordinateItem.Deuterium));
+            Assert.Greater(sectorsWithDeuterium, 0);
+        }
+
+        [Test]
+        public void Mines_Are_Not_Added_To_Starbase_Sectors_When_Config_Disables_It()
+        {
+            var overrides = new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"AllowMinesInStarbaseSectors", "false"}
+            });
+
+            var game = new Game(overrides, new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                AddDeuterium = false,
+                AddGraviticMines = true,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(0,0)), CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(1,0)), CoordinateItem.HostileShip),
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(2,0)), CoordinateItem.Starbase)
+                }
+            });
+
+            var sector = game.Map.Sectors[new Point(0, 0)];
+            var mineCount = sector.Coordinates.Count(c => c.Item == CoordinateItem.GraviticMine);
+            Assert.AreEqual(0, mineCount);
+        }
+
+        [Test]
+        public void Mines_Can_Be_Added_To_Starbase_Sectors_When_Config_Enables_It()
+        {
+            var overrides = new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"AllowMinesInStarbaseSectors", "true"}
+            });
+
+            var game = new Game(overrides, new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                AddDeuterium = false,
+                AddGraviticMines = true,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(0,0)), CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(1,0)), CoordinateItem.HostileShip),
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(2,0)), CoordinateItem.Starbase)
+                }
+            });
+
+            var sector = game.Map.Sectors[new Point(0, 0)];
+            var mineCount = sector.Coordinates.Count(c => c.Item == CoordinateItem.GraviticMine);
+            Assert.GreaterOrEqual(mineCount, 1);
+        }
+
         private sealed class ConfigOverrideSettings : IStarTrekKGSettings
         {
-            private readonly IStarTrekKGSettings _inner = new StarTrekKGSettings();
+            private readonly StarTrekKGSettings _inner = new StarTrekKGSettings();
             private readonly IDictionary<string, string> _overrideValues;
 
             public ConfigOverrideSettings(IDictionary<string, string> overrideValues)
@@ -61,28 +239,20 @@ namespace UnitTests.Playfield
                 _overrideValues = overrideValues ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             }
 
-            public string SettingsFileName { get => _inner.SettingsFileName; set => _inner.SettingsFileName = value; }
-            public bool ConfigError { get => _inner.ConfigError; set => _inner.ConfigError = value; }
-            public System.Configuration.Configuration Get { get => _inner.Get; set => _inner.Get = value; }
-            public string CurrentPrompt { get => _inner.CurrentPrompt; set => _inner.CurrentPrompt = value; }
-            public List<string> NameHeaders => _inner.NameHeaders;
-            public List<string> NameValues => _inner.NameValues;
-            public List<string> SeverityValues => _inner.SeverityValues;
-            public string HostileRegistryAndTypeClasses => _inner.HostileRegistryAndTypeClasses;
-            public List<string> HostileFactionThreats => _inner.HostileFactionThreats;
-            public bool IsError() => _inner.IsError();
-            public string Setting(string settingName) => this.GetSetting<string>(settingName);
+            public StarTrekKGSettings Get { get => _inner.Get; set => _inner.Get = value; }
+            public Names StarSystems => _inner.StarSystems;
+            public NameValues ConsoleText => _inner.ConsoleText;
+            public Factions Factions => _inner.Factions;
+            public NameValues GameSettings => _inner.GameSettings;
+            public MenusElement Menus => _inner.Menus;
+            public List<CommandDef> LoadCommands() => _inner.LoadCommands();
+            public StarTrekKGSettings GetConfig() => _inner.GetConfig();
+            public List<string> ShipNames(FactionName faction) => _inner.ShipNames(faction);
+            public List<FactionThreat> GetThreats(FactionName faction) => _inner.GetThreats(faction);
+            public MenuItems GetMenuItems(string menuName) => _inner.GetMenuItems(menuName);
+            public List<string> GetStarSystems() => _inner.GetStarSystems();
             public string GetText(string name) => _inner.GetText(name);
-            public string GetSetting(string name) => this.GetSetting<string>(name);
-            public string Mission() => _inner.Mission();
-            public List<string> ShipNames(StarTrek_KG.TypeSafeEnums.FactionName stockBaddieFaction) => _inner.ShipNames(stockBaddieFaction);
-            public List<string> SectorNames() => _inner.SectorNames();
-            public StarTrek_KG.Config.Collections.MenuItems GetMenuItems(string submenuName) => _inner.GetMenuItems(submenuName);
-            public StarTrek_KG.Config.Collections.CommandCollection GetCommands() => _inner.GetCommands();
-            public StarTrek_KG.Config.Collections.FactionThreats GetFactionThreats() => _inner.GetFactionThreats();
-            public List<string> RegistryAndTypeClasses(StarTrek_KG.TypeSafeEnums.FactionName stockBaddieFaction) => _inner.RegistryAndTypeClasses(stockBaddieFaction);
-            public void VerifyNameInConfig(string nameToVerify) => _inner.VerifyNameInConfig(nameToVerify);
-            public void RemoveConfigSetting(string settingToDelete) => _inner.RemoveConfigSetting(settingToDelete);
+            public string GetText(string textToGet, string textToGet2) => _inner.GetText(textToGet, textToGet2);
             public T GetSetting<T>(string name)
             {
                 if (_overrideValues.TryGetValue(name, out var value))
@@ -92,9 +262,9 @@ namespace UnitTests.Playfield
 
                 return _inner.GetSetting<T>(name);
             }
-            public System.Configuration.Configuration GetConfig() => _inner.GetConfig();
-            public string ToString(ICollection<string> collectionToString) => _inner.ToString(collectionToString);
-            public string NamesToString() => _inner.NamesToString();
+            public string Setting(string name) => this.GetSetting<string>(name);
+            public T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false) => _inner.CheckAndCastValue<T>(name, element, whiteSpaceIsOk);
+            public void Reset() => _inner.Reset();
         }
     }
 }

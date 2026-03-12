@@ -274,3 +274,4 @@ __pycache__/
 # tools/**
 # !tools/packages.config
 /.dotnet/.dotnet
+/.dotnet_home/.dotnet

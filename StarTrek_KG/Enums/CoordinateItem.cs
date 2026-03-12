@@ -12,6 +12,7 @@ namespace StarTrek_KG.Enums
         Deuterium,
         DeuteriumCloud,
         GraviticMine,
+        GaseousAnomaly,
         EnergyAnomaly,
         Debug
     };

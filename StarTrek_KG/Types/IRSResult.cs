@@ -39,15 +39,23 @@ namespace StarTrek_KG.Types
                     break;
 
                 case CoordinateItem.Deuterium:
-                    returnVal = "Deuterium";
+                    var deuterium = this.Object as Deuterium;
+                    var deuteriumAmount = deuterium?.Amount ?? 0;
+                    returnVal = $"Deuterium ({deuteriumAmount})";
                     break;
 
                 case CoordinateItem.DeuteriumCloud:
-                    returnVal = "Deuterium Cloud";
+                    var deuteriumCloud = this.Object as DeuteriumCloud;
+                    var cloudAmount = deuteriumCloud?.Amount ?? 0;
+                    returnVal = $"Deuterium Cloud ({cloudAmount})";
                     break;
 
                 case CoordinateItem.GraviticMine:
                     returnVal = "Gravitic Mine";
+                    break;
+
+                case CoordinateItem.GaseousAnomaly:
+                    returnVal = "Gaseous Anomaly";
                     break;
 
                 case CoordinateItem.PlayerShip:

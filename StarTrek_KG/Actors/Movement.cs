@@ -40,7 +40,7 @@ namespace StarTrek_KG.Actors
             lastSectorY = playershipSector.Y;
             lastSectorX = playershipSector.X;
 
-            Coordinate.GetFrom(this.ShipConnectedTo).Item = CoordinateItem.Empty; //Clear Old Coordinate
+            this.ClearOrRestoreCurrentCoordinate();
 
             IGame game = this.ShipConnectedTo.Map.Game;
 
@@ -153,7 +153,17 @@ namespace StarTrek_KG.Actors
                 }
                 else
                 {
+                    var targetCoordinate = newLocation?.Sector?.Coordinates?.GetNoError(
+                        new Point(newLocation.Coordinate.X, newLocation.Coordinate.Y));
+                    var hitGaseousAnomaly = targetCoordinate?.Item == CoordinateItem.GaseousAnomaly;
                     this.ShipConnectedTo.Map.SetPlayershipInLocation(travellingShip, this.ShipConnectedTo.Map, newLocation);
+
+                    if (hitGaseousAnomaly)
+                    {
+                        this.ApplyGaseousAnomalyTravelPenalty();
+                        this.ShipConnectedTo.OutputLine("Gaseous anomaly encountered. Impulse movement halted.");
+                        break;
+                    }
                 }
             }
         }
@@ -170,36 +180,32 @@ namespace StarTrek_KG.Actors
         /// <returns></returns>
         private bool SublightObstacleCheck(IPoint lastSector, IPoint sector, Coordinates activeSectors)
         {
-            //todo:  I think I destroyed a star and appeared in its place when navigating to a new Sector.  (That or LRS is broken, or maybe it is working fine!)
-            try
-            {
-                ICoordinate mySector = this.ShipConnectedTo.Coordinate;
-                CoordinateItem currentItem = activeSectors[sector.X, sector.Y].Item;
-                ICoordinateObject currentObject = activeSectors[sector.X, sector.Y].Object;
+            ICoordinate mySector = this.ShipConnectedTo.Coordinate;
+            CoordinateItem currentItem = activeSectors[sector.X, sector.Y].Item;
+            ICoordinateObject currentObject = activeSectors[sector.X, sector.Y].Object;
 
-                if (currentItem != CoordinateItem.Empty)
+            if (currentItem != CoordinateItem.Empty)
+            {
+                if (currentItem == CoordinateItem.Deuterium ||
+                    currentItem == CoordinateItem.DeuteriumCloud ||
+                    currentItem == CoordinateItem.GraviticMine ||
+                    currentItem == CoordinateItem.GaseousAnomaly ||
+                    currentItem == CoordinateItem.EnergyAnomaly)
                 {
-                    if (currentItem == CoordinateItem.Deuterium || currentItem == CoordinateItem.DeuteriumCloud)
-                    {
-                        return false;
-                    }
-
-                    mySector.X = lastSector.X;
-                    mySector.Y = lastSector.Y;
-
-                    //todo: move this to XXX label.  run tests.  should work.
-                    activeSectors[mySector.X, mySector.Y].Item = CoordinateItem.PlayerShip;
-
-                    this.IdentifyObstacle(sector, currentObject, currentItem);
-
-                    this.BlockedByObstacle = true;
-
-                    return true;
+                    return false;
                 }
-            }
-            catch
-            {
-                //Console.Write("error while checking for obstacle.");
+
+                mySector.X = lastSector.X;
+                mySector.Y = lastSector.Y;
+
+                //todo: move this to XXX label.  run tests.  should work.
+                activeSectors[mySector.X, mySector.Y].Item = CoordinateItem.PlayerShip;
+
+                this.IdentifyObstacle(sector, currentObject, currentItem);
+
+                this.BlockedByObstacle = true;
+
+                return true;
             }
 
             return false;
@@ -207,32 +213,53 @@ namespace StarTrek_KG.Actors
 
         private void IdentifyObstacle(IPoint sector, ICoordinateObject currentObject, CoordinateItem currentItem)
         {
-            //todo: this will go away when ".item" is removed
-            if (currentObject == null)
-            {
-                throw new ArgumentException("SectorObject not set.");
-            }
-
             switch (currentItem)
             {
                 case CoordinateItem.Star:
                     ICoordinateObject star = currentObject;
                     this.SystemPrompt.Line($"Stellar body {star?.Name?.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.SystemPrompt.Line("Collision with a stellar body resulted in catastrophic destruction.");
+                    this.ShipConnectedTo.Energy = 0;
+                    this.ShipConnectedTo.Destroyed = true;
                     break;
 
                 case CoordinateItem.HostileShip:
                     ICoordinateObject hostile = currentObject;
                     this.SystemPrompt.Line($"Ship {hostile?.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.ApplyCollisionDamage("HostileCollisionDamage", 350, "Collision with hostile ship caused severe hull damage.");
                     break;
 
 
                 case CoordinateItem.Starbase:
                     this.SystemPrompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.ApplyCollisionDamage("StarbaseCollisionDamage", 900, "Collision with starbase caused massive structural damage.");
                     break;
 
                 default:
                     this.SystemPrompt.Line($"Detected an unidentified obstacle while navigating at sector: [{sector.X},{sector.Y}]");
                     break;
+            }
+        }
+
+        private void ApplyCollisionDamage(string configName, int defaultDamage, string damageMessage)
+        {
+            int damage = defaultDamage;
+            try
+            {
+                damage = this.ShipConnectedTo?.Map?.Game?.Config?.GetSetting<int>(configName) ?? defaultDamage;
+            }
+            catch
+            {
+                damage = defaultDamage;
+            }
+
+            this.ShipConnectedTo.OutputLine($"{damageMessage} Damage: {damage}.");
+            this.ShipConnectedTo.Energy -= damage;
+
+            if (this.ShipConnectedTo.Energy <= 0)
+            {
+                this.ShipConnectedTo.Energy = 0;
+                this.ShipConnectedTo.Destroyed = true;
             }
         }
 
@@ -257,6 +284,18 @@ namespace StarTrek_KG.Actors
                 this.ShipConnectedTo.Energy = 0;
                 this.ShipConnectedTo.Destroyed = true;
             }
+        }
+
+        private void ApplyGaseousAnomalyTravelPenalty()
+        {
+            var map = this.ShipConnectedTo?.Map;
+            if (map == null)
+            {
+                return;
+            }
+
+            map.timeRemaining--;
+            map.Stardate++;
         }
 
         #endregion
@@ -397,8 +436,15 @@ namespace StarTrek_KG.Actors
             else
             {
                 //todo: how we gonna check for obstacles if scanresult has bad numbers in it?
+                var travellingCoordinate = travellingShip?.Coordinate ?? this.ShipConnectedTo?.Coordinate;
+                if (travellingCoordinate == null)
+                {
+                    stopNavigation = true;
+                    return null;
+                }
+
                 bool obstacleEncountered = this.SublightObstacleCheck(
-                    new Point(travellingShip.Coordinate.X, travellingShip.Coordinate.Y),
+                    new Point(travellingCoordinate.X, travellingCoordinate.Y),
                     new Point(newCoordinate.X, newCoordinate.Y),
                     currentSector.Coordinates
                 );
@@ -551,6 +597,25 @@ namespace StarTrek_KG.Actors
         private void GoDown(ref int y)
         {
             y++;
+        }
+
+        private void ClearOrRestoreCurrentCoordinate()
+        {
+            var currentCoordinate = Coordinate.GetFrom(this.ShipConnectedTo);
+            if (currentCoordinate == null)
+            {
+                return;
+            }
+
+            if (currentCoordinate.Object is GaseousAnomaly)
+            {
+                currentCoordinate.Item = CoordinateItem.GaseousAnomaly;
+            }
+            else
+            {
+                currentCoordinate.Item = CoordinateItem.Empty;
+                currentCoordinate.Object = null;
+            }
         }
     }
 } 
