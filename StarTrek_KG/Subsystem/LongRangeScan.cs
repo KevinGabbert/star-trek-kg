@@ -144,6 +144,7 @@ namespace StarTrek_KG.Subsystem
                 sectorResult.Hostiles = sectorToScan.GetHostiles().Count;
                 sectorResult.Starbases = sectorToScan.GetStarbaseCount();
                 sectorResult.Stars = sectorToScan.GetStarCount();
+                sectorResult.FeatureMask = GetSectorFeatureMask(sectorToScan);
                 sectorResult.HasDeuterium = sectorToScan.Coordinates != null &&
                                             sectorToScan.Coordinates.Any(c =>
                                                 c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud);
@@ -170,6 +171,7 @@ namespace StarTrek_KG.Subsystem
                 sectorResult.Hostiles = sectorToScan.GetHostiles().Count;
                 sectorResult.Starbases = sectorToScan.GetStarbaseCount();
                 sectorResult.Stars = sectorToScan.GetStarCount();
+                sectorResult.FeatureMask = GetSectorFeatureMask(sectorToScan);
                 sectorResult.HasDeuterium = sectorToScan.Coordinates != null &&
                                             sectorToScan.Coordinates.Any(c =>
                                                 c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud);
@@ -201,6 +203,53 @@ namespace StarTrek_KG.Subsystem
         public new static LongRangeScan For(IShip ship)
         {
             return (LongRangeScan)SubSystem_Base.For(ship, SubsystemType.LongRangeScan);
+        }
+
+        private static LrsFeatureMask GetSectorFeatureMask(Sector sectorToScan)
+        {
+            if (sectorToScan?.Coordinates == null)
+            {
+                return LrsFeatureMask.None;
+            }
+
+            var mask = LrsFeatureMask.None;
+
+            if (sectorToScan.Coordinates.Any(c => c.Item == CoordinateItem.Starbase))
+            {
+                mask |= LrsFeatureMask.Starbase;
+            }
+
+            if (sectorToScan.Coordinates.Any(c => c.Item == CoordinateItem.Wormhole))
+            {
+                mask |= LrsFeatureMask.Wormhole;
+            }
+
+            if (sectorToScan.Coordinates.Any(c => c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud))
+            {
+                mask |= LrsFeatureMask.Deuterium;
+            }
+
+            if (sectorToScan.Coordinates.Any(c => c.Item == CoordinateItem.TemporalRift))
+            {
+                mask |= LrsFeatureMask.TemporalRift;
+            }
+
+            if (sectorToScan.Coordinates.Any(c => c.Item == CoordinateItem.TechnologyCache))
+            {
+                mask |= LrsFeatureMask.TechnologyCache;
+            }
+
+            if (sectorToScan.Coordinates.Any(c =>
+                    c.Item == CoordinateItem.GraviticMine ||
+                    c.Item == CoordinateItem.GaseousAnomaly ||
+                    c.Item == CoordinateItem.SporeField ||
+                    c.Item == CoordinateItem.BlackHole ||
+                    c.Item == CoordinateItem.EnergyAnomaly))
+            {
+                mask |= LrsFeatureMask.Hazard;
+            }
+
+            return mask;
         }
     }
 }

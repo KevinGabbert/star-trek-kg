@@ -21,6 +21,7 @@ namespace StarTrek_KG.Types
         public int? Starbases { get; set; }
         public int? Stars { get; set; }
         public bool HasDeuterium { get; set; }
+        public LrsFeatureMask FeatureMask { get; set; }
 
         public override string ToString()
         {
@@ -39,7 +40,7 @@ namespace StarTrek_KG.Types
         {
             string returnVal = null;
 
-            returnVal = $"{this.Hostiles.GetValueOrDefault(0)} · {this.Starbases.GetValueOrDefault(0)} · {this.Stars.GetValueOrDefault(0)}";
+            returnVal = $"{this.Hostiles.GetValueOrDefault(0)} ï¿½ {this.Starbases.GetValueOrDefault(0)} ï¿½ {this.Stars.GetValueOrDefault(0)}";
 
             return returnVal;
         }

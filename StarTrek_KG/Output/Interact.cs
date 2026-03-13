@@ -352,33 +352,14 @@ namespace StarTrek_KG.Output
             }
             else
             {
-                currentSectorResult += dataPoint;
-                currentSectorResult = CompactLrsCounts(currentSectorResult);
-
-                var sectorHasWormhole = dataPoint.Point != null &&
-                                        !dataPoint.GalacticBarrier &&
-                                        game.Map?.Sectors != null &&
-                                        game.Map.Sectors.Any(s => s.X == dataPoint.Point.X && s.Y == dataPoint.Point.Y &&
-                                                                  s.Coordinates != null &&
-                                                                  s.Coordinates.Any(c => c.Item == CoordinateItem.Wormhole));
-                if (sectorHasWormhole)
+                if (dataPoint is LRSResult lrsResult)
                 {
-                    string marker;
-                    try
-                    {
-                        marker = game.Config.GetSetting<string>("WormholeChar");
-                    }
-                    catch
-                    {
-                        marker = "∞";
-                    }
-
-                    if (string.IsNullOrWhiteSpace(marker))
-                    {
-                        marker = "∞";
-                    }
-
-                    currentSectorResult += marker.Trim();
+                    currentSectorResult = RenderCompactLrsCell(game.Config, lrsResult);
+                }
+                else
+                {
+                    currentSectorResult += dataPoint;
+                    currentSectorResult = CompactLrsCounts(currentSectorResult);
                 }
             }
 
@@ -404,6 +385,14 @@ namespace StarTrek_KG.Output
 
             scanColumn++;
             return currentLRSScanLine;
+        }
+
+        private static string RenderCompactLrsCell(IStarTrekKGSettings config, LRSResult result)
+        {
+            var hostiles = EncodeCompactCount(result.Hostiles.GetValueOrDefault(0));
+            var stars = EncodeCompactCount(result.Stars.GetValueOrDefault(0));
+            var features = EncodeFeatureMask(config, result.FeatureMask);
+            return string.Concat(hostiles, stars, features);
         }
 
         private static string CompactLrsCounts(string currentSectorResult)
@@ -454,6 +443,41 @@ namespace StarTrek_KG.Output
             }
 
             return (char)('A' + alpha);
+        }
+
+        private static char EncodeFeatureMask(IStarTrekKGSettings config, LrsFeatureMask mask)
+        {
+            var alphabet = GetFeatureMaskAlphabet(config);
+            var index = (int)mask;
+            if (index < 0 || index >= alphabet.Length)
+            {
+                return '?';
+            }
+
+            return alphabet[index];
+        }
+
+        private static int DecodeFeatureMask(IStarTrekKGSettings config, char code)
+        {
+            return GetFeatureMaskAlphabet(config).IndexOf(code);
+        }
+
+        private static string GetFeatureMaskAlphabet(IStarTrekKGSettings config)
+        {
+            try
+            {
+                var configured = config.GetSetting<string>("LRSFeatureMaskAlphabet");
+                if (!string.IsNullOrWhiteSpace(configured))
+                {
+                    return configured.Trim();
+                }
+            }
+            catch
+            {
+                // Use fallback below.
+            }
+
+            return "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
         }
 
         //public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
@@ -515,6 +539,12 @@ namespace StarTrek_KG.Output
             }
 
             int longestText = Interaction.GetLongestScanText(data);
+            var longestFeatureText = data.OfType<LRSResult>()
+                .Where(r => r.FeatureMask != LrsFeatureMask.None)
+                .Select(r => (r.ToScanString()?.Length ?? 0) + 4)
+                .DefaultIfEmpty(longestText)
+                .Max();
+            longestText = Math.Max(longestText, longestFeatureText);
 
             var galacticBarrierText = this.Config.GetSetting<string>("GalacticBarrierText");
             var barrierID = galacticBarrierText;
@@ -614,6 +644,10 @@ namespace StarTrek_KG.Output
                 else
                 {
                     currentSectorResult += scanDataPoint.ToScanString();
+                    if (scanDataPoint is LRSResult lrsResultWithFeatures && lrsResultWithFeatures.FeatureMask != LrsFeatureMask.None)
+                    {
+                        currentSectorResult += $" [{EncodeFeatureMask(this.Config, lrsResultWithFeatures.FeatureMask)}]";
+                    }
                 }
 
                 if (scanRenderType == ScanRenderType.DoubleSingleLine && scanDataPoint.MyLocation)
@@ -902,6 +936,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  srs   Short range scan"));
                     retVal.AddRange(this.Output.WriteLine("  lrs   Long range scan"));
                     retVal.AddRange(this.Output.WriteLine("  crs   Combined range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  obj   Describe sector object types / decode compact LRS code"));
                     retVal.AddRange(this.Output.WriteLine(""));
                     retVal.AddRange(this.Output.WriteLine("WEAPONS"));
                     retVal.AddRange(this.Output.WriteLine("  pha   Phasers"));
@@ -979,6 +1014,230 @@ namespace StarTrek_KG.Output
             return this.EvalCommand(playerShip, userCommand);
         }
 
+        private IEnumerable<string> DecodeLrsFeatureMaskCommand(IShip playerShip)
+        {
+            var commandText = this.Subscriber.PromptInfo.RawCommandText ?? string.Empty;
+            var tokens = commandText
+                .Trim()
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (tokens.Length < 2)
+            {
+                this.Output.WriteLine("Usage: obj <feature code|sector name>");
+                this.Output.WriteLine("Examples: obj 7, obj G, obj Zane");
+                return this.Output.Queue.ToList();
+            }
+
+            var query = string.Join(" ", tokens.Skip(1));
+            var sector = this.ResolveSectorByName(playerShip?.Map, query);
+            if (sector != null)
+            {
+                return this.DecodeSectorFeatureMaskCommand(sector).ToList();
+            }
+
+            var code = query.Trim()[0];
+            var maskValue = DecodeFeatureMask(this.Config, code);
+            if (maskValue < 0)
+            {
+                this.Output.WriteLine($"Unknown feature code or sector: {query}");
+                return this.Output.Queue.ToList();
+            }
+
+            var mask = (LrsFeatureMask)maskValue;
+            var decoded = this.DecodeFeatureNames(mask).ToList();
+            if (decoded.Count == 0)
+            {
+                this.Output.WriteLine(this.GetFeatureName("LRSFeatureNameNone", "none"));
+                return this.Output.Queue.ToList();
+            }
+
+            this.Output.WriteLine(string.Join(" ", decoded));
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> DecodeSectorFeatureMaskCommand(Sector sector)
+        {
+            var featureMask = this.GetSectorFeatureMask(sector);
+            var featureCode = EncodeFeatureMask(this.Config, featureMask);
+            var decoded = this.DecodeFeatureNames(featureMask).ToList();
+
+            this.Output.WriteLine($"{sector.Name}: {featureCode} = {string.Join(" ", decoded.DefaultIfEmpty(this.GetFeatureName("LRSFeatureNameNone", "none")))}");
+
+            var hazards = this.GetSectorHazardNames(sector).ToList();
+            if (hazards.Count > 0)
+            {
+                this.Output.WriteLine($"{this.ColorizeHazardLabel("Hazards")}: {string.Join(", ", hazards)}");
+            }
+
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> DecodeFeatureNames(LrsFeatureMask mask)
+        {
+            if ((mask & LrsFeatureMask.Starbase) != 0)
+            {
+                yield return this.GetFeatureName("LRSFeatureNameStarbase", "starbase");
+            }
+
+            if ((mask & LrsFeatureMask.Wormhole) != 0)
+            {
+                yield return this.GetFeatureName("LRSFeatureNameWormhole", "wormhole");
+            }
+
+            if ((mask & LrsFeatureMask.Deuterium) != 0)
+            {
+                yield return this.GetFeatureName("LRSFeatureNameDeuterium", "deuterium");
+            }
+
+            if ((mask & LrsFeatureMask.TemporalRift) != 0)
+            {
+                yield return this.GetFeatureName("LRSFeatureNameTemporalRift", "temporal rift");
+            }
+
+            if ((mask & LrsFeatureMask.TechnologyCache) != 0)
+            {
+                yield return this.GetFeatureName("LRSFeatureNameTechnologyCache", "technology cache");
+            }
+
+            if ((mask & LrsFeatureMask.Hazard) != 0)
+            {
+                yield return this.ColorizeHazardLabel(this.GetFeatureName("LRSFeatureNameHazard", "hazard"));
+            }
+        }
+
+        private Sector ResolveSectorByName(IMap map, string query)
+        {
+            if (map?.Sectors == null || string.IsNullOrWhiteSpace(query))
+            {
+                return null;
+            }
+
+            var exactMatches = map.Sectors
+                .Where(s => s?.Name != null && string.Equals(s.Name, query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (exactMatches.Count == 1)
+            {
+                return exactMatches[0];
+            }
+
+            var partialMatches = map.Sectors
+                .Where(s => s?.Name != null && s.Name.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+
+            return partialMatches.Count == 1 ? partialMatches[0] : null;
+        }
+
+        private LrsFeatureMask GetSectorFeatureMask(Sector sector)
+        {
+            var mask = LrsFeatureMask.None;
+            if (sector?.Coordinates == null)
+            {
+                return mask;
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.Starbase))
+            {
+                mask |= LrsFeatureMask.Starbase;
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.Wormhole))
+            {
+                mask |= LrsFeatureMask.Wormhole;
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.Deuterium || c.Item == CoordinateItem.DeuteriumCloud))
+            {
+                mask |= LrsFeatureMask.Deuterium;
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.TemporalRift))
+            {
+                mask |= LrsFeatureMask.TemporalRift;
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.TechnologyCache))
+            {
+                mask |= LrsFeatureMask.TechnologyCache;
+            }
+
+            if (this.GetSectorHazardNames(sector).Any())
+            {
+                mask |= LrsFeatureMask.Hazard;
+            }
+
+            return mask;
+        }
+
+        private IEnumerable<string> GetSectorHazardNames(Sector sector)
+        {
+            if (sector?.Coordinates == null)
+            {
+                yield break;
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.GraviticMine))
+            {
+                yield return this.ColorizeHazardLabel(this.GetFeatureName("LRSFeatureNameGraviticMine", "gravitic mine"));
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.GaseousAnomaly))
+            {
+                yield return this.ColorizeHazardLabel(this.GetFeatureName("LRSFeatureNameGaseousAnomaly", "gaseous anomaly"));
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.SporeField))
+            {
+                yield return this.ColorizeHazardLabel(this.GetFeatureName("LRSFeatureNameSporeField", "spore field"));
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.BlackHole))
+            {
+                yield return this.ColorizeHazardLabel(this.GetFeatureName("LRSFeatureNameBlackHole", "black hole"));
+            }
+
+            if (sector.Coordinates.Any(c => c.Item == CoordinateItem.EnergyAnomaly))
+            {
+                yield return this.ColorizeHazardLabel(this.GetFeatureName("LRSFeatureNameEnergyAnomaly", "energy anomaly"));
+            }
+        }
+
+        private string ColorizeHazardLabel(string text)
+        {
+            try
+            {
+                var color = this.Config.GetSetting<string>("LRSFeatureHazardColor");
+                if (!string.IsNullOrWhiteSpace(color))
+                {
+                    return $"[[;{color.Trim()};]{text}]";
+                }
+            }
+            catch
+            {
+                // Fall back below.
+            }
+
+            return text;
+        }
+
+        private string GetFeatureName(string configKey, string fallback)
+        {
+            try
+            {
+                var configured = this.Config.GetSetting<string>(configKey);
+                if (!string.IsNullOrWhiteSpace(configured))
+                {
+                    return configured.Trim();
+                }
+            }
+            catch
+            {
+                // Fall back below.
+            }
+
+            return fallback;
+        }
+
         private List<string> EvalCommand(IShip playerShip, string userCommand)
         {
             List<string> retVal;
@@ -1036,6 +1295,7 @@ namespace StarTrek_KG.Output
                 "srs = Short Range Scan",
                 "lrs = Long Range Scan",
                 "crs = Combined Range Scan",
+                "obj = Describe sector object types / decode compact LRS code",
                 "-----------------------------",
                 "pha = Phaser Control",
                 "tor = Photon Torpedo Control",
@@ -1219,6 +1479,10 @@ namespace StarTrek_KG.Output
                 {
                     concretePlayer.TacticsManualUses++;
                 }
+            }
+            else if (menuCommand == Menu.obj.ToString())
+            {
+                retVal = this.DecodeLrsFeatureMaskCommand(playerShip).ToList();
             }
             else
             {
