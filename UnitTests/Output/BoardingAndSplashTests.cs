@@ -74,10 +74,12 @@ namespace UnitTests.Output
             var output = _interact.ReadAndOutput(player, _game.Map.Text, "brd");
 
             Assert.IsTrue(output.Any(l => l.Contains("Boarding successful")));
-            Assert.IsTrue(output.Any(l => l.Contains("Prisoners transferred")));
-            Assert.AreEqual(0, _game.Map.Sectors.GetActive().GetHostiles().Count);
-            Assert.GreaterOrEqual(player.Energy, startEnergy + 250);
-            Assert.AreEqual(startTorpedoes + 4, Torpedoes.For(player).Count);
+            Assert.IsTrue(output.Any(l => l.Contains("Captured hostile crew")));
+            Assert.AreEqual(1, _game.Map.Sectors.GetActive().GetHostiles().Count);
+            Assert.Greater(player.Energy, startEnergy);
+            Assert.Greater(Torpedoes.For(player).Count, startTorpedoes);
+            Assert.Less(hostile.Energy, 250);
+            Assert.Less(Torpedoes.For(hostile).Count, 4);
             Assert.Greater(player.Prisoners, 0);
         }
 

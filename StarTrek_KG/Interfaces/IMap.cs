@@ -60,6 +60,9 @@ namespace StarTrek_KG.Interfaces
         void RemoveAllDestroyedShips(IMap map, IEnumerable<IShip> destroyedShips);
         void RemoveDestroyedShipsAndScavenge(List<IShip> destroyedShips);
         void RemoveTargetFromSector(IMap map, IShip ship);
+        IEnumerable<Ship> GetPlayerFleetShips();
+        void PromoteToPlayership(Ship ship);
+        void BringPlayerFleetToSector(Sector sector);
 
         ///// <summary>
         ///// Removes all friendlies fromevery sector in the entire map.

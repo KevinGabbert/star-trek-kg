@@ -948,6 +948,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  pha   Phasers"));
                     retVal.AddRange(this.Output.WriteLine("  tor   Photon torpedoes"));
                     retVal.AddRange(this.Output.WriteLine("  brd   Boarding action"));
+                    retVal.AddRange(this.Output.WriteLine("  tfg   Transfer flag to boarded ship"));
                     retVal.AddRange(this.Output.WriteLine("  tss   Target hostile subsystem"));
                     retVal.AddRange(this.Output.WriteLine("  toq   Target object in region"));
                     retVal.AddRange(this.Output.WriteLine(""));
@@ -1306,6 +1307,7 @@ namespace StarTrek_KG.Output
                 "pha = Phaser Control",
                 "tor = Photon Torpedo Control",
                 "brd = Boarding Action",
+                "tfg = Transfer Flag",
                 "tss = Target Hostile Subsystem",
                 "toq = Target Object in this Sector",
                 "-----------------------------",
@@ -1425,6 +1427,10 @@ namespace StarTrek_KG.Output
             else if (string.Equals(menuCommand, "brd", StringComparison.OrdinalIgnoreCase))
             {
                 retVal = this.ExecuteBoardingAction(playerShip).ToList();
+            }
+            else if (string.Equals(menuCommand, "tfg", StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = this.ExecuteTransferFlagAction(playerShip).ToList();
             }
             else if (menuCommand == Menu.she.ToString())
             {
@@ -1760,7 +1766,7 @@ namespace StarTrek_KG.Output
             var target = adjacentHostiles.First();
             if (target.Faction == FactionName.Borg)
             {
-                this.Output.WriteLine("Boarding the Borg is not survivable. Retreat is advised.");
+                this.Output.WriteLine("Standard boarding cannot secure the Borg. Use tfg under rare Zip Bug conditions.");
                 return this.Output.Queue.ToList();
             }
 
@@ -1788,11 +1794,11 @@ namespace StarTrek_KG.Output
                 return this.Output.Queue.ToList();
             }
 
-            var energyCaptured = Math.Max(0, target.Energy);
+            var energyCaptured = Math.Max(0, target.Energy / 2);
             var torpedoesCaptured = 0;
             try
             {
-                torpedoesCaptured = Math.Max(0, Torpedoes.For(target).Count);
+                torpedoesCaptured = Math.Max(0, Torpedoes.For(target).Count / 2);
             }
             catch
             {
@@ -1801,8 +1807,11 @@ namespace StarTrek_KG.Output
 
             playerShip.Energy += energyCaptured;
             Torpedoes.For(playerShip).Count += torpedoesCaptured;
+            target.Energy = Math.Max(0, target.Energy - energyCaptured);
+            Torpedoes.For(target).Count = Math.Max(0, Torpedoes.For(target).Count - torpedoesCaptured);
 
-            var prisonersCaptured = Utility.Utility.Random.Next(1, 101);
+            var crewRoll = Utility.Utility.Random.Next(1, 7);
+            var prisonersCaptured = crewRoll * 10;
             var prisonerCap = this.GetSettingOrDefault("MaxPrisoners", 500);
             var acceptedPrisoners = prisonersCaptured;
             if (playerShip is Ship concretePlayer)
@@ -1812,16 +1821,74 @@ namespace StarTrek_KG.Output
                 concretePlayer.Prisoners += acceptedPrisoners;
             }
 
-            target.Destroyed = true;
-            playerShip.Map.RemoveTargetFromSector(playerShip.Map, target);
-
-            this.Output.WriteLine($"Boarding successful. Captured {energyCaptured} energy and {torpedoesCaptured} torpedoes from {target.Name}.");
-            this.Output.WriteLine($"Prisoners transferred to {playerShip.Name}: {acceptedPrisoners}.");
+            this.Output.WriteLine($"Boarding successful. Stole {energyCaptured} energy and {torpedoesCaptured} torpedoes from {target.Name}.");
+            this.Output.WriteLine($"Captured hostile crew on 1d6 roll {crewRoll}: {acceptedPrisoners} prisoners secured.");
             if (acceptedPrisoners < prisonersCaptured)
             {
                 this.Output.WriteLine($"Brig capacity reached. {prisonersCaptured - acceptedPrisoners} prisoners could not be transferred.");
             }
 
+            return this.Output.Queue.ToList();
+        }
+
+        private IEnumerable<string> ExecuteTransferFlagAction(IShip playerShip)
+        {
+            if (!(playerShip is Ship currentFlagship))
+            {
+                this.Output.WriteLine("No active flagship available.");
+                return this.Output.Queue.ToList();
+            }
+
+            var sector = currentFlagship.GetSector();
+            var adjacentShips = sector.Coordinates
+                .Where(c => c?.Object is Ship ship && ship != currentFlagship && !ship.Destroyed)
+                .Select(c => (Ship)c.Object)
+                .Where(ship =>
+                {
+                    var dx = Math.Abs(ship.Coordinate.X - currentFlagship.Coordinate.X);
+                    var dy = Math.Abs(ship.Coordinate.Y - currentFlagship.Coordinate.Y);
+                    return dx <= 1 && dy <= 1 && !(dx == 0 && dy == 0);
+                })
+                .OrderBy(ship => ship.Allegiance == Allegiance.GoodGuy ? 0 : 1)
+                .ThenBy(ship => Math.Abs(ship.Coordinate.X - currentFlagship.Coordinate.X) + Math.Abs(ship.Coordinate.Y - currentFlagship.Coordinate.Y))
+                .ThenBy(ship => ship.Name)
+                .ToList();
+
+            if (!adjacentShips.Any())
+            {
+                this.Output.WriteLine("No adjacent ship is available for flag transfer.");
+                return this.Output.Queue.ToList();
+            }
+
+            var target = adjacentShips.First();
+            if (target.Faction == FactionName.Borg)
+            {
+                if (!(playerShip.Map.Game is Game borgGame) || !borgGame.CanTransferFlagToBorg(playerShip, target))
+                {
+                    this.Output.WriteLine("Borg flag transfer requires a Zip Bug in =8 form to be present in this sector.");
+                    return this.Output.Queue.ToList();
+                }
+            }
+            else if (target.Allegiance == Allegiance.BadGuy)
+            {
+                if (!this.TargetWeaponsAreDown(target))
+                {
+                    this.Output.WriteLine($"Transfer denied. {target.Name} still has active weapons.");
+                    return this.Output.Queue.ToList();
+                }
+
+                var roll = Utility.Utility.Random.Next(1, 7);
+                var successRoll = this.GetSettingOrDefault("BoardingSuccessMinRoll", 4);
+                this.Output.WriteLine($"Flag transfer assault on {target.Name}: rolled {roll} on 1d6.");
+                if (roll < successRoll)
+                {
+                    this.Output.WriteLine("Transfer failed. Command staff could not secure the ship.");
+                    return this.Output.Queue.ToList();
+                }
+            }
+
+            playerShip.Map.PromoteToPlayership(target);
+            this.Output.WriteLine($"Command flag transferred to {target.Name}. {currentFlagship.Name} joins your fleet.");
             return this.Output.Queue.ToList();
         }
 

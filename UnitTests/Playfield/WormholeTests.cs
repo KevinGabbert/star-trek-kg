@@ -250,6 +250,35 @@ namespace UnitTests.Playfield
         }
 
         [Test]
+        public void Warp_Arrival_Into_Sector_With_Wormhole_At_Current_Coordinate_Does_Not_AutoTeleport()
+        {
+            var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"WormholeSectorPercent", "0"}
+            }));
+
+            var originSector = game.Map.Sectors[0, 0];
+            var warpDestination = game.Map.Sectors[1, 0];
+            var wormholeCoordinate = warpDestination.Coordinates[game.Map.Playership.Coordinate.X, game.Map.Playership.Coordinate.Y];
+            wormholeCoordinate.Item = CoordinateItem.Wormhole;
+            wormholeCoordinate.Object = new Wormhole
+            {
+                Coordinate = wormholeCoordinate,
+                DestinationSector = game.Map.Sectors[2, 0].GetPoint(),
+                PairId = 21
+            };
+
+            var movement = new Movement(game.Map.Playership);
+            movement.Execute(MovementType.Warp, NavDirection.Right, 1, out _, out _);
+
+            Assert.AreEqual(warpDestination.X, game.Map.Playership.Point.X);
+            Assert.AreEqual(warpDestination.Y, game.Map.Playership.Point.Y);
+            Assert.AreEqual(wormholeCoordinate.X, game.Map.Playership.Coordinate.X);
+            Assert.AreEqual(wormholeCoordinate.Y, game.Map.Playership.Coordinate.Y);
+            Assert.IsFalse(game.Map.Playership.OutputQueue().Any(line => line.Contains("Wormhole engaged")));
+        }
+
+        [Test]
         public void Wormhole_Transit_Fails_Gracefully_When_Destination_Sector_Has_No_Empty_Coordinate()
         {
             var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

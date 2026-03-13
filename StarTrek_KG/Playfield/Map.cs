@@ -1592,6 +1592,7 @@ namespace StarTrek_KG.Playfield
                 Energy = this.Config.GetSetting<int>("energy")
             };
             this.Playership.MaxEnergy = this.Playership.Energy;
+            this.Playership.InPlayerFleet = true;
 
             this.SetupPlayershipSector(playerShipDef);
 
@@ -1924,8 +1925,9 @@ namespace StarTrek_KG.Playfield
 
             var targetCoordinate = activeSector.Coordinates[map.Playership.Coordinate.X, map.Playership.Coordinate.Y];
             this.ConsumeDeuteriumIfPresent(map.Playership, targetCoordinate);
-            var newActiveSector = targetCoordinate.Item = CoordinateItem.PlayerShip;
-            this.ResolveWormholeTransitIfPresent(map.Playership, targetCoordinate);
+            targetCoordinate.Item = CoordinateItem.PlayerShip;
+            targetCoordinate.Object = map.Playership;
+            this.BringPlayerFleetToSector(activeSector);
             (this.Game as Game)?.HandlePlayerSectorVisibilityChange(activeSector);
         }
 
@@ -1944,11 +1946,94 @@ namespace StarTrek_KG.Playfield
             Coordinate foundSector = this.LookupSector(shipToSet.GetSector(), newLocation);
             this.ConsumeDeuteriumIfPresent(shipToSet, foundSector);
             foundSector.Item = CoordinateItem.PlayerShip;
+            foundSector.Object = shipToSet;
 
             shipToSet.Point = new Point(newLocation.Sector.X, newLocation.Sector.Y);
             shipToSet.Coordinate = foundSector;
+            this.BringPlayerFleetToSector(newLocation.Sector);
             this.ResolveWormholeTransitIfPresent(shipToSet, foundSector);
             (this.Game as Game)?.HandlePlayerSectorVisibilityChange(newLocation.Sector);
+        }
+
+        public IEnumerable<Ship> GetPlayerFleetShips()
+        {
+            return this.Sectors?
+                       .SelectMany(s => s?.Coordinates ?? Enumerable.Empty<Coordinate>())
+                       .Where(c => c?.Object is Ship)
+                       .Select(c => (Ship)c.Object)
+                       .Where(ship => ship.InPlayerFleet && !ship.Destroyed)
+                       .Distinct()
+                   ?? Enumerable.Empty<Ship>();
+        }
+
+        public void PromoteToPlayership(Ship ship)
+        {
+            if (ship == null || this.Playership == null || ship == this.Playership)
+            {
+                return;
+            }
+
+            var previousFlagship = this.Playership;
+            previousFlagship.InPlayerFleet = true;
+            previousFlagship.Allegiance = Allegiance.GoodGuy;
+            ship.InPlayerFleet = true;
+            ship.Allegiance = Allegiance.GoodGuy;
+
+            if (previousFlagship.Coordinate != null)
+            {
+                previousFlagship.Coordinate.Item = CoordinateItem.FriendlyShip;
+                previousFlagship.Coordinate.Object = previousFlagship;
+            }
+
+            this.Playership = ship;
+            if (ship.Coordinate != null)
+            {
+                ship.Coordinate.Item = CoordinateItem.PlayerShip;
+                ship.Coordinate.Object = ship;
+            }
+
+            Navigation.For(previousFlagship).Docked = false;
+            Navigation.For(ship).Docked = false;
+        }
+
+        public void BringPlayerFleetToSector(Sector sector)
+        {
+            if (sector?.Coordinates == null || this.Playership == null)
+            {
+                return;
+            }
+
+            var fleetShips = this.GetPlayerFleetShips()
+                .Where(ship => ship != this.Playership)
+                .ToList();
+
+            foreach (var ship in fleetShips)
+            {
+                var currentSector = ship.GetSector();
+                var origin = currentSector?.Coordinates?.GetNoError(new Point(ship.Coordinate.X, ship.Coordinate.Y));
+                if (origin != null && origin.Object == ship)
+                {
+                    origin.Item = CoordinateItem.Empty;
+                    origin.Object = null;
+                }
+
+                var destination = sector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Empty)
+                    .OrderBy(c => Math.Abs(c.X - this.Playership.Coordinate.X) + Math.Abs(c.Y - this.Playership.Coordinate.Y))
+                    .ThenBy(_ => Utility.Utility.Random.Next())
+                    .FirstOrDefault();
+
+                if (destination == null)
+                {
+                    continue;
+                }
+
+                ship.Point = new Point(sector.X, sector.Y);
+                ship.Coordinate = destination;
+                destination.Item = CoordinateItem.FriendlyShip;
+                destination.Object = ship;
+                Navigation.For(ship).Docked = false;
+            }
         }
 
         private void ConsumeDeuteriumIfPresent(IShip shipToSet, Coordinate coordinate)
@@ -2018,6 +2103,7 @@ namespace StarTrek_KG.Playfield
                 if (bonus > 0 && shipToSet is Ship ship)
                 {
                     ship.MaxEnergy += bonus;
+                    ship.Energy = ship.MaxEnergy;
                     this.Write?.Line($"Technology cache recovered. Maximum energy capacity increased by {bonus}.");
                     this.Game?.AppendGameEventLog($"Item consumed: technology cache bonus={bonus} at coord [{coordinate.X},{coordinate.Y}]");
                 }

@@ -10,6 +10,7 @@ using StarTrek_KG.Config.Collections;
 using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
@@ -150,6 +151,30 @@ namespace UnitTests.Playfield
             var output = game.SubscriberSendAndGetResponse("srs");
 
             Assert.IsTrue(output.Any(line => line.Contains("#")));
+        }
+
+        [Test]
+        public void HostileForm_ZipBug_Renders_Full_Configured_Glyph_In_Srs()
+        {
+            var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"ZipBugCount", "0"},
+                {"ZipBugHostileGlyph", "+?+"}
+            }));
+
+            var sector = game.Map.Sectors.GetActive();
+            var zipBugCoordinate = sector.Coordinates[1, 0];
+            zipBugCoordinate.Item = CoordinateItem.ZipBug;
+            zipBugCoordinate.Object = new ZipBug
+            {
+                Coordinate = zipBugCoordinate,
+                Form = ZipBug.ZipBugForm.HostileMimic,
+                Name = "Regeneration"
+            };
+
+            var output = game.SubscriberSendAndGetResponse("srs");
+
+            Assert.IsTrue(output.Any(line => line.Contains("+?+")));
         }
 
         private static Game CreateGame(IStarTrekKGSettings settings)

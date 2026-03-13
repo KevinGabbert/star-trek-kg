@@ -3,7 +3,7 @@ using StarTrek_KG.Playfield;
 
 namespace StarTrek_KG.Types
 {
-    public class LRSResult: IScanResult
+    public class LRSResult : IScanResult
     {
         public string SectorName
         {
@@ -26,24 +26,13 @@ namespace StarTrek_KG.Types
 
         public override string ToString()
         {
-            string returnVal = null;
-
-            returnVal = $"{this.Hostiles.GetValueOrDefault(0)}{this.Starbases.GetValueOrDefault(0)}{this.Stars.GetValueOrDefault(0)}";
-
-            return returnVal;
+            return $"{this.Hostiles.GetValueOrDefault(0)}{this.Starbases.GetValueOrDefault(0)}{this.Stars.GetValueOrDefault(0)}";
         }
 
-        /// <summary>
-        /// Used in LRS
-        /// </summary>
-        /// <returns></returns>
         public string ToScanString()
         {
-            string returnVal = null;
-
-            returnVal = $"{this.Hostiles.GetValueOrDefault(0)} � {this.Starbases.GetValueOrDefault(0)} � {this.Stars.GetValueOrDefault(0)}";
-
-            return returnVal;
+            const string bulletSeparator = " \u2022 ";
+            return $"{this.Hostiles.GetValueOrDefault(0)}{bulletSeparator}{this.Starbases.GetValueOrDefault(0)}{bulletSeparator}{this.Stars.GetValueOrDefault(0)}";
         }
     }
 }

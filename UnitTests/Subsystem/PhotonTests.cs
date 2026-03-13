@@ -315,6 +315,7 @@ namespace UnitTests.Subsystem
             _photonsToTest.Shoot(7); // right from [0,0] -> [1,0]
 
             Assert.Less(Shields.For(hostile).Energy, startingHostileShields);
+            Assert.IsTrue(_setup.TestMap.Playership.OutputQueue().Any(line => line.Contains("TestHostile was hit by the deuterium blast.")));
         }
 
         public void ShootHostileAt(Point friendlySector, Point hostileSector, int directionToShoot, bool debugMode)

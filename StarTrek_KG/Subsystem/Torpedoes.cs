@@ -183,11 +183,19 @@ namespace StarTrek_KG.Subsystem
 
                 if (this.HitSomething(newLocation))
                 {
+                    if (this.ShipConnectedTo == game.Map.Playership && game is Game concreteGameOnHit)
+                    {
+                        concreteGameOnHit.PlayerFleetSupportFire(game.Map.Sectors.GetActive());
+                    }
                     return;
                 }
             }
 
             this.ShipConnectedTo.OutputLine("Photon torpedo failed to hit anything.");
+            if (this.ShipConnectedTo == game.Map.Playership && game is Game concreteGameOnMiss)
+            {
+                concreteGameOnMiss.PlayerFleetSupportFire(game.Map.Sectors.GetActive());
+            }
         }
 
         private static Point GetDirectionDelta(double direction)
@@ -475,6 +483,15 @@ namespace StarTrek_KG.Subsystem
                 {
                     if (ship is Ship concreteShip)
                     {
+                        if (ship == map.Playership)
+                        {
+                            map.Game?.Interact?.Line("Your ship was caught in the deuterium blast.");
+                        }
+                        else
+                        {
+                            map.Game?.Interact?.Line($"{ship.Name} was hit by the deuterium blast.");
+                        }
+
                         concreteShip.AbsorbHitFrom(map.Playership, 200);
                     }
                 }

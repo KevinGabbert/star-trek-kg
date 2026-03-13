@@ -407,8 +407,22 @@ namespace StarTrek_KG.Output
                 // Use defaultValue
             }
 
-            var symbol = string.IsNullOrEmpty(defaultValue) ? " " : defaultValue.Substring(0, 1);
-            return $" {symbol} ";
+            if (string.IsNullOrEmpty(defaultValue))
+            {
+                return "   ";
+            }
+
+            if (defaultValue.Length >= 3)
+            {
+                return defaultValue.Substring(0, 3);
+            }
+
+            if (defaultValue.Length == 2)
+            {
+                return $" {defaultValue}";
+            }
+
+            return $" {defaultValue} ";
         }
 
         private string BuildCrsTopBorderDisplay(string topBorder, IShip ship)

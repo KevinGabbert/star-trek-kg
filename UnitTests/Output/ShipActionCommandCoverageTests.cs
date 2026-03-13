@@ -57,6 +57,7 @@ namespace UnitTests.Output
         [TestCase("pha")]
         [TestCase("tor")]
         [TestCase("brd")]
+        [TestCase("tfg")]
         [TestCase("tss")]
         [TestCase("toq")]
         [TestCase("she")]

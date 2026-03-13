@@ -52,6 +52,8 @@ namespace StarTrek_KG.Actors
             public int BorgDamageableTurnsRemaining { get; set; }
             public int BorgRepelledTurnsRemaining { get; set; }
             public Point BorgLastKnownPlayerSector { get; set; }
+            public bool InPlayerFleet { get; set; }
+            public bool GodMode { get; set; }
             public Dictionary<string, int> PowerShedSnapshots { get; set; }
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
@@ -119,6 +121,8 @@ namespace StarTrek_KG.Actors
             this.BorgDamageableTurnsRemaining = 0;
             this.BorgRepelledTurnsRemaining = 0;
             this.BorgLastKnownPlayerSector = null;
+            this.InPlayerFleet = false;
+            this.GodMode = false;
             this.PowerShedSnapshots = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         }
@@ -271,6 +275,12 @@ namespace StarTrek_KG.Actors
         /// returns true if ship was destroyed. (hence, ship could not absorb all energy)
         public void AbsorbHitFrom(IShip attacker, int attackingEnergy)
         {
+            if (this.GodMode)
+            {
+                this.Map.Write.Line("God mode active. Incoming damage ignored.");
+                return;
+            }
+
             var shields = Shields.For(this);
 
             if (attackingEnergy > 0)

@@ -170,7 +170,7 @@ namespace UnitTests.Playfield
         }
 
         [Test]
-        public void TechnologyCache_Is_Consumed_And_Increases_MaxEnergy()
+        public void TechnologyCache_Is_Consumed_And_Tops_Off_Energy_And_MaxEnergy()
         {
             var activeSector = _setup.TestMap.Sectors.GetActive();
             var targetCoordinate = AdjacentTestCoordinate();
@@ -181,12 +181,14 @@ namespace UnitTests.Playfield
             };
 
             var player = (StarTrek_KG.Actors.Ship)_setup.TestMap.Playership;
+            player.Energy = 250;
             var startingMaxEnergy = player.MaxEnergy;
             var newLocation = new Location(activeSector, targetCoordinate);
 
             _setup.TestMap.SetPlayershipInLocation(player, _setup.TestMap, newLocation);
 
             Assert.AreEqual(startingMaxEnergy + 1200, player.MaxEnergy);
+            Assert.AreEqual(player.MaxEnergy, player.Energy);
             Assert.AreEqual(CoordinateItem.PlayerShip, targetCoordinate.Item);
             Assert.IsNull(targetCoordinate.Object);
             Assert.IsTrue(player.OutputQueue().Any(line => line.Contains("Technology cache recovered.")));

@@ -156,6 +156,37 @@ namespace UnitTests.GameTests
         }
 
         [Test]
+        public void FigureEight_ZipBug_Suppresses_Borg_Lockdown()
+        {
+            var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"BorgCubeCount", "0"},
+                {"BorgAttackRange", "2"},
+                {"BorgPowerDrainPercent", "35"},
+                {"BlackHoleSectorPercent", "0"},
+                {"TemporalRiftSectorPercent", "0"},
+                {"WormholeSectorPercent", "0"}
+            }));
+
+            var sector = game.Map.Sectors.GetActive();
+            AddManualBorg(game, sector, 2, 0);
+            var zipCoordinate = sector.Coordinates[3, 0];
+            zipCoordinate.Item = CoordinateItem.ZipBug;
+            zipCoordinate.Object = new ZipBug
+            {
+                Coordinate = zipCoordinate,
+                Form = ZipBug.ZipBugForm.FigureEight,
+                Name = "Observer"
+            };
+
+            var startingEnergy = game.Map.Playership.Energy;
+            game.SubscriberSendAndGetResponse("irs");
+
+            Assert.AreEqual(startingEnergy, game.Map.Playership.Energy);
+            Assert.IsFalse(game.IsPlayerImmobilizedByBorg(game.Map.Playership));
+        }
+
+        [Test]
         public void Default_Startup_Places_Player_In_Alpha_Quadrant()
         {
             var game = new Game(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

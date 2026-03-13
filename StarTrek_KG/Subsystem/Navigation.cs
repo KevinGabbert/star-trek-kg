@@ -389,7 +389,20 @@ namespace StarTrek_KG.Subsystem
 
             Shields.For(this.ShipConnectedTo).Damage = 0;
 
-            this.ShipConnectedTo.RepairEverything();
+            foreach (var ship in this.ShipConnectedTo.Map.GetPlayerFleetShips().Where(s => !s.Destroyed))
+            {
+                ship.RepairEverything();
+                if (ship.MaxEnergy > 0)
+                {
+                    ship.Energy = ship.MaxEnergy;
+                }
+
+                Torpedoes.For(ship).Count = this.ShipConnectedTo.Map.Config.GetSetting<int>("photonTorpedoes");
+                if (ship == this.ShipConnectedTo)
+                {
+                    Shields.For(ship).Energy = 0;
+                }
+            }
             this.ProcessPrisonerTransferAtStarbase();
 
             this.ShipConnectedTo.Map.Game.Interact.ResourceLine(this.ShipConnectedTo.Map.Game.Config.GetSetting<string>("PlayerShip"), "SuccessfullDock");

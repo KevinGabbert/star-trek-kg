@@ -32,6 +32,10 @@ namespace StarTrek_KG.Subsystem
 
                 this.ShipConnectedTo.Energy = this.ShipConnectedTo.Energy -= energyToFire;
                 Phasers.For(this.ShipConnectedTo).Execute(energyToFire);
+                if (this.ShipConnectedTo == game.Map.Playership && game is Game concreteGame)
+                {
+                    concreteGame.PlayerFleetSupportFire(game.Map.Sectors.GetActive());
+                }
             }
             else
             {

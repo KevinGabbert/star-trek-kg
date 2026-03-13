@@ -6,6 +6,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Types;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Output
@@ -132,6 +133,19 @@ namespace UnitTests.Output
             Assert.IsTrue(output.Any(line => line.Contains("Zane:")));
             Assert.IsTrue(output.Any(line => line.Contains("black hole")));
             Assert.IsTrue(output.Any(line => line.Contains("#4da3ff")));
+        }
+
+        [Test]
+        public void LrsResult_ToScanString_Uses_Bullet_Separators()
+        {
+            var result = new LRSResult
+            {
+                Hostiles = 1,
+                Starbases = 2,
+                Stars = 3
+            };
+
+            Assert.AreEqual("1 • 2 • 3", result.ToScanString());
         }
     }
 }

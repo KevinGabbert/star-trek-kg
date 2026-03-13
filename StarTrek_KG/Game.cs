@@ -767,7 +767,7 @@ namespace StarTrek_KG
 
         public bool IsPlayerImmobilizedByBorg(IShip ship)
         {
-            if (ship == null || ship != this.Map?.Playership || ship.GetSector()?.Type == SectorType.Nebulae)
+            if (ship == null || ship != this.Map?.Playership || ship.GetSector()?.Type == SectorType.Nebulae || this.IsBorgSuppressedByFigureEightZipBug(ship))
             {
                 return false;
             }
@@ -985,6 +985,12 @@ namespace StarTrek_KG
                 return;
             }
 
+            if (this.IsBorgSuppressedByFigureEightZipBug(player))
+            {
+                this.Interact.Line($"{borg.Name} hesitates under Zip Bug interference.");
+                return;
+            }
+
             if (this.TryResolveBorgBlackHoleLure(borg, player) || this.TryResolveBorgWormholeLure(borg, player))
             {
                 return;
@@ -1152,6 +1158,19 @@ namespace StarTrek_KG
             return true;
         }
 
+        public bool CanTransferFlagToBorg(IShip playerShip, IShip targetShip)
+        {
+            return playerShip != null &&
+                   targetShip is Ship borgShip &&
+                   borgShip.Faction == FactionName.Borg &&
+                   this.IsBorgSuppressedByFigureEightZipBug(playerShip);
+        }
+
+        public void PlayerFleetSupportFire(ISector activeSector)
+        {
+            this.FriendlyShipsSupportPlayer(this.Map, activeSector);
+        }
+
         private void ApplyZipBugTurnEffects()
         {
             var player = this.Map?.Playership;
@@ -1244,6 +1263,16 @@ namespace StarTrek_KG
                                        bug.Coordinate.SectorDef.Y == playerShip.Point.Y &&
                                        this.IsZipBugAdjacentToPlayer(bug, playerShip));
             return zipBug != null;
+        }
+
+        private bool IsBorgSuppressedByFigureEightZipBug(IShip playerShip)
+        {
+            return this.GetZipBugs().Any(bug =>
+                bug.Form == ZipBug.ZipBugForm.FigureEight &&
+                bug.Coordinate?.SectorDef != null &&
+                playerShip?.Point != null &&
+                bug.Coordinate.SectorDef.X == playerShip.Point.X &&
+                bug.Coordinate.SectorDef.Y == playerShip.Point.Y);
         }
 
         private bool IsZipBugAdjacentToPlayer(ZipBug zipBug, IShip player)
