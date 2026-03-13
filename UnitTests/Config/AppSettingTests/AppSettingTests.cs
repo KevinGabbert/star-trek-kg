@@ -29,6 +29,12 @@ namespace UnitTests.Config.AppSettingTests
         }
 
         [Test]
+        public void timeRemaining_Default_Is_72()
+        {
+            Assert.AreEqual(72, new StarTrekKGSettings().GetSetting<int>("timeRemaining"));
+        }
+
+        [Test]
         public void SectorsNoHostileShips()
         {
             //Assert.AreEqual(2001, (new StarTrekKGSettings()).GetSetting<int>("SectorsNoHostileShips"));

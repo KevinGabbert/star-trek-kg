@@ -149,5 +149,47 @@ namespace UnitTests.Playfield
             Assert.Less(hostile.Energy, startingEnergy);
             Assert.IsTrue(_setup.TestMap.Playership.OutputQueue().Any(line => line.Contains($"Enemy ship {hostile.Name} has taken damage from a gravitic mine.")));
         }
+
+        [Test]
+        public void IRS_Shows_TechnologyCache()
+        {
+            var targetCoordinate = AdjacentTestCoordinate();
+            targetCoordinate.Item = CoordinateItem.TechnologyCache;
+            targetCoordinate.Object = new TechnologyCache(750)
+            {
+                Coordinate = targetCoordinate
+            };
+
+            var shipLocation = _setup.TestMap.Playership.GetLocation();
+            var irsData = shipLocation.Sector.GetIRSFullData(shipLocation, _setup.Game);
+
+            var result = irsData.Single(r => r.Point != null && r.Point.X == targetCoordinate.X && r.Point.Y == targetCoordinate.Y);
+
+            Assert.AreEqual(CoordinateItem.TechnologyCache, result.Item);
+            Assert.AreEqual("Technology Cache (+750 Max Energy)", result.ToScanString());
+        }
+
+        [Test]
+        public void TechnologyCache_Is_Consumed_And_Increases_MaxEnergy()
+        {
+            var activeSector = _setup.TestMap.Sectors.GetActive();
+            var targetCoordinate = AdjacentTestCoordinate();
+            targetCoordinate.Item = CoordinateItem.TechnologyCache;
+            targetCoordinate.Object = new TechnologyCache(1200)
+            {
+                Coordinate = targetCoordinate
+            };
+
+            var player = (StarTrek_KG.Actors.Ship)_setup.TestMap.Playership;
+            var startingMaxEnergy = player.MaxEnergy;
+            var newLocation = new Location(activeSector, targetCoordinate);
+
+            _setup.TestMap.SetPlayershipInLocation(player, _setup.TestMap, newLocation);
+
+            Assert.AreEqual(startingMaxEnergy + 1200, player.MaxEnergy);
+            Assert.AreEqual(CoordinateItem.PlayerShip, targetCoordinate.Item);
+            Assert.IsNull(targetCoordinate.Object);
+            Assert.IsTrue(player.OutputQueue().Any(line => line.Contains("Technology cache recovered.")));
+        }
     }
 }

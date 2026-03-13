@@ -411,6 +411,32 @@ namespace StarTrek_KG.Playfield
                     Coordinate = newlyCreatedSector
                 };
             }
+            else if (itemToPopulate == CoordinateItem.TechnologyCache)
+            {
+                var min = this.Map?.Config?.GetSetting<int>("TechnologyCacheMinBonus") ?? 500;
+                var max = this.Map?.Config?.GetSetting<int>("TechnologyCacheMaxBonus") ?? 2000;
+                if (max < min)
+                {
+                    var swap = min;
+                    min = max;
+                    max = swap;
+                }
+
+                var amount = Utility.Utility.Random.Next(min, max + 1);
+                newlyCreatedSector.Item = CoordinateItem.TechnologyCache;
+                newlyCreatedSector.Object = new TechnologyCache(amount)
+                {
+                    Coordinate = newlyCreatedSector
+                };
+            }
+            else if (itemToPopulate == CoordinateItem.Wormhole)
+            {
+                newlyCreatedSector.Item = CoordinateItem.Wormhole;
+                newlyCreatedSector.Object = new Wormhole
+                {
+                    Coordinate = newlyCreatedSector
+                };
+            }
             else
             {
                 newlyCreatedSector.Item = itemToPopulate;

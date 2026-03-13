@@ -240,7 +240,9 @@ namespace StarTrek_KG.Actors
                     currentItem == CoordinateItem.GaseousAnomaly ||
                     currentItem == CoordinateItem.TemporalRift ||
                     currentItem == CoordinateItem.SporeField ||
-                    currentItem == CoordinateItem.EnergyAnomaly)
+                    currentItem == CoordinateItem.EnergyAnomaly ||
+                    currentItem == CoordinateItem.TechnologyCache ||
+                    currentItem == CoordinateItem.Wormhole)
                 {
                     return false;
                 }

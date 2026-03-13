@@ -83,6 +83,16 @@ namespace StarTrek_KG.Types
                     returnVal = "Black Hole";
                     break;
 
+                case CoordinateItem.TechnologyCache:
+                    var technologyCache = this.Object as TechnologyCache;
+                    var bonus = technologyCache?.MaxEnergyBonus ?? 0;
+                    returnVal = bonus > 0 ? $"Technology Cache (+{bonus} Max Energy)" : "Technology Cache";
+                    break;
+
+                case CoordinateItem.Wormhole:
+                    returnVal = "Wormhole";
+                    break;
+
                 case CoordinateItem.PlayerShip:
                     returnVal = "<This Ship>"; //todo: identify ship
                     break;

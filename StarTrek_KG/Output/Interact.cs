@@ -354,6 +354,32 @@ namespace StarTrek_KG.Output
             {
                 currentSectorResult += dataPoint;
                 currentSectorResult = CompactLrsCounts(currentSectorResult);
+
+                var sectorHasWormhole = dataPoint.Point != null &&
+                                        !dataPoint.GalacticBarrier &&
+                                        game.Map?.Sectors != null &&
+                                        game.Map.Sectors.Any(s => s.X == dataPoint.Point.X && s.Y == dataPoint.Point.Y &&
+                                                                  s.Coordinates != null &&
+                                                                  s.Coordinates.Any(c => c.Item == CoordinateItem.Wormhole));
+                if (sectorHasWormhole)
+                {
+                    string marker;
+                    try
+                    {
+                        marker = game.Config.GetSetting<string>("WormholeChar");
+                    }
+                    catch
+                    {
+                        marker = "∞";
+                    }
+
+                    if (string.IsNullOrWhiteSpace(marker))
+                    {
+                        marker = "∞";
+                    }
+
+                    currentSectorResult += marker.Trim();
+                }
             }
 
             var verticalBoxLine = game.Config.Setting("VerticalBoxLine");

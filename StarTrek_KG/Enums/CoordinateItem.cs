@@ -18,6 +18,8 @@ namespace StarTrek_KG.Enums
         SporeField,
         BlackHole,
         EnergyAnomaly,
+        TechnologyCache,
+        Wormhole,
         Debug
     };
 }

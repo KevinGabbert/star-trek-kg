@@ -315,6 +315,14 @@ namespace StarTrek_KG.Output
                         sb.Append($" {glyph} ");
                         break;
 
+                    case CoordinateItem.TechnologyCache:
+                        sb.Append(this.SymbolCell("TechnologyCacheChar", "T"));
+                        break;
+
+                    case CoordinateItem.Wormhole:
+                        sb.Append(this.SymbolCell("WormholeChar", "∞"));
+                        break;
+
                     case CoordinateItem.Debug:
                         sb.Append(DEFAULTS.DEBUG_MARKER);
                         break;

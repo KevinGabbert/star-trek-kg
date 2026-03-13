@@ -211,6 +211,8 @@ namespace StarTrek_KG.Playfield
             this.PopulateSporeFields();
             this.PopulateBlackHoles();
             this.PopulateHostileOutposts();
+            this.PopulateTechnologyCaches();
+            this.PopulateWormholes();
 
             if (this.GameConfig?.AddGraviticMines ?? true)
             {
@@ -897,6 +899,97 @@ namespace StarTrek_KG.Playfield
             };
         }
 
+        private void PopulateTechnologyCaches()
+        {
+            var percent = this.GetSettingOrDefault("TechnologyCacheSectorPercent", 3);
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var candidates = this.GetFeatureCandidateSectors();
+            foreach (var sector in candidates)
+            {
+                if (Utility.Utility.Random.Next(100) >= percent)
+                {
+                    continue;
+                }
+
+                var empty = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).ToList();
+                if (!empty.Any())
+                {
+                    continue;
+                }
+
+                var coordinate = empty[Utility.Utility.Random.Next(empty.Count)];
+                this.PlaceTechnologyCacheAt(coordinate);
+            }
+        }
+
+        private void PopulateWormholes()
+        {
+            var percent = this.GetSettingOrDefault("WormholeSectorPercent", 3);
+            if (percent <= 0)
+            {
+                return;
+            }
+
+            if (percent > 100)
+            {
+                percent = 100;
+            }
+
+            var candidates = this.GetFeatureCandidateSectors();
+            if (candidates.Count < 2)
+            {
+                return;
+            }
+
+            var targetCount = (int)Math.Round(candidates.Count * (percent / 100.0));
+            if (targetCount < 2)
+            {
+                targetCount = 2;
+            }
+
+            if (targetCount > candidates.Count)
+            {
+                targetCount = candidates.Count;
+            }
+
+            if (targetCount % 2 != 0)
+            {
+                targetCount--;
+            }
+
+            if (targetCount < 2)
+            {
+                return;
+            }
+
+            var selected = candidates.Shuffle().Take(targetCount).ToList();
+            var pairId = 1;
+            for (var i = 0; i < selected.Count; i += 2)
+            {
+                var firstSector = selected[i];
+                var secondSector = selected[i + 1];
+                var firstCoordinate = firstSector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).OrderBy(_ => Utility.Utility.Random.Next()).FirstOrDefault();
+                var secondCoordinate = secondSector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).OrderBy(_ => Utility.Utility.Random.Next()).FirstOrDefault();
+                if (firstCoordinate == null || secondCoordinate == null)
+                {
+                    continue;
+                }
+
+                this.PlaceWormholeAt(firstCoordinate, secondSector.GetPoint(), pairId);
+                this.PlaceWormholeAt(secondCoordinate, firstSector.GetPoint(), pairId);
+                pairId++;
+            }
+        }
+
         private List<Sector> GetFeatureCandidateSectors()
         {
             return this.Sectors
@@ -1126,6 +1219,47 @@ namespace StarTrek_KG.Playfield
             var amount = Utility.Utility.Random.Next(min, max + 1);
             coordinate.Item = CoordinateItem.DeuteriumCloud;
             coordinate.Object = new DeuteriumCloud(amount);
+        }
+
+        private void PlaceTechnologyCacheAt(Coordinate coordinate)
+        {
+            if (coordinate == null)
+            {
+                return;
+            }
+
+            var min = this.GetSettingOrDefault("TechnologyCacheMinBonus", 500);
+            var max = this.GetSettingOrDefault("TechnologyCacheMaxBonus", 2000);
+
+            if (max < min)
+            {
+                var temp = min;
+                min = max;
+                max = temp;
+            }
+
+            var amount = Utility.Utility.Random.Next(min, max + 1);
+            coordinate.Item = CoordinateItem.TechnologyCache;
+            coordinate.Object = new TechnologyCache(amount)
+            {
+                Coordinate = coordinate
+            };
+        }
+
+        private void PlaceWormholeAt(Coordinate coordinate, Point destinationSector, int pairId)
+        {
+            if (coordinate == null || destinationSector == null)
+            {
+                return;
+            }
+
+            coordinate.Item = CoordinateItem.Wormhole;
+            coordinate.Object = new Wormhole
+            {
+                Coordinate = coordinate,
+                DestinationSector = new Point(destinationSector.X, destinationSector.Y),
+                PairId = pairId
+            };
         }
 
         private void NormalizeDeuteriumTotalsPerSector()
@@ -1570,6 +1704,14 @@ namespace StarTrek_KG.Playfield
             {
                 coordinate.Item = CoordinateItem.BlackHole;
             }
+            else if (coordinate?.Object is TechnologyCache)
+            {
+                coordinate.Item = CoordinateItem.TechnologyCache;
+            }
+            else if (coordinate?.Object is Wormhole)
+            {
+                coordinate.Item = CoordinateItem.Wormhole;
+            }
             else if (coordinate != null)
             {
                 coordinate.Item = CoordinateItem.Empty;
@@ -1599,6 +1741,7 @@ namespace StarTrek_KG.Playfield
             var targetCoordinate = activeSector.Coordinates[map.Playership.Coordinate.X, map.Playership.Coordinate.Y];
             this.ConsumeDeuteriumIfPresent(map.Playership, targetCoordinate);
             var newActiveSector = targetCoordinate.Item = CoordinateItem.PlayerShip;
+            this.ResolveWormholeTransitIfPresent(map.Playership, targetCoordinate);
         }
 
         /// <summary>
@@ -1619,6 +1762,7 @@ namespace StarTrek_KG.Playfield
 
             shipToSet.Point = new Point(newLocation.Sector.X, newLocation.Sector.Y);
             shipToSet.Coordinate = foundSector;
+            this.ResolveWormholeTransitIfPresent(shipToSet, foundSector);
         }
 
         private void ConsumeDeuteriumIfPresent(IShip shipToSet, Coordinate coordinate)
@@ -1681,6 +1825,21 @@ namespace StarTrek_KG.Playfield
                 this.Game?.AppendGameEventLog($"Item consumed: energy anomaly glyph={glyph} at coord [{coordinate.X},{coordinate.Y}]");
             }
 
+            if (coordinate.Item == CoordinateItem.TechnologyCache)
+            {
+                var cache = coordinate.Object as TechnologyCache;
+                var bonus = cache?.MaxEnergyBonus ?? 0;
+                if (bonus > 0 && shipToSet is Ship ship)
+                {
+                    ship.MaxEnergy += bonus;
+                    this.Write?.Line($"Technology cache recovered. Maximum energy capacity increased by {bonus}.");
+                    this.Game?.AppendGameEventLog($"Item consumed: technology cache bonus={bonus} at coord [{coordinate.X},{coordinate.Y}]");
+                }
+
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
+            }
+
             if (coordinate.Item == CoordinateItem.SporeField)
             {
                 if (shipToSet is Ship ship)
@@ -1690,6 +1849,38 @@ namespace StarTrek_KG.Playfield
 
                 this.Write?.Line("Spore contact detected. Biofilm is draining reactor efficiency.");
             }
+        }
+
+        private void ResolveWormholeTransitIfPresent(IShip shipToSet, Coordinate coordinate)
+        {
+            if (shipToSet == null || coordinate?.Object is not Wormhole wormhole || wormhole.DestinationSector == null)
+            {
+                return;
+            }
+
+            var destinationSector = this.Sectors[wormhole.DestinationSector];
+            var emptyCoordinates = destinationSector?.Coordinates?
+                .Where(c => c.Item == CoordinateItem.Empty)
+                .ToList();
+            if (destinationSector == null || emptyCoordinates == null || emptyCoordinates.Count == 0)
+            {
+                this.Write?.Line("Wormhole destabilized. No clear emergence point was available.");
+                this.Game?.AppendGameEventLog($"Wormhole transit failed: pair={wormhole.PairId} destination sector [{wormhole.DestinationSector.X},{wormhole.DestinationSector.Y}] had no empty coordinate.");
+                return;
+            }
+
+            var destinationCoordinate = emptyCoordinates[Utility.Utility.Random.Next(emptyCoordinates.Count)];
+            this.Write?.Line("Wormhole engaged...");
+            this.Write?.Line($"Ship emerged at sector [{destinationSector.X},{destinationSector.Y}], coord [{destinationCoordinate.X},{destinationCoordinate.Y}].");
+            this.Game?.AppendGameEventLog($"Wormhole transit: pair={wormhole.PairId} from sector [{shipToSet.Point?.X},{shipToSet.Point?.Y}] to sector [{destinationSector.X},{destinationSector.Y}] coord [{destinationCoordinate.X},{destinationCoordinate.Y}]");
+
+            this.RemovePlayership(this);
+            destinationSector.SetActive();
+            destinationCoordinate.Item = CoordinateItem.PlayerShip;
+            shipToSet.Point = new Point(destinationSector.X, destinationSector.Y);
+            shipToSet.Coordinate = destinationCoordinate;
+            this.timeRemaining = Math.Max(0, this.timeRemaining - 1);
+            this.Stardate++;
         }
 
         private Coordinate LookupSector(Sector oldSector, Location newLocation)
