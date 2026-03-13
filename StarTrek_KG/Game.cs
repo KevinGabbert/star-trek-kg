@@ -25,6 +25,7 @@ namespace StarTrek_KG
         #region Properties
         private CommandDispatcher Dispatcher { get; set; }
         private string _lastTitlePictureKey;
+        public string GameEventLogPath { get; private set; }
 
         public delegate TResult _promptFunc<T, out TResult>(T input, out T output);
 
@@ -118,6 +119,7 @@ namespace StarTrek_KG
         private void InitializeStartup(SetupOptions startConfigOverride)
         {
             this.LatestTaunts = new List<FactionThreat>();
+            this.InitializeGameEventLog();
 
             //These constants need to be localized to Game:
             this.GetConstants();
@@ -147,6 +149,23 @@ namespace StarTrek_KG
             this.Interact = new Interaction(this.Map.HostilesToSetUp, Map.starbases, Map.Stardate, Map.timeRemaining, this.Config);
             this.PrintSector = new Render(this.Interact, this.Config);
             this.RecordPlayerTurnSnapshot();
+            this.AppendGameEventLog($"Game initialized. Mode={(this.IsSystemsCascadeMode ? "systems-cascade" : this.IsWarGamesMode ? "war-games" : "standard")} Stardate={this.Map?.Stardate} TimeRemaining={this.Map?.timeRemaining}");
+        }
+
+        private void InitializeGameEventLog()
+        {
+            this.GameEventLogPath = GameEventLog.GetDefaultPath();
+            GameEventLog.Reset(this.GameEventLogPath);
+        }
+
+        public void AppendGameEventLog(string message)
+        {
+            GameEventLog.Append(this.GameEventLogPath, message);
+        }
+
+        public List<string> GetGameEventLogLines()
+        {
+            return GameEventLog.ReadAll(this.GameEventLogPath);
         }
 
         private SetupOptions BuildDefaultSetupOptions()
@@ -266,16 +285,9 @@ namespace StarTrek_KG
                 return true;
             }
 
-            if (normalized == "pwr" || normalized == "pwr help")
+            if (normalized == "pwr help")
             {
                 this.PrintSystemsCascadePowerHelp();
-                output = this.Map.Playership.OutputQueue();
-                return true;
-            }
-
-            if (normalized == "pwr status")
-            {
-                this.PrintSystemsCascadePowerStatus();
                 output = this.Map.Playership.OutputQueue();
                 return true;
             }
@@ -1193,16 +1205,16 @@ namespace StarTrek_KG
                     return false;
                 }
 
-                var maxRetreatAttempts = this.Config.GetSetting<int>("HostileMaxRetreatAttempts");
+                var maxRetreatAttempts = this.GetIntSettingOrDefault("HostileMaxRetreatAttempts", 2);
                 if (concreteHostile.RetreatAttempts >= maxRetreatAttempts)
                 {
                     return false;
                 }
             }
 
-            var torDown = this.IsSubsystemDamaged(hostile, SubsystemType.Torpedoes);
-            var phaDown = this.IsSubsystemDamaged(hostile, SubsystemType.Phasers);
-            var dsrDown = this.IsSubsystemDamaged(hostile, SubsystemType.Disruptors);
+            var torDown = this.IsSubsystemDamagedForRetreat(hostile, SubsystemType.Torpedoes);
+            var phaDown = this.IsSubsystemDamagedForRetreat(hostile, SubsystemType.Phasers);
+            var dsrDown = this.IsSubsystemDamagedForRetreat(hostile, SubsystemType.Disruptors);
             return torDown && phaDown && dsrDown;
         }
 
@@ -1210,6 +1222,24 @@ namespace StarTrek_KG
         {
             var subsystem = ship?.Subsystems?.SingleOrDefault(s => s.Type == subsystemType);
             return subsystem == null || subsystem.Damage > 0;
+        }
+
+        private bool IsSubsystemDamagedForRetreat(IShip ship, SubsystemType subsystemType)
+        {
+            var subsystem = ship?.Subsystems?.SingleOrDefault(s => s.Type == subsystemType);
+            return subsystem != null && subsystem.Damage > 0;
+        }
+
+        private int GetIntSettingOrDefault(string key, int defaultValue)
+        {
+            try
+            {
+                return this.Config?.GetSetting<int>(key) ?? defaultValue;
+            }
+            catch
+            {
+                return defaultValue;
+            }
         }
 
         private void HostileRepairAndRetreat(IMap map, IShip hostile)
@@ -1325,6 +1355,7 @@ namespace StarTrek_KG
             hostile.Coordinate = targetCoordinate;
             targetCoordinate.Item = CoordinateItem.HostileShip;
             targetCoordinate.Object = hostile;
+            this.AppendGameEventLog($"{hostile.Name} retreated via warp to sector [{nextSectorX},{nextSectorY}] coord [{targetCoordinate.X},{targetCoordinate.Y}]");
 
             if (sameSectorAsPlayer)
             {
@@ -1391,6 +1422,7 @@ namespace StarTrek_KG
             hostile.Coordinate = candidate;
             candidate.Item = CoordinateItem.HostileShip;
             candidate.Object = hostile;
+            this.AppendGameEventLog($"{hostile.Name} retreated via impulse to coord [{candidate.X},{candidate.Y}] in sector [{hostile.Point.X},{hostile.Point.Y}]");
 
             if (sameSectorAsPlayer)
             {
@@ -1468,6 +1500,7 @@ namespace StarTrek_KG
             var attackingEnergy = (int)Utility.Utility.ShootBeamWeapon(seedEnergyToPowerWeapon, distance, "DisruptorShotDeprecationLevel", "DisruptorEnergyAdjustment", inNebula);
 
             this.Interact.Line($"{badGuy.Name} fires on you.");
+            this.AppendGameEventLog($"{badGuy.Name} attacked playership with beam energy {attackingEnergy} at distance {Math.Round(Convert.ToDouble(distance), 2)}");
 
             var shieldsValueBeforeHit = Shields.For(map.Playership).Energy;
 
@@ -1655,6 +1688,7 @@ namespace StarTrek_KG
 
             qLocation.Object = null;
             qLocation.Item = CoordinateItem.Empty;
+            this.AppendGameEventLog($"Starbase destroyed at sector [{newX},{newY}]");
 
             //yeah. How come a starbase can protect your from baddies but one torpedo hit takes it out?
             this.Interact.Line($"You have destroyed A Federation starbase! (at sector [{newX},{newY}])");

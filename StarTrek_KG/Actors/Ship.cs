@@ -46,6 +46,7 @@ namespace StarTrek_KG.Actors
             public int RetreatAttempts { get; set; }
             public int RetreatSuppressedTurns { get; set; }
             public bool HasRetreatedAndRearmed { get; set; }
+            public Dictionary<string, int> PowerShedSnapshots { get; set; }
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
             //public Log ShipLog { get; set; } //
@@ -106,6 +107,7 @@ namespace StarTrek_KG.Actors
             this.RetreatAttempts = 0;
             this.RetreatSuppressedTurns = 0;
             this.HasRetreatedAndRearmed = false;
+            this.PowerShedSnapshots = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         }
 

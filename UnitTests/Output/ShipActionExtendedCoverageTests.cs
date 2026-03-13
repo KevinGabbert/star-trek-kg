@@ -2,13 +2,19 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
+using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
+using StarTrek_KG.Config.Collections;
+using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Types;
+using StarTrek_KG.TypeSafeEnums;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Output
@@ -95,6 +101,16 @@ namespace UnitTests.Output
             Assert.IsNotNull(computerOutput);
             Assert.IsNotNull(damageOutput);
             Assert.IsTrue(computerOutput.Any() || damageOutput.Any());
+        }
+
+        [Test]
+        public void PowerStatus_Command_Returns_SubsystemRows()
+        {
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "pwr");
+
+            Assert.IsNotNull(output);
+            Assert.IsTrue(output.Any(line => line.Contains("Power / Subsystem Status")));
+            Assert.IsTrue(output.Any(line => line.Contains("STATE:")));
         }
 
         [Test]
@@ -185,6 +201,67 @@ namespace UnitTests.Output
             var player = (Ship)_game.Map.Playership;
             Assert.AreEqual("tor", player.TargetSubsystemMnemonic);
             Assert.IsFalse(string.IsNullOrWhiteSpace(player.TargetShipName));
+        }
+
+        [Test]
+        public void Missing_HostileMaxRetreatAttempts_Does_Not_Throw_During_Attack_Turn()
+        {
+            var config = new MissingRetreatAttemptsConfig();
+            var game = new Game(config, new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                AddDeuterium = false,
+                AddGraviticMines = false,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(0,0)), CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0,0), new Point(1,1)), CoordinateItem.HostileShip)
+                }
+            });
+
+            var interact = (Interaction)game.Interact;
+
+            Assert.DoesNotThrow(() =>
+            {
+                interact.ReadAndOutput(game.Map.Playership, game.Map.Text, "imp");
+                interact.ReadAndOutput(game.Map.Playership, game.Map.Text, "7");
+                interact.ReadAndOutput(game.Map.Playership, game.Map.Text, "1");
+            });
+        }
+
+        private sealed class MissingRetreatAttemptsConfig : IStarTrekKGSettings
+        {
+            private readonly StarTrekKGSettings _inner = new StarTrekKGSettings();
+
+            public StarTrekKGSettings Get { get => _inner.Get; set => _inner.Get = value; }
+            public Names StarSystems => _inner.StarSystems;
+            public NameValues ConsoleText => _inner.ConsoleText;
+            public Factions Factions => _inner.Factions;
+            public NameValues GameSettings => _inner.GameSettings;
+            public MenusElement Menus => _inner.Menus;
+            public List<CommandDef> LoadCommands() => _inner.LoadCommands();
+            public StarTrekKGSettings GetConfig() => _inner.GetConfig();
+            public List<string> ShipNames(FactionName faction) => _inner.ShipNames(faction);
+            public List<FactionThreat> GetThreats(FactionName faction) => _inner.GetThreats(faction);
+            public MenuItems GetMenuItems(string menuName) => _inner.GetMenuItems(menuName);
+            public List<string> GetStarSystems() => _inner.GetStarSystems();
+            public string GetText(string name) => _inner.GetText(name);
+            public string GetText(string textToGet, string textToGet2) => _inner.GetText(textToGet, textToGet2);
+            public T GetSetting<T>(string name)
+            {
+                if (string.Equals(name, "HostileMaxRetreatAttempts", System.StringComparison.Ordinal))
+                {
+                    throw new System.Configuration.SettingsPropertyNotFoundException("Missing for test.");
+                }
+
+                return _inner.GetSetting<T>(name);
+            }
+            public string Setting(string name) => this.GetSetting<string>(name);
+            public T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false) => _inner.CheckAndCastValue<T>(name, element, whiteSpaceIsOk);
+            public void Reset() => _inner.Reset();
         }
     }
 }

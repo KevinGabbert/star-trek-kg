@@ -361,12 +361,14 @@ namespace StarTrek_KG.Subsystem
                     qLocation.Item = CoordinateItem.Empty;
                     qLocation.Object = null;
                     game.Interact.Line($"Deuterium pocket detonated at sector [{newX},{newY}].");
+                    game.AppendGameEventLog($"Torpedo impact: deuterium pocket detonated at [{newX},{newY}]");
                     return true;
                 case CoordinateItem.DeuteriumCloud:
                     this.ApplyDeuteriumBlast(game.Map, qLocation, newX, newY);
                     qLocation.Item = CoordinateItem.Empty;
                     qLocation.Object = null;
                     game.Interact.Line($"Deuterium cloud detonated at sector [{newX},{newY}].");
+                    game.AppendGameEventLog($"Torpedo impact: deuterium cloud detonated at [{newX},{newY}]");
                     return true;
 
                 case CoordinateItem.Starbase:
@@ -388,10 +390,12 @@ namespace StarTrek_KG.Subsystem
                         qLocation.Item = CoordinateItem.Empty;
                         qLocation.Object = null;
                         game.Interact.Line($"Hostile outpost destroyed at sector [{newX},{newY}].");
+                        game.AppendGameEventLog($"Torpedo impact: hostile outpost destroyed at [{newX},{newY}]");
                     }
                     else
                     {
                         game.Interact.Line($"Hostile outpost hit at sector [{newX},{newY}]. Remaining torpedo hits to destroy: {outpost.HitPoints}.");
+                        game.AppendGameEventLog($"Torpedo impact: hostile outpost hit at [{newX},{newY}], hp={outpost.HitPoints}");
                     }
 
                     return true;

@@ -18,6 +18,7 @@ using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Utility;
 
 namespace StarTrek_KG.Output
 {
@@ -754,6 +755,12 @@ namespace StarTrek_KG.Output
                 return cascadeOutput;
             }
 
+            if (this.Subscriber.PromptInfo.Level == 0 &&
+                userCommand.StartsWith("pwr", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.ExecutePowerDistributionCommand(playerShip, userCommand).ToList();
+            }
+
             if (this.Subscriber.PromptInfo.Level == 0)
             {
                 string nlCommand = NaturalLanguageRouter.TryParse(userCommand);
@@ -851,6 +858,8 @@ namespace StarTrek_KG.Output
 
                 case "?":
                 case "help":
+                    var irsPlusPlusPlusCost = this.GetSettingOrDefault("IRSPlusPlusPlusEnergyCost",
+                        this.GetSettingOrDefault("IRSPlusPlusPlusPlusEnergyCost", 1000));
                     this.ResetPrompt();
                     retVal.AddRange(this.Output.WriteLine($"--- {playerShip.Name} Command Help ---"));
                     retVal.AddRange(this.Output.WriteLine(""));
@@ -863,7 +872,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  irs   Immediate range scan"));
                     retVal.AddRange(this.Output.WriteLine("  irs+  Extended immediate scan (4x4)"));
                     retVal.AddRange(this.Output.WriteLine("  irs++ Deep immediate scan (5x5)"));
-                    retVal.AddRange(this.Output.WriteLine("  irs+++ Full sector immediate scan (8x8)"));
+                    retVal.AddRange(this.Output.WriteLine($"  irs+++ Full sector immediate scan (8x8, {irsPlusPlusPlusCost} energy)"));
                     retVal.AddRange(this.Output.WriteLine("  srs   Short range scan"));
                     retVal.AddRange(this.Output.WriteLine("  lrs   Long range scan"));
                     retVal.AddRange(this.Output.WriteLine("  crs   Combined range scan"));
@@ -879,11 +888,11 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  she   Shields"));
                     retVal.AddRange(this.Output.WriteLine("  com   Computer"));
                     retVal.AddRange(this.Output.WriteLine("  dmg   Damage control"));
+                    retVal.AddRange(this.Output.WriteLine("  pwr   Power / subsystem status"));
                     retVal.AddRange(this.Output.WriteLine("  inst  Quick instructions"));
                     retVal.AddRange(this.Output.WriteLine("  tac   Tactics manual (costs 1 turn)"));
                     if (playerShip.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
                     {
-                        retVal.AddRange(this.Output.WriteLine("  pwr   Systems Cascade power routing"));
                         retVal.AddRange(this.Output.WriteLine("  cascade status   Systems Cascade mission/status"));
                     }
                     if (playerShip.Map?.Game?.IsWarGamesMode == true)
@@ -984,6 +993,9 @@ namespace StarTrek_KG.Output
 
         private void CreateCommandPanelFor(IShip playerShip)
         {
+            var irsPlusPlusPlusCost = this.GetSettingOrDefault("IRSPlusPlusPlusEnergyCost",
+                this.GetSettingOrDefault("IRSPlusPlusPlusPlusEnergyCost", 1000));
+
             //todo: resource out this menu
             SHIP_PANEL = new List<string>
             {
@@ -994,7 +1006,7 @@ namespace StarTrek_KG.Output
                 "irs = Immediate Range Scan",
                 "irs+ = Extended Immediate Range Scan (4x4)",
                 "irs++ = Deep Immediate Range Scan (5x5)",
-                "irs+++ = Full Sector Immediate Range Scan (8x8)",
+                $"irs+++ = Full Sector Immediate Range Scan (8x8, {irsPlusPlusPlusCost} energy)",
                 "srs = Short Range Scan",
                 "lrs = Long Range Scan",
                 "crs = Combined Range Scan",
@@ -1008,6 +1020,7 @@ namespace StarTrek_KG.Output
                 "she = Shield Control",
                 "com = Access Computer",
                 "dmg = Damage Control",
+                "pwr = Power / Subsystem Status",
                 "inst = Quick Instructions",
                 "tac = Tactics Manual (costs 1 turn)"
             };
@@ -1019,7 +1032,6 @@ namespace StarTrek_KG.Output
 
             if (playerShip?.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
             {
-                SHIP_PANEL.Add("pwr = Systems Cascade Power Routing");
                 SHIP_PANEL.Add("cascade status = Systems Cascade Status");
             }
 
@@ -1175,10 +1187,7 @@ namespace StarTrek_KG.Output
             else if (menuCommand == Menu.tac.ToString() || string.Equals(menuCommand, "tactics", StringComparison.OrdinalIgnoreCase))
             {
                 retVal = this.OutputTacticsManual(playerShip).ToList();
-                if (!(playerShip is Ship player) || player.TacticsManualUses > 0)
-                {
-                    this.ConsumeOneTurn(playerShip?.Map);
-                }
+                this.ConsumeOneTurn(playerShip?.Map);
 
                 if (playerShip is Ship concretePlayer)
                 {
@@ -1258,6 +1267,7 @@ namespace StarTrek_KG.Output
             output.AddRange(this.Output.WriteLine("4) Fight with pha or tor. Use toq to target objects."));
             output.AddRange(this.Output.WriteLine("5) Use lrs to plan your next sector jump."));
             output.AddRange(this.Output.WriteLine("6) Type ? for full command help."));
+            output.AddRange(this.Output.WriteLine("7) Type pwr for subsystem power/system status."));
 
             if (playerShip?.Map?.Game?.IsWarGamesMode == true)
             {
@@ -1278,6 +1288,39 @@ namespace StarTrek_KG.Output
 
             output.AddRange(this.Output.WriteLine(""));
             return output;
+        }
+
+        private IEnumerable<string> ExecutePowerDistributionCommand(IShip playerShip, string commandText)
+        {
+            var normalized = (commandText ?? string.Empty).Trim().ToLowerInvariant();
+            if (normalized != "pwr" && normalized != "pwr status" && normalized != "pwr panel")
+            {
+                this.Output.WriteLine("Usage: pwr | pwr status | pwr panel");
+                return this.Output.Queue.ToList();
+            }
+
+            if (playerShip?.Subsystems == null)
+            {
+                this.Output.WriteLine("No active ship subsystem data available.");
+                return this.Output.Queue.ToList();
+            }
+
+            this.Output.WriteLine("--- Power / Subsystem Status ---");
+            this.Output.WriteLine("Subsystems are listed alphabetically.");
+
+            var subsystems = playerShip.Subsystems
+                .Where(s => s?.Type != null && s.Type != SubsystemType.Debug)
+                .OrderBy(s => s.Type.Name)
+                .ToList();
+
+            foreach (var subsystem in subsystems)
+            {
+                var status = subsystem.Damage <= 0 ? "GREEN" : subsystem.Damage == 1 ? "YELLOW" : "RED";
+                this.Output.WriteLine($"{subsystem.Type.Name.PadRight(20)} DMG:{subsystem.Damage.ToString().PadLeft(2)} STATE:{status}");
+            }
+
+            this.Output.WriteLine("");
+            return this.Output.Queue.ToList();
         }
 
         private IEnumerable<string> ExecuteTargetSubsystemCommand(IShip playerShip, string commandText)
@@ -2732,7 +2775,11 @@ namespace StarTrek_KG.Output
             MenuItemDef shipOption = menuItemDefs.FirstOrDefault(m => m.name == OBJECT_TYPE.SHIP.ToLower()); //todo: resource this
             if (shipOption != null)
             {
-                panel.Add($"{shipOption.name} {shipOption.divider} {shipOption.description}");
+                var shipLine = $"{shipOption.name} {shipOption.divider} {shipOption.description}";
+                if (!panel.Contains(shipLine))
+                {
+                    panel.Add(shipLine);
+                }
             }
         }
 
@@ -2889,6 +2936,10 @@ namespace StarTrek_KG.Output
 
             linesToOutput.AddRange(this.Output.WriteLine(stringToOutput));
             linesToOutput.Add(this.Output.WriteLine());
+            if (!string.IsNullOrWhiteSpace(stringToOutput))
+            {
+                GameEventLog.Append(GameEventLog.GetDefaultPath(), stringToOutput);
+            }
 
             return linesToOutput;
         }
@@ -2918,6 +2969,10 @@ namespace StarTrek_KG.Output
         public void SingleLine(string stringToOutput)
         {
             this.Output.WriteLine(stringToOutput);
+            if (!string.IsNullOrWhiteSpace(stringToOutput))
+            {
+                GameEventLog.Append(GameEventLog.GetDefaultPath(), stringToOutput);
+            }
         }
 
         public string ShipHitMessage(IShip attacker, int attackingEnergy)
@@ -3094,6 +3149,16 @@ namespace StarTrek_KG.Output
 
             if (!string.IsNullOrWhiteSpace(commandResult))
             {
+                var lastNonEmpty = this.Output.Queue
+                    .Reverse()
+                    .FirstOrDefault(line => !string.IsNullOrWhiteSpace(line))
+                    ?.Trim();
+
+                if (string.Equals(lastNonEmpty, commandResult, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
                 this.Line(commandResult);
             }
         }

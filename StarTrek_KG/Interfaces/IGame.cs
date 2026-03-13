@@ -15,6 +15,7 @@ namespace StarTrek_KG.Interfaces
         bool IsSystemsCascadeMode { get; }
         List<FactionThreat> LatestTaunts { get; set; }
         Game._promptFunc<string, bool> Prompt { get; set; }
+        string GameEventLogPath { get; }
 
         void DestroyStarbase(IMap map, int newY, int newX, ICoordinate qLocation);
         void ALLHostilesAttack(IMap map);
@@ -22,5 +23,7 @@ namespace StarTrek_KG.Interfaces
         void MoveTimeForward(IMap map, Point lastSector, Point Sector);
         void TriggerSystemsCascadeFromAnomaly(string glyph);
         void ShowRandomTitle();
+        void AppendGameEventLog(string message);
+        List<string> GetGameEventLogLines();
     }
 }

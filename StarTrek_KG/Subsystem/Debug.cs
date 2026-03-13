@@ -41,7 +41,8 @@ namespace StarTrek_KG.Subsystem
                                                     "dpdh = Playership takes a random energy level disruptor hit",
                                                     "dmbb = move baddie around sector",
                                                     "dadd = add energy to Playership",
-                                                    "dads = add shield energy to ship" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
+                                                    "dads = add shield energy to ship",
+                                                    "dlog = show latest game event log" //it should be: dadd  Who? (then user selects a number from a list of ships) How much?
                                                 };
 
         public Debug(IShip shipConnectedTo): base(shipConnectedTo)
@@ -148,6 +149,20 @@ namespace StarTrek_KG.Subsystem
                 case "dlrs":
                     LongRangeScan.For(this.ShipConnectedTo).Debug_Scan_All_Sectors(DEFAULTS.DEBUG_MODE);
                     this.ShipConnectedTo.OutputLine( $"All Sectors set to: {DEFAULTS.DEBUG_MODE}.  (set debugmode to true to make this scan all.)");
+                    break;
+                case "dlog":
+                    var logLines = this.ShipConnectedTo.Map.Game.GetGameEventLogLines();
+                    if (logLines.Count == 0)
+                    {
+                        this.ShipConnectedTo.OutputLine("Game event log is empty for the current session.");
+                        break;
+                    }
+
+                    this.ShipConnectedTo.OutputLine("--- Latest Game Event Log ---");
+                    foreach (var line in logLines)
+                    {
+                        this.ShipConnectedTo.OutputLine(line);
+                    }
                     break;
 
                 default:

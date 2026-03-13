@@ -1471,6 +1471,7 @@ namespace StarTrek_KG.Playfield
 
             foreach (var destroyedShip in destroyedShips)
             {
+                this.Game?.AppendGameEventLog($"Ship destroyed: {destroyedShip?.Name} faction={destroyedShip?.Faction} sector [{destroyedShip?.Point?.X},{destroyedShip?.Point?.Y}] coord [{destroyedShip?.Coordinate?.X},{destroyedShip?.Coordinate?.Y}]");
                 this.Playership.Scavenge(destroyedShip.Faction == FactionName.Federation
                     ? ScavengeType.FederationShip
                     : ScavengeType.OtherShip);
@@ -1526,6 +1527,7 @@ namespace StarTrek_KG.Playfield
                     if (target == this.Playership)
                     {
                         this.Write?.Line($"Shockwave from destroyed hostile {destroyed.Name} damaged your ship for {damage}.");
+                        this.Game?.AppendGameEventLog($"Splash damage: destroyed hostile {destroyed.Name} dealt {damage} to playership");
                     }
 
                     if (target is Ship concreteTarget)
@@ -1676,6 +1678,7 @@ namespace StarTrek_KG.Playfield
 
                 coordinate.Item = CoordinateItem.Empty;
                 coordinate.Object = null;
+                this.Game?.AppendGameEventLog($"Item consumed: energy anomaly glyph={glyph} at coord [{coordinate.X},{coordinate.Y}]");
             }
 
             if (coordinate.Item == CoordinateItem.SporeField)

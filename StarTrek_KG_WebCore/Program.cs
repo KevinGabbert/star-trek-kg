@@ -684,15 +684,16 @@ static List<string> GetTerminalMenuLines()
 {
     return new List<string>
     {
-        " --- Terminal Menu ---",
-        "start - starts a normal game session",
-        "war games - starts a deterministic scenario session",
-        "systems cascade - starts systems failure survival mode",
-        "stop | exit | quit - ends the currently running game",
-        "clear session - clears the active session id",
-        "term menu - show terminal commands",
-        "release notes - see the latest release notes",
-        "clear - clear the screen"
+        "Terminal Commands",
+        "-----------------",
+        "start           Start a normal game session",
+        "war games       Start a deterministic scenario session",
+        "systems cascade Start systems failure survival mode",
+        "stop | exit     End the currently running game",
+        "clear session   Clear the active session id",
+        "term menu       Show terminal commands",
+        "release notes   Show the latest release notes",
+        "clear           Clear the screen"
     };
 }
 

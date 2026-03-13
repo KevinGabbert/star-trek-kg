@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Linq;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
@@ -67,6 +68,8 @@ namespace UnitTests.Actors.MovementTests
             Assert.AreEqual(0, _game.Map.Playership.Coordinate.Y);
             Assert.AreEqual(CoordinateItem.PlayerShip, _game.Map.Playership.GetSector().Coordinates[0, 0].Item);
             Assert.AreEqual(CoordinateItem.Starbase, _game.Map.Playership.GetSector().Coordinates[1, 0].Item);
+            Assert.IsTrue(_game.Interact.Output.Queue.Any(q => q.Contains("Starbase encountered while navigating")));
+            Assert.IsTrue(_game.Interact.Output.Queue.Any(q => q.Contains("Collision with starbase caused massive structural damage")));
         }
 
         [Test]

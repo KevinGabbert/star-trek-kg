@@ -6,6 +6,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
+using StarTrek_KG.Subsystem;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Output
@@ -52,15 +53,17 @@ namespace UnitTests.Output
         {
             var sector = _game.Map.Playership.GetSector();
             var outpostCoordinate = sector.Coordinates[1, 0];
+            var torpedoes = Torpedoes.For(_game.Map.Playership);
+            var startingTorpedoes = torpedoes.Count;
 
             for (var i = 0; i < 3; i++)
             {
-                _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "tor");
-                _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "7");
+                _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "tor 7");
             }
 
             Assert.AreEqual(CoordinateItem.Empty, outpostCoordinate.Item);
             Assert.IsNull(outpostCoordinate.Object);
+            Assert.AreEqual(startingTorpedoes - 3, torpedoes.Count);
         }
     }
 }

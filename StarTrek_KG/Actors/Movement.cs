@@ -23,6 +23,7 @@ namespace StarTrek_KG.Actors
         public bool BlockedByObstacle { get; set; }
         public bool BlockedByGalacticBarrier { get; private set; }
         public IInteraction SystemPrompt { get; set; }
+        private IInteraction CurrentPrompt => this.ShipConnectedTo?.Map?.Game?.Interact ?? this.SystemPrompt;
 
         private readonly string NEBULA_ENCOUNTERED = "Nebula Encountered. Navigation stopped to manually recalibrate warp coil"; //todo: resource this.
         private readonly string GALACTIC_BARRIER_ENCOUNTERED = "Navigation auto shutdown. Galactic Barrier encountered. Power drained by {0}.";
@@ -43,6 +44,7 @@ namespace StarTrek_KG.Actors
             this.ClearOrRestoreCurrentCoordinate();
 
             IGame game = this.ShipConnectedTo.Map.Game;
+            game?.AppendGameEventLog($"Movement requested: ship={this.ShipConnectedTo?.Name} type={movementType} dir={direction} distance={distance} from sector [{this.ShipConnectedTo?.Point?.X},{this.ShipConnectedTo?.Point?.Y}] coord [{this.ShipConnectedTo?.Coordinate?.X},{this.ShipConnectedTo?.Coordinate?.Y}]");
 
             switch (movementType)
             {
@@ -102,6 +104,8 @@ namespace StarTrek_KG.Actors
                 // Ensure the ship remains visible when movement is blocked
                 this.ShipConnectedTo.Map.SetPlayershipInActiveSector(this.ShipConnectedTo.Map);
             }
+
+            game?.AppendGameEventLog($"Movement result: ship={this.ShipConnectedTo?.Name} sector [{this.ShipConnectedTo?.Point?.X},{this.ShipConnectedTo?.Point?.Y}] coord [{this.ShipConnectedTo?.Coordinate?.X},{this.ShipConnectedTo?.Coordinate?.Y}] blockedObstacle={this.BlockedByObstacle} blockedBarrier={this.BlockedByGalacticBarrier}");
         }
 
         //todo: for warp-to-Sector
@@ -186,6 +190,7 @@ namespace StarTrek_KG.Actors
                     if (hitGaseousAnomaly)
                     {
                         this.ApplyGaseousAnomalyTravelPenalty();
+                        this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Movement hazard: gaseous anomaly at coord [{targetCoordinate?.X},{targetCoordinate?.Y}]");
                         this.ShipConnectedTo.OutputLine("Gaseous anomaly encountered. Impulse movement halted.");
                         break;
                     }
@@ -196,10 +201,12 @@ namespace StarTrek_KG.Actors
                         var map = this.ShipConnectedTo.Map as Map;
                         if (map != null && map.TrySendShipBackInTime(travellingShip, rewindTurns))
                         {
+                            this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Movement hazard: temporal rift rewound ship by {rewindTurns} turns.");
                             this.ShipConnectedTo.OutputLine($"Temporal rift encountered. Ship displaced to position from {rewindTurns} turns ago.");
                         }
                         else
                         {
+                            this.ShipConnectedTo.Map.Game?.AppendGameEventLog("Movement hazard: temporal rift encountered but rewind failed.");
                             this.ShipConnectedTo.OutputLine("Temporal rift encountered, but no stable historical lock was available.");
                         }
 
@@ -260,34 +267,40 @@ namespace StarTrek_KG.Actors
             {
                 case CoordinateItem.Star:
                     ICoordinateObject star = currentObject;
-                    this.SystemPrompt.Line($"Stellar body {star?.Name?.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
-                    this.SystemPrompt.Line("Collision with a stellar body resulted in catastrophic destruction.");
+                    this.CurrentPrompt.Line($"Stellar body {star?.Name?.ToUpper()} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.CurrentPrompt.Line("Collision with a stellar body resulted in catastrophic destruction.");
+                    this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Collision: ship hit star '{star?.Name}' at [{sector.X},{sector.Y}] and was destroyed.");
                     this.ShipConnectedTo.Energy = 0;
                     this.ShipConnectedTo.Destroyed = true;
                     break;
 
                 case CoordinateItem.HostileShip:
                     ICoordinateObject hostile = currentObject;
-                    this.SystemPrompt.Line($"Ship {hostile?.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.CurrentPrompt.Line($"Ship {hostile?.Name} encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Collision: ship hit hostile '{hostile?.Name}' at [{sector.X},{sector.Y}]");
                     this.ApplyCollisionDamage("HostileCollisionDamage", 350, "Collision with hostile ship caused severe hull damage.");
                     break;
 
 
                 case CoordinateItem.Starbase:
-                    this.SystemPrompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.CurrentPrompt.Line($"Starbase encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Collision: ship hit starbase at [{sector.X},{sector.Y}]");
                     this.ApplyCollisionDamage("StarbaseCollisionDamage", 900, "Collision with starbase caused massive structural damage.");
                     break;
                 case CoordinateItem.HostileOutpost:
-                    this.SystemPrompt.Line($"Hostile outpost encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.CurrentPrompt.Line($"Hostile outpost encountered while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Collision: ship hit hostile outpost at [{sector.X},{sector.Y}]");
                     this.ApplyCollisionDamage("StarbaseCollisionDamage", 900, "Collision with hostile outpost caused massive structural damage.");
                     break;
 
                 case CoordinateItem.BlackHole:
-                    this.SystemPrompt.Line($"Black hole event horizon detected at sector: [{sector.X},{sector.Y}]. Navigation halted.");
+                    this.CurrentPrompt.Line($"Black hole event horizon detected at sector: [{sector.X},{sector.Y}]. Navigation halted.");
+                    this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Collision/Block: black hole at [{sector.X},{sector.Y}]");
                     break;
 
                 default:
-                    this.SystemPrompt.Line($"Detected an unidentified obstacle while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.CurrentPrompt.Line($"Detected an unidentified obstacle while navigating at sector: [{sector.X},{sector.Y}]");
+                    this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Collision/Block: unknown obstacle {currentItem} at [{sector.X},{sector.Y}]");
                     break;
             }
         }
@@ -306,6 +319,7 @@ namespace StarTrek_KG.Actors
 
             this.ShipConnectedTo.OutputLine($"{damageMessage} Damage: {damage}.");
             this.ShipConnectedTo.Energy -= damage;
+            this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Collision damage applied: {damageMessage} amount={damage} remainingEnergy={this.ShipConnectedTo.Energy}");
 
             if (this.ShipConnectedTo.Energy <= 0)
             {
@@ -321,6 +335,7 @@ namespace StarTrek_KG.Actors
             if (this.ShipConnectedTo != null)
             {
                 this.ShipConnectedTo.OutputLine(string.Format(this.GALACTIC_BARRIER_ENCOUNTERED, damage));
+                this.ShipConnectedTo.Map.Game?.AppendGameEventLog($"Galactic barrier penalty applied: damage={damage}");
             }
 
             if (this.ShipConnectedTo == null)
@@ -567,7 +582,7 @@ namespace StarTrek_KG.Actors
             string userDirection = "";
             List<int> availableDirections = Enum.GetValues(typeof(NavDirection)).Cast<int>().ToList();
 
-            bool userEnteredCourse = this.ShipConnectedTo.Map.Game.Prompt.Invoke($"{this.SystemPrompt.RenderCourse()}{Environment.NewLine}Enter Course: ", out userDirection);
+            bool userEnteredCourse = this.ShipConnectedTo.Map.Game.Prompt.Invoke($"{this.CurrentPrompt.RenderCourse()}{Environment.NewLine}Enter Course: ", out userDirection);
 
             if (!userEnteredCourse || string.IsNullOrWhiteSpace(userDirection))
             {
@@ -579,7 +594,7 @@ namespace StarTrek_KG.Actors
 
             if (!userDirection.IsNumeric() || userDirection.Contains("."))
             {
-                this.SystemPrompt.Line("Invalid course.");
+                this.CurrentPrompt.Line("Invalid course.");
                 direction = NavDirection.Up;
 
                 return true;
@@ -589,7 +604,7 @@ namespace StarTrek_KG.Actors
 
             if (directionToCheck > availableDirections.Max() || directionToCheck < availableDirections.Min())
             {
-                this.SystemPrompt.Line("Invalid course.");
+                this.CurrentPrompt.Line("Invalid course.");
                 direction = NavDirection.Up;
 
                 return true;

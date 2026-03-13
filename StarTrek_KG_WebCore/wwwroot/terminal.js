@@ -264,13 +264,13 @@ jQuery(function ($) {
     applyWord('Galactic Barrier', clientSettings.galacticBarrierColor);
 
     // Hostile ship names (default Klingon style name in IRS).
-    updated = updated.replace(/\bIKC [A-Za-z'’`\-]+/g, (match) => {
+    updated = updated.replace(/\b(?:IKC|IKS)\s+[^\s]+/g, (match) => {
       formatted = true;
       return reverseColor(match, clientSettings.hostileColor);
     });
 
     // Star names are currently rendered as uppercase names in IRS cells.
-    updated = updated.replace(/\b[A-Z]{3,}(?: [A-Z]{3,})+\b/g, (match) => {
+    updated = updated.replace(/\b[A-Z]{3,}(?: [A-Z]{2,})+\b/g, (match) => {
       // Skip already-special system labels.
       if (match === 'EMPTY SPACE' || match === 'GALACTIC BARRIER') {
         return match;
@@ -278,6 +278,20 @@ jQuery(function ($) {
 
       formatted = true;
       return reverseColor(match, clientSettings.starColor);
+    });
+
+    return { text: updated, formatted };
+  }
+
+  function colorizeHostileNames(line) {
+    if (!line) {
+      return { text: line, formatted: false };
+    }
+
+    let formatted = false;
+    const updated = line.replace(/\b(?:IKC|IKS)\s+[^\s]+/g, (match) => {
+      formatted = true;
+      return reverseColor(match, clientSettings.hostileColor);
     });
 
     return { text: updated, formatted };
@@ -343,6 +357,17 @@ jQuery(function ($) {
         }
 
         const immediateScanStyled = colorizeImmediateScanEntities(item);
+
+        if (item.includes('[[;')) {
+          term.echo(item, { raw: false });
+          return;
+        }
+
+        const hostileStyled = colorizeHostileNames(item);
+        if (hostileStyled.formatted) {
+          term.echo(hostileStyled.text, { raw: false });
+          return;
+        }
         if (immediateScanStyled.formatted) {
           term.echo(immediateScanStyled.text, { raw: false });
           return;

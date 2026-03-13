@@ -49,9 +49,10 @@ namespace StarTrek_KG.Output
             List<string> lrsResults = LongRangeScan.For(map.Playership).RunLRSScan(shipLocation);
 
             var topBorder = this.Config.GetText("CRSTopBorder");
+            var renderedTopBorder = this.BuildCrsTopBorderDisplay(topBorder, map.Playership);
 
             this.CRS_Sector_ScanLine(SectorDisplayName, topBorder, shipLocation);
-            this.ScanLine(topBorder, $" Energy: {map.Playership.Energy}   Shields: {Shields.For(map.Playership).Energy}");
+            this.Interact.SingleLine(renderedTopBorder + $" Energy: {map.Playership.Energy}   Shields: {Shields.For(map.Playership).Energy}");
 
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
             var game = map.Game as Game;
@@ -383,6 +384,77 @@ namespace StarTrek_KG.Output
 
             var symbol = string.IsNullOrEmpty(defaultValue) ? " " : defaultValue.Substring(0, 1);
             return $" {symbol} ";
+        }
+
+        private string BuildCrsTopBorderDisplay(string topBorder, IShip ship)
+        {
+            if (!this.GetBoolSettingOrDefault("enable-crs-subsystem-bar", false))
+            {
+                return topBorder;
+            }
+
+            if (string.IsNullOrWhiteSpace(topBorder) || topBorder.Length < 3 || ship?.Subsystems == null)
+            {
+                return topBorder;
+            }
+
+            var left = topBorder[0];
+            var right = topBorder[topBorder.Length - 1];
+            var fill = topBorder[1];
+            var innerWidth = topBorder.Length - 2;
+
+            var subsystems = ship.Subsystems
+                .Where(s => s?.Type != null && s.Type != SubsystemType.Debug)
+                .OrderBy(s => s.Type.Name)
+                .ToList();
+
+            var green = this.GetStringSettingOrDefault("crs-subsystem-color-green", "#00ff00");
+            var yellow = this.GetStringSettingOrDefault("crs-subsystem-color-yellow", "#ffff00");
+            var red = this.GetStringSettingOrDefault("crs-subsystem-color-red", "#ff3b30");
+
+            var sb = new StringBuilder();
+            sb.Append(left);
+            for (var i = 0; i < innerWidth; i++)
+            {
+                if (i < subsystems.Count)
+                {
+                    var subsystem = subsystems[i];
+                    var color = subsystem.Damage <= 0 ? green : subsystem.Damage == 1 ? yellow : red;
+                    sb.Append($"[[;{color};]{fill}]");
+                }
+                else
+                {
+                    sb.Append(fill);
+                }
+            }
+
+            sb.Append(right);
+            return sb.ToString();
+        }
+
+        private bool GetBoolSettingOrDefault(string key, bool defaultValue)
+        {
+            try
+            {
+                return this.Config.GetSetting<bool>(key);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        private string GetStringSettingOrDefault(string key, string defaultValue)
+        {
+            try
+            {
+                var value = this.Config.GetSetting<string>(key);
+                return string.IsNullOrWhiteSpace(value) ? defaultValue : value;
+            }
+            catch
+            {
+                return defaultValue;
+            }
         }
 
         private void AppendShipDesignator(StringBuilder sb, int totalHostiles, ICoordinate sector)
