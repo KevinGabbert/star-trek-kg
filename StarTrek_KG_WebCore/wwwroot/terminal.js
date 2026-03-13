@@ -154,7 +154,10 @@ async function fetchClientSettings() {
     const galacticBarrierColor = data && typeof data.galacticBarrierColor === 'string' && data.galacticBarrierColor.trim()
       ? data.galacticBarrierColor.trim()
       : '#ffffff';
-    return { autoStart: !!(data && data.autoStart), autoStartMode, terminalMenuColor, deuteriumColor, hostileColor, starbaseColor, starColor, galacticBarrierColor };
+    const crsSubsystemTooltips = data && Array.isArray(data.crsSubsystemTooltips)
+      ? data.crsSubsystemTooltips.map(item => String(item || '').trim()).filter(item => item.length > 0)
+      : [];
+    return { autoStart: !!(data && data.autoStart), autoStartMode, terminalMenuColor, deuteriumColor, hostileColor, starbaseColor, starColor, galacticBarrierColor, crsSubsystemTooltips };
   } catch {
     return {
       autoStart: false,
@@ -164,7 +167,8 @@ async function fetchClientSettings() {
       hostileColor: '#ff0000',
       starbaseColor: '#ffff00',
       starColor: '#ffffff',
-      galacticBarrierColor: '#ffffff'
+      galacticBarrierColor: '#ffffff',
+      crsSubsystemTooltips: []
     };
   }
 }
@@ -185,8 +189,49 @@ jQuery(function ($) {
     hostileColor: '#ff0000',
     starbaseColor: '#ffff00',
     starColor: '#ffffff',
-    galacticBarrierColor: '#ffffff'
+    galacticBarrierColor: '#ffffff',
+    crsSubsystemTooltips: []
   };
+
+  function annotateCrsSubsystemTooltips(root) {
+    if (!root || !Array.isArray(clientSettings.crsSubsystemTooltips) || clientSettings.crsSubsystemTooltips.length === 0) {
+      return;
+    }
+
+    const lineCandidates = root.querySelectorAll('.terminal-output > div > div, .terminal-output > div');
+    lineCandidates.forEach((line) => {
+      if (!line || line.dataset.crsSubsystemAnnotated === 'true') {
+        return;
+      }
+
+      const text = line.textContent || '';
+      if (!text.includes('Energy:') || !text.includes('Shields:')) {
+        return;
+      }
+
+      const spans = Array.from(line.querySelectorAll('span')).filter((span) => {
+        const content = (span.textContent || '').trim();
+        return content.length === 1 && /[-═]/.test(content);
+      });
+
+      if (spans.length < clientSettings.crsSubsystemTooltips.length) {
+        return;
+      }
+
+      clientSettings.crsSubsystemTooltips.forEach((name, index) => {
+        const span = spans[index];
+        if (!span) {
+          return;
+        }
+
+        span.title = name;
+        span.setAttribute('aria-label', name);
+        span.classList.add('crs-subsystem-status');
+      });
+
+      line.dataset.crsSubsystemAnnotated = 'true';
+    });
+  }
 
   function isTerminalMenuHeader(line) {
     return line && line.trim() === '--- Terminal Menu ---';
@@ -397,6 +442,7 @@ jQuery(function ($) {
 
     const prompt = await fetchPrompt(getTerminalSessionId());
     term.set_prompt(prompt);
+    annotateCrsSubsystemTooltips(termHost[0]);
   }
 
   (async function initializeTerminal() {

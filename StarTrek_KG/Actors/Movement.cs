@@ -45,6 +45,14 @@ namespace StarTrek_KG.Actors
 
             IGame game = this.ShipConnectedTo.Map.Game;
             game?.AppendGameEventLog($"Movement requested: ship={this.ShipConnectedTo?.Name} type={movementType} dir={direction} distance={distance} from sector [{this.ShipConnectedTo?.Point?.X},{this.ShipConnectedTo?.Point?.Y}] coord [{this.ShipConnectedTo?.Coordinate?.X},{this.ShipConnectedTo?.Coordinate?.Y}]");
+            if (this.ShipConnectedTo == game?.Map?.Playership &&
+                game is Game concreteGame &&
+                concreteGame.IsPlayerImmobilizedByBorg(this.ShipConnectedTo))
+            {
+                this.ShipConnectedTo.OutputLine("Borg tractor fields immobilize the ship. Movement unavailable.");
+                this.ShipConnectedTo.Map.SetPlayershipInActiveSector(this.ShipConnectedTo.Map);
+                return;
+            }
 
             switch (movementType)
             {
@@ -197,6 +205,7 @@ namespace StarTrek_KG.Actors
 
                     if (hitTemporalRift)
                     {
+                        (this.ShipConnectedTo.Map.Game as Game)?.HandlePlayerEscapedTemporalRift();
                         var rewindTurns = this.ShipConnectedTo.Map.Game.Config.GetSetting<int>("TemporalRiftRewindTurns");
                         var map = this.ShipConnectedTo.Map as Map;
                         if (map != null && map.TrySendShipBackInTime(travellingShip, rewindTurns))

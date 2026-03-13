@@ -267,7 +267,6 @@ namespace StarTrek_KG.Output
             var isNebula = region.Type == SectorType.Nebulae;
             string regionDisplayName = region.Name;
             var sectorScanStringBuilder = new StringBuilder();
-
             if (isNebula)
             {
                 regionDisplayName += " Nebula"; //todo: resource out.
@@ -626,8 +625,15 @@ namespace StarTrek_KG.Output
 
                 if (scanDataPoint.Point != null)
                 {
-                    regionCoordinate = coordinateIndicator + scanDataPoint.Point.X + "." +
-                                         scanDataPoint.Point.Y + "";
+                    if (scanDataPoint is LRSResult lrsResult && !string.IsNullOrWhiteSpace(lrsResult.QuadrantName))
+                    {
+                        regionCoordinate = $"{QuadrantRules.GetQuadrantSymbol(lrsResult.QuadrantName)}§{scanDataPoint.Point.X}.{scanDataPoint.Point.Y}";
+                    }
+                    else
+                    {
+                        regionCoordinate = coordinateIndicator + scanDataPoint.Point.X + "." +
+                                           scanDataPoint.Point.Y;
+                    }
 
                     currentSectorName += scanDataPoint.SectorName;
                 }
@@ -1752,6 +1758,12 @@ namespace StarTrek_KG.Output
             }
 
             var target = adjacentHostiles.First();
+            if (target.Faction == FactionName.Borg)
+            {
+                this.Output.WriteLine("Boarding the Borg is not survivable. Retreat is advised.");
+                return this.Output.Queue.ToList();
+            }
+
             if (!this.TargetWeaponsAreDown(target))
             {
                 this.Output.WriteLine($"Boarding denied. {target.Name} still has active weapons.");
@@ -2657,6 +2669,42 @@ namespace StarTrek_KG.Output
                 case "romulan ships":
                     faction = FactionName.Romulan;
                     return true;
+                case "cardassian":
+                case "cardassians":
+                case "cardassian ship":
+                case "cardassian ships":
+                    faction = FactionName.Cardassian;
+                    return true;
+                case "ferengi":
+                case "ferengis":
+                case "ferengi ship":
+                case "ferengi ships":
+                    faction = FactionName.Ferengi;
+                    return true;
+                case "bajoran":
+                case "bajorans":
+                case "bajoran ship":
+                case "bajoran ships":
+                    faction = FactionName.Bajoran;
+                    return true;
+                case "dominion":
+                case "dominion ship":
+                case "dominion ships":
+                case "jem'hadar":
+                case "jemhadar":
+                    faction = FactionName.Dominion;
+                    return true;
+                case "borg":
+                case "borg ship":
+                case "borg ships":
+                    faction = FactionName.Borg;
+                    return true;
+                case "kazon":
+                case "kazons":
+                case "kazon ship":
+                case "kazon ships":
+                    faction = FactionName.Kazon;
+                    return true;
                 case "vulcan":
                 case "vulcans":
                 case "vulcan ship":
@@ -2775,7 +2823,7 @@ namespace StarTrek_KG.Output
             {
             }
 
-            return faction != FactionName.Vulcan;
+            return faction != FactionName.Vulcan && faction != FactionName.Federation;
         }
 
         private List<FactionName> GetKnownShipFactions()
@@ -2785,6 +2833,12 @@ namespace StarTrek_KG.Output
                 FactionName.Klingon,
                 FactionName.Federation,
                 FactionName.Romulan,
+                FactionName.Cardassian,
+                FactionName.Ferengi,
+                FactionName.Bajoran,
+                FactionName.Dominion,
+                FactionName.Borg,
+                FactionName.Kazon,
                 FactionName.Gorn,
                 FactionName.Vulcan,
                 FactionName.Other,

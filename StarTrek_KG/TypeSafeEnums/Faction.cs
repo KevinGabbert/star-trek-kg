@@ -15,6 +15,12 @@ namespace StarTrek_KG.TypeSafeEnums
         public static readonly FactionName Gorn = new FactionName(5, "Gorn");
         public static readonly FactionName Other = new FactionName(6, "Other");
         public static readonly FactionName TestFaction = new FactionName(7, "TestFaction");
+        public static readonly FactionName Cardassian = new FactionName(8, "Cardassian");
+        public static readonly FactionName Ferengi = new FactionName(9, "Ferengi");
+        public static readonly FactionName Bajoran = new FactionName(10, "Bajoran");
+        public static readonly FactionName Dominion = new FactionName(11, "Dominion");
+        public static readonly FactionName Borg = new FactionName(12, "Borg");
+        public static readonly FactionName Kazon = new FactionName(13, "Kazon");
 
         private static Dictionary<string, FactionName> instance = new Dictionary<string, FactionName>();
 

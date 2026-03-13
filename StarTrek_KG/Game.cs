@@ -741,6 +741,575 @@ namespace StarTrek_KG
             concreteMap.TryApplyBlackHolePull(ship);
         }
 
+        public void HandlePlayerUsedWormhole()
+        {
+            var delay = this.GetIntSettingOrDefault("BorgWormholeDelayTurns", 5);
+            foreach (var borg in this.GetBorgShips().Where(b => b.BorgTrackingPlayer))
+            {
+                borg.BorgReacquireDelayTurnsRemaining = Math.Max(borg.BorgReacquireDelayTurnsRemaining, delay);
+                borg.BorgArrivalTurnsRemaining = 0;
+                borg.BorgLastKnownPlayerSector = this.CopyPoint(this.Map?.Playership?.Point);
+            }
+        }
+
+        public void HandlePlayerEscapedTemporalRift()
+        {
+            this.LoseBorgTracking("Temporal rift interference severs Borg pursuit lock.");
+        }
+
+        public void HandlePlayerSectorVisibilityChange(Sector sector)
+        {
+            if (sector?.Type == SectorType.Nebulae)
+            {
+                this.LoseBorgTracking("Nebula cover breaks Borg sensor lock.");
+            }
+        }
+
+        public bool IsPlayerImmobilizedByBorg(IShip ship)
+        {
+            if (ship == null || ship != this.Map?.Playership || ship.GetSector()?.Type == SectorType.Nebulae)
+            {
+                return false;
+            }
+
+            var range = this.GetIntSettingOrDefault("BorgAttackRange", 2);
+            return this.GetBorgShips()
+                .Any(borg => borg.Point.X == ship.Point.X &&
+                             borg.Point.Y == ship.Point.Y &&
+                             borg.BorgRepelledTurnsRemaining <= 0 &&
+                             this.GetCoordinateDistance(borg, ship) <= range);
+        }
+
+        public bool TryApplyBorgWeaponDamage(IShip target, int damage, string weaponName)
+        {
+            if (!(target is Ship borg) || borg.Faction != FactionName.Borg)
+            {
+                return false;
+            }
+
+            if (borg.BorgDamageableTurnsRemaining <= 0)
+            {
+                borg.Energy = borg.MaxEnergy;
+                Shields.For(borg).Energy = this.GetIntSettingOrDefault("BorgShieldEnergy", borg.MaxEnergy);
+                this.Interact.Line($"{borg.Name} adapts to your {weaponName}. No lasting damage registered.");
+                return true;
+            }
+
+            var shields = Shields.For(borg);
+            var remainingDamage = Math.Max(0, damage);
+            if (remainingDamage > 0 && shields.Energy > 0)
+            {
+                var absorbed = Math.Min(shields.Energy, remainingDamage);
+                shields.Energy -= absorbed;
+                remainingDamage -= absorbed;
+            }
+
+            if (remainingDamage > 0)
+            {
+                borg.Energy = Math.Max(1, borg.Energy - remainingDamage);
+            }
+
+            if (string.Equals(weaponName, "torpedo", StringComparison.OrdinalIgnoreCase))
+            {
+                borg.BorgRepelledTurnsRemaining = Math.Max(borg.BorgRepelledTurnsRemaining, 2);
+                this.Interact.Line($"{borg.Name} is repelled. You have a brief escape window.");
+            }
+
+            this.Interact.Line($"{borg.Name} absorbs the {weaponName}. Borg integrity now E:{borg.Energy}/S:{shields.Energy}.");
+            return true;
+        }
+
+        private void ApplyBorgTurnEffects()
+        {
+            var player = this.Map?.Playership;
+            if (player == null || player.Destroyed)
+            {
+                return;
+            }
+
+            var borgShips = this.GetBorgShips().ToList();
+            if (!borgShips.Any())
+            {
+                return;
+            }
+
+            var currentSector = player.GetSector();
+            if (currentSector?.Type == SectorType.Nebulae)
+            {
+                this.LoseBorgTracking("Nebula cover breaks Borg sensor lock.");
+                return;
+            }
+
+            foreach (var borg in borgShips)
+            {
+                if (borg.Destroyed)
+                {
+                    continue;
+                }
+
+                if (borg.Point.X == player.Point.X && borg.Point.Y == player.Point.Y)
+                {
+                    this.EnsureBorgTracking(borg);
+                    this.ResolveBorgSameSectorTurn(borg, player);
+                    continue;
+                }
+
+                if (!borg.BorgTrackingPlayer)
+                {
+                    continue;
+                }
+
+                this.UpdateBorgPursuitTarget(borg, player);
+                if (borg.BorgReacquireDelayTurnsRemaining > 0)
+                {
+                    borg.BorgReacquireDelayTurnsRemaining--;
+                    continue;
+                }
+
+                if (borg.BorgArrivalTurnsRemaining > 0)
+                {
+                    borg.BorgArrivalTurnsRemaining--;
+                    if (borg.BorgArrivalTurnsRemaining > 0)
+                    {
+                        continue;
+                    }
+                }
+
+                this.MoveBorgToPlayerSector(borg, player);
+            }
+        }
+
+        private IEnumerable<Ship> GetBorgShips()
+        {
+            return this.Map?.Sectors?.GetHostiles()
+                ?.OfType<Ship>()
+                .Where(ship => ship.Faction == FactionName.Borg && !ship.Destroyed) ?? Enumerable.Empty<Ship>();
+        }
+
+        private void LoseBorgTracking(string message)
+        {
+            var borgShips = this.GetBorgShips().Where(b => b.BorgTrackingPlayer).ToList();
+            if (!borgShips.Any())
+            {
+                return;
+            }
+
+            foreach (var borg in borgShips)
+            {
+                borg.BorgTrackingPlayer = false;
+                borg.BorgArrivalTurnsRemaining = 0;
+                borg.BorgReacquireDelayTurnsRemaining = 0;
+                borg.BorgLastKnownPlayerSector = null;
+                borg.BorgDamageableTurnsRemaining = 0;
+            }
+
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                this.Interact.Line(message);
+            }
+        }
+
+        private void EnsureBorgTracking(Ship borg)
+        {
+            if (borg.BorgTrackingPlayer)
+            {
+                return;
+            }
+
+            borg.BorgTrackingPlayer = true;
+            borg.BorgArrivalTurnsRemaining = 0;
+            borg.BorgReacquireDelayTurnsRemaining = 0;
+            borg.BorgDamageableTurnsRemaining = this.GetIntSettingOrDefault("BorgInitialDamageableTurns", 2);
+            borg.BorgLastKnownPlayerSector = this.CopyPoint(this.Map?.Playership?.Point);
+            this.Interact.Line($"{borg.Name} has adapted to your presence. Evasion is recommended.");
+        }
+
+        private void UpdateBorgPursuitTarget(Ship borg, IShip player)
+        {
+            if (borg.BorgLastKnownPlayerSector != null &&
+                borg.BorgLastKnownPlayerSector.X == player.Point.X &&
+                borg.BorgLastKnownPlayerSector.Y == player.Point.Y)
+            {
+                return;
+            }
+
+            borg.BorgLastKnownPlayerSector = this.CopyPoint(player.Point);
+            borg.BorgArrivalTurnsRemaining = this.GetIntSettingOrDefault("BorgPursuitDelayTurns", 2);
+        }
+
+        private void MoveBorgToPlayerSector(Ship borg, IShip player)
+        {
+            var playerSector = player.GetSector();
+            var destination = playerSector?.Coordinates?
+                .Where(c => c.Item == CoordinateItem.Empty)
+                .OrderByDescending(c => Math.Abs(c.X - player.Coordinate.X) + Math.Abs(c.Y - player.Coordinate.Y))
+                .FirstOrDefault();
+            if (destination == null)
+            {
+                return;
+            }
+
+            var oldSector = borg.GetSector();
+            var oldCoordinate = oldSector.Coordinates.GetNoError(new Point(borg.Coordinate.X, borg.Coordinate.Y));
+            if (oldCoordinate != null && oldCoordinate.Object == borg)
+            {
+                oldCoordinate.Item = CoordinateItem.Empty;
+                oldCoordinate.Object = null;
+            }
+
+            borg.Point = new Point(playerSector.X, playerSector.Y);
+            borg.Coordinate = destination;
+            destination.Item = CoordinateItem.HostileShip;
+            destination.Object = borg;
+            borg.BorgArrivalTurnsRemaining = 0;
+
+            this.Interact.Line($"{borg.Name} emerges in this sector on an intercept vector.");
+            this.AppendGameEventLog($"{borg.Name} arrived in sector [{playerSector.X},{playerSector.Y}]");
+        }
+
+        private void ResolveBorgSameSectorTurn(Ship borg, IShip player)
+        {
+            if (borg.BorgDamageableTurnsRemaining > 0)
+            {
+                borg.BorgDamageableTurnsRemaining--;
+            }
+            else
+            {
+                borg.Energy = borg.MaxEnergy;
+                Shields.For(borg).Energy = this.GetIntSettingOrDefault("BorgShieldEnergy", borg.MaxEnergy);
+            }
+
+            if (borg.BorgRepelledTurnsRemaining > 0)
+            {
+                borg.BorgRepelledTurnsRemaining--;
+                return;
+            }
+
+            if (this.TryResolveBorgBlackHoleLure(borg, player) || this.TryResolveBorgWormholeLure(borg, player))
+            {
+                return;
+            }
+
+            var range = this.GetIntSettingOrDefault("BorgAttackRange", 2);
+            if (this.GetCoordinateDistance(borg, player) > range)
+            {
+                this.MoveBorgTowardPlayer(borg, player);
+            }
+
+            if (this.GetCoordinateDistance(borg, player) <= range)
+            {
+                var drainPercent = this.GetIntSettingOrDefault("BorgPowerDrainPercent", 35);
+                var drain = Math.Max(1, (int)Math.Ceiling(player.Energy * (drainPercent / 100.0)));
+                player.Energy = Math.Max(0, player.Energy - drain);
+                this.Interact.Line($"{borg.Name} locks down your ship and drains {drain} energy.");
+                if (player.Energy <= 0)
+                {
+                    player.Destroyed = true;
+                }
+            }
+        }
+
+        private void MoveBorgTowardPlayer(Ship borg, IShip player)
+        {
+            var dx = Math.Sign(player.Coordinate.X - borg.Coordinate.X);
+            var dy = Math.Sign(player.Coordinate.Y - borg.Coordinate.Y);
+            var target = borg.GetSector().Coordinates.GetNoError(new Point(borg.Coordinate.X + dx, borg.Coordinate.Y + dy));
+            if (target == null || target.Item != CoordinateItem.Empty)
+            {
+                return;
+            }
+
+            var origin = borg.GetSector().Coordinates.GetNoError(new Point(borg.Coordinate.X, borg.Coordinate.Y));
+            if (origin != null && origin.Object == borg)
+            {
+                origin.Item = CoordinateItem.Empty;
+                origin.Object = null;
+            }
+
+            borg.Coordinate = target;
+            target.Item = CoordinateItem.HostileShip;
+            target.Object = borg;
+        }
+
+        private bool TryResolveBorgBlackHoleLure(Ship borg, IShip player)
+        {
+            var sector = borg.GetSector();
+            var blackHole = this.FindIntermediateHazard(sector, borg, player, CoordinateItem.BlackHole);
+            if (blackHole == null)
+            {
+                return false;
+            }
+
+            var percent = this.GetIntSettingOrDefault("BorgBlackHoleLurePercent", 25);
+            if (Utility.Utility.Random.Next(100) >= percent)
+            {
+                return false;
+            }
+
+            var origin = sector.Coordinates.GetNoError(new Point(borg.Coordinate.X, borg.Coordinate.Y));
+            if (origin != null && origin.Object == borg)
+            {
+                origin.Item = CoordinateItem.Empty;
+                origin.Object = null;
+            }
+
+            borg.Destroyed = true;
+            this.Interact.Line($"{borg.Name} is pulled into a black hole.");
+            this.AppendGameEventLog($"{borg.Name} destroyed by black hole lure");
+            return true;
+        }
+
+        private bool TryResolveBorgWormholeLure(Ship borg, IShip player)
+        {
+            var sector = borg.GetSector();
+            var wormholeCoordinate = this.FindIntermediateHazard(sector, borg, player, CoordinateItem.Wormhole);
+            if (wormholeCoordinate?.Object is not Wormhole wormhole)
+            {
+                return false;
+            }
+
+            var percent = this.GetIntSettingOrDefault("BorgWormholeLurePercent", 100);
+            if (Utility.Utility.Random.Next(100) >= percent)
+            {
+                return false;
+            }
+
+            var destinationSector = this.Map.Sectors[wormhole.DestinationSector];
+            var destination = destinationSector?.Coordinates?
+                .Where(c => c.Item == CoordinateItem.Empty)
+                .OrderBy(_ => Utility.Utility.Random.Next())
+                .FirstOrDefault();
+            if (destination == null)
+            {
+                return false;
+            }
+
+            var oldCoordinate = sector.Coordinates.GetNoError(new Point(borg.Coordinate.X, borg.Coordinate.Y));
+            if (oldCoordinate != null && oldCoordinate.Object == borg)
+            {
+                oldCoordinate.Item = CoordinateItem.Empty;
+                oldCoordinate.Object = null;
+            }
+
+            borg.Point = new Point(destinationSector.X, destinationSector.Y);
+            borg.Coordinate = destination;
+            destination.Item = CoordinateItem.HostileShip;
+            destination.Object = borg;
+            borg.BorgReacquireDelayTurnsRemaining = this.GetIntSettingOrDefault("BorgWormholeDelayTurns", 5);
+            borg.BorgArrivalTurnsRemaining = 0;
+            borg.BorgLastKnownPlayerSector = this.CopyPoint(player.Point);
+            this.Interact.Line($"{borg.Name} is diverted through a wormhole. Temporary respite achieved.");
+            return true;
+        }
+
+        private Coordinate FindIntermediateHazard(Sector sector, IShip borg, IShip player, CoordinateItem hazard)
+        {
+            if (sector?.Coordinates == null || borg?.Coordinate == null || player?.Coordinate == null)
+            {
+                return null;
+            }
+
+            if (borg.Coordinate.X == player.Coordinate.X)
+            {
+                var minY = Math.Min(borg.Coordinate.Y, player.Coordinate.Y) + 1;
+                var maxY = Math.Max(borg.Coordinate.Y, player.Coordinate.Y);
+                return sector.Coordinates
+                    .Where(c => c.X == borg.Coordinate.X && c.Y >= minY && c.Y < maxY && c.Item == hazard)
+                    .FirstOrDefault();
+            }
+
+            if (borg.Coordinate.Y == player.Coordinate.Y)
+            {
+                var minX = Math.Min(borg.Coordinate.X, player.Coordinate.X) + 1;
+                var maxX = Math.Max(borg.Coordinate.X, player.Coordinate.X);
+                return sector.Coordinates
+                    .Where(c => c.Y == borg.Coordinate.Y && c.X >= minX && c.X < maxX && c.Item == hazard)
+                    .FirstOrDefault();
+            }
+
+            return null;
+        }
+
+        private int GetCoordinateDistance(IShip left, IShip right)
+        {
+            return Math.Max(Math.Abs(left.Coordinate.X - right.Coordinate.X), Math.Abs(left.Coordinate.Y - right.Coordinate.Y));
+        }
+
+        private Point CopyPoint(Point point)
+        {
+            return point == null ? null : new Point(point.X, point.Y);
+        }
+
+        public bool HandleZipBugShot(ICoordinate coordinate, string weaponName)
+        {
+            if (coordinate?.Object is not ZipBug zipBug)
+            {
+                return false;
+            }
+
+            this.Interact.Line($"{zipBug.Name} flickers away from your {weaponName} fire.");
+            this.RelocateZipBug(zipBug);
+            return true;
+        }
+
+        private void ApplyZipBugTurnEffects()
+        {
+            var player = this.Map?.Playership;
+            if (player == null || player.Destroyed)
+            {
+                return;
+            }
+
+            foreach (var zipBug in this.GetZipBugs())
+            {
+                zipBug.TurnsInCurrentSector++;
+
+                if (zipBug.Coordinate?.SectorDef != null &&
+                    zipBug.Coordinate.SectorDef.X == player.Point.X &&
+                    zipBug.Coordinate.SectorDef.Y == player.Point.Y)
+                {
+                    if (zipBug.Form == ZipBug.ZipBugForm.FigureEight)
+                    {
+                        var sectorBonus = this.GetIntSettingOrDefault("ZipBugFigureEightEnergyPerTurn", 200);
+                        player.Energy += sectorBonus;
+                        this.Interact.Line($"{zipBug.Name} renews your energy by {sectorBonus}.");
+                    }
+
+                    this.MoveZipBugWithinSector(zipBug, player);
+
+                    var adjacent = this.IsZipBugAdjacentToPlayer(zipBug, player);
+                    if (adjacent && !zipBug.WasAdjacentToPlayerLastTurn)
+                    {
+                        var bonus = this.GetIntSettingOrDefault("ZipBugAdjacentEnergyBonus", 1000);
+                        player.Energy += bonus;
+                        this.Interact.Line($"{zipBug.Name} alights nearby. Energy gain: {bonus}.");
+                    }
+
+                    zipBug.WasAdjacentToPlayerLastTurn = adjacent;
+                }
+                else
+                {
+                    zipBug.WasAdjacentToPlayerLastTurn = false;
+                }
+
+                var maxTurns = this.GetIntSettingOrDefault("ZipBugMaxTurnsPerSector", 3);
+                if (zipBug.TurnsInCurrentSector >= maxTurns)
+                {
+                    this.RelocateZipBug(zipBug);
+                }
+            }
+        }
+
+        private IEnumerable<ZipBug> GetZipBugs()
+        {
+            return this.Map?.Sectors?
+                .SelectMany(s => s?.Coordinates ?? Enumerable.Empty<Coordinate>())
+                .Where(c => c?.Object is ZipBug)
+                .Select(c => (ZipBug)c.Object)
+                .ToList() ?? Enumerable.Empty<ZipBug>();
+        }
+
+        private void MoveZipBugWithinSector(ZipBug zipBug, IShip player)
+        {
+            var sector = this.Map.Sectors[new Point(zipBug.Coordinate.SectorDef.X, zipBug.Coordinate.SectorDef.Y)];
+            var candidates = sector.Coordinates
+                .Where(c => c.Item == CoordinateItem.Empty)
+                .Where(c => !(c.X == player.Coordinate.X && c.Y == player.Coordinate.Y))
+                .OrderBy(c => Math.Abs(c.X - player.Coordinate.X) + Math.Abs(c.Y - player.Coordinate.Y))
+                .ThenBy(_ => Utility.Utility.Random.Next())
+                .ToList();
+            if (!candidates.Any())
+            {
+                return;
+            }
+
+            var target = candidates.First();
+            var origin = sector.Coordinates.GetNoError(new Point(zipBug.Coordinate.X, zipBug.Coordinate.Y));
+            if (origin != null && origin.Object == zipBug)
+            {
+                origin.Item = CoordinateItem.Empty;
+                origin.Object = null;
+            }
+
+            zipBug.Coordinate = target;
+            target.Item = CoordinateItem.ZipBug;
+            target.Object = zipBug;
+        }
+
+        private bool IsPlayerProtectedByZipBug(IShip playerShip, out ZipBug zipBug)
+        {
+            zipBug = this.GetZipBugs()
+                .FirstOrDefault(bug => bug.Coordinate?.SectorDef != null &&
+                                       bug.Coordinate.SectorDef.X == playerShip.Point.X &&
+                                       bug.Coordinate.SectorDef.Y == playerShip.Point.Y &&
+                                       this.IsZipBugAdjacentToPlayer(bug, playerShip));
+            return zipBug != null;
+        }
+
+        private bool IsZipBugAdjacentToPlayer(ZipBug zipBug, IShip player)
+        {
+            if (zipBug?.Coordinate == null || player?.Coordinate == null)
+            {
+                return false;
+            }
+
+            var dx = Math.Abs(zipBug.Coordinate.X - player.Coordinate.X);
+            var dy = Math.Abs(zipBug.Coordinate.Y - player.Coordinate.Y);
+            return dx <= 1 && dy <= 1 && !(dx == 0 && dy == 0);
+        }
+
+        private void RelocateZipBug(ZipBug zipBug)
+        {
+            if (zipBug?.Coordinate?.SectorDef == null || this.Map?.Sectors == null)
+            {
+                return;
+            }
+
+            var originSector = this.Map.Sectors[new Point(zipBug.Coordinate.SectorDef.X, zipBug.Coordinate.SectorDef.Y)];
+            var origin = originSector?.Coordinates?.GetNoError(new Point(zipBug.Coordinate.X, zipBug.Coordinate.Y));
+            if (origin != null && origin.Object == zipBug)
+            {
+                origin.Item = CoordinateItem.Empty;
+                origin.Object = null;
+            }
+
+            var destinationSector = this.Map.Sectors
+                .Where(s => s != null && s.Coordinates.Any(c => c.Item == CoordinateItem.Empty))
+                .OrderBy(_ => Utility.Utility.Random.Next())
+                .FirstOrDefault();
+            var destination = destinationSector?.Coordinates
+                .Where(c => c.Item == CoordinateItem.Empty)
+                .OrderBy(_ => Utility.Utility.Random.Next())
+                .FirstOrDefault();
+            if (destination == null)
+            {
+                return;
+            }
+
+            zipBug.ResetForRelocation();
+            zipBug.Coordinate = destination;
+            destination.Item = CoordinateItem.ZipBug;
+            destination.Object = zipBug;
+        }
+
+        private void DepleteShipWeapons(IShip ship)
+        {
+            if (ship == null)
+            {
+                return;
+            }
+
+            Torpedoes.For(ship).Count = 0;
+            Torpedoes.For(ship).Damage = Math.Max(1, Torpedoes.For(ship).Damage);
+            Phasers.For(ship).Damage = Math.Max(1, Phasers.For(ship).Damage);
+
+            var disruptors = ship.Subsystems.SingleOrDefault(s => s.Type == SubsystemType.Disruptors);
+            if (disruptors != null)
+            {
+                disruptors.Damage = Math.Max(1, disruptors.Damage);
+            }
+        }
+
         private void RecordPlayerTurnSnapshot()
         {
             var ship = this.Map?.Playership as Ship;
@@ -790,9 +1359,14 @@ namespace StarTrek_KG
             this.Interact.Output.Clear();
             try
             {
+                var stardateBefore = this.Map?.Stardate ?? 0;
                 if (command.StartsWith("wrp ", StringComparison.OrdinalIgnoreCase))
                 {
                     this.Dispatcher.HandleInput(command, this.Map.Playership);
+                    if ((this.Map?.Stardate ?? 0) > stardateBefore)
+                    {
+                        this.MoveQuadrantFriendlies();
+                    }
                     return this.Map.Playership.OutputQueue();
                 }
 
@@ -806,8 +1380,14 @@ namespace StarTrek_KG
                 {
                     this.ApplySystemsCascadeTurnEffects(command);
                     this.ApplyEnvironmentalTurnEffects();
+                    this.ApplyBorgTurnEffects();
+                    this.ApplyZipBugTurnEffects();
                     this.ReportGameStatus();
                     this.RecordPlayerTurnSnapshot();
+                    if ((this.Map?.Stardate ?? 0) > stardateBefore)
+                    {
+                        this.MoveQuadrantFriendlies();
+                    }
                     retVal = this.Map.Playership.OutputQueue();
                 }
 
@@ -1154,6 +1734,139 @@ namespace StarTrek_KG
             this.HostileStarbasesAttack(map, activeSector);
 
             returnValue = this.HostileShipsAttack(map, hostilesAttacking, returnValue);
+            if (returnValue)
+            {
+                this.FriendlyShipsSupportPlayer(map, activeSector);
+            }
+        }
+
+        private void FriendlyShipsSupportPlayer(IMap map, ISector activeSector)
+        {
+            if (activeSector?.Coordinates == null)
+            {
+                return;
+            }
+
+            var hostiles = activeSector.GetHostiles().Where(h => h?.Destroyed != true).ToList();
+            if (!hostiles.Any())
+            {
+                return;
+            }
+
+            var friendlies = activeSector.Coordinates
+                .Where(c => c?.Object is IShip ship &&
+                            ship != map.Playership &&
+                            !ship.Destroyed &&
+                            ship.Allegiance == Allegiance.GoodGuy)
+                .Select(c => (IShip)c.Object)
+                .ToList();
+
+            var destroyed = new List<IShip>();
+            foreach (var friendly in friendlies)
+            {
+                var target = hostiles.FirstOrDefault(h => h?.Destroyed != true);
+                if (target == null)
+                {
+                    break;
+                }
+
+                var attackEnergy = 150 + Utility.Utility.TestableRandom(this, 100, 100);
+                this.Interact.Line($"{friendly.Name} fires on {target.Name}.");
+                if (target.Faction == FactionName.Borg)
+                {
+                    this.TryApplyBorgWeaponDamage(target, attackEnergy, "support fire");
+                }
+                else if (target is Ship concreteTarget)
+                {
+                    concreteTarget.AbsorbHitFrom(friendly, attackEnergy);
+                }
+                if (target.Destroyed)
+                {
+                    destroyed.Add(target);
+                    hostiles.Remove(target);
+                }
+            }
+
+            if (destroyed.Any())
+            {
+                map.RemoveAllDestroyedShips(map, destroyed);
+            }
+        }
+
+        private void MoveQuadrantFriendlies()
+        {
+            var concreteMap = this.Map as Map;
+            if (concreteMap?.Sectors == null)
+            {
+                return;
+            }
+
+            foreach (var sector in concreteMap.Sectors.Where(s => s?.Coordinates != null))
+            {
+                var friendlies = sector.Coordinates
+                    .Where(c => c?.Object is IShip ship &&
+                                ship != concreteMap.Playership &&
+                                !ship.Destroyed &&
+                                ship.Allegiance == Allegiance.GoodGuy)
+                    .Select(c => (IShip)c.Object)
+                    .ToList();
+
+                foreach (var friendly in friendlies)
+                {
+                    this.TryMoveFriendlyShip(concreteMap, friendly);
+                }
+            }
+        }
+
+        private void TryMoveFriendlyShip(Map map, IShip friendly)
+        {
+            if (Utility.Utility.Random.Next(100) >= QuadrantRules.GetFriendlyMovePercent(map))
+            {
+                return;
+            }
+
+            var currentSector = friendly.GetSector();
+            var allowCrossQuadrant = Utility.Utility.Random.Next(100) < QuadrantRules.GetFriendlyCrossQuadrantMovePercent(map);
+            var homeQuadrants = map.Sectors
+                .Where(s => QuadrantRules.GetFriendlyFactionsForSector(map, s.X, s.Y).Any(f => f == friendly.Faction))
+                .Select(s => QuadrantRules.GetQuadrantName(map, s.X, s.Y))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var candidateSectors = map.Sectors.Where(s => s != null && s.Type != SectorType.GalacticBarrier);
+            if (!allowCrossQuadrant && homeQuadrants.Any())
+            {
+                candidateSectors = candidateSectors.Where(s => homeQuadrants.Contains(QuadrantRules.GetQuadrantName(map, s.X, s.Y), StringComparer.OrdinalIgnoreCase));
+            }
+
+            var destinationSector = candidateSectors
+                .Where(s => Math.Abs(s.X - currentSector.X) <= 1 && Math.Abs(s.Y - currentSector.Y) <= 1 && !(s.X == currentSector.X && s.Y == currentSector.Y))
+                .OrderBy(_ => Utility.Utility.Random.Next())
+                .FirstOrDefault();
+            if (destinationSector == null)
+            {
+                return;
+            }
+
+            var destination = destinationSector.Coordinates.Where(c => c.Item == CoordinateItem.Empty)
+                .OrderBy(_ => Utility.Utility.Random.Next())
+                .FirstOrDefault();
+            if (destination == null)
+            {
+                return;
+            }
+
+            var oldCoordinate = currentSector.Coordinates.GetNoError(new Point(friendly.Coordinate.X, friendly.Coordinate.Y));
+            if (oldCoordinate != null && oldCoordinate.Object == friendly)
+            {
+                oldCoordinate.Item = CoordinateItem.Empty;
+                oldCoordinate.Object = null;
+            }
+
+            friendly.Point = new Point(destinationSector.X, destinationSector.Y);
+            friendly.Coordinate = destination;
+            destination.Item = CoordinateItem.FriendlyShip;
+            destination.Object = friendly;
         }
 
         private bool HostileShipsAttack(IMap map, ICollection<IShip> hostilesAttacking, bool returnValue)
@@ -1163,6 +1876,11 @@ namespace StarTrek_KG
                 foreach (var badGuy in hostilesAttacking)
                 {
                     if (badGuy?.Destroyed == true)
+                    {
+                        continue;
+                    }
+
+                    if (badGuy.Faction == FactionName.Borg)
                     {
                         continue;
                     }
@@ -1187,7 +1905,7 @@ namespace StarTrek_KG
 
         private bool HostileShouldRetreat(IShip hostile)
         {
-            if (hostile?.Subsystems == null)
+            if (hostile?.Subsystems == null || hostile.Faction == FactionName.Borg)
             {
                 return false;
             }
@@ -1482,6 +2200,13 @@ namespace StarTrek_KG
 
         private void AttackNonDockedPlayership(IMap map, IShip badGuy, int randomFactor)
         {
+            if (this.IsPlayerProtectedByZipBug(map.Playership, out var zipBug))
+            {
+                this.DepleteShipWeapons(badGuy);
+                this.Interact.Line($"{zipBug.Name} distorts incoming fire. {badGuy.Name}'s weapons are depleted.");
+                return;
+            }
+
             var playerShipLocation = map.Playership.GetLocation();
             var distance = Utility.Utility.Distance(playerShipLocation.Coordinate.X,
                                                     playerShipLocation.Coordinate.Y,

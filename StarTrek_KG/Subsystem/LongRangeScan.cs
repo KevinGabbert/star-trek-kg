@@ -138,6 +138,7 @@ namespace StarTrek_KG.Subsystem
             sectorResult.Starbases = 0;
             sectorResult.Stars = 0;
             sectorResult.GalacticBarrier = sectorToScan.Type == SectorType.GalacticBarrier;
+            sectorResult.QuadrantName = QuadrantRules.GetQuadrantName(map, sectorToScan.X, sectorToScan.Y);
 
             if (sectorToScan.Type != SectorType.Nebulae)
             {
@@ -165,6 +166,7 @@ namespace StarTrek_KG.Subsystem
                 Point = sectorToScan.GetPoint()
             };
             sectorResult.GalacticBarrier = sectorToScan.Type == SectorType.GalacticBarrier;
+            sectorResult.QuadrantName = QuadrantRules.GetQuadrantName(sectorToScan.Map, sectorToScan.X, sectorToScan.Y);
 
             if (sectorToScan.Type != SectorType.Nebulae)
             {

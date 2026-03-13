@@ -33,6 +33,21 @@ namespace UnitTests.Config.AppSettingTests
                 "StarbaseCollisionDamage",
                 "HostileDestructionSplashDamage",
                 "HostileMaxRetreatAttempts",
+                "BorgCubeCount",
+                "BorgEnergy",
+                "BorgShieldEnergy",
+                "BorgAttackRange",
+                "BorgPowerDrainPercent",
+                "BorgPursuitDelayTurns",
+                "BorgWormholeDelayTurns",
+                "BorgBlackHoleLurePercent",
+                "BorgWormholeLurePercent",
+                "BorgInitialDamageableTurns",
+                "BorgTorpedoDamage",
+                "ZipBugCount",
+                "ZipBugMaxTurnsPerSector",
+                "ZipBugAdjacentEnergyBonus",
+                "ZipBugFigureEightEnergyPerTurn",
                 "DeuteriumSectorSpawnPercent",
                 "DeuteriumSectorTotalMin",
                 "DeuteriumSectorTotalMax",
@@ -42,10 +57,13 @@ namespace UnitTests.Config.AppSettingTests
                 "SporeSectorPercent",
                 "BlackHoleSectorPercent",
                 "HostileOutpostSectorPercent",
+                "TSSLockStreakBonusPercent",
+                "TSSLockStreakBonusCapPercent",
                 "IRSPlusEnergyCost",
                 "IRSPlusPlusEnergyCost",
                 "IRSPlusPlusPlusEnergyCost",
-                "GraviticMineDamage"
+                "GraviticMineDamage",
+                "IRSHostileSystemsVisibleDistance"
             };
 
             foreach (var key in required)
@@ -98,7 +116,10 @@ namespace UnitTests.Config.AppSettingTests
                 "CommandPrompt",
                 "GalacticBarrierCRS",
                 "HostileOutpostGlyph",
-                "war-games-start-command"
+                "war-games-start-command",
+                "ZipBugFigureEightGlyph",
+                "ZipBugHostileGlyph",
+                "ZipBugRevealGlyph"
             };
 
             foreach (var key in required)

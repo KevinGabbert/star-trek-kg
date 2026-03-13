@@ -46,6 +46,12 @@ namespace StarTrek_KG.Actors
             public int RetreatAttempts { get; set; }
             public int RetreatSuppressedTurns { get; set; }
             public bool HasRetreatedAndRearmed { get; set; }
+            public bool BorgTrackingPlayer { get; set; }
+            public int BorgArrivalTurnsRemaining { get; set; }
+            public int BorgReacquireDelayTurnsRemaining { get; set; }
+            public int BorgDamageableTurnsRemaining { get; set; }
+            public int BorgRepelledTurnsRemaining { get; set; }
+            public Point BorgLastKnownPlayerSector { get; set; }
             public Dictionary<string, int> PowerShedSnapshots { get; set; }
 
             ////todo: status of the battles will be kept in the ships LOG.  If you board a ship, you can read its log and see who it had a battle with.
@@ -83,9 +89,9 @@ namespace StarTrek_KG.Actors
             }
 
             this.Type = this.GetType();
-            this.Allegiance = this.GetAllegiance(); 
             this.Name = name;
             this.Faction = faction ?? throw new GameException(this.Config.GetText("NullFaction"));
+            this.Allegiance = this.GetAllegiance();
             
             this.Subsystems = new Subsystems(this);
 
@@ -107,6 +113,12 @@ namespace StarTrek_KG.Actors
             this.RetreatAttempts = 0;
             this.RetreatSuppressedTurns = 0;
             this.HasRetreatedAndRearmed = false;
+            this.BorgTrackingPlayer = false;
+            this.BorgArrivalTurnsRemaining = 0;
+            this.BorgReacquireDelayTurnsRemaining = 0;
+            this.BorgDamageableTurnsRemaining = 0;
+            this.BorgRepelledTurnsRemaining = 0;
+            this.BorgLastKnownPlayerSector = null;
             this.PowerShedSnapshots = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         }
@@ -143,16 +155,31 @@ namespace StarTrek_KG.Actors
 
         private Allegiance GetAllegiance()
         {
-            var setting = this.Config.GetSetting<string>("Hostile");
+            string setting = null;
+            try
+            {
+                setting = this.Config?.Factions?[this.Faction?.ToString()]?.allegiance;
+            }
+            catch
+            {
+                setting = null;
+            }
+
+            if (string.IsNullOrWhiteSpace(setting))
+            {
+                setting = this.Config?.GetSetting<string>("Hostile");
+            }
 
             Allegiance returnVal;
 
             switch (setting)
             {
                 case "BadGuy":
+                case "Hostile":
                     returnVal = Allegiance.BadGuy;
                     break;
                 case "GoodGuy":
+                case "Friendly":
                     returnVal = Allegiance.GoodGuy;
                     break;
                 default:

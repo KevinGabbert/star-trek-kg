@@ -1,9 +1,12 @@
-﻿using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
+using StarTrek_KG.Types;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Output
@@ -37,6 +40,68 @@ namespace UnitTests.Output
                 var wrongRowIndex = 1 + location.Coordinate.X;
                 Assert.IsFalse(lines[wrongRowIndex].Contains(DEFAULTS.PLAYERSHIP), "Playership rendered on X row instead of Y row.");
             }
+        }
+
+        [Test]
+        public void SRS_Header_Shows_Quadrant_Symbol_And_Location_Format()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1FriendlyAtSector(new Point(6, 5));
+
+            var map = setup.TestMap;
+            var render = new Render(map.Game.Interact, map.Game.Config);
+            var sector = map.Playership.GetLocation().Sector;
+            var location = map.Playership.GetLocation();
+            var sb = new StringBuilder();
+
+            map.Game.Interact.Output.Clear();
+
+            render.CreateSRSViewScreen(sector, map, location, 0, sector.Name, false, sb);
+
+            var header = map.Game.Interact.Output.Queue.First();
+            Assert.That(header, Does.Contain($"Sector: Δ {sector.Name}"));
+            Assert.That(header, Does.Contain($"⌖[{location.Coordinate.X},{location.Coordinate.Y}]"));
+            Assert.That(header, Does.Contain($"§{location.Sector.X}.{location.Sector.Y}"));
+        }
+
+        [Test]
+        public void Named_Lrs_Render_Uses_Quadrant_Symbol_In_Coordinate_Line()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1Friendly();
+
+            var map = setup.TestMap;
+            var result = new LRSResult
+            {
+                Point = new Point(6, 4),
+                SectorName = "Mariner",
+                Name = "Mariner",
+                QuadrantName = "Delta",
+                Hostiles = 1,
+                Starbases = 0,
+                Stars = 2
+            };
+
+            var rendered = map.Game.Interact.RenderScanWithNames(
+                ScanRenderType.SingleLine,
+                "*** Long Range Scan ***",
+                new List<IScanResult> { result },
+                map.Game).ToList();
+
+            Assert.That(rendered.Any(line => line.Contains("Δ§6.4")), Is.True);
+            Assert.That(rendered.Any(line => line.Contains("[Delta]")), Is.False);
+        }
+
+        [Test]
+        public void Ccrs_Subsystem_Display_Order_Matches_Rendered_Alphabetical_Order()
+        {
+            var order = Render.GetCrsSubsystemDisplayOrder().ToList();
+
+            Assert.That(order.First(), Is.EqualTo("Combined Range Scan"));
+            Assert.That(order.Last(), Is.EqualTo("Warp Drive"));
+            Assert.That(order, Does.Contain("Shields"));
+            Assert.That(order, Does.Contain("Immediate Range Scan"));
+            Assert.That(order.Count, Is.EqualTo(13));
         }
     }
 }

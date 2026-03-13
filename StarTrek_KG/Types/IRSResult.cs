@@ -93,6 +93,10 @@ namespace StarTrek_KG.Types
                     returnVal = "Wormhole";
                     break;
 
+                case CoordinateItem.ZipBug:
+                    returnVal = this.Object?.Name ?? "Unknown Contact";
+                    break;
+
                 case CoordinateItem.PlayerShip:
                     returnVal = "<This Ship>"; //todo: identify ship
                     break;

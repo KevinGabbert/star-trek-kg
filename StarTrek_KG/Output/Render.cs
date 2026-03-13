@@ -35,10 +35,11 @@ namespace StarTrek_KG.Output
             int srsRows = Convert.ToInt32(this.GetConfigText("SRSRows"));
             var game = map.Game as Game;
             var noiseRows = game?.IsSystemsCascadeMode == true ? game.GetSystemsCascadeSrsNoiseLines() : 0;
+            var zipBugRevealActive = this.HasZipBugInSector(Sector);
             for (int i = 0; i < srsRows; i++) //todo: resource out
             {
                 var forceNoise = noiseRows > 0 && i >= srsRows - noiseRows;
-                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Sector.Coordinates, totalHostiles, isNebula, forceNoise);
+                this.ShowSectorRow(sectorScanStringBuilder, i, this.GetSRSRowIndicator(i, map, shipLocation), Sector.Coordinates, totalHostiles, isNebula, zipBugRevealActive, forceNoise);
             }
 
             this.Interact.Output.WriteLine(this.Config.GetText("SRSBottomBorder", "SRSDockedIndicator"), Navigation.For(map.Playership).Docked);
@@ -57,6 +58,7 @@ namespace StarTrek_KG.Output
             int crsRows = Convert.ToInt32(this.Config.GetText("CRSRows"));
             var game = map.Game as Game;
             var noiseRows = game?.IsSystemsCascadeMode == true ? game.GetSystemsCascadeCrsNoiseLines() : 0;
+            var zipBugRevealActive = this.HasZipBugInSector(Sector);
             for (int i = 0; i < crsRows; i++) 
             {
                 var rowIndicator = this.GetCRSRightTextLine(i, map, lrsResults, totalHostiles);
@@ -65,7 +67,7 @@ namespace StarTrek_KG.Output
                     rowIndicator = this.ApplyLrsBrownoutNoise(rowIndicator, game.GetSystemsCascadeLrsNoiseLevel());
                 }
                 var forceNoise = noiseRows > 0 && i >= crsRows - noiseRows;
-                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, Sector.Coordinates, totalHostiles, isNebula, forceNoise);
+                this.ShowSectorRow(sectorScanStringBuilder, i, rowIndicator, Sector.Coordinates, totalHostiles, isNebula, zipBugRevealActive, forceNoise);
             }
 
             string lrsBottom = null;
@@ -133,13 +135,12 @@ namespace StarTrek_KG.Output
         private void CRS_Sector_ScanLine(string SectorName, string topBorder, Location location)
         {
             int topBorderAreaMeasurement = topBorder.Length + 1;
-            var regionLineBuilder = new StringBuilder($"Sector: {SectorName}".PadRight(topBorderAreaMeasurement));
-
-            regionLineBuilder.Remove(topBorderAreaMeasurement, regionLineBuilder.ToString().Length - topBorderAreaMeasurement);
+            var quadrantSymbol = QuadrantRules.GetQuadrantSymbol(location?.Sector?.Map, location?.Sector?.X ?? 0, location?.Sector?.Y ?? 0);
+            var regionLineBuilder = new StringBuilder($"Sector: {quadrantSymbol} {SectorName}".PadRight(topBorderAreaMeasurement));
 
             var blackHoleMarker = this.GetBlackHoleSectorMarker(location?.Sector);
             string SectorIndicator =
-                $" Coord: [{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}]  Sec: §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}{blackHoleMarker}";
+                $" ⌖[{Convert.ToString(location.Coordinate.X)},{Convert.ToString(location.Coordinate.Y)}] §{Convert.ToString(location.Sector.X)}.{Convert.ToString(location.Sector.Y)}{blackHoleMarker}";
 
             regionLineBuilder.Insert(topBorderAreaMeasurement, SectorIndicator);
 
@@ -194,7 +195,7 @@ namespace StarTrek_KG.Output
             return retVal;
         }
 
-        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Coordinates sectors, int totalHostiles, bool isNebula, bool forceNoise = false)
+        private void ShowSectorRow(StringBuilder sb, int row, string suffix, Coordinates sectors, int totalHostiles, bool isNebula, bool zipBugRevealActive, bool forceNoise = false)
         {
             if (forceNoise)
             {
@@ -285,7 +286,7 @@ namespace StarTrek_KG.Output
                         break;
 
                     case CoordinateItem.GraviticMine:
-                        sb.Append(DEFAULTS.EMPTY);
+                        sb.Append(zipBugRevealActive ? this.SymbolCell("ZipBugRevealGlyph", "#") : DEFAULTS.EMPTY);
                         break;
 
                     case CoordinateItem.GaseousAnomaly:
@@ -297,7 +298,7 @@ namespace StarTrek_KG.Output
                         break;
 
                     case CoordinateItem.SporeField:
-                        sb.Append(DEFAULTS.EMPTY);
+                        sb.Append(zipBugRevealActive ? this.SymbolCell("ZipBugRevealGlyph", "#") : DEFAULTS.EMPTY);
                         break;
 
                     case CoordinateItem.BlackHole:
@@ -321,6 +322,22 @@ namespace StarTrek_KG.Output
 
                     case CoordinateItem.Wormhole:
                         sb.Append(this.SymbolCell("WormholeChar", "∞"));
+                        break;
+
+                    case CoordinateItem.ZipBug:
+                        var zipBug = sector.Object as ZipBug;
+                        switch (zipBug?.Form)
+                        {
+                            case ZipBug.ZipBugForm.FigureEight:
+                                sb.Append(this.SymbolCell("ZipBugFigureEightGlyph", "=8"));
+                                break;
+                            case ZipBug.ZipBugForm.StarMimic:
+                                sb.Append(DEFAULTS.STAR);
+                                break;
+                            default:
+                                sb.Append(this.SymbolCell("ZipBugHostileGlyph", "+?+"));
+                                break;
+                        }
                         break;
 
                     case CoordinateItem.Debug:
@@ -440,6 +457,29 @@ namespace StarTrek_KG.Output
             return sb.ToString();
         }
 
+        public static IReadOnlyList<string> GetCrsSubsystemDisplayOrder()
+        {
+            return new[]
+            {
+                SubsystemType.Shields,
+                SubsystemType.ImmediateRangeScan,
+                SubsystemType.ShortRangeScan,
+                SubsystemType.LongRangeScan,
+                SubsystemType.CombinedRangeScan,
+                SubsystemType.Warp,
+                SubsystemType.Impulse,
+                SubsystemType.Computer,
+                SubsystemType.Navigation,
+                SubsystemType.Torpedoes,
+                SubsystemType.Phasers,
+                SubsystemType.Disruptors,
+                SubsystemType.DamageControl
+            }
+            .OrderBy(type => type.Name)
+            .Select(type => type.Name)
+            .ToList();
+        }
+
         private bool GetBoolSettingOrDefault(string key, bool defaultValue)
         {
             try
@@ -501,6 +541,11 @@ namespace StarTrek_KG.Output
             //}
 
             sb.Append(factionDesignator);
+        }
+
+        private bool HasZipBugInSector(ISector sector)
+        {
+            return sector?.Coordinates != null && sector.Coordinates.Any(c => c.Item == CoordinateItem.ZipBug);
         }
 
         public void OutputScanWarnings(ISector Sector, IMap map, bool shieldsAutoRaised)

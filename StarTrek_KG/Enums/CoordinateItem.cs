@@ -20,6 +20,7 @@ namespace StarTrek_KG.Enums
         EnergyAnomaly,
         TechnologyCache,
         Wormhole,
+        ZipBug,
         Debug
     };
 }

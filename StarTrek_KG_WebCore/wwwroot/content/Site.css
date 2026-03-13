@@ -81,3 +81,7 @@ pre {
 .terminal .terminal-output > div.raw > div {
   white-space: pre !important;
 }
+
+.terminal .crs-subsystem-status {
+  cursor: help;
+}

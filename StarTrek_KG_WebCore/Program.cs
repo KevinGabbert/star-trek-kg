@@ -131,7 +131,8 @@ app.MapGet("/api/settings", () =>
         hostileColor,
         starbaseColor,
         starColor,
-        galacticBarrierColor));
+        galacticBarrierColor,
+        Render.GetCrsSubsystemDisplayOrder().ToList()));
 });
 
 app.Run();
@@ -770,7 +771,8 @@ record SettingsResponse(
     string HostileColor,
     string StarbaseColor,
     string StarColor,
-    string GalacticBarrierColor);
+    string GalacticBarrierColor,
+    List<string> CrsSubsystemTooltips);
 
 static class SystemsCascadeSetupLoader
 {

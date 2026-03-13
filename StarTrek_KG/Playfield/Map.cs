@@ -102,6 +102,8 @@ namespace StarTrek_KG.Playfield
                 this.SetupPlayerShipInSectors(sectorDefs);
             }
 
+            this.SpawnQuadrantFriendlies();
+
             //Modify this to output everything
             if (DEFAULTS.DEBUG_MODE)
             {
@@ -114,6 +116,65 @@ namespace StarTrek_KG.Playfield
 
             this.Playership?.UpdateDivinedSectors();
             this.HostilesToSetUp = this.Sectors.GetHostileCount();
+        }
+
+        private void SpawnQuadrantFriendlies()
+        {
+            if (this.Sectors == null)
+            {
+                return;
+            }
+
+            var countPerFaction = QuadrantRules.GetFriendlyShipsPerFaction(this);
+            if (countPerFaction < 1)
+            {
+                return;
+            }
+
+            var quadrantNames = new[]
+            {
+                QuadrantRules.GetQuadrantName(this, 0, 0),
+                QuadrantRules.GetQuadrantName(this, Math.Max(0, DEFAULTS.SECTOR_MAX - 1), 0),
+                QuadrantRules.GetQuadrantName(this, 0, Math.Max(0, DEFAULTS.SECTOR_MAX - 1)),
+                QuadrantRules.GetQuadrantName(this, Math.Max(0, DEFAULTS.SECTOR_MAX - 1), Math.Max(0, DEFAULTS.SECTOR_MAX - 1))
+            }.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+            foreach (var quadrantName in quadrantNames)
+            {
+                var sectorsInQuadrant = this.Sectors
+                    .Where(s => s != null &&
+                                s.Type != SectorType.GalacticBarrier &&
+                                string.Equals(QuadrantRules.GetQuadrantName(this, s.X, s.Y), quadrantName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                if (!sectorsInQuadrant.Any())
+                {
+                    continue;
+                }
+
+                var friendlyFactions = QuadrantRules.GetFriendlyFactionsForSector(this, sectorsInQuadrant[0].X, sectorsInQuadrant[0].Y).ToList();
+                foreach (var faction in friendlyFactions)
+                {
+                    for (var i = 0; i < countPerFaction; i++)
+                    {
+                        var sector = sectorsInQuadrant.OrderBy(_ => Utility.Utility.Random.Next()).FirstOrDefault();
+                        if (sector == null)
+                        {
+                            break;
+                        }
+
+                        var empty = sector.Coordinates.Where(c => c.Item == CoordinateItem.Empty)
+                            .OrderBy(_ => Utility.Utility.Random.Next())
+                            .FirstOrDefault();
+                        if (empty == null)
+                        {
+                            break;
+                        }
+
+                        var ship = new Ship(faction, QuadrantRules.GetRandomShipNameForFaction(this, faction), empty, this);
+                        sector.AddShip(ship, empty);
+                    }
+                }
+            }
         }
 
         public void SetupPlayerShipInSectors(CoordinateDefs sectorDefs)
@@ -210,6 +271,8 @@ namespace StarTrek_KG.Playfield
             this.PopulateTemporalRifts();
             this.PopulateSporeFields();
             this.PopulateBlackHoles();
+            this.PopulateBorgCubes();
+            this.PopulateZipBugs();
             this.PopulateHostileOutposts();
             this.PopulateTechnologyCaches();
             this.PopulateWormholes();
@@ -1000,6 +1063,118 @@ namespace StarTrek_KG.Playfield
                 .ToList();
         }
 
+        private void PopulateBorgCubes()
+        {
+            var requestedCount = this.GetSettingOrDefault("BorgCubeCount", 2);
+            if (requestedCount <= 0 || this.Sectors == null)
+            {
+                return;
+            }
+
+            var existingBorg = this.Sectors
+                .SelectMany(s => s?.Coordinates ?? Enumerable.Empty<Coordinate>())
+                .Count(c => c?.Object is Ship ship && ship.Faction == FactionName.Borg);
+            var remaining = requestedCount - existingBorg;
+            if (remaining <= 0)
+            {
+                return;
+            }
+
+            var deltaSectors = this.Sectors
+                .Where(s => s != null &&
+                            s.Type != SectorType.GalacticBarrier &&
+                            string.Equals(QuadrantRules.GetQuadrantName(this, s.X, s.Y), "Delta", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(_ => Utility.Utility.Random.Next())
+                .ToList();
+
+            foreach (var sector in deltaSectors)
+            {
+                if (remaining <= 0)
+                {
+                    break;
+                }
+
+                var coordinate = sector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Empty)
+                    .OrderBy(_ => Utility.Utility.Random.Next())
+                    .FirstOrDefault();
+                if (coordinate == null)
+                {
+                    continue;
+                }
+
+                var borg = new Ship(FactionName.Borg, "Borg Cube", coordinate, this);
+                this.ConfigureBorgShip(borg);
+                sector.AddShip(borg, coordinate);
+                remaining--;
+            }
+        }
+
+        private void PopulateZipBugs()
+        {
+            var requestedCount = this.GetSettingOrDefault("ZipBugCount", 2);
+            if (requestedCount <= 0 || this.Sectors == null)
+            {
+                return;
+            }
+
+            var candidates = this.GetFeatureCandidateSectors()
+                .OrderBy(_ => Utility.Utility.Random.Next())
+                .ToList();
+
+            foreach (var sector in candidates)
+            {
+                if (requestedCount <= 0)
+                {
+                    break;
+                }
+
+                var coordinate = sector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Empty)
+                    .OrderBy(_ => Utility.Utility.Random.Next())
+                    .FirstOrDefault();
+                if (coordinate == null)
+                {
+                    continue;
+                }
+
+                coordinate.Item = CoordinateItem.ZipBug;
+                coordinate.Object = new ZipBug
+                {
+                    Coordinate = coordinate
+                };
+                requestedCount--;
+            }
+        }
+
+        private void ConfigureBorgShip(Ship borg)
+        {
+            if (borg == null)
+            {
+                return;
+            }
+
+            var borgEnergy = this.GetSettingOrDefault("BorgEnergy", 10000);
+            var borgShields = this.GetSettingOrDefault("BorgShieldEnergy", 10000);
+            borg.Energy = borgEnergy;
+            borg.MaxEnergy = borgEnergy;
+            Shields.For(borg).Energy = borgShields;
+
+            var torpedoes = Torpedoes.For(borg);
+            torpedoes.Count = 0;
+            torpedoes.Damage = Math.Max(1, torpedoes.Damage);
+
+            Phasers.For(borg).Damage = Math.Max(1, Phasers.For(borg).Damage);
+
+            var disruptors = borg.Subsystems.SingleOrDefault(s => s.Type == SubsystemType.Disruptors);
+            if (disruptors != null)
+            {
+                disruptors.Damage = Math.Max(1, disruptors.Damage);
+            }
+
+            borg.BorgDamageableTurnsRemaining = this.GetSettingOrDefault("BorgInitialDamageableTurns", 2);
+        }
+
         public bool IsPlayershipNearBlackHole(IShip ship = null, int radius = 2)
         {
             var subject = ship ?? this.Playership;
@@ -1481,7 +1656,16 @@ namespace StarTrek_KG.Playfield
         {
             if (playerShipDef.SectorDef == null)
             {
-                playerShipDef.SectorDef = Point.GetRandom();
+                var alphaSectors = this.Sectors
+                    .Where(q => string.Equals(QuadrantRules.GetQuadrantName(this, q.X, q.Y), "Alpha", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                var selectedSector = alphaSectors.Any()
+                    ? alphaSectors[Utility.Utility.Random.Next(alphaSectors.Count)]
+                    : null;
+
+                playerShipDef.SectorDef = selectedSector != null
+                    ? new Point(selectedSector.X, selectedSector.Y)
+                    : Point.GetRandom();
             }
 
             if(!this.Sectors.Any())
@@ -1742,6 +1926,7 @@ namespace StarTrek_KG.Playfield
             this.ConsumeDeuteriumIfPresent(map.Playership, targetCoordinate);
             var newActiveSector = targetCoordinate.Item = CoordinateItem.PlayerShip;
             this.ResolveWormholeTransitIfPresent(map.Playership, targetCoordinate);
+            (this.Game as Game)?.HandlePlayerSectorVisibilityChange(activeSector);
         }
 
         /// <summary>
@@ -1763,6 +1948,7 @@ namespace StarTrek_KG.Playfield
             shipToSet.Point = new Point(newLocation.Sector.X, newLocation.Sector.Y);
             shipToSet.Coordinate = foundSector;
             this.ResolveWormholeTransitIfPresent(shipToSet, foundSector);
+            (this.Game as Game)?.HandlePlayerSectorVisibilityChange(newLocation.Sector);
         }
 
         private void ConsumeDeuteriumIfPresent(IShip shipToSet, Coordinate coordinate)
@@ -1881,6 +2067,7 @@ namespace StarTrek_KG.Playfield
             shipToSet.Coordinate = destinationCoordinate;
             this.timeRemaining = Math.Max(0, this.timeRemaining - 1);
             this.Stardate++;
+            (this.Game as Game)?.HandlePlayerUsedWormhole();
         }
 
         private Coordinate LookupSector(Sector oldSector, Location newLocation)

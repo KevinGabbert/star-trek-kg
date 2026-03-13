@@ -508,7 +508,7 @@ namespace StarTrek_KG.Playfield
                 switch (ship.Allegiance)
                 {
                     case Allegiance.GoodGuy:
-                        addToSector.Item = CoordinateItem.PlayerShip;
+                        addToSector.Item = ship == this.Map.Playership ? CoordinateItem.PlayerShip : CoordinateItem.FriendlyShip;
                         break;
 
                     case Allegiance.BadGuy:
@@ -540,10 +540,9 @@ namespace StarTrek_KG.Playfield
         /// <returns></returns>
         public Ship CreateHostileShip(ICoordinate position, Stack<string> listOfBaddies, FactionName stockBaddieFaction, IGame game)
         {
-            //todo: modify this to populate more than a single baddie faction
-
-            //todo: this should be a random baddie, from the list of baddies in app.config
-            var hostileShip = new Ship(stockBaddieFaction, listOfBaddies.Pop(), position, this.Map)
+            var spawnFaction = QuadrantRules.ChooseHostileFactionForSector(this.Map, this.X, this.Y);
+            var shipName = QuadrantRules.GetRandomShipNameForFaction(this.Map, spawnFaction);
+            var hostileShip = new Ship(spawnFaction, shipName, position, this.Map)
             {
                 //yes.  This code can be misused.  There will be repeats of ship names if the stack isn't managed properly
                 Coordinate = {X = position.X, Y = position.Y},

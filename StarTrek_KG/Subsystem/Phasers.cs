@@ -161,6 +161,11 @@ namespace StarTrek_KG.Subsystem
                 return;
             }
 
+            if (hostile?.Faction == FactionName.Borg)
+            {
+                return;
+            }
+
             var targetName = playerShip.TargetShipName;
             var targetSubsystemMnemonic = playerShip.TargetSubsystemMnemonic;
             if (string.IsNullOrWhiteSpace(targetName) || string.IsNullOrWhiteSpace(targetSubsystemMnemonic))
@@ -257,6 +262,12 @@ namespace StarTrek_KG.Subsystem
         private void BadGuyTakesDamage(ICollection<IShip> destroyedShips, IShip badGuyShip, double deliveredEnergy)
         {
             //todo: add more descriptive output messages depending on how much phaser energy absorbed by baddie
+
+            if (this.ShipConnectedTo.Map.Game is Game borgGame &&
+                borgGame.TryApplyBorgWeaponDamage(badGuyShip, (int)Math.Round(deliveredEnergy), "phasers"))
+            {
+                return;
+            }
 
             var badGuyShields = Shields.For(badGuyShip);
             badGuyShields.Energy -= (int) deliveredEnergy;

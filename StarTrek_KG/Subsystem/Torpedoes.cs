@@ -297,6 +297,11 @@ namespace StarTrek_KG.Subsystem
 
             if (targetCoordinate?.Item == CoordinateItem.HostileShip && hostileInSector != null)
             {
+                if (game is Game borgGame && borgGame.TryApplyBorgWeaponDamage(hostileInSector, this.GetBorgTorpedoDamageOrDefault(borgGame), "torpedo"))
+                {
+                    return true;
+                }
+
                 game.Map.RemoveTargetFromSector(game.Map, hostileInSector);
 
                 if (hostileInSector.Faction == FactionName.Federation)
@@ -314,6 +319,18 @@ namespace StarTrek_KG.Subsystem
             }
 
             return false;
+        }
+
+        private int GetBorgTorpedoDamageOrDefault(Game game)
+        {
+            try
+            {
+                return game.Config.GetSetting<int>("BorgTorpedoDamage");
+            }
+            catch
+            {
+                return 2500;
+            }
         }
 
         private static void DebugTrack(Location newLocation)
@@ -399,6 +416,13 @@ namespace StarTrek_KG.Subsystem
                     }
 
                     return true;
+
+                case CoordinateItem.ZipBug:
+                    if (game is Game zipBugGame && zipBugGame.HandleZipBugShot(qLocation, "torpedo"))
+                    {
+                        return true;
+                    }
+                    break;
 
                 case CoordinateItem.Star:
 

@@ -18,7 +18,7 @@ namespace StarTrek_KG.Subsystem
         {
             this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
-            if (this.Damaged()) return null;
+            if (this.Damaged()) return this.ShipConnectedTo.OutputQueue();
 
             this.ShipConnectedTo.Map.Game.Interact.RenderSectors(CoordinateScanType.ShortRange, this);
             return this.ShipConnectedTo.Map.Game.Interact.Output.Queue?.ToList();

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using StarTrek_KG.Config;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.Config.AppSettingTests
 {
@@ -31,7 +32,26 @@ namespace UnitTests.Config.AppSettingTests
         [Test]
         public void timeRemaining_Default_Is_72()
         {
-            Assert.AreEqual(72, new StarTrekKGSettings().GetSetting<int>("timeRemaining"));
+            Assert.AreEqual(75, new StarTrekKGSettings().GetSetting<int>("timeRemaining"));
+        }
+
+        [Test]
+        public void totalHostiles_Default_Is_25()
+        {
+            Assert.AreEqual(25, new StarTrekKGSettings().GetSetting<int>("totalHostiles"));
+        }
+
+        [Test]
+        public void Romulan_Faction_Has_Configured_Ship_Names()
+        {
+            var shipNames = new StarTrekKGSettings().ShipNames(FactionName.Romulan);
+
+            Assert.That(shipNames, Does.Contain("IRW Valdore"));
+            Assert.That(shipNames, Does.Contain("IRW Haakona"));
+            Assert.That(shipNames, Does.Contain("RIS D'deridex"));
+            Assert.That(shipNames, Does.Contain("IRW Intrakhu"));
+            Assert.That(shipNames, Does.Contain("IRW T'seren"));
+            Assert.That(shipNames.Count, Is.GreaterThanOrEqualTo(75));
         }
 
         [Test]

@@ -19,11 +19,6 @@ namespace StarTrek_KG.Subsystem
 
             if (this.Damaged()) return this.ShipConnectedTo.OutputQueue();
 
-            if (ShortRangeScan.For(this.ShipConnectedTo).Damaged())
-            {
-                this.ShipConnectedTo.OutputLine("Combined Scan needs SRS Subsystem in order to run.");
-            }
-
             this.ShipConnectedTo.Map.Game.Interact.RenderSectors(CoordinateScanType.CombinedRange, this);
 
             return this.ShipConnectedTo.OutputQueue();

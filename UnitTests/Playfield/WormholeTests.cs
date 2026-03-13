@@ -13,6 +13,7 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
+using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.Playfield
