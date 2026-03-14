@@ -44,6 +44,28 @@ namespace UnitTests.Output
         }
 
         [Test]
+        public void SRS_Render_Colors_Active_Playership_Glyph_Using_Configured_Color()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1FriendlyAtSector(new Point(2, 1));
+
+            var map = setup.TestMap;
+            var render = new Render(map.Game.Interact, map.Game.Config);
+            var sector = map.Sectors.GetActive();
+            var location = map.Playership.GetLocation();
+            var sb = new StringBuilder();
+
+            map.Game.Interact.Output.Clear();
+
+            render.CreateSRSViewScreen(sector, map, location, 0, sector.Name, false, sb);
+
+            var lines = map.Game.Interact.Output.Queue.ToList();
+            var expectedColor = map.Game.Config.GetSetting<string>("PlayerShipColor");
+
+            Assert.That(lines.Any(line => line.Contains($"[[;{expectedColor};]{DEFAULTS.PLAYERSHIP}]")), Is.True);
+        }
+
+        [Test]
         public void SRS_Header_Shows_Quadrant_Symbol_And_Location_Format()
         {
             var setup = new Test_Setup();

@@ -114,6 +114,7 @@ namespace UnitTests.Config.AppSettingTests
             var required = new[]
             {
                 "PlayerShip",
+                "PlayerShipColor",
                 "Hostile",
                 "CommandPrompt",
                 "GalacticBarrierCRS",

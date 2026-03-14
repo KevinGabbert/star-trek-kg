@@ -233,7 +233,8 @@ namespace StarTrek_KG.Output
                         }
                         else
                         {
-                            sb.Append(DEFAULTS.PLAYERSHIP);
+                            var playerGlyph = this.GetStringSettingOrDefault("PlayerShipGlyph", DEFAULTS.PLAYERSHIP);
+                            sb.Append(this.FormatWithColor(playerGlyph, "PlayerShipColor", "blue"));
                         }
                         break;
 
@@ -535,6 +536,22 @@ namespace StarTrek_KG.Output
             {
                 return defaultValue;
             }
+        }
+
+        private string FormatWithColor(string text, string key, string defaultColor)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return text;
+            }
+
+            var color = this.GetStringSettingOrDefault(key, defaultColor)?.Trim();
+            if (string.IsNullOrWhiteSpace(color))
+            {
+                return text;
+            }
+
+            return $"[[;{color};]{text}]";
         }
 
         private void AppendShipDesignator(StringBuilder sb, int totalHostiles, ICoordinate sector)
