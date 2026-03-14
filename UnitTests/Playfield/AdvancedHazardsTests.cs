@@ -97,7 +97,8 @@ namespace UnitTests.Playfield
 
             game.SubscriberSendAndGetResponse("crs");
 
-            Assert.IsTrue(game.Map.Playership.OutputQueue().Any(line => line.Contains(expected)));
+            Assert.IsTrue(game.Map.Playership.OutputQueue().Any(line =>
+                line.Contains($"\u00A7{x}.{y}") && line.Contains("\u00B0")));
         }
 
         [Test]

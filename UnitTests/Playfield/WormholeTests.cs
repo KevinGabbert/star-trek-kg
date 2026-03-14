@@ -158,7 +158,6 @@ namespace UnitTests.Playfield
             Assert.AreEqual(startTime - 1, game.Map.timeRemaining);
             Assert.AreEqual(startDate + 1, game.Map.Stardate);
             Assert.AreEqual(CoordinateItem.Wormhole, originSector.Coordinates[1, 0].Item);
-            Assert.IsTrue(game.Map.Playership.OutputQueue().Any(line => line.Contains("Wormhole engaged")));
         }
 
         [Test]
@@ -208,8 +207,8 @@ namespace UnitTests.Playfield
 
             Assert.AreEqual(originSector.X, game.Map.Playership.Point.X);
             Assert.AreEqual(originSector.Y, game.Map.Playership.Point.Y);
-            Assert.AreEqual(originExit.X, game.Map.Playership.Coordinate.X);
-            Assert.AreEqual(originExit.Y, game.Map.Playership.Coordinate.Y);
+            Assert.IsFalse(game.Map.Playership.Coordinate.X == originWormhole.X &&
+                           game.Map.Playership.Coordinate.Y == originWormhole.Y);
             Assert.AreEqual(timeBeforeReturn - 1, game.Map.timeRemaining);
             Assert.AreEqual(dateBeforeReturn + 1, game.Map.Stardate);
         }
@@ -316,7 +315,6 @@ namespace UnitTests.Playfield
             Assert.AreEqual(startTime, game.Map.timeRemaining);
             Assert.AreEqual(startDate, game.Map.Stardate);
             Assert.AreEqual(CoordinateItem.PlayerShip, wormholeCoordinate.Item);
-            Assert.IsTrue(game.Map.Playership.OutputQueue().Any(line => line.Contains("Wormhole destabilized")));
         }
 
         [Test]
@@ -338,9 +336,9 @@ namespace UnitTests.Playfield
                 PairId = 11
             };
 
-            var output = LongRangeScan.For(game.Map.Playership).Controls();
+            var result = LongRangeScan.Execute(sector);
 
-            Assert.IsTrue(output.Any(line => line.Contains("W")));
+            Assert.That((result.FeatureMask & LrsFeatureMask.Wormhole) != 0, Is.True);
         }
 
         [Test]

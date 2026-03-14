@@ -281,13 +281,21 @@ namespace UnitTests.Subsystem
             _photonsToTest = Torpedoes.For(_setup.TestMap.Playership);
             _testSector = _setup.TestMap.Playership.GetSector();
 
-            var target = _testSector.Coordinates[2, 0];
+            foreach (var coordinate in _testSector.Coordinates.Where(c => !(c.X == 0 && c.Y == 0) &&
+                                                                          !(c.X == 1 && c.Y == 1) &&
+                                                                          !(c.X == 2 && c.Y == 2)))
+            {
+                coordinate.Item = CoordinateItem.Empty;
+                coordinate.Object = null;
+            }
+
+            var target = _testSector.Coordinates[2, 2];
             target.Item = CoordinateItem.Deuterium;
             target.Object = new Deuterium(25);
 
             var startingEnergy = _setup.TestMap.Playership.Energy;
 
-            _photonsToTest.Shoot(7); // right from [0,0] -> [1,0] then [2,0]
+            _photonsToTest.Shoot(8); // down-right from [0,0] -> [1,1] then [2,2]
 
             Assert.AreEqual(startingEnergy, _setup.TestMap.Playership.Energy);
         }

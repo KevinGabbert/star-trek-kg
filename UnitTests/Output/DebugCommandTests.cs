@@ -7,6 +7,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
+using StarTrek_KG.TypeSafeEnums;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Output
@@ -61,6 +62,21 @@ namespace UnitTests.Output
 
             Assert.IsTrue(output.Any(line => line.Contains("Added 1000 energy")));
             Assert.AreEqual(1050, ship.Energy);
+        }
+
+        [Test]
+        public void Ship_Command_Exits_Debug_Menu_And_Resets_Prompt_State()
+        {
+            var ship = (Ship)_game.Map.Playership;
+
+            _interact.ReadAndOutput(ship, _game.Map.Text, "dbg");
+            Assert.AreEqual(SubsystemType.Debug, _interact.Subscriber.PromptInfo.SubSystem);
+
+            var output = _interact.ReadAndOutput(ship, _game.Map.Text, "ship");
+
+            Assert.IsTrue(output.Any(line => line.Contains("exiting Debug Mode")));
+            Assert.AreEqual(SubsystemType.None, _interact.Subscriber.PromptInfo.SubSystem);
+            Assert.AreEqual(0, _interact.Subscriber.PromptInfo.Level);
         }
     }
 }

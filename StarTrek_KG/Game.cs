@@ -292,6 +292,13 @@ namespace StarTrek_KG
                 return true;
             }
 
+            if (normalized == "pwr status")
+            {
+                this.PrintSystemsCascadePowerStatus();
+                output = this.Map.Playership.OutputQueue();
+                return true;
+            }
+
             var transferMatch = Regex.Match(normalized, @"^pwr\s+transfer\s+(?<amount>\d+)\s+(?<from>[a-z]+)\s+(?<to>[a-z]+)$", RegexOptions.IgnoreCase);
             if (transferMatch.Success)
             {
@@ -1322,6 +1329,23 @@ namespace StarTrek_KG
             zipBug.Coordinate = destination;
             destination.Item = CoordinateItem.ZipBug;
             destination.Object = zipBug;
+            this.ApplyZipBugAppearanceMaxEnergyBonus();
+        }
+
+        private void ApplyZipBugAppearanceMaxEnergyBonus()
+        {
+            if (this.Map?.Playership is not Ship player)
+            {
+                return;
+            }
+
+            var bonus = this.GetIntSettingOrDefault("ZipBugMaxEnergyAppearanceBonus", 100);
+            if (bonus <= 0)
+            {
+                return;
+            }
+
+            player.MaxEnergy += bonus;
         }
 
         private void DepleteShipWeapons(IShip ship)

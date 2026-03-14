@@ -58,7 +58,7 @@ namespace UnitTests.Playfield
 
             Assert.AreEqual(startingEnergy + 25, _setup.TestMap.Playership.Energy);
             Assert.AreEqual(CoordinateItem.PlayerShip, targetCoordinate.Item);
-            Assert.IsNull(targetCoordinate.Object);
+            Assert.AreSame(_setup.TestMap.Playership, targetCoordinate.Object);
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace UnitTests.Playfield
 
             Assert.AreEqual(startingEnergy + 25, _setup.TestMap.Playership.Energy);
             Assert.AreEqual(CoordinateItem.PlayerShip, targetCoordinate.Item);
-            Assert.IsNull(targetCoordinate.Object);
+            Assert.AreSame(_setup.TestMap.Playership, targetCoordinate.Object);
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace UnitTests.Playfield
 
             Assert.AreEqual(startingEnergy - 200, _setup.TestMap.Playership.Energy);
             Assert.AreEqual(CoordinateItem.PlayerShip, mineCoordinate.Item);
-            Assert.IsNull(mineCoordinate.Object);
+            Assert.AreSame(_setup.TestMap.Playership, mineCoordinate.Object);
             Assert.IsTrue(_setup.TestMap.Playership.OutputQueue().Any(line => line.Contains("Gravitic mine detonated and damaged the playership.")));
         }
 
@@ -190,7 +190,7 @@ namespace UnitTests.Playfield
             Assert.AreEqual(startingMaxEnergy + 1200, player.MaxEnergy);
             Assert.AreEqual(player.MaxEnergy, player.Energy);
             Assert.AreEqual(CoordinateItem.PlayerShip, targetCoordinate.Item);
-            Assert.IsNull(targetCoordinate.Object);
+            Assert.AreSame(player, targetCoordinate.Object);
             Assert.IsTrue(player.OutputQueue().Any(line => line.Contains("Technology cache recovered.")));
         }
     }

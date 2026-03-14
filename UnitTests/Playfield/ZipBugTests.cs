@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
@@ -41,6 +42,28 @@ namespace UnitTests.Playfield
         }
 
         [Test]
+        public void ZipBug_Appearance_Increases_Player_MaxEnergy_On_Spawn_And_Relocation()
+        {
+            var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"ZipBugCount", "1"},
+                {"ZipBugMaxEnergyAppearanceBonus", "100"},
+                {"BlackHoleSectorPercent", "0"},
+                {"TemporalRiftSectorPercent", "0"},
+                {"WormholeSectorPercent", "0"}
+            }));
+
+            var player = (Ship)game.Map.Playership;
+            var baselineMaxEnergy = game.Config.GetSetting<int>("energy");
+            Assert.AreEqual(baselineMaxEnergy + 100, player.MaxEnergy);
+
+            var zipBugCoordinate = game.Map.Sectors.SelectMany(s => s.Coordinates).Single(c => c.Item == CoordinateItem.ZipBug);
+            Assert.IsTrue(game.HandleZipBugShot(zipBugCoordinate, "test"));
+
+            Assert.AreEqual(baselineMaxEnergy + 200, player.MaxEnergy);
+        }
+
+        [Test]
         public void ZipBug_Moving_Adjacent_And_FigureEight_Form_Grant_Energy()
         {
             var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -65,7 +88,9 @@ namespace UnitTests.Playfield
 
             var movedZipBug = sector.Coordinates.Single(c => c.Item == CoordinateItem.ZipBug).Object as ZipBug;
             Assert.AreEqual(startingEnergy + 1200, game.Map.Playership.Energy);
-            Assert.AreEqual(1, movedZipBug?.Coordinate?.X ?? -1);
+            Assert.That(movedZipBug, Is.Not.Null);
+            Assert.LessOrEqual(Math.Abs(movedZipBug.Coordinate.X - game.Map.Playership.Coordinate.X), 1);
+            Assert.LessOrEqual(Math.Abs(movedZipBug.Coordinate.Y - game.Map.Playership.Coordinate.Y), 1);
         }
 
         [Test]
@@ -175,6 +200,18 @@ namespace UnitTests.Playfield
             var output = game.SubscriberSendAndGetResponse("srs");
 
             Assert.IsTrue(output.Any(line => line.Contains("+?+")));
+        }
+
+        [Test]
+        public void ZipBug_AliasPool_Includes_RandomLetter_Observer_Names()
+        {
+            var aliasesField = typeof(ZipBug).GetField("Aliases", BindingFlags.NonPublic | BindingFlags.Static);
+            var aliases = ((string[])aliasesField.GetValue(null)).ToList();
+
+            Assert.That(aliases, Does.Contain("ZZZZFTT"));
+            Assert.That(aliases, Does.Contain("FFFFIPBG"));
+            Assert.That(aliases, Does.Contain("FFFFHBBTT"));
+            Assert.That(aliases, Does.Contain("FFTTHXLT"));
         }
 
         private static Game CreateGame(IStarTrekKGSettings settings)

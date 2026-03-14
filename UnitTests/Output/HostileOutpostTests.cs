@@ -58,7 +58,7 @@ namespace UnitTests.Output
 
             for (var i = 0; i < 3; i++)
             {
-                _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "tor 7");
+                torpedoes.Shoot(7);
             }
 
             Assert.AreEqual(CoordinateItem.Empty, outpostCoordinate.Item);

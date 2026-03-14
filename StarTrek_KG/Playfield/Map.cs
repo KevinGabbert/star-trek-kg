@@ -194,6 +194,7 @@ namespace StarTrek_KG.Playfield
 
                     //This places our newly created ship into our newly created List of Sectors.
                     sectorToPlaceShip.Item = CoordinateItem.PlayerShip;
+                    this.ApplyInitialZipBugAppearanceBonus();
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -206,6 +207,28 @@ namespace StarTrek_KG.Playfield
                 //this.Sectors[0].Active = true;
                 this.Sectors[0].SetActive();
             }
+        }
+
+        private void ApplyInitialZipBugAppearanceBonus()
+        {
+            if (this.Playership is not Ship playership || this.Sectors == null)
+            {
+                return;
+            }
+
+            var zipBugCount = this.Sectors.SelectMany(s => s.Coordinates).Count(c => c.Item == CoordinateItem.ZipBug);
+            if (zipBugCount < 1)
+            {
+                return;
+            }
+
+            var bonusPerAppearance = this.GetSettingOrDefault("ZipBugMaxEnergyAppearanceBonus", 100);
+            if (bonusPerAppearance <= 0)
+            {
+                return;
+            }
+
+            playership.MaxEnergy += zipBugCount * bonusPerAppearance;
         }
 
         //Creates a 2D array of Sectors.  This is how all of our game pieces will be moving around.
@@ -1040,8 +1063,14 @@ namespace StarTrek_KG.Playfield
             {
                 var firstSector = selected[i];
                 var secondSector = selected[i + 1];
-                var firstCoordinate = firstSector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).OrderBy(_ => Utility.Utility.Random.Next()).FirstOrDefault();
-                var secondCoordinate = secondSector.Coordinates.Where(c => c.Item == CoordinateItem.Empty).OrderBy(_ => Utility.Utility.Random.Next()).FirstOrDefault();
+                var firstCoordinate = firstSector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Empty && !this.IsReservedPlayerStartCoordinate(c))
+                    .OrderBy(_ => Utility.Utility.Random.Next())
+                    .FirstOrDefault();
+                var secondCoordinate = secondSector.Coordinates
+                    .Where(c => c.Item == CoordinateItem.Empty && !this.IsReservedPlayerStartCoordinate(c))
+                    .OrderBy(_ => Utility.Utility.Random.Next())
+                    .FirstOrDefault();
                 if (firstCoordinate == null || secondCoordinate == null)
                 {
                     continue;
@@ -1051,6 +1080,18 @@ namespace StarTrek_KG.Playfield
                 this.PlaceWormholeAt(secondCoordinate, firstSector.GetPoint(), pairId);
                 pairId++;
             }
+        }
+
+        private bool IsReservedPlayerStartCoordinate(Coordinate coordinate)
+        {
+            return coordinate?.SectorDef != null &&
+                   this.GameConfig?.CoordinateDefs?.PlayerShips().Any(def =>
+                       def.SectorDef != null &&
+                       def.Coordinate != null &&
+                       def.SectorDef.X == coordinate.SectorDef.X &&
+                       def.SectorDef.Y == coordinate.SectorDef.Y &&
+                       def.Coordinate.X == coordinate.X &&
+                       def.Coordinate.Y == coordinate.Y) == true;
         }
 
         private List<Sector> GetFeatureCandidateSectors()
@@ -1944,6 +1985,9 @@ namespace StarTrek_KG.Playfield
             newLocation.Sector.SetActive();
 
             Coordinate foundSector = this.LookupSector(shipToSet.GetSector(), newLocation);
+            var encounteredWormhole = foundSector?.Item == CoordinateItem.Wormhole
+                ? foundSector.Object as Wormhole
+                : null;
             this.ConsumeDeuteriumIfPresent(shipToSet, foundSector);
             foundSector.Item = CoordinateItem.PlayerShip;
             foundSector.Object = shipToSet;
@@ -1951,7 +1995,7 @@ namespace StarTrek_KG.Playfield
             shipToSet.Point = new Point(newLocation.Sector.X, newLocation.Sector.Y);
             shipToSet.Coordinate = foundSector;
             this.BringPlayerFleetToSector(newLocation.Sector);
-            this.ResolveWormholeTransitIfPresent(shipToSet, foundSector);
+            this.ResolveWormholeTransitIfPresent(shipToSet, foundSector, encounteredWormhole);
             (this.Game as Game)?.HandlePlayerSectorVisibilityChange(newLocation.Sector);
         }
 
@@ -2123,9 +2167,10 @@ namespace StarTrek_KG.Playfield
             }
         }
 
-        private void ResolveWormholeTransitIfPresent(IShip shipToSet, Coordinate coordinate)
+        private void ResolveWormholeTransitIfPresent(IShip shipToSet, Coordinate coordinate, Wormhole encounteredWormhole = null)
         {
-            if (shipToSet == null || coordinate?.Object is not Wormhole wormhole || wormhole.DestinationSector == null)
+            var wormhole = encounteredWormhole ?? coordinate?.Object as Wormhole;
+            if (shipToSet == null || wormhole?.DestinationSector == null)
             {
                 return;
             }
@@ -2146,9 +2191,14 @@ namespace StarTrek_KG.Playfield
             this.Write?.Line($"Ship emerged at sector [{destinationSector.X},{destinationSector.Y}], coord [{destinationCoordinate.X},{destinationCoordinate.Y}].");
             this.Game?.AppendGameEventLog($"Wormhole transit: pair={wormhole.PairId} from sector [{shipToSet.Point?.X},{shipToSet.Point?.Y}] to sector [{destinationSector.X},{destinationSector.Y}] coord [{destinationCoordinate.X},{destinationCoordinate.Y}]");
 
+            if (coordinate != null)
+            {
+                coordinate.Object = wormhole;
+            }
             this.RemovePlayership(this);
             destinationSector.SetActive();
             destinationCoordinate.Item = CoordinateItem.PlayerShip;
+            destinationCoordinate.Object = shipToSet;
             shipToSet.Point = new Point(destinationSector.X, destinationSector.Y);
             shipToSet.Coordinate = destinationCoordinate;
             this.timeRemaining = Math.Max(0, this.timeRemaining - 1);

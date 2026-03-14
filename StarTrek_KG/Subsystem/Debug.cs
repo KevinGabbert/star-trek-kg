@@ -97,6 +97,12 @@ namespace StarTrek_KG.Subsystem
 
             switch (normalizedCommand.ToLower())
             {
+                case "ship":
+                case "out":
+                    this.ShipConnectedTo.ResetPrompt();
+                    this.ShipConnectedTo.OutputLine(">> exiting Debug Mode..");
+                    break;
+
                 case "dsrec":
                     //this.PrintGalacticRecord(this.Map.Sectors); 
                     this.ShipConnectedTo.OutputLine("full galactic record with ship position as colored text, baddies as red");

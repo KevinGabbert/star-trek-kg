@@ -201,8 +201,8 @@ namespace StarTrek_KG.Subsystem
             var baseChance = this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSBaseHitChancePercent");
             var distancePenalty = ((int)Math.Round(distance)) * this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSDistancePenaltyPercent");
             var shieldPenalty = shieldsUp ? this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSShieldPenaltyPercent") : 0;
-            var streakBonusPerShot = this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSLockStreakBonusPercent");
-            var streakBonusCap = this.ShipConnectedTo.Map.Config.GetSetting<int>("TSSLockStreakBonusCapPercent");
+            var streakBonusPerShot = this.GetSettingOrDefault("TSSLockStreakBonusPercent", 5);
+            var streakBonusCap = this.GetSettingOrDefault("TSSLockStreakBonusCapPercent", 20);
             var streakBonus = Math.Min(streakBonusCap, playerShip.TargetSubsystemLockStreak * streakBonusPerShot);
             var chance = Math.Max(5, Math.Min(95, baseChance - distancePenalty - shieldPenalty + streakBonus));
             var roll = Utility.Utility.Random.Next(1, 101);
@@ -217,6 +217,18 @@ namespace StarTrek_KG.Subsystem
             {
                 playerShip.TargetSubsystemLockStreak = 0;
                 this.ShipConnectedTo.OutputLine($"Targeted shot on {hostile.Name} {targetSubsystemMnemonic} missed ({roll}>{chance}).");
+            }
+        }
+
+        private int GetSettingOrDefault(string key, int defaultValue)
+        {
+            try
+            {
+                return this.ShipConnectedTo?.Map?.Config?.GetSetting<int>(key) ?? defaultValue;
+            }
+            catch
+            {
+                return defaultValue;
             }
         }
 

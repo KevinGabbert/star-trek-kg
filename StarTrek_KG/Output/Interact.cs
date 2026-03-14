@@ -1553,7 +1553,7 @@ namespace StarTrek_KG.Output
             output.AddRange(this.Output.WriteLine("   - Use phasers to soften multiple targets; torpedoes for decisive kills."));
             output.AddRange(this.Output.WriteLine("   - Chain deuterium/mine blasts for area damage."));
             output.AddRange(this.Output.WriteLine("4. Boarding and Capture"));
-            output.AddRange(this.Output.WriteLine("   - Boarding requires adjacent hostile with tor/pha/dsr disabled."));
+            output.AddRange(this.Output.WriteLine($"   - Boarding requires an adjacent hostile with shields below {this.GetSettingOrDefault("BoardingShieldThreshold", 50)}."));
             output.AddRange(this.Output.WriteLine("   - Use tss to lock a hostile subsystem target before firing."));
             output.AddRange(this.Output.WriteLine("   - Command formats:"));
             output.AddRange(this.Output.WriteLine("     tss <subsystem>"));
@@ -1782,9 +1782,10 @@ namespace StarTrek_KG.Output
                 return this.Output.Queue.ToList();
             }
 
-            if (!this.TargetWeaponsAreDown(target))
+            var boardingShieldThreshold = this.GetSettingOrDefault("BoardingShieldThreshold", 50);
+            if (Shields.For(target).Energy >= boardingShieldThreshold)
             {
-                this.Output.WriteLine($"Boarding denied. {target.Name} still has active weapons.");
+                this.Output.WriteLine($"Boarding denied. {target.Name} shields are still at or above {boardingShieldThreshold}.");
                 if (target is Ship hostileShipDenied)
                 {
                     hostileShipDenied.RetreatSuppressedTurns = Math.Max(hostileShipDenied.RetreatSuppressedTurns, 1);

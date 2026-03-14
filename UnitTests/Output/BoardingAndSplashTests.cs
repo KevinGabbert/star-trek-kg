@@ -33,7 +33,8 @@ namespace UnitTests.Output
             TestRunner.GetTestConstants();
             var config = new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                {"BoardingSuccessMinRoll", "1"}
+                {"BoardingSuccessMinRoll", "1"},
+                {"BoardingShieldThreshold", "50"}
             });
             _game = new Game(config, new SetupOptions
             {
@@ -56,12 +57,10 @@ namespace UnitTests.Output
         }
 
         [Test]
-        public void Boarding_Succeeds_When_Adjacent_And_Weapons_Are_Down()
+        public void Boarding_Succeeds_When_Adjacent_And_Shields_Are_Below_Configured_Threshold()
         {
             var hostile = _game.Map.Sectors.GetActive().GetHostiles().First();
-            Torpedoes.For(hostile).Damage = 1;
-            Phasers.For(hostile).Damage = 1;
-            hostile.Subsystems.Single(s => s.Type == StarTrek_KG.TypeSafeEnums.SubsystemType.Disruptors).Damage = 1;
+            Shields.For(hostile).Energy = 49;
 
             Torpedoes.For(hostile).Count = 4;
             hostile.Energy = 250;
@@ -84,11 +83,13 @@ namespace UnitTests.Output
         }
 
         [Test]
-        public void Boarding_Fails_When_Target_Weapons_Are_Still_Active()
+        public void Boarding_Fails_When_Target_Shields_Are_At_Configured_Threshold()
         {
+            var hostile = _game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(hostile).Energy = 50;
             var player = _game.Map.Playership;
             var output = _interact.ReadAndOutput(player, _game.Map.Text, "brd");
-            Assert.IsTrue(output.Any(l => l.Contains("still has active weapons")));
+            Assert.IsTrue(output.Any(l => l.Contains("shields are still at or above 50")));
         }
 
         [Test]
