@@ -53,6 +53,8 @@ namespace StarTrek_KG.Actors
             public int BorgRepelledTurnsRemaining { get; set; }
             public Point BorgLastKnownPlayerSector { get; set; }
             public bool InPlayerFleet { get; set; }
+            public bool UsePlayerGlyph { get; set; }
+            public bool SecuredByBoarding { get; set; }
             public bool GodMode { get; set; }
             public Dictionary<string, int> PowerShedSnapshots { get; set; }
 
@@ -122,6 +124,8 @@ namespace StarTrek_KG.Actors
             this.BorgRepelledTurnsRemaining = 0;
             this.BorgLastKnownPlayerSector = null;
             this.InPlayerFleet = false;
+            this.UsePlayerGlyph = false;
+            this.SecuredByBoarding = false;
             this.GodMode = false;
             this.PowerShedSnapshots = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 

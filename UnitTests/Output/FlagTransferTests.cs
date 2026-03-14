@@ -16,6 +16,7 @@ using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Commands;
 using StarTrek_KG.Config.Elements;
 using UnitTests.TestObjects;
+using System.Text;
 
 namespace UnitTests.Output
 {
@@ -49,16 +50,19 @@ namespace UnitTests.Output
         }
 
         [Test]
-        public void Tfg_Promotes_Adjacent_Disarmed_Hostile_And_Moves_Fleet_With_Player()
+        public void Tfg_Promotes_Boarded_Adjacent_Hostile_And_Moves_Fleet_With_Player()
         {
             var oldFlagship = (Ship)_game.Map.Playership;
             var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
             target.Energy = 333;
             target.MaxEnergy = 333;
-            Torpedoes.For(target).Damage = 1;
-            Phasers.For(target).Damage = 1;
-            target.Subsystems.Single(s => s.Type == SubsystemType.Disruptors).Damage = 1;
+            Shields.For(target).Energy = 49;
 
+            var boardingOutput = _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "brd");
+            Assert.IsTrue(boardingOutput.Any(l => l.Contains("Boarding successful")));
+            Assert.IsTrue(target.SecuredByBoarding);
+
+            _interact.Output.Clear();
             var output = _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "tfg");
 
             Assert.IsTrue(output.Any(l => l.Contains("Command flag transferred")));
@@ -77,6 +81,81 @@ namespace UnitTests.Output
             Assert.IsNotNull(oldFlagship.Coordinate);
             Assert.IsFalse(_game.Map.Playership.Coordinate.X == oldFlagship.Coordinate.X &&
                            _game.Map.Playership.Coordinate.Y == oldFlagship.Coordinate.Y);
+        }
+
+        [Test]
+        public void Tfg_Updates_Prompt_To_New_Commanding_Ship_Name()
+        {
+            var oldFlagship = (Ship)_game.Map.Playership;
+            var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(target).Energy = 49;
+
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "brd");
+            _interact.Output.Clear();
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "tfg");
+
+            Assert.AreEqual($"{target.Name} -> ", _interact.CurrentPrompt);
+        }
+
+        [Test]
+        public void Tfg_Renders_Transferred_Flagship_With_Its_Original_Faction_Glyph()
+        {
+            var oldFlagship = (Ship)_game.Map.Playership;
+            var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(target).Energy = 49;
+
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "brd");
+            _interact.Output.Clear();
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "tfg");
+
+            var render = new Render(_game.Map.Game.Interact, _game.Map.Game.Config);
+            var sector = _game.Map.Sectors.GetActive();
+            var location = _game.Map.Playership.GetLocation();
+            var sb = new StringBuilder();
+            _game.Map.Game.Interact.Output.Clear();
+
+            render.CreateSRSViewScreen(sector, _game.Map, location, 1, sector.Name, false, sb);
+            var lines = _game.Map.Game.Interact.Output.Queue.ToList();
+            var klingonGlyph = _game.Config.Get.FactionDetails(target.Faction).designator;
+            var playerRowIndex = 1 + location.Coordinate.Y;
+
+            Assert.IsTrue(lines[playerRowIndex].Contains(klingonGlyph), lines[playerRowIndex]);
+        }
+
+        [Test]
+        public void Tfg_Renders_Previous_Flagship_As_Friendly_Ship_Not_Null_Marker()
+        {
+            var oldFlagship = (Ship)_game.Map.Playership;
+            var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(target).Energy = 49;
+
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "brd");
+            _interact.Output.Clear();
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "tfg");
+
+            var render = new Render(_game.Map.Game.Interact, _game.Map.Game.Config);
+            var sector = _game.Map.Sectors.GetActive();
+            var location = _game.Map.Playership.GetLocation();
+            var sb = new StringBuilder();
+            _game.Map.Game.Interact.Output.Clear();
+
+            render.CreateSRSViewScreen(sector, _game.Map, location, 1, sector.Name, false, sb);
+            var lines = _game.Map.Game.Interact.Output.Queue.ToList();
+            var nullMarker = DEFAULTS.NULL_MARKER;
+
+            Assert.IsFalse(lines.Any(line => line.Contains(nullMarker)));
+        }
+
+        [Test]
+        public void Tfg_Fails_When_Adjacent_Hostile_Has_Not_Been_Boarded()
+        {
+            var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(target).Energy = 49;
+
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "tfg");
+
+            Assert.IsTrue(output.Any(l => l.Contains("has not been secured by boarding")));
+            Assert.AreNotSame(target, _game.Map.Playership);
         }
 
         [Test]
@@ -101,6 +180,69 @@ namespace UnitTests.Output
             Assert.IsTrue(output.Any(l => l.Contains("Command flag transferred")));
             Assert.AreSame(target, _game.Map.Playership);
             Assert.AreEqual(Allegiance.GoodGuy, target.Allegiance);
+        }
+
+        [Test]
+        public void FleetShip_Moves_Out_Of_The_Way_When_Playership_Impulses_Into_It()
+        {
+            var oldFlagship = (Ship)_game.Map.Playership;
+            var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(target).Energy = 49;
+
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "brd");
+            _interact.Output.Clear();
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "tfg");
+
+            var targetXBeforeMove = _game.Map.Playership.Coordinate.X;
+            var targetYBeforeMove = _game.Map.Playership.Coordinate.Y;
+            var fleetXBeforeMove = oldFlagship.Coordinate.X;
+            var fleetYBeforeMove = oldFlagship.Coordinate.Y;
+            var movement = new Movement(_game.Map.Playership) { BlockedByObstacle = false };
+            movement.Execute(MovementType.Impulse, NavDirection.Left, 1, out _, out _);
+
+            Assert.AreEqual(0, _game.Map.Playership.Coordinate.X, $"player before=[{targetXBeforeMove},{targetYBeforeMove}] fleet before=[{fleetXBeforeMove},{fleetYBeforeMove}]");
+            Assert.AreEqual(0, _game.Map.Playership.Coordinate.Y, $"player before=[{targetXBeforeMove},{targetYBeforeMove}] fleet before=[{fleetXBeforeMove},{fleetYBeforeMove}]");
+            Assert.AreNotEqual(_game.Map.Playership.Coordinate, oldFlagship.Coordinate);
+            Assert.AreEqual(CoordinateItem.FriendlyShip, oldFlagship.Coordinate.Item);
+        }
+
+        [Test]
+        public void FleetShip_Does_Not_Relocate_During_Normal_IntraSector_Player_Movement()
+        {
+            var oldFlagship = (Ship)_game.Map.Playership;
+            var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(target).Energy = 49;
+
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "brd");
+            _interact.Output.Clear();
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "tfg");
+
+            var fleetXBeforeMove = oldFlagship.Coordinate.X;
+            var fleetYBeforeMove = oldFlagship.Coordinate.Y;
+
+            var movement = new Movement(_game.Map.Playership) { BlockedByObstacle = false };
+            movement.Execute(MovementType.Impulse, NavDirection.Right, 1, out _, out _);
+
+            Assert.AreEqual(fleetXBeforeMove, oldFlagship.Coordinate.X);
+            Assert.AreEqual(fleetYBeforeMove, oldFlagship.Coordinate.Y);
+            Assert.AreEqual(CoordinateItem.FriendlyShip, oldFlagship.Coordinate.Item);
+        }
+
+        [Test]
+        public void Warp_After_Flag_Transfer_Does_Not_Return_Duplicate_Scan_Blocks()
+        {
+            var oldFlagship = (Ship)_game.Map.Playership;
+            var target = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
+            Shields.For(target).Energy = 49;
+
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "brd");
+            _interact.Output.Clear();
+            _interact.ReadAndOutput(oldFlagship, _game.Map.Text, "tfg");
+
+            var output = _game.SubscriberSendAndGetResponse("warp 1 course 7");
+            var sectorLines = output.Where(line => line.StartsWith("Sector:", System.StringComparison.Ordinal)).ToList();
+
+            Assert.LessOrEqual(sectorLines.Count, 1, string.Join(" | ", sectorLines));
         }
 
         private sealed class ConfigOverrideSettings : IStarTrekKGSettings

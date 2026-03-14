@@ -37,7 +37,7 @@ namespace UnitTests.Output
 
             _interact.ResetPrompt();
 
-            Assert.AreEqual(_interact.Subscriber.PromptInfo.DefaultPrompt, _interact.CurrentPrompt);
+            Assert.AreEqual("USS Enterprise -> ", _interact.CurrentPrompt);
             Assert.AreEqual(string.Empty, _interact.Subscriber.PromptInfo.SubCommand);
             Assert.AreEqual(SubsystemType.None, _interact.Subscriber.PromptInfo.SubSystem);
             Assert.AreEqual(0, _interact.Subscriber.PromptInfo.Level);

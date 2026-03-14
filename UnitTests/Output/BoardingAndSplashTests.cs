@@ -59,7 +59,7 @@ namespace UnitTests.Output
         [Test]
         public void Boarding_Succeeds_When_Adjacent_And_Shields_Are_Below_Configured_Threshold()
         {
-            var hostile = _game.Map.Sectors.GetActive().GetHostiles().First();
+            var hostile = (Ship)_game.Map.Sectors.GetActive().GetHostiles().First();
             Shields.For(hostile).Energy = 49;
 
             Torpedoes.For(hostile).Count = 4;
@@ -80,6 +80,7 @@ namespace UnitTests.Output
             Assert.Less(hostile.Energy, 250);
             Assert.Less(Torpedoes.For(hostile).Count, 4);
             Assert.Greater(player.Prisoners, 0);
+            Assert.IsTrue(hostile.SecuredByBoarding);
         }
 
         [Test]

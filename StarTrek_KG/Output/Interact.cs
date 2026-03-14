@@ -34,6 +34,7 @@ namespace StarTrek_KG.Output
         public IOutputMethod Output { get; set; }
 
         public Subscriber Subscriber { get; set; }
+        private IShip PromptShipContext { get; set; }
 
         public string CurrentPrompt { get; set; }
         public bool OutputError { get; set; }
@@ -793,6 +794,7 @@ namespace StarTrek_KG.Output
         /// <param name="userInput"></param>
         public List<string> ReadAndOutput(IShip playerShip, string mapText, string userInput = null)
         {
+            this.PromptShipContext = playerShip;
             this.Output.Write(mapText);
 
             return this.ProcessInputString(playerShip, userInput);
@@ -1841,6 +1843,11 @@ namespace StarTrek_KG.Output
                 this.Output.WriteLine($"Brig capacity reached. {prisonersCaptured - acceptedPrisoners} prisoners could not be transferred.");
             }
 
+            if (target is Ship securedShip)
+            {
+                securedShip.SecuredByBoarding = true;
+            }
+
             return this.Output.Queue.ToList();
         }
 
@@ -1884,46 +1891,18 @@ namespace StarTrek_KG.Output
             }
             else if (target.Allegiance == Allegiance.BadGuy)
             {
-                if (!this.TargetWeaponsAreDown(target))
+                if (!target.SecuredByBoarding)
                 {
-                    this.Output.WriteLine($"Transfer denied. {target.Name} still has active weapons.");
-                    return this.Output.Queue.ToList();
-                }
-
-                var roll = Utility.Utility.Random.Next(1, 7);
-                var successRoll = this.GetSettingOrDefault("BoardingSuccessMinRoll", 4);
-                this.Output.WriteLine($"Flag transfer assault on {target.Name}: rolled {roll} on 1d6.");
-                if (roll < successRoll)
-                {
-                    this.Output.WriteLine("Transfer failed. Command staff could not secure the ship.");
+                    this.Output.WriteLine($"Transfer denied. {target.Name} has not been secured by boarding.");
                     return this.Output.Queue.ToList();
                 }
             }
 
             playerShip.Map.PromoteToPlayership(target);
+            this.PromptShipContext = playerShip.Map.Playership;
+            this.ResetPrompt();
             this.Output.WriteLine($"Command flag transferred to {target.Name}. {currentFlagship.Name} joins your fleet.");
             return this.Output.Queue.ToList();
-        }
-
-        private bool TargetWeaponsAreDown(IShip target)
-        {
-            var torpedoesDown = this.SubsystemIsDamaged(target, SubsystemType.Torpedoes);
-            var phasersDown = this.SubsystemIsDamaged(target, SubsystemType.Phasers);
-            var disruptorsDown = this.SubsystemIsDamaged(target, SubsystemType.Disruptors);
-            return torpedoesDown && phasersDown && disruptorsDown;
-        }
-
-        private bool SubsystemIsDamaged(IShip ship, SubsystemType subsystemType)
-        {
-            try
-            {
-                var subsystem = ship?.Subsystems?.SingleOrDefault(s => s.Type == subsystemType);
-                return subsystem == null || subsystem.Damage > 0;
-            }
-            catch
-            {
-                return true;
-            }
         }
 
         #region Sub-Level Menus
@@ -2008,7 +1987,7 @@ namespace StarTrek_KG.Output
 
             string promptReply;
             this.PromptUser(SubsystemType.Debug,
-                $"{this.Subscriber.PromptInfo.DefaultPrompt}Debug -> ",
+                $"{this.GetBasePrompt()}Debug -> ",
                 null,
                 out promptReply,
                 this.Output.Queue,
@@ -2042,7 +2021,7 @@ namespace StarTrek_KG.Output
             string promptReply;
             this.PromptUser(
                 SubsystemType.WarGames,
-                $"{this.Subscriber.PromptInfo.DefaultPrompt}War Games -> ",
+                $"{this.GetBasePrompt()}War Games -> ",
                 null,
                 out promptReply,
                 this.Output.Queue,
@@ -3033,7 +3012,7 @@ namespace StarTrek_KG.Output
             string shieldPromptReply;
 
             //todo: this needs to be divined?
-            this.PromptUser(SubsystemType.Shields, $"{this.Subscriber.PromptInfo.DefaultPrompt}Shield Control -> ",
+            this.PromptUser(SubsystemType.Shields, $"{this.GetBasePrompt()}Shield Control -> ",
                 null, out shieldPromptReply, this.Output.Queue, 1);
 
             Shields.For(playerShip).Controls(shieldPanelCommand);
@@ -3065,7 +3044,7 @@ namespace StarTrek_KG.Output
 
             //todo: this needs to be divined?
             this.PromptUser(SubsystemType.Impulse, 
-                            $"{this.Subscriber.PromptInfo.DefaultPrompt}Impulse Control -> Enter Direction ->",
+                            $"{this.GetBasePrompt()}Impulse Control -> Enter Direction ->",
                             null, 
                             out impulsePromptReply, 
                             this.Output.Queue, 
@@ -3128,7 +3107,7 @@ namespace StarTrek_KG.Output
 
             this.PromptUser(
                 SubsystemType.Navigation,
-                $"{this.Subscriber.PromptInfo.DefaultPrompt}Warp Control -> ",
+                $"{this.GetBasePrompt()}Warp Control -> ",
                 this.RenderCourse() + "Enter Course: ",
                 out warpPromptReply,
                 this.Output.Queue,
@@ -3213,11 +3192,38 @@ namespace StarTrek_KG.Output
 
         public void ResetPrompt()
         {
-            this.CurrentPrompt = this.Subscriber.PromptInfo.DefaultPrompt; //todo: set this to config file default prompt 
+            this.CurrentPrompt = this.GetBasePrompt();
 
             this.Subscriber.PromptInfo.SubCommand = "";
             this.Subscriber.PromptInfo.SubSystem = SubsystemType.None;
             this.Subscriber.PromptInfo.Level = 0;
+        }
+
+        private string GetBasePrompt()
+        {
+            var activeShip = this.PromptShipContext?.Map?.Playership ?? this.PromptShipContext;
+            if (activeShip == null)
+            {
+                return this.Subscriber.PromptInfo.DefaultPrompt;
+            }
+
+            return $"{this.GetPromptShipName(activeShip)} -> ";
+        }
+
+        private string GetPromptShipName(IShip ship)
+        {
+            if (ship == null || string.IsNullOrWhiteSpace(ship.Name))
+            {
+                return "Ship";
+            }
+
+            if (ship.Faction == FactionName.Federation &&
+                !ship.Name.StartsWith("USS ", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"USS {ship.Name}";
+            }
+
+            return ship.Name;
         }
 
         public void SetPrompt(int promptLevel)

@@ -227,7 +227,25 @@ namespace StarTrek_KG.Output
                         break;
 
                     case CoordinateItem.PlayerShip:
-                        sb.Append(DEFAULTS.PLAYERSHIP);
+                        if (sector.Object is Ship activeShip && !activeShip.UsePlayerGlyph)
+                        {
+                            this.AppendShipDesignator(sb, totalHostiles, sector);
+                        }
+                        else
+                        {
+                            sb.Append(DEFAULTS.PLAYERSHIP);
+                        }
+                        break;
+
+                    case CoordinateItem.FriendlyShip:
+                        if (sector.Object is Ship friendlyShip && friendlyShip.UsePlayerGlyph)
+                        {
+                            sb.Append(this.GetStringSettingOrDefault("PlayerShipGlyph", DEFAULTS.PLAYERSHIP));
+                        }
+                        else
+                        {
+                            this.AppendShipDesignator(sb, totalHostiles, sector);
+                        }
                         break;
 
                     case CoordinateItem.HostileShip:

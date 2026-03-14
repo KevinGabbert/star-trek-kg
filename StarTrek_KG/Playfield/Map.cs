@@ -1630,7 +1630,8 @@ namespace StarTrek_KG.Playfield
             this.Playership = new Ship(FactionName.Federation, playerShipName, startingSector, this)
             {
                 Allegiance = Allegiance.GoodGuy,
-                Energy = this.Config.GetSetting<int>("energy")
+                Energy = this.Config.GetSetting<int>("energy"),
+                UsePlayerGlyph = true
             };
             this.Playership.MaxEnergy = this.Playership.Energy;
             this.Playership.InPlayerFleet = true;
@@ -1980,6 +1981,7 @@ namespace StarTrek_KG.Playfield
         /// <param name="newLocation"></param>
         public void SetPlayershipInLocation(IShip shipToSet, IMap map, Location newLocation)
         {
+            var previousSector = shipToSet?.GetSector();
             this.RemovePlayership(map);
 
             newLocation.Sector.SetActive();
@@ -1994,7 +1996,13 @@ namespace StarTrek_KG.Playfield
 
             shipToSet.Point = new Point(newLocation.Sector.X, newLocation.Sector.Y);
             shipToSet.Coordinate = foundSector;
-            this.BringPlayerFleetToSector(newLocation.Sector);
+            var changedSector = previousSector == null ||
+                                previousSector.X != newLocation.Sector.X ||
+                                previousSector.Y != newLocation.Sector.Y;
+            if (changedSector)
+            {
+                this.BringPlayerFleetToSector(newLocation.Sector);
+            }
             this.ResolveWormholeTransitIfPresent(shipToSet, foundSector, encounteredWormhole);
             (this.Game as Game)?.HandlePlayerSectorVisibilityChange(newLocation.Sector);
         }
@@ -2023,21 +2031,58 @@ namespace StarTrek_KG.Playfield
             ship.InPlayerFleet = true;
             ship.Allegiance = Allegiance.GoodGuy;
 
-            if (previousFlagship.Coordinate != null)
+            var previousSectorCoordinate = previousFlagship.GetSector().Coordinates
+                .GetNoError(new Point(previousFlagship.Coordinate.X, previousFlagship.Coordinate.Y));
+            if (previousSectorCoordinate != null)
             {
-                previousFlagship.Coordinate.Item = CoordinateItem.FriendlyShip;
-                previousFlagship.Coordinate.Object = previousFlagship;
+                previousSectorCoordinate.Item = CoordinateItem.FriendlyShip;
+                previousSectorCoordinate.Object = previousFlagship;
+                previousFlagship.Coordinate = previousSectorCoordinate;
             }
 
             this.Playership = ship;
-            if (ship.Coordinate != null)
+            DEFAULTS.PLAYERSHIP = this.ResolvePlayershipGlyph(ship);
+            var playershipSectorCoordinate = ship.GetSector().Coordinates
+                .GetNoError(new Point(ship.Coordinate.X, ship.Coordinate.Y));
+            if (playershipSectorCoordinate != null)
             {
-                ship.Coordinate.Item = CoordinateItem.PlayerShip;
-                ship.Coordinate.Object = ship;
+                playershipSectorCoordinate.Item = CoordinateItem.PlayerShip;
+                playershipSectorCoordinate.Object = ship;
+                ship.Coordinate = playershipSectorCoordinate;
             }
 
             Navigation.For(previousFlagship).Docked = false;
             Navigation.For(ship).Docked = false;
+        }
+
+        private string ResolvePlayershipGlyph(Ship ship)
+        {
+            if (ship?.UsePlayerGlyph == true)
+            {
+                try
+                {
+                    return this.Config.GetSetting<string>("PlayerShipGlyph");
+                }
+                catch
+                {
+                    return DEFAULTS.PLAYERSHIP;
+                }
+            }
+
+            try
+            {
+                var glyph = this.Config.Get?.FactionDetails(ship?.Faction)?.designator;
+                if (!string.IsNullOrWhiteSpace(glyph))
+                {
+                    return glyph;
+                }
+            }
+            catch
+            {
+                // Fall back below.
+            }
+
+            return DEFAULTS.PLAYERSHIP;
         }
 
         public void BringPlayerFleetToSector(Sector sector)
@@ -2063,7 +2108,7 @@ namespace StarTrek_KG.Playfield
 
                 var destination = sector.Coordinates
                     .Where(c => c.Item == CoordinateItem.Empty)
-                    .OrderBy(c => Math.Abs(c.X - this.Playership.Coordinate.X) + Math.Abs(c.Y - this.Playership.Coordinate.Y))
+                    .OrderByDescending(c => Math.Abs(c.X - this.Playership.Coordinate.X) + Math.Abs(c.Y - this.Playership.Coordinate.Y))
                     .ThenBy(_ => Utility.Utility.Random.Next())
                     .FirstOrDefault();
 

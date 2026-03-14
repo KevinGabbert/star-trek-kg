@@ -241,6 +241,14 @@ namespace StarTrek_KG.Actors
             CoordinateItem currentItem = activeSectors[sector.X, sector.Y].Item;
             ICoordinateObject currentObject = activeSectors[sector.X, sector.Y].Object;
 
+            if (currentObject is Ship fleetShip &&
+                fleetShip != this.ShipConnectedTo &&
+                fleetShip.InPlayerFleet)
+            {
+                this.TryMoveFriendlyShipOutOfTheWay(activeSectors, fleetShip, new Point(sector.X, sector.Y));
+                return false;
+            }
+
             if (currentItem != CoordinateItem.Empty)
             {
                 if (currentItem == CoordinateItem.Deuterium ||
@@ -270,6 +278,37 @@ namespace StarTrek_KG.Actors
             }
 
             return false;
+        }
+
+        private bool TryMoveFriendlyShipOutOfTheWay(Coordinates activeSectors, Ship friendlyShip, Point blockedTarget)
+        {
+            if (activeSectors == null || friendlyShip?.Coordinate == null)
+            {
+                return false;
+            }
+
+            var relocation = activeSectors
+                .Where(c => c.Item == CoordinateItem.Empty)
+                .OrderByDescending(c => Math.Abs(c.X - blockedTarget.X) + Math.Abs(c.Y - blockedTarget.Y))
+                .ThenBy(_ => Utility.Utility.Random.Next())
+                .FirstOrDefault();
+
+            if (relocation == null)
+            {
+                return false;
+            }
+
+            var origin = activeSectors.GetNoError(new Point(friendlyShip.Coordinate.X, friendlyShip.Coordinate.Y));
+            if (origin != null && origin.Object == friendlyShip)
+            {
+                origin.Item = CoordinateItem.Empty;
+                origin.Object = null;
+            }
+
+            friendlyShip.Coordinate = relocation;
+            relocation.Item = CoordinateItem.FriendlyShip;
+            relocation.Object = friendlyShip;
+            return true;
         }
 
         private void IdentifyObstacle(IPoint sector, ICoordinateObject currentObject, CoordinateItem currentItem)

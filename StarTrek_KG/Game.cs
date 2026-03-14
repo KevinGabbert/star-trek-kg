@@ -2672,16 +2672,24 @@ namespace StarTrek_KG
 
             if (sectorLineIndexes.Count >= 2)
             {
-                var first = sectorLineIndexes[0];
-                var second = sectorLineIndexes[1];
-                var blockLength = second - first;
-                if (blockLength > 0 && second + blockLength <= output.Count)
+                for (var i = 0; i < sectorLineIndexes.Count - 1; i++)
                 {
-                    var firstBlock = output.Skip(first).Take(blockLength).ToList();
-                    var secondBlock = output.Skip(second).Take(blockLength).ToList();
+                    var first = sectorLineIndexes[i];
+                    var second = sectorLineIndexes[i + 1];
+                    var firstBlockLength = second - first;
+                    var third = i + 2 < sectorLineIndexes.Count ? sectorLineIndexes[i + 2] : output.Count;
+                    var secondBlockLength = third - second;
+
+                    if (firstBlockLength <= 0 || secondBlockLength <= 0 || firstBlockLength != secondBlockLength)
+                    {
+                        continue;
+                    }
+
+                    var firstBlock = output.Skip(first).Take(firstBlockLength).ToList();
+                    var secondBlock = output.Skip(second).Take(secondBlockLength).ToList();
                     if (firstBlock.SequenceEqual(secondBlock))
                     {
-                        var normalizedByBlock = output.Take(second).Concat(output.Skip(second + blockLength)).ToList();
+                        var normalizedByBlock = output.Take(second).Concat(output.Skip(third)).ToList();
                         this.Interact.Output.Clear();
                         this.Interact.Output.Write(normalizedByBlock);
                         return normalizedByBlock;
