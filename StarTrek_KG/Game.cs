@@ -776,7 +776,7 @@ namespace StarTrek_KG
             return this.GetBorgShips()
                 .Any(borg => borg.Point.X == ship.Point.X &&
                              borg.Point.Y == ship.Point.Y &&
-                             borg.BorgRepelledTurnsRemaining <= 0 &&
+                             borg.BorgRepelledTurnsRemaining < 0 &&
                              this.GetCoordinateDistance(borg, ship) <= range);
         }
 
@@ -979,10 +979,13 @@ namespace StarTrek_KG
                 Shields.For(borg).Energy = this.GetIntSettingOrDefault("BorgShieldEnergy", borg.MaxEnergy);
             }
 
-            if (borg.BorgRepelledTurnsRemaining > 0)
+            if (borg.BorgRepelledTurnsRemaining >= 0)
             {
                 borg.BorgRepelledTurnsRemaining--;
-                return;
+                if (borg.BorgRepelledTurnsRemaining >= 0)
+                {
+                    return;
+                }
             }
 
             if (this.IsBorgSuppressedByFigureEightZipBug(player))
@@ -1417,7 +1420,7 @@ namespace StarTrek_KG
                     {
                         this.MoveQuadrantFriendlies();
                     }
-                    retVal = this.Map.Playership.OutputQueue();
+                    retVal = this.DeduplicateRepeatedScanOutput(this.Map.Playership.OutputQueue());
                 }
 
                 return retVal;
@@ -2628,6 +2631,58 @@ namespace StarTrek_KG
                 map.timeRemaining--;
                 map.Stardate++;
             }
+        }
+
+        private List<string> DeduplicateRepeatedScanOutput(List<string> output)
+        {
+            if (output == null || output.Count < 2)
+            {
+                return output;
+            }
+
+            var sectorLineIndexes = output
+                .Select((line, index) => new { line, index })
+                .Where(x => !string.IsNullOrWhiteSpace(x.line) && x.line.StartsWith("Sector:", StringComparison.Ordinal))
+                .Select(x => x.index)
+                .ToList();
+
+            if (sectorLineIndexes.Count >= 2)
+            {
+                var first = sectorLineIndexes[0];
+                var second = sectorLineIndexes[1];
+                var blockLength = second - first;
+                if (blockLength > 0 && second + blockLength <= output.Count)
+                {
+                    var firstBlock = output.Skip(first).Take(blockLength).ToList();
+                    var secondBlock = output.Skip(second).Take(blockLength).ToList();
+                    if (firstBlock.SequenceEqual(secondBlock))
+                    {
+                        var normalizedByBlock = output.Take(second).Concat(output.Skip(second + blockLength)).ToList();
+                        this.Interact.Output.Clear();
+                        this.Interact.Output.Write(normalizedByBlock);
+                        return normalizedByBlock;
+                    }
+                }
+            }
+
+            if (output.Count % 2 != 0)
+            {
+                return output;
+            }
+
+            var half = output.Count / 2;
+            for (var i = 0; i < half; i++)
+            {
+                if (!string.Equals(output[i], output[i + half], StringComparison.Ordinal))
+                {
+                    return output;
+                }
+            }
+
+            var normalized = output.Take(half).ToList();
+            this.Interact.Output.Clear();
+            this.Interact.Output.Write(normalized);
+            return normalized;
         }
 
         public void Dispose()

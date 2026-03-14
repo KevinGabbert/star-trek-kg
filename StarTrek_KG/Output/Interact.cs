@@ -842,6 +842,18 @@ namespace StarTrek_KG.Output
                 return this.ExecuteTargetSubsystemCommand(playerShip, userCommand).ToList();
             }
 
+            if (this.Subscriber.PromptInfo.Level == 0 &&
+                userCommand.StartsWith("dbg ", StringComparison.OrdinalIgnoreCase))
+            {
+                return Debug.For(playerShip).Controls(userCommand.Substring(4).Trim());
+            }
+
+            if (this.Subscriber.PromptInfo.Level > 0 &&
+                this.Subscriber.PromptInfo.SubSystem == SubsystemType.Debug)
+            {
+                return Debug.For(playerShip).Controls(userCommand);
+            }
+
             if (userCommand.Contains(" "))
             {
                 return ProcessMultiStepCommand(playerShip, userCommand);

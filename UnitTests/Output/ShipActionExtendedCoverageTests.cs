@@ -138,6 +138,15 @@ namespace UnitTests.Output
         }
 
         [Test]
+        public void Subscriber_WarpArrival_Output_Does_Not_Return_Duplicate_Scan_Blocks()
+        {
+            var output = _game.SubscriberSendAndGetResponse("warp 1 course 7");
+
+            var sectorLines = output.Where(line => line.StartsWith("Sector:", System.StringComparison.Ordinal)).ToList();
+            Assert.LessOrEqual(sectorLines.Count, 1);
+        }
+
+        [Test]
         public void GaseousAnomaly_ConsumesExtraTurn_OnEachEntry()
         {
             var sector = _game.Map.Playership.GetSector();

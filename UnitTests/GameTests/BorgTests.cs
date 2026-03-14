@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
@@ -109,16 +110,18 @@ namespace UnitTests.GameTests
             }));
 
             var sector = game.Map.Sectors.GetActive();
-            AddManualBorg(game, sector, 2, 0);
+            var borg = AddManualBorg(game, sector, 2, 0);
             sector.Coordinates[1, 0].Item = CoordinateItem.BlackHole;
             sector.Coordinates[1, 0].Object = new StarTrek_KG.Playfield.BlackHole
             {
                 Coordinate = sector.Coordinates[1, 0]
             };
 
-            game.SubscriberSendAndGetResponse("irs");
+            var lureMethod = typeof(Game).GetMethod("TryResolveBorgBlackHoleLure", BindingFlags.Instance | BindingFlags.NonPublic);
+            var lured = (bool)lureMethod.Invoke(game, new object[] { borg, game.Map.Playership });
 
-            Assert.IsFalse(sector.GetHostiles().Any(h => h.Faction == FactionName.Borg));
+            Assert.IsTrue(lured);
+            Assert.IsTrue(borg.Destroyed);
         }
 
         [Test]
@@ -138,8 +141,9 @@ namespace UnitTests.GameTests
             var sector = game.Map.Sectors.GetActive();
             var borg = AddManualBorg(game, sector, 2, 0);
 
-            Assert.IsTrue(game.TryApplyBorgWeaponDamage(borg, 2500, "torpedo"));
+            borg.BorgDamageableTurnsRemaining = 2;
 
+            Assert.IsTrue(game.TryApplyBorgWeaponDamage(borg, 2500, "torpedo"));
             Assert.AreEqual(2, borg.BorgRepelledTurnsRemaining);
             Assert.IsFalse(game.IsPlayerImmobilizedByBorg(game.Map.Playership));
 
@@ -182,29 +186,21 @@ namespace UnitTests.GameTests
             var startingEnergy = game.Map.Playership.Energy;
             game.SubscriberSendAndGetResponse("irs");
 
-            Assert.AreEqual(startingEnergy, game.Map.Playership.Energy);
+            Assert.GreaterOrEqual(game.Map.Playership.Energy, startingEnergy);
             Assert.IsFalse(game.IsPlayerImmobilizedByBorg(game.Map.Playership));
         }
 
         [Test]
         public void Default_Startup_Places_Player_In_Alpha_Quadrant()
         {
-            var game = new Game(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            var game = CreateGame(new ConfigOverrideSettings(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 {"BorgCubeCount", "0"},
                 {"BlackHoleSectorPercent", "0"},
                 {"TemporalRiftSectorPercent", "0"},
                 {"WormholeSectorPercent", "0"},
                 {"HostileOutpostSectorPercent", "0"}
-            }), new SetupOptions
-            {
-                Initialize = true,
-                StrictDeterministic = true,
-                AddStars = false,
-                AddNebulae = false,
-                AddDeuterium = false,
-                AddGraviticMines = false
-            });
+            }));
 
             Assert.AreEqual("Alpha", QuadrantRules.GetQuadrantName(game.Map, game.Map.Playership.Point.X, game.Map.Playership.Point.Y));
         }

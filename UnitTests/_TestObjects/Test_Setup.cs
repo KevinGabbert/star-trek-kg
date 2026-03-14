@@ -2,13 +2,17 @@ using System.Linq;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
+using StarTrek_KG.Config.Collections;
+using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
+using StarTrek_KG.Types;
 
 namespace UnitTests.TestObjects
 {
@@ -250,7 +254,7 @@ namespace UnitTests.TestObjects
             DEFAULTS.SECTOR_MIN = 0;
             DEFAULTS.SECTOR_MAX = 0;
 
-            this.Game = new Game(new StarTrekKGSettings(), false);
+            this.Game = new Game(new UnitTestSettings(), false);
             this.Config = Game.Config;
 
             TestRunner.GetTestConstants();
@@ -261,6 +265,49 @@ namespace UnitTests.TestObjects
         public string GetConfigText(string textToGet)
         {
             return this.Config.GetText(textToGet);
+        }
+
+        private sealed class UnitTestSettings : IStarTrekKGSettings
+        {
+            private readonly StarTrekKGSettings _inner = new StarTrekKGSettings().GetConfig();
+
+            public StarTrekKGSettings Get { get => _inner.Get; set => _inner.Get = value; }
+            public Names StarSystems => _inner.StarSystems;
+            public NameValues ConsoleText => _inner.ConsoleText;
+            public Factions Factions => _inner.Factions;
+            public NameValues GameSettings => _inner.GameSettings;
+            public MenusElement Menus => _inner.Menus;
+            public System.Collections.Generic.List<CommandDef> LoadCommands() => _inner.LoadCommands();
+            public StarTrekKGSettings GetConfig() => _inner.GetConfig();
+            public System.Collections.Generic.List<string> ShipNames(FactionName faction) => _inner.ShipNames(faction);
+            public System.Collections.Generic.List<FactionThreat> GetThreats(FactionName faction) => _inner.GetThreats(faction);
+            public MenuItems GetMenuItems(string menuName) => _inner.GetMenuItems(menuName);
+            public System.Collections.Generic.List<string> GetStarSystems() => _inner.GetStarSystems();
+            public string GetText(string name) => _inner.GetText(name);
+            public string GetText(string textToGet, string textToGet2) => _inner.GetText(textToGet, textToGet2);
+
+            public T GetSetting<T>(string name)
+            {
+                if (name == "QuadrantFriendlyShipsPerFaction" ||
+                    name == "BorgCubeCount" ||
+                    name == "HostileOutpostSectorPercent" ||
+                    name == "BlackHoleSectorPercent" ||
+                    name == "TemporalRiftSectorPercent" ||
+                    name == "WormholeSectorPercent" ||
+                    name == "DeuteriumCloudSectorPercent" ||
+                    name == "GaseousAnomalySectorPercent" ||
+                    name == "SporeSectorPercent" ||
+                    name == "ZipBugCount")
+                {
+                    return (T)System.Convert.ChangeType("0", typeof(T));
+                }
+
+                return _inner.GetSetting<T>(name);
+            }
+
+            public string Setting(string name) => this.GetSetting<string>(name);
+            public T CheckAndCastValue<T>(string name, NameValue element, bool whiteSpaceIsOk = false) => _inner.CheckAndCastValue<T>(name, element, whiteSpaceIsOk);
+            public void Reset() => _inner.Reset();
         }
     }
 }

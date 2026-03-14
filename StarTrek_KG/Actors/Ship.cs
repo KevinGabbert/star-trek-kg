@@ -171,7 +171,14 @@ namespace StarTrek_KG.Actors
 
             if (string.IsNullOrWhiteSpace(setting))
             {
-                setting = this.Config?.GetSetting<string>("Hostile");
+                if (this.Map != null && QuadrantRules.IsFriendlyFaction(this.Map, this.Faction))
+                {
+                    setting = "Friendly";
+                }
+                else
+                {
+                    setting = this.Config?.GetSetting<string>("Hostile");
+                }
             }
 
             Allegiance returnVal;

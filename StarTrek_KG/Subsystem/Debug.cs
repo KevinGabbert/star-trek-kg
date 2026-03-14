@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StarTrek_KG.Actors;
@@ -54,8 +55,47 @@ namespace StarTrek_KG.Subsystem
         public override List<string> Controls(string command)
         {
             this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
+            var normalizedCommand = (command ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(normalizedCommand))
+            {
+                this.ShipConnectedTo.OutputLine(">> exiting Debug Mode..");
+                return this.ShipConnectedTo.OutputQueue();
+            }
 
-            switch (command.ToLower())
+            if (string.Equals(normalizedCommand, "god", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(normalizedCommand, "dbg god", StringComparison.OrdinalIgnoreCase))
+            {
+                if (this.ShipConnectedTo is Ship concreteShip)
+                {
+                    concreteShip.GodMode = !concreteShip.GodMode;
+                    this.ShipConnectedTo.OutputLine($"God mode set to: {concreteShip.GodMode}.");
+                }
+
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            if (normalizedCommand.StartsWith("dadd", StringComparison.OrdinalIgnoreCase))
+            {
+                var amount = this.ParseTrailingAmount(normalizedCommand, 1000);
+                this.ShipConnectedTo.Energy += amount;
+                if (this.ShipConnectedTo is Ship energyShip && energyShip.MaxEnergy < this.ShipConnectedTo.Energy)
+                {
+                    energyShip.MaxEnergy = this.ShipConnectedTo.Energy;
+                }
+
+                this.ShipConnectedTo.OutputLine($"Added {amount} energy to {this.ShipConnectedTo.Name}. Energy now {this.ShipConnectedTo.Energy}.");
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            if (normalizedCommand.StartsWith("dads", StringComparison.OrdinalIgnoreCase))
+            {
+                var amount = this.ParseTrailingAmount(normalizedCommand, 500);
+                Shields.For(this.ShipConnectedTo).Energy += amount;
+                this.ShipConnectedTo.OutputLine($"Added {amount} shield energy. Shields now {Shields.For(this.ShipConnectedTo).Energy}.");
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            switch (normalizedCommand.ToLower())
             {
                 case "dsrec":
                     //this.PrintGalacticRecord(this.Map.Sectors); 
@@ -176,6 +216,22 @@ namespace StarTrek_KG.Subsystem
         public new static Debug For(IShip ship)
         {
             return (Debug)For(ship, SubsystemType.Debug);
+        }
+
+        private int ParseTrailingAmount(string command, int defaultValue)
+        {
+            var parts = command.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2)
+            {
+                return defaultValue;
+            }
+
+            if (int.TryParse(parts.Last(), out var parsed) && parsed > 0)
+            {
+                return parsed;
+            }
+
+            return defaultValue;
         }
     }
 }

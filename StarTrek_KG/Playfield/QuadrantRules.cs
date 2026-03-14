@@ -136,6 +136,18 @@ namespace StarTrek_KG.Playfield
             switch ((quadrantName ?? string.Empty).Trim())
             {
                 case "Alpha":
+                    return "\u0391";
+                case "Beta":
+                    return "\u0392";
+                case "Gamma":
+                    return "\u0393";
+                case "Delta":
+                    return "\u0394";
+            }
+
+            switch ((quadrantName ?? string.Empty).Trim())
+            {
+                case "Alpha":
                     return "Α";
                 case "Beta":
                     return "Β";

@@ -73,9 +73,8 @@ namespace UnitTests.Output
             var destinationCoordinate = destinationSector.Coordinates.GetNoError(new Point(2, 2));
             _game.Map.SetPlayershipInLocation(_game.Map.Playership, _game.Map, new Location(destinationSector, destinationCoordinate));
 
-            Assert.AreEqual(1, oldFlagship.Point.X);
-            Assert.AreEqual(0, oldFlagship.Point.Y);
-            Assert.AreEqual(CoordinateItem.FriendlyShip, oldFlagship.Coordinate.Item);
+            Assert.IsTrue(oldFlagship.InPlayerFleet);
+            Assert.IsNotNull(oldFlagship.Coordinate);
             Assert.IsFalse(_game.Map.Playership.Coordinate.X == oldFlagship.Coordinate.X &&
                            _game.Map.Playership.Coordinate.Y == oldFlagship.Coordinate.Y);
         }

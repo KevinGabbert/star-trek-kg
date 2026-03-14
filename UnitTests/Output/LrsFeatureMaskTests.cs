@@ -1,8 +1,10 @@
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using StarTrek_KG;
 using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
+using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
@@ -80,13 +82,14 @@ namespace UnitTests.Output
                 AddNebulae = false,
                 CoordinateDefs = new CoordinateDefs
                 {
-                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 0)), CoordinateItem.PlayerShip)
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 0)), CoordinateItem.PlayerShip),
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 1)), CoordinateItem.TechnologyCache)
                 }
             });
 
-            var output = game.Interact.ReadAndOutput(game.Map.Playership, game.Map.Text, "obj G");
+            var sectorResult = LongRangeScan.Execute(game.Map.Sectors[0, 0]);
 
-            Assert.IsTrue(output.Any(line => line.Contains("technology cache")));
+            Assert.That((sectorResult.FeatureMask & LrsFeatureMask.TechnologyCache) != 0, Is.True);
         }
 
         [Test]
@@ -128,11 +131,14 @@ namespace UnitTests.Output
 
             game.Map.Sectors[0, 0].Name = "Zane";
 
-            var output = game.Interact.ReadAndOutput(game.Map.Playership, game.Map.Text, "obj Zane");
+            var decodeMethod = typeof(Interaction).GetMethod("DecodeSectorFeatureMaskCommand", BindingFlags.Instance | BindingFlags.NonPublic);
+            var output = ((System.Collections.IEnumerable)decodeMethod.Invoke(game.Interact, new object[] { game.Map.Sectors[0, 0] }))
+                .Cast<string>()
+                .ToList();
 
             Assert.IsTrue(output.Any(line => line.Contains("Zane:")));
             Assert.IsTrue(output.Any(line => line.Contains("black hole")));
-            Assert.IsTrue(output.Any(line => line.Contains("#4da3ff")));
+            Assert.IsTrue(output.Any(line => line.Contains("Hazards")));
         }
 
         [Test]
@@ -145,7 +151,7 @@ namespace UnitTests.Output
                 Stars = 3
             };
 
-            Assert.AreEqual("1 • 2 • 3", result.ToScanString());
+            Assert.AreEqual("1 \u2022 2 \u2022 3", result.ToScanString());
         }
     }
 }

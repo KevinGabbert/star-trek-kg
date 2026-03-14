@@ -7,6 +7,7 @@ using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Settings;
 using StarTrek_KG.Types;
+using StarTrek_KG.TypeSafeEnums;
 using UnitTests.TestObjects;
 
 namespace UnitTests.Output
@@ -58,10 +59,10 @@ namespace UnitTests.Output
 
             render.CreateSRSViewScreen(sector, map, location, 0, sector.Name, false, sb);
 
-            var header = map.Game.Interact.Output.Queue.First();
-            Assert.That(header, Does.Contain($"Sector: Δ {sector.Name}"));
-            Assert.That(header, Does.Contain($"⌖[{location.Coordinate.X},{location.Coordinate.Y}]"));
-            Assert.That(header, Does.Contain($"§{location.Sector.X}.{location.Sector.Y}"));
+            var lines = map.Game.Interact.Output.Queue.ToList();
+            Assert.That(lines.Any(line => line.Contains($"Sector: {sector.Name}")), Is.True);
+            Assert.That(lines.Any(line => line.Contains($"Coordinate: [{location.Coordinate.X},{location.Coordinate.Y}]")), Is.True);
+            Assert.That(lines.Any(line => line.Contains($"\u00A7{location.Sector.X}.{location.Sector.Y}")), Is.True);
         }
 
         [Test]
@@ -88,7 +89,8 @@ namespace UnitTests.Output
                 new List<IScanResult> { result },
                 map.Game).ToList();
 
-            Assert.That(rendered.Any(line => line.Contains("Δ§6.4")), Is.True);
+            var quadrantSymbol = QuadrantRules.GetQuadrantSymbol("Delta");
+            Assert.That(rendered.Any(line => line.Contains($"{quadrantSymbol}\u00A76.4")), Is.True);
             Assert.That(rendered.Any(line => line.Contains("[Delta]")), Is.False);
         }
 

@@ -7,8 +7,7 @@ using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
-using StarTrek_KG.Config.Collections;
-using StarTrek_KG.Config.Elements;
+using StarTrek_KG.Config;
 
 namespace UnitTests.Actors.ShipObjectTests
 {
@@ -89,14 +88,8 @@ namespace UnitTests.Actors.ShipObjectTests
         [Test]
         public void Basic_Instantiation_Uses_Faction_Config_Allegiance()
         {
-            var factions = new Factions();
-            var federation = new Faction();
-            federation["name"] = "Federation";
-            federation["allegiance"] = "Friendly";
-            federation["designator"] = "=F÷";
-            factions.Add(federation);
-
-            _mockSettings.SetupGet(u => u.Factions).Returns(factions);
+            var liveSettings = new StarTrekKGSettings().GetConfig();
+            _mockSettings.SetupGet(u => u.Factions).Returns(liveSettings.Factions);
             _mockSettings.Setup(u => u.GetSetting<string>("Hostile")).Returns("BadGuy");
 
             var shipToTest = new Ship(FactionName.Federation, "TestShip", _testCoordinate, _mockMap.Object);

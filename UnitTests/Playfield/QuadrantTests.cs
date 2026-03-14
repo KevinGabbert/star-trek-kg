@@ -77,16 +77,16 @@ namespace UnitTests.Playfield
                 }
             });
 
-            Assert.AreEqual("Α", QuadrantRules.GetQuadrantSymbol(game.Map, 0, 0));
-            Assert.AreEqual("Β", QuadrantRules.GetQuadrantSymbol(game.Map, 7, 0));
-            Assert.AreEqual("Γ", QuadrantRules.GetQuadrantSymbol(game.Map, 0, 7));
-            Assert.AreEqual("Δ", QuadrantRules.GetQuadrantSymbol(game.Map, 7, 7));
+            Assert.AreEqual("\u0391", QuadrantRules.GetQuadrantSymbol(game.Map, 0, 0));
+            Assert.AreEqual("\u0392", QuadrantRules.GetQuadrantSymbol(game.Map, 7, 0));
+            Assert.AreEqual("\u0393", QuadrantRules.GetQuadrantSymbol(game.Map, 0, 7));
+            Assert.AreEqual("\u0394", QuadrantRules.GetQuadrantSymbol(game.Map, 7, 7));
         }
 
         [Test]
         public void Federation_And_Vulcan_Ships_Are_Friendly_From_Config()
         {
-            var game = new Game(new StarTrekKGSettings(), new SetupOptions
+            var game = new Game(new StarTrekKGSettings().GetConfig(), new SetupOptions
             {
                 Initialize = true,
                 StrictDeterministic = true,

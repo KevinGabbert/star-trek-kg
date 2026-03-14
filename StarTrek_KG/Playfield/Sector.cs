@@ -525,9 +525,14 @@ namespace StarTrek_KG.Playfield
 
         public void RemoveShip(IShip ship)
         {
-            //staple ship to sector passed.
-            Coordinate sectorToAdd = this.Coordinates.Single(s => s.X == ship.Coordinate.X && s.Y == ship.Coordinate.Y);
-            sectorToAdd.Object = ship;
+            var sectorToClear = this.Coordinates.SingleOrDefault(s => s.X == ship.Coordinate.X && s.Y == ship.Coordinate.Y);
+            if (sectorToClear == null)
+            {
+                return;
+            }
+
+            sectorToClear.Item = CoordinateItem.Empty;
+            sectorToClear.Object = null;
         }
 
         /// <summary>
