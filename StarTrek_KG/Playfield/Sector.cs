@@ -33,6 +33,7 @@ namespace StarTrek_KG.Playfield
 
         public Coordinates Coordinates { get; set; }
         public bool Scanned { get; set; }
+        public bool Visited { get; set; }
         public bool Empty { get; set; }
 
         public bool Active { get; set; }
@@ -90,6 +91,7 @@ namespace StarTrek_KG.Playfield
             this.Map.Sectors.ClearActive();
 
             this.Active = true;
+            this.Visited = true;
         }
 
         public void Create(Stack<string> baddieNames, FactionName stockBaddieFaction, bool addStars = true,

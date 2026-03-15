@@ -102,6 +102,26 @@ namespace UnitTests.Output
             Assert.IsTrue(output.Any(line => line.Contains("NAVIGATION")));
             Assert.IsTrue(output.Any(line => line.Contains("SCANNERS")));
             Assert.IsTrue(output.Any(line => line.Contains("SYSTEMS")));
+            Assert.IsTrue(output.Any(line => line.Contains("grs")));
+        }
+
+        [Test]
+        public void ReadAndOutput_Grs_Prints_Galactic_Record_With_Galaxy_Name()
+        {
+            var output = _interact.ReadAndOutput(Game.Map.Playership, "map", "grs");
+
+            Assert.IsNotNull(output);
+            Assert.IsTrue(output.Any(line => line.Contains("Galactic Record Scan")));
+            Assert.IsTrue(output.Any(line => line.Contains("Galaxy: NGC-100")));
+        }
+
+        [Test]
+        public void ReadAndOutput_Gname_Renames_Current_Galaxy()
+        {
+            var output = _interact.ReadAndOutput(Game.Map.Playership, "map", "gname Milky Way Prime");
+
+            Assert.IsNotNull(output);
+            Assert.IsTrue(output.Any(line => line.Contains("Galaxy renamed to: Milky Way Prime")));
         }
 
         [Test]

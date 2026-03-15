@@ -641,7 +641,14 @@ namespace StarTrek_KG.Output
 
                 if (scanDataPoint.Unknown)
                 {
-                    currentSectorResult = Utility.Utility.DamagedScannerUnit(scanDataPoint.Point);
+                    if (scanDataPoint is LRSResult lrsUnknown && lrsUnknown.SuppressUnknownNoise)
+                    {
+                        currentSectorResult = "";
+                    }
+                    else
+                    {
+                        currentSectorResult = Utility.Utility.DamagedScannerUnit(scanDataPoint.Point);
+                    }
                 }
                 else if (scanDataPoint.GalacticBarrier)
                 {
@@ -808,6 +815,18 @@ namespace StarTrek_KG.Output
                 return null;
             }
 
+            if (string.Equals(userCommand, "grs", StringComparison.OrdinalIgnoreCase))
+            {
+                this.ResetPrompt();
+                return LongRangeScan.For(playerShip).ControlsGalacticRecord();
+            }
+
+            if (userCommand.StartsWith("gname", StringComparison.OrdinalIgnoreCase))
+            {
+                this.ResetPrompt();
+                return this.ExecuteGalaxyRenameCommand(playerShip, userCommand).ToList();
+            }
+
             if (this.Subscriber.PromptInfo.Level == 0 &&
                 playerShip?.Map?.Game?.IsWarGamesMode == true &&
                 this.TryParseWarGamesNaturalLanguage(playerShip, userCommand, out var warGamesAction))
@@ -870,6 +889,7 @@ namespace StarTrek_KG.Output
         {
             if (userInput != null)
             {
+                this.Subscriber.PromptInfo.RawCommandText = userInput.Trim();
                 userCommand = userInput.Trim().ToLower();
                 this.Output.Clear();
             }
@@ -882,6 +902,7 @@ namespace StarTrek_KG.Output
                     return true;
                 }
 
+                this.Subscriber.PromptInfo.RawCommandText = readLine.Trim();
                 userCommand = readLine.Trim().ToLower();
             }
             return false;
@@ -955,6 +976,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine($"  irs+++ Full sector immediate scan (8x8, {irsPlusPlusPlusCost} energy)"));
                     retVal.AddRange(this.Output.WriteLine("  srs   Short range scan"));
                     retVal.AddRange(this.Output.WriteLine("  lrs   Long range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  grs   Galactic record scan (full galaxy map)"));
                     retVal.AddRange(this.Output.WriteLine("  crs   Combined range scan"));
                     retVal.AddRange(this.Output.WriteLine("  obj   Describe sector object types / decode compact LRS code"));
                     retVal.AddRange(this.Output.WriteLine(""));
@@ -971,6 +993,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  com   Computer"));
                     retVal.AddRange(this.Output.WriteLine("  dmg   Damage control"));
                     retVal.AddRange(this.Output.WriteLine("  pwr   Power / subsystem status"));
+                    retVal.AddRange(this.Output.WriteLine("  gname Rename current galaxy"));
                     retVal.AddRange(this.Output.WriteLine("  inst  Quick instructions"));
                     retVal.AddRange(this.Output.WriteLine("  tac   Tactics manual (costs 1 turn)"));
                     if (playerShip.Map?.Game is Game modeGame && modeGame.IsSystemsCascadeMode)
@@ -1315,6 +1338,7 @@ namespace StarTrek_KG.Output
                 $"irs+++ = Full Sector Immediate Range Scan (8x8, {irsPlusPlusPlusCost} energy)",
                 "srs = Short Range Scan",
                 "lrs = Long Range Scan",
+                "grs = Galactic Record Scan",
                 "crs = Combined Range Scan",
                 "obj = Describe sector object types / decode compact LRS code",
                 "-----------------------------",
@@ -1329,6 +1353,7 @@ namespace StarTrek_KG.Output
                 "com = Access Computer",
                 "dmg = Damage Control",
                 "pwr = Power / Subsystem Status",
+                "gname = Rename Current Galaxy",
                 "inst = Quick Instructions",
                 "tac = Tactics Manual (costs 1 turn)"
             };
@@ -1422,6 +1447,11 @@ namespace StarTrek_KG.Output
             {
                 this.Subscriber.PromptInfo.SubSystem = SubsystemType.LongRangeScan;
                 retVal = LongRangeScan.For(playerShip).Controls();
+            }
+            else if (string.Equals(menuCommand, "grs", StringComparison.OrdinalIgnoreCase))
+            {
+                this.Subscriber.PromptInfo.SubSystem = SubsystemType.LongRangeScan;
+                retVal = LongRangeScan.For(playerShip).ControlsGalacticRecord();
             }
             else if (menuCommand == Menu.crs.ToString())
             {
@@ -1582,8 +1612,10 @@ namespace StarTrek_KG.Output
             output.AddRange(this.Output.WriteLine("3) Raise shields with she -> add <amount> when hostiles are near."));
             output.AddRange(this.Output.WriteLine("4) Fight with pha or tor. Use toq to target objects."));
             output.AddRange(this.Output.WriteLine("5) Use lrs to plan your next sector jump."));
-            output.AddRange(this.Output.WriteLine("6) Type ? for full command help."));
+            output.AddRange(this.Output.WriteLine("6) Use grs to view the full galactic record map."));
             output.AddRange(this.Output.WriteLine("7) Type pwr for subsystem power/system status."));
+            output.AddRange(this.Output.WriteLine("8) Rename the current galaxy: gname <new name>."));
+            output.AddRange(this.Output.WriteLine("9) Type ? for full command help."));
 
             if (playerShip?.Map?.Game?.IsWarGamesMode == true)
             {
@@ -1604,6 +1636,30 @@ namespace StarTrek_KG.Output
 
             output.AddRange(this.Output.WriteLine(""));
             return output;
+        }
+
+        private IEnumerable<string> ExecuteGalaxyRenameCommand(IShip playerShip, string commandText)
+        {
+            if (!(playerShip?.Map is Map map))
+            {
+                this.Output.WriteLine("Galaxy naming is unavailable.");
+                return this.Output.Queue.ToList();
+            }
+
+            var raw = this.Subscriber?.PromptInfo?.RawCommandText ?? commandText ?? string.Empty;
+            var trimmed = raw.Trim();
+            var parts = trimmed.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2 || string.IsNullOrWhiteSpace(parts[1]))
+            {
+                this.Output.WriteLine($"Current galaxy: {map.GetCurrentGalaxyName()}");
+                this.Output.WriteLine("Usage: gname <new galaxy name>");
+                return this.Output.Queue.ToList();
+            }
+
+            var newName = parts[1].Trim();
+            map.RenameCurrentGalaxy(newName);
+            this.Output.WriteLine($"Galaxy renamed to: {map.GetCurrentGalaxyName()}");
+            return this.Output.Queue.ToList();
         }
 
         private IEnumerable<string> ExecutePowerDistributionCommand(IShip playerShip, string commandText)

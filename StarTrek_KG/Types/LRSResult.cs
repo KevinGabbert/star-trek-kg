@@ -23,6 +23,7 @@ namespace StarTrek_KG.Types
         public bool HasDeuterium { get; set; }
         public LrsFeatureMask FeatureMask { get; set; }
         public string QuadrantName { get; set; }
+        public bool SuppressUnknownNoise { get; set; }
 
         public override string ToString()
         {

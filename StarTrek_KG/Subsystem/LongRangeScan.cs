@@ -4,6 +4,7 @@ using System.Linq;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.Settings;
 using StarTrek_KG.Types;
 using StarTrek_KG.TypeSafeEnums;
 
@@ -35,6 +36,8 @@ namespace StarTrek_KG.Subsystem
             Location myLocation = this.ShipConnectedTo.GetLocation();
             var renderedResults = this.RunFullLRSScan(myLocation);
 
+            this.ShipConnectedTo.Map.Game.Interact.SingleLine($"Galaxy: {this.GetCurrentGalaxyName()}");
+
             foreach (string line in renderedResults)
             {
                 this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
@@ -65,6 +68,8 @@ namespace StarTrek_KG.Subsystem
             Location myLocation = this.ShipConnectedTo.GetLocation();
             var renderedResults = this.RunFullLRSScan(myLocation, gridSize, title, markDeuteriumSectors);
 
+            this.ShipConnectedTo.Map.Game.Interact.SingleLine($"Galaxy: {this.GetCurrentGalaxyName()}");
+
             foreach (string line in renderedResults)
             {
                 this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
@@ -72,6 +77,43 @@ namespace StarTrek_KG.Subsystem
 
             this.ShipConnectedTo.OutputLine("");
 
+            return this.ShipConnectedTo.OutputQueue();
+        }
+
+        public List<string> ControlsGalacticRecord()
+        {
+            this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
+
+            if (this.Damaged()) return this.ShipConnectedTo.OutputQueue();
+
+            var map = this.ShipConnectedTo.Map as Map;
+            if (map?.Sectors == null)
+            {
+                this.ShipConnectedTo.OutputLine("Galactic record is unavailable.");
+                return this.ShipConnectedTo.OutputQueue();
+            }
+
+            var data = this.BuildGalacticRecordData(map).Cast<IScanResult>().ToList();
+            var rendered = this.ShipConnectedTo.Map.Game.Interact.RenderScanWithNames(
+                ScanRenderType.SingleLine,
+                "*** Galactic Record Scan ***",
+                data,
+                this.ShipConnectedTo.Map.Game);
+
+            this.ShipConnectedTo.Map.Game.Interact.SingleLine($"Galaxy: {this.GetCurrentGalaxyName()}");
+            this.ShipConnectedTo.Map.Game.Interact.SingleLine("Legend: ??? = unexplored");
+            this.ShipConnectedTo.Map.Game.Interact.SingleLine(
+                $"Quadrants: {QuadrantRules.GetQuadrantSymbol("Alpha")}={this.GetQuadrantNameSafe(map, "QuadrantAlphaName", "Alpha")}, " +
+                $"{QuadrantRules.GetQuadrantSymbol("Beta")}={this.GetQuadrantNameSafe(map, "QuadrantBetaName", "Beta")}, " +
+                $"{QuadrantRules.GetQuadrantSymbol("Gamma")}={this.GetQuadrantNameSafe(map, "QuadrantGammaName", "Gamma")}, " +
+                $"{QuadrantRules.GetQuadrantSymbol("Delta")}={this.GetQuadrantNameSafe(map, "QuadrantDeltaName", "Delta")}");
+
+            foreach (var line in rendered)
+            {
+                this.ShipConnectedTo.Map.Game.Interact.SingleLine(line);
+            }
+
+            this.ShipConnectedTo.OutputLine("");
             return this.ShipConnectedTo.OutputQueue();
         }
 
@@ -107,6 +149,57 @@ namespace StarTrek_KG.Subsystem
             IEnumerable<string> renderedData = this.ShipConnectedTo.Map.Game.Interact.RenderScanWithNames(ScanRenderType.SingleLine, title, lrsData.Cast<IScanResult>().ToList(), this.ShipConnectedTo.Map.Game);
 
             return renderedData;
+        }
+
+        private IEnumerable<LRSResult> BuildGalacticRecordData(Map map)
+        {
+            var activeSector = this.ShipConnectedTo?.GetSector();
+
+            for (var y = 0; y < DEFAULTS.SECTOR_MAX; y++)
+            {
+                for (var x = 0; x < DEFAULTS.SECTOR_MAX; x++)
+                {
+                    var sector = map.Sectors[x, y];
+                    var wasScanned = sector.Scanned;
+                    var result = Execute(sector);
+                    sector.Scanned = wasScanned;
+                    result.QuadrantName = QuadrantRules.GetQuadrantName(map, x, y);
+                    result.MyLocation = activeSector != null && activeSector.X == x && activeSector.Y == y;
+
+                    var knownToPlayer = result.MyLocation || sector.Visited || wasScanned;
+                    if (!knownToPlayer)
+                    {
+                        result.Unknown = true;
+                        result.SectorName = "???";
+                        result.SuppressUnknownNoise = true;
+                    }
+
+                    yield return result;
+                }
+            }
+        }
+
+        private string GetCurrentGalaxyName()
+        {
+            if (this.ShipConnectedTo?.Map is Map concreteMap)
+            {
+                return concreteMap.GetCurrentGalaxyName();
+            }
+
+            return "NGC-100";
+        }
+
+        private string GetQuadrantNameSafe(IMap map, string key, string fallback)
+        {
+            try
+            {
+                var value = map?.Config?.GetSetting<string>(key);
+                return string.IsNullOrWhiteSpace(value) ? fallback : value.Trim();
+            }
+            catch
+            {
+                return fallback;
+            }
         }
 
         private string GetDeuteriumSectorMarker()

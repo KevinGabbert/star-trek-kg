@@ -18,7 +18,38 @@ namespace StarTrek_KG.Playfield
         #region Properties
 
             public IGame Game { get; set; }
-            public Sectors Sectors { get; set; }
+            private Sectors _sectors;
+            public Sectors Sectors
+            {
+                get => this._sectors;
+                set
+                {
+                    this._sectors = value;
+
+                    // Compatibility shortcut: existing code still uses Map.Sectors.
+                    // Under the galaxy layer, that always points to the current galaxy sectors.
+                    if (value != null)
+                    {
+                        this.Galaxies ??= new Galaxies();
+                        if (!this.Galaxies.Any())
+                        {
+                            this.CurrentGalaxyId = 0;
+                            this.Galaxies.Add(new Galaxy(0, "Galaxy 0", value));
+                            return;
+                        }
+                    }
+
+                    var current = this.CurrentGalaxy;
+                    if (current != null)
+                    {
+                        current.Sectors = value;
+                    }
+                }
+            }
+            public Galaxies Galaxies { get; private set; }
+            public int CurrentGalaxyId { get; private set; }
+            public Galaxy CurrentGalaxy => this.Galaxies?.GetById(this.CurrentGalaxyId) ?? this.Galaxies?.FirstOrDefault();
+            public const int MaxGalaxyCount = ushort.MaxValue;
             public Ship Playership { get; set; } // todo: v2.0 will have a List<StarShip>().
             public SetupOptions GameConfig { get; set; }
             public IInteraction Write { get; set; }
@@ -35,10 +66,11 @@ namespace StarTrek_KG.Playfield
 
         public Map()
         {
-
+            this.Galaxies = new Galaxies();
+            this.CurrentGalaxyId = 0;
         }
 
-        public Map(SetupOptions setupOptions, IInteraction write, IStarTrekKGSettings config, IGame game, FactionName defaultHostile = null)
+        public Map(SetupOptions setupOptions, IInteraction write, IStarTrekKGSettings config, IGame game, FactionName defaultHostile = null) : this()
         {
             this.Game = game;
             this.Config = config;
@@ -234,7 +266,8 @@ namespace StarTrek_KG.Playfield
         //Creates a 2D array of Sectors.  This is how all of our game pieces will be moving around.
         public void InitializeSectorsWithBaddies(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, CoordinateDefs sectorDefs, bool generateWithNebulae)
         {
-            this.Sectors = new Sectors(this, this.Write);
+            var sectors = new Sectors(this, this.Write);
+            this.InitializePrimaryGalaxy(sectors);
 
             //Friendlies are added separately
             List<Coordinate> itemsToPopulateThatAreNotPlayerShip = sectorDefs.ToCoordinates(this.Sectors).Where(q => q.Item != CoordinateItem.PlayerShip).ToList();
@@ -243,6 +276,68 @@ namespace StarTrek_KG.Playfield
             
             //todo: this can be done with a single loop populating a list of XYs
             this.GenerateSquareGalaxy(names, baddieNames, stockBaddieFaction, itemsToPopulateThatAreNotPlayerShip, generateWithNebulae);
+        }
+
+        private void InitializePrimaryGalaxy(Sectors sectors)
+        {
+            if (sectors == null)
+            {
+                throw new ArgumentNullException(nameof(sectors));
+            }
+
+            this.Galaxies = new Galaxies();
+            this.CurrentGalaxyId = 0;
+
+            this.Galaxies.Add(new Galaxy(0, this.GetDefaultGalaxyName(0), sectors));
+            this.Sectors = sectors;
+        }
+
+        public Galaxy AddGalaxy(string name, Sectors sectors)
+        {
+            if (this.Galaxies == null)
+            {
+                this.Galaxies = new Galaxies();
+            }
+
+            if (this.Galaxies.Count >= MaxGalaxyCount)
+            {
+                throw new GameException($"Maximum galaxy count reached: {MaxGalaxyCount}.");
+            }
+
+            var nextId = this.Galaxies.Any() ? this.Galaxies.Max(g => g.Id) + 1 : 0;
+            var galaxy = new Galaxy(nextId, string.IsNullOrWhiteSpace(name) ? this.GetDefaultGalaxyName(nextId) : name, sectors ?? new Sectors(this, this.Write));
+            this.Galaxies.Add(galaxy);
+
+            if (this.Galaxies.Count == 1)
+            {
+                this.CurrentGalaxyId = galaxy.Id;
+                this.Sectors = galaxy.Sectors;
+            }
+
+            return galaxy;
+        }
+
+        public string GetCurrentGalaxyName()
+        {
+            return this.CurrentGalaxy?.Name ?? this.GetDefaultGalaxyName(this.CurrentGalaxyId);
+        }
+
+        public void RenameCurrentGalaxy(string name)
+        {
+            var current = this.CurrentGalaxy;
+            if (current == null)
+            {
+                return;
+            }
+
+            current.Name = string.IsNullOrWhiteSpace(name)
+                ? this.GetDefaultGalaxyName(current.Id)
+                : name.Trim();
+        }
+
+        private string GetDefaultGalaxyName(int id)
+        {
+            return $"NGC-{(100 + Math.Max(0, id)):000}";
         }
 
         public void GenerateSquareGalaxy(Stack<string> names, Stack<string> baddieNames, FactionName stockBaddieFaction, List<Coordinate> itemsToPopulate, bool generateWithNebula)
