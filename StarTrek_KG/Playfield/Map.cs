@@ -2288,9 +2288,17 @@ namespace StarTrek_KG.Playfield
                 {
                     ship.MaxEnergy += bonus;
                     ship.Energy = ship.MaxEnergy;
-                    this.Write?.Line($"Technology cache recovered. Maximum energy capacity increased by {bonus}.");
-                    this.Game?.AppendGameEventLog($"Item consumed: technology cache bonus={bonus} at coord [{coordinate.X},{coordinate.Y}]");
                 }
+                else if (shipToSet is Ship shipNoBonus)
+                {
+                    // Keep energy in sync when cache exists but bonus is non-positive.
+                    shipNoBonus.Energy = Math.Min(shipNoBonus.Energy, shipNoBonus.MaxEnergy);
+                }
+
+                this.Write?.Line(bonus > 0
+                    ? $"Technology cache recovered. Maximum energy capacity increased by {bonus}."
+                    : "Technology cache recovered. No usable energy increase was found.");
+                this.Game?.AppendGameEventLog($"Item consumed: technology cache bonus={bonus} at coord [{coordinate.X},{coordinate.Y}]");
 
                 coordinate.Item = CoordinateItem.Empty;
                 coordinate.Object = null;
