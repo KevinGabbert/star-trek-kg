@@ -1794,16 +1794,11 @@ namespace StarTrek_KG.Playfield
         {
             if (playerShipDef.SectorDef == null)
             {
-                var alphaSectors = this.Sectors
-                    .Where(q => string.Equals(QuadrantRules.GetQuadrantName(this, q.X, q.Y), "Alpha", StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-                var selectedSector = alphaSectors.Any()
-                    ? alphaSectors[Utility.Utility.Random.Next(alphaSectors.Count)]
-                    : null;
-
-                playerShipDef.SectorDef = selectedSector != null
-                    ? new Point(selectedSector.X, selectedSector.Y)
-                    : Point.GetRandom();
+                playerShipDef.SectorDef = this.GetRandomAlphaSectorPoint() ?? Point.GetRandom();
+            }
+            else if (!string.Equals(QuadrantRules.GetQuadrantName(this, playerShipDef.SectorDef.X, playerShipDef.SectorDef.Y), "Alpha", StringComparison.OrdinalIgnoreCase))
+            {
+                playerShipDef.SectorDef = this.NormalizeSectorPointToAlpha(playerShipDef.SectorDef);
             }
 
             if(!this.Sectors.Any())
@@ -1815,6 +1810,36 @@ namespace StarTrek_KG.Playfield
             this.Playership.Point = new Point(regionWithPlayershipDef.X, regionWithPlayershipDef.Y);
 
             this.Playership.GetSector().SetActive();
+        }
+
+        private Point NormalizeSectorPointToAlpha(Point requestedSector)
+        {
+            var half = Math.Max(1, DEFAULTS.SECTOR_MAX / 2);
+            var normalized = new Point(
+                Math.Max(0, Math.Min(half - 1, requestedSector.X)),
+                Math.Max(0, Math.Min(half - 1, requestedSector.Y)));
+
+            if (this.Sectors.Any(s => s.X == normalized.X && s.Y == normalized.Y))
+            {
+                return normalized;
+            }
+
+            return this.GetRandomAlphaSectorPoint() ?? normalized;
+        }
+
+        private Point GetRandomAlphaSectorPoint()
+        {
+            var alphaSectors = this.Sectors
+                .Where(q => string.Equals(QuadrantRules.GetQuadrantName(this, q.X, q.Y), "Alpha", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (!alphaSectors.Any())
+            {
+                return null;
+            }
+
+            var selectedSector = alphaSectors[Utility.Utility.Random.Next(alphaSectors.Count)];
+            return new Point(selectedSector.X, selectedSector.Y);
         }
 
         public void SetupPlayershipTorpedoes()

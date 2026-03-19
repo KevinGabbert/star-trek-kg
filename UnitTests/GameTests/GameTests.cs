@@ -161,6 +161,27 @@ namespace UnitTests.GameTests
             Assert.AreEqual(8, DEFAULTS.SECTOR_MAX);
         }
 
+        [Test]
+        public void Startup_Normalizes_Playership_To_Alpha_Quadrant()
+        {
+            var setup = new StarTrek_KG.Settings.SetupOptions
+            {
+                Initialize = true,
+                AddStars = false,
+                AddNebulae = false,
+                StrictDeterministic = true,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(7, 7), new Point(0, 0)), StarTrek_KG.Enums.CoordinateItem.PlayerShip)
+                }
+            };
+
+            var game = new Game(new ConfigOverrideSettings(), setup);
+            var quadrant = QuadrantRules.GetQuadrantName(game.Map, game.Map.Playership.Point.X, game.Map.Playership.Point.Y);
+
+            Assert.AreEqual("Alpha", quadrant);
+        }
+
         /// <summary>
         /// Tests code in context with surrounding code
         /// </summary>

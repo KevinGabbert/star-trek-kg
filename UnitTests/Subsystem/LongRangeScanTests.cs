@@ -176,7 +176,7 @@ namespace UnitTests.Subsystem
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
-            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
+            var x = LongRangeScan.Execute(this.Game.Map.Playership.GetSector()); //pulls count from Sector object
 
             Assert.AreEqual(2, x.Hostiles);
         }
@@ -204,7 +204,7 @@ namespace UnitTests.Subsystem
 
             _setup.TestLongRangeScan = new LongRangeScan(this.Game.Map.Playership);
 
-            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
+            var x = LongRangeScan.Execute(this.Game.Map.Playership.GetSector()); //pulls count from Sector object
 
             Assert.AreEqual(5, x.Starbases);
             Assert.AreEqual(0, x.Stars);
@@ -234,7 +234,7 @@ namespace UnitTests.Subsystem
                 AddStars = false
             }, this.Game.Interact, this.Game.Config, this.Game);
 
-            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
+            var x = LongRangeScan.Execute(this.Game.Map.Playership.GetSector()); //pulls count from Sector object
 
             Assert.AreEqual(5, x.Starbases);
         }
@@ -245,7 +245,7 @@ namespace UnitTests.Subsystem
         {
             //todo: fix hostiles and starbases and stars to test fully
 
-            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]); //pulls count from Sector object
+            var x = LongRangeScan.Execute(this.Game.Map.Playership.GetSector()); //pulls count from Sector object
 
             Assert.Greater(0, x.Hostiles);
             Assert.Greater(0, x.Starbases);
@@ -309,7 +309,7 @@ namespace UnitTests.Subsystem
             //int starCount;
             //int hostileCount;
 
-            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0]);
+            var x = LongRangeScan.Execute(this.Game.Map.Sectors[0, 0]);
             //pulls count from Sector object
 
             Assert.AreEqual(2, x.Stars);
