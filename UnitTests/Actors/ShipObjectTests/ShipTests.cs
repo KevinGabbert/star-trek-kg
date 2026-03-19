@@ -5,6 +5,7 @@ using StarTrek_KG.Enums;
 using StarTrek_KG.Exceptions;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
+using StarTrek_KG.TypeSafeEnums;
 
 namespace UnitTests.Tests
 {
