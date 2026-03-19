@@ -218,6 +218,12 @@ namespace StarTrek_KG.Output
             {
                 Coordinate sector = sectors[column, row];
 
+                if (isNebula && sector.Item != CoordinateItem.PlayerShip)
+                {
+                    sb.Append(this.FormatWithColor(Utility.Utility.DamagedScannerUnit(new Point(sector.X, sector.Y)), "NebulaScanColor", "#2ecc71"));
+                    continue;
+                }
+
                 switch (sector.Item)
                 {
                     case CoordinateItem.Empty:

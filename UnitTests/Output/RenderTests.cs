@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using StarTrek_KG.Enums;
+using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Output;
 using StarTrek_KG.Playfield;
@@ -32,14 +34,15 @@ namespace UnitTests.Output
             render.CreateSRSViewScreen(sector, map, location, 0, sector.Name, false, sb);
 
             var lines = map.Game.Interact.Output.Queue.ToList();
+            var playerGlyph = map.Game.Config.GetSetting<string>("PlayerShipGlyph");
 
             var expectedRowIndex = 1 + location.Coordinate.Y;
-            Assert.IsTrue(lines[expectedRowIndex].Contains(DEFAULTS.PLAYERSHIP), "Playership not rendered on expected row.");
+            Assert.IsTrue(lines[expectedRowIndex].Contains(playerGlyph), "Playership not rendered on expected row.");
 
             if (location.Coordinate.X != location.Coordinate.Y)
             {
                 var wrongRowIndex = 1 + location.Coordinate.X;
-                Assert.IsFalse(lines[wrongRowIndex].Contains(DEFAULTS.PLAYERSHIP), "Playership rendered on X row instead of Y row.");
+                Assert.IsFalse(lines[wrongRowIndex].Contains(playerGlyph), "Playership rendered on X row instead of Y row.");
             }
         }
 
@@ -61,8 +64,9 @@ namespace UnitTests.Output
 
             var lines = map.Game.Interact.Output.Queue.ToList();
             var expectedColor = map.Game.Config.GetSetting<string>("PlayerShipColor");
+            var playerGlyph = map.Game.Config.GetSetting<string>("PlayerShipGlyph");
 
-            Assert.That(lines.Any(line => line.Contains($"[[;{expectedColor};]{DEFAULTS.PLAYERSHIP}]")), Is.True);
+            Assert.That(lines.Any(line => line.Contains($"[[;{expectedColor};]{playerGlyph}]")), Is.True);
         }
 
         [Test]
@@ -126,6 +130,40 @@ namespace UnitTests.Output
             Assert.That(order, Does.Contain("Shields"));
             Assert.That(order, Does.Contain("Immediate Range Scan"));
             Assert.That(order.Count, Is.EqualTo(13));
+        }
+
+        [Test]
+        public void SRS_Render_Masks_NonPlayer_Objects_In_Nebula()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1FriendlyAtSector(new Point(2, 1));
+
+            var map = setup.TestMap;
+            var render = new Render(map.Game.Interact, map.Game.Config);
+            var sector = map.Sectors.GetActive();
+            var location = map.Playership.GetLocation();
+            var deuteriumCell = sector.GetCoordinate(new Point(1, 1));
+            var hostileCell = sector.GetCoordinate(new Point(3, 1));
+            var sb = new StringBuilder();
+
+            deuteriumCell.Item = CoordinateItem.Deuterium;
+            deuteriumCell.Object = new Deuterium(30);
+            hostileCell.Item = CoordinateItem.HostileShip;
+            hostileCell.Object = new StarTrek_KG.Actors.Ship(FactionName.Klingon, "Probe", hostileCell, map);
+            sector.TransformIntoNebulae();
+
+            map.Game.Interact.Output.Clear();
+
+            render.CreateSRSViewScreen(sector, map, location, 1, sector.Name, true, sb);
+
+            var output = string.Join("\n", map.Game.Interact.Output.Queue);
+            var maskedDeuterium = StarTrek_KG.Utility.Utility.DamagedScannerUnit(new Point(1, 1));
+            var maskedHostile = StarTrek_KG.Utility.Utility.DamagedScannerUnit(new Point(3, 1));
+            var playerGlyph = map.Game.Config.GetSetting<string>("PlayerShipGlyph");
+            Assert.That(output.Contains(playerGlyph), Is.True);
+            Assert.That(output.Contains(" . "), Is.False);
+            Assert.That(output.Contains(maskedDeuterium), Is.True);
+            Assert.That(output.Contains(maskedHostile), Is.True);
         }
     }
 }

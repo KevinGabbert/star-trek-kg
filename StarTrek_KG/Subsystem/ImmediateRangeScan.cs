@@ -34,7 +34,7 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.ShipConnectedTo.OutputLine("");
-            this.OutputNebulaDegradationMessageIfNeeded();
+            this.OutputNebulaDegradationMessageIfNeeded(3);
 
             return this.ShipConnectedTo.OutputQueue();
         }
@@ -44,6 +44,13 @@ namespace StarTrek_KG.Subsystem
             this.ShipConnectedTo.Map.Game.Interact.Output.Queue.Clear();
 
             if (this.Damaged()) return this.ShipConnectedTo.OutputQueue();
+
+            if (this.IsBlockedByNebula(gridSize))
+            {
+                this.ShipConnectedTo.OutputLine("Nebula interference blocks this enhanced scan mode.");
+                this.OutputNebulaDegradationMessageIfNeeded(gridSize);
+                return this.ShipConnectedTo.OutputQueue();
+            }
 
             if (energyCost > 0)
             {
@@ -73,13 +80,23 @@ namespace StarTrek_KG.Subsystem
             }
 
             this.ShipConnectedTo.OutputLine("");
-            this.OutputNebulaDegradationMessageIfNeeded();
+            this.OutputNebulaDegradationMessageIfNeeded(gridSize);
             if (gridSize >= DEFAULTS.COORDINATE_MAX)
             {
                 this.ConsumeFullSectorScanTurn();
             }
 
             return this.ShipConnectedTo.OutputQueue();
+        }
+
+        private bool IsBlockedByNebula(int gridSize)
+        {
+            if (this.ShipConnectedTo?.GetSector()?.Type != SectorType.Nebulae)
+            {
+                return false;
+            }
+
+            return gridSize >= DEFAULTS.COORDINATE_MAX;
         }
 
         private void ConsumeFullSectorScanTurn()
@@ -94,11 +111,22 @@ namespace StarTrek_KG.Subsystem
             map.Stardate++;
         }
 
-        private void OutputNebulaDegradationMessageIfNeeded()
+        private void OutputNebulaDegradationMessageIfNeeded(int gridSize)
         {
             if (this.ShipConnectedTo?.GetSector()?.Type == SectorType.Nebulae)
             {
-                this.ShipConnectedTo.OutputLine("Due to nebula interference, immediate scans are degraded.");
+                if (gridSize >= 5)
+                {
+                    this.ShipConnectedTo.OutputLine("Due to nebula interference, this scan is severely degraded. Data may be wrong, coordinates may be false, and ghost images are likely.");
+                }
+                else if (gridSize == 4)
+                {
+                    this.ShipConnectedTo.OutputLine("Due to nebula interference, this scan is inaccurate. Data may be wrong, coordinates may be false, and ghost images are possible.");
+                }
+                else
+                {
+                    this.ShipConnectedTo.OutputLine("Due to nebula interference, immediate scans are degraded.");
+                }
             }
         }
 

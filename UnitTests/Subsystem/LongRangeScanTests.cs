@@ -290,6 +290,7 @@ namespace UnitTests.Subsystem
         {
             this.Game.Map = new Map(new SetupOptions
             {
+                AddNebulae = false,
                 Initialize = true,
                 AddStars = false,
                 CoordinateDefs = new CoordinateDefs

@@ -736,14 +736,161 @@ namespace StarTrek_KG.Playfield
                     };
 
                     currentResult = this.GetSectorInfo(shipLocation.Sector, new Point(sectorX, sectorY), outOfBounds, game);
-                      currentResult.MyLocation = shipLocation.Coordinate.X == sectorX &&
-                                                  shipLocation.Coordinate.Y == sectorY;
+                    currentResult.MyLocation = shipLocation.Coordinate.X == sectorX &&
+                                               shipLocation.Coordinate.Y == sectorY;
+
+                    if (shipLocation.Sector.IsNebulae())
+                    {
+                        currentResult = this.ApplyNebulaImmediateScanRules(
+                            shipLocation.Sector,
+                            currentResult,
+                            new Point(sectorX, sectorY),
+                            gridSize,
+                            outOfBounds,
+                            game);
+                    }
+
                     this.ApplyHostileScanResolution(currentResult, shipLocation, game);
 
                     scanData.Add(currentResult);
                 }
             }
             return scanData;
+        }
+
+        private IRSResult ApplyNebulaImmediateScanRules(
+            Sector currentSector,
+            IRSResult currentResult,
+            Point scanPoint,
+            int gridSize,
+            bool outOfBounds,
+            IGame game)
+        {
+            if (currentResult?.MyLocation == true)
+            {
+                currentResult.Point = scanPoint;
+                return currentResult;
+            }
+
+            if (outOfBounds)
+            {
+                currentResult.Point = scanPoint;
+                return currentResult;
+            }
+
+            if (gridSize <= 3)
+            {
+                return this.GetSectorData(currentSector, scanPoint, game);
+            }
+
+            var severity = this.GetNebulaEnhancedScanSeverity(gridSize);
+            var hash = this.GetNebulaScanHash(currentSector, scanPoint, gridSize);
+
+            if (this.ShouldCreateNebulaGhostImage(hash, severity))
+            {
+                return this.CreateNebulaGhostImage(currentSector, scanPoint, severity);
+            }
+
+            if (this.ShouldRevealNebulaEnhancedScanCell(hash, severity))
+            {
+                var displayedResult = this.GetSectorData(currentSector, scanPoint, game);
+                displayedResult.Point = this.GetNebulaDisplayedPoint(scanPoint, hash, severity);
+                return displayedResult;
+            }
+
+            return new IRSResult
+            {
+                Point = this.GetNebulaDisplayedPoint(scanPoint, hash, severity),
+                SectorName = currentSector.Name,
+                Unknown = true
+            };
+        }
+
+        private int GetNebulaEnhancedScanSeverity(int gridSize)
+        {
+            return gridSize >= 5 ? 2 : 1;
+        }
+
+        private int GetNebulaScanHash(Sector currentSector, Point scanPoint, int gridSize)
+        {
+            return ((currentSector.X + 1) * 19) +
+                   ((currentSector.Y + 1) * 23) +
+                   ((scanPoint.X + 2) * 29) +
+                   ((scanPoint.Y + 2) * 31) +
+                   (gridSize * 37);
+        }
+
+        private bool ShouldRevealNebulaEnhancedScanCell(int hash, int severity)
+        {
+            var divisor = severity == 1 ? 2 : 6;
+            return Math.Abs(hash) % divisor == 0;
+        }
+
+        private bool ShouldCreateNebulaGhostImage(int hash, int severity)
+        {
+            var divisor = severity == 1 ? 4 : 3;
+            return Math.Abs(hash) % divisor == 1;
+        }
+
+        private IRSResult CreateNebulaGhostImage(Sector currentSector, Point scanPoint, int severity)
+        {
+            var hash = this.GetNebulaScanHash(currentSector, scanPoint, severity + 3);
+            var ghostItems = severity == 1
+                ? new[]
+                {
+                    CoordinateItem.BlackHole,
+                    CoordinateItem.GraviticMine,
+                    CoordinateItem.GaseousAnomaly,
+                    CoordinateItem.TemporalRift
+                }
+                : new[]
+                {
+                    CoordinateItem.BlackHole,
+                    CoordinateItem.BlackHole,
+                    CoordinateItem.TemporalRift,
+                    CoordinateItem.HostileOutpost,
+                    CoordinateItem.GraviticMine
+                };
+
+            return new IRSResult
+            {
+                Point = this.GetNebulaDisplayedPoint(scanPoint, hash, severity),
+                SectorName = currentSector.Name,
+                Item = ghostItems[Math.Abs(hash) % ghostItems.Length]
+            };
+        }
+
+        private Point GetNebulaDisplayedPoint(Point scanPoint, int hash, int severity)
+        {
+            var offsets = severity == 1
+                ? new[]
+                {
+                    new Point(-1, 0),
+                    new Point(0, -1),
+                    new Point(1, 0),
+                    new Point(0, 1),
+                    new Point(1, 1)
+                }
+                : new[]
+                {
+                    new Point(-2, 0),
+                    new Point(0, -2),
+                    new Point(2, 0),
+                    new Point(0, 2),
+                    new Point(1, -1),
+                    new Point(-1, 1)
+                };
+
+            var offset = offsets[Math.Abs(hash) % offsets.Length];
+            var shiftedX = Math.Max(0, Math.Min(DEFAULTS.COORDINATE_MAX - 1, scanPoint.X + offset.X));
+            var shiftedY = Math.Max(0, Math.Min(DEFAULTS.COORDINATE_MAX - 1, scanPoint.Y + offset.Y));
+
+            if (shiftedX == scanPoint.X && shiftedY == scanPoint.Y)
+            {
+                shiftedX = Math.Max(0, Math.Min(DEFAULTS.COORDINATE_MAX - 1, scanPoint.X + (severity == 1 ? 1 : -1)));
+            }
+
+            return new Point(shiftedX, shiftedY);
         }
 
         public void ApplyHostileScanResolution(IRSResult result, Location shipLocation, IGame game)
@@ -918,27 +1065,12 @@ namespace StarTrek_KG.Playfield
 
             if (!outOfBounds)
             {
-                if (!currentSector.IsNebulae())
-                {
-                    currentResult = this.GetSectorData(currentSector, sector, game);
-                }
-                else
-                {
-                    // 30% chance to reveal actual info in nebula
-                    if (Utility.Utility.Random.Next(100) < 30)
-                    {
-                        currentResult = this.GetSectorData(currentSector, sector, game);
-                    }
-                    else
-                    {
-                        currentResult.Unknown = true;
-                        currentResult.Point = new Point(currentSector.X, currentSector.Y);
-                    }
-                }
+                currentResult = this.GetSectorData(currentSector, sector, game);
             }
             else
             {
                 currentResult.GalacticBarrier = true;
+                currentResult.Point = new Point(sector.X, sector.Y);
                 //todo: set region to Galactic barrier?
             }
 
