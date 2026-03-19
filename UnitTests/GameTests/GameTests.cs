@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using StarTrek_KG;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Commands;
 using StarTrek_KG.Config;
 using StarTrek_KG.Config.Collections;
@@ -129,6 +130,35 @@ namespace UnitTests.GameTests
             var game = new Game(new ConfigOverrideSettings(), setup);
 
             Assert.True(game.GameOver);
+        }
+
+        [Test]
+        public void GetFederationShipRegistration_WhenNameHasNoUssMarker_ReturnsTrimmedName()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1Friendly();
+            var ship = new Ship(FactionName.Federation, "Starbase", setup.TestMap.Playership.Coordinate, setup.TestMap);
+
+            var registration = Game.GetFederationShipRegistration(ship);
+
+            Assert.AreEqual("Starbase", registration);
+        }
+
+        [Test]
+        public void Dispose_Does_Not_Reset_Global_Bounds()
+        {
+            var game = new Game(new StarTrekKGSettings(), false);
+            DEFAULTS.COORDINATE_MIN = 0;
+            DEFAULTS.COORDINATE_MAX = 8;
+            DEFAULTS.SECTOR_MIN = 0;
+            DEFAULTS.SECTOR_MAX = 8;
+
+            game.Dispose();
+
+            Assert.AreEqual(0, DEFAULTS.COORDINATE_MIN);
+            Assert.AreEqual(8, DEFAULTS.COORDINATE_MAX);
+            Assert.AreEqual(0, DEFAULTS.SECTOR_MIN);
+            Assert.AreEqual(8, DEFAULTS.SECTOR_MAX);
         }
 
         /// <summary>

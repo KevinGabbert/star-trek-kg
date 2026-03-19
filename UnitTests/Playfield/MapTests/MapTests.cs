@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
@@ -472,6 +473,33 @@ namespace UnitTests.MapTests
             Assert.That(Utility.ComputeDirection(0, 1, 2, 0), Is.EqualTo(6.40966552939827d).Within(1e-12));
 
             Assert.AreEqual(2.0, Utility.ComputeDirection(2, 0, 1, 1));
+        }
+
+        [Test]
+        public void CoordinateDef_Rejects_Coordinate_At_Max_Boundary()
+        {
+            TestRunner.GetTestConstants();
+
+            Assert.That(
+                () => new CoordinateDef(new LocationDef(new Point(0, 0), new Point(DEFAULTS.COORDINATE_MAX, 0)), CoordinateItem.PlayerShip),
+                Throws.TypeOf<GameConfigException>());
+        }
+
+        [Test]
+        public void GetRandomCoordinate_Uses_Full_Coordinate_Range()
+        {
+            TestRunner.GetTestConstants();
+            var method = typeof(Map).GetMethod("GetRandomCoordinate", BindingFlags.NonPublic | BindingFlags.Static);
+
+            Assert.IsNotNull(method);
+
+            var points = Enumerable.Range(0, 64)
+                .Select(_ => (Point)method.Invoke(null, null))
+                .ToList();
+
+            Assert.IsTrue(points.Any(p => p.X > DEFAULTS.COORDINATE_MIN));
+            Assert.IsTrue(points.All(p => p.X >= DEFAULTS.COORDINATE_MIN && p.X < DEFAULTS.COORDINATE_MAX));
+            Assert.IsTrue(points.All(p => p.Y >= DEFAULTS.COORDINATE_MIN && p.Y < DEFAULTS.COORDINATE_MAX));
         }
 
         [Ignore("")]

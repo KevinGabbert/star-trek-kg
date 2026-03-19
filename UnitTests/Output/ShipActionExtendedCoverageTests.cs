@@ -147,6 +147,23 @@ namespace UnitTests.Output
         }
 
         [Test]
+        public void PromptWarp_Arrival_Renders_One_Sector_And_Consumes_One_Turn()
+        {
+            var startStardate = _game.Map.Stardate;
+            var startTimeRemaining = _game.Map.timeRemaining;
+
+            _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "wrp");
+            _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "7");
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "4");
+
+            var sectorLines = output.Where(line => line.StartsWith("Sector:", System.StringComparison.Ordinal)).ToList();
+
+            Assert.LessOrEqual(sectorLines.Count, 1);
+            Assert.AreEqual(startStardate + 1, _game.Map.Stardate);
+            Assert.AreEqual(startTimeRemaining - 1, _game.Map.timeRemaining);
+        }
+
+        [Test]
         public void GaseousAnomaly_ConsumesExtraTurn_OnEachEntry()
         {
             var sector = _game.Map.Playership.GetSector();

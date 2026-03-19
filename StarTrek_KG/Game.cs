@@ -2543,7 +2543,16 @@ namespace StarTrek_KG
 
         public static string GetFederationShipRegistration(IShip ship)
         {
-            int USS = ship.Name.IndexOf("U.S.S."); //todo: resource this out.
+            if (ship == null || string.IsNullOrWhiteSpace(ship.Name))
+            {
+                return string.Empty;
+            }
+
+            int USS = ship.Name.IndexOf("U.S.S.", StringComparison.Ordinal); //todo: resource this out.
+            if (USS <= 0)
+            {
+                return ship.Name.Trim();
+            }
 
             string currentShipName = ship.Name.Substring(0, USS).Trim();
             return currentShipName;
@@ -2719,11 +2728,6 @@ namespace StarTrek_KG
 
         public void Dispose()
         {
-            DEFAULTS.COORDINATE_MIN = 0;
-            DEFAULTS.COORDINATE_MAX = 0;
-
-            DEFAULTS.SECTOR_MIN = 0;
-            DEFAULTS.SECTOR_MAX = 0;
         }
 
         public string GetConfigText(string textToGet)

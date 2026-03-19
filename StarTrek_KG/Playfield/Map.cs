@@ -2455,8 +2455,15 @@ namespace StarTrek_KG.Playfield
 
         private static Point GetRandomCoordinate()
         {
-            int x = Utility.Utility.Random.Next(DEFAULTS.COORDINATE_MIN);
-            int y = Utility.Utility.Random.Next(DEFAULTS.COORDINATE_MAX);
+            int min = DEFAULTS.COORDINATE_MIN;
+            int maxExclusive = DEFAULTS.COORDINATE_MAX;
+            if (maxExclusive <= min)
+            {
+                maxExclusive = min + 1;
+            }
+
+            int x = Utility.Utility.Random.Next(min, maxExclusive);
+            int y = Utility.Utility.Random.Next(min, maxExclusive);
 
             var randomCoordinate = new Point(x, y);
             return randomCoordinate;

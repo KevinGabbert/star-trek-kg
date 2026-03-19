@@ -67,17 +67,18 @@ namespace StarTrek_KG.Actors
         public Ship(FactionName faction, string name, ICoordinate sector, IMap map)
         {
             this.Map = map;
+            var mapConfig = map?.Config;
 
             //todo: this could actually be a feature later..
 
-            if (this.Map.Sectors == null)
+            if (this.Map?.Sectors == null)
             {
-                throw new GameException(this.Config.GetText("MapHasNoSectors"));
+                throw new GameException(mapConfig?.GetText("MapHasNoSectors") ?? "Map has no sectors.");
             }
 
             if (this.Map.Config == null)
             {
-                throw new GameException(this.Config.GetText("MapHasNoConfig"));
+                throw new GameException("Map has no config.");
             }
             
             this.Config = (IStarTrekKGSettings)CheckParam(map.Config);

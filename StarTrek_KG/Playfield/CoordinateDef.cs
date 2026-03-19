@@ -29,26 +29,34 @@ namespace StarTrek_KG.Playfield
 
         public CoordinateDef(LocationDef location, CoordinateItem sectorItem)
         {
-            string sectorSetupError = new StarTrekKGSettings().GetText("CoordinateDefSetupError");
-
-            if (location.Coordinate.X < DEFAULTS.COORDINATE_MIN)
+            var settings = new StarTrekKGSettings();
+            string sectorSetupError = settings.GetText("CoordinateDefSetupError");
+            int coordinateMin = DEFAULTS.COORDINATE_MIN;
+            int coordinateMax = DEFAULTS.COORDINATE_MAX;
+            if (coordinateMax <= coordinateMin)
             {
-                throw new GameConfigException($"{sectorSetupError} Coordinate x < {DEFAULTS.COORDINATE_MIN}");
+                coordinateMin = settings.GetSetting<int>("COORDINATE_MIN");
+                coordinateMax = settings.GetSetting<int>("COORDINATE_MAX");
             }
 
-            if (location.Coordinate.X > DEFAULTS.COORDINATE_MAX)
+            if (location.Coordinate.X < coordinateMin)
             {
-                throw new GameConfigException($"{sectorSetupError} Coordinate x > {DEFAULTS.COORDINATE_MAX}");
+                throw new GameConfigException($"{sectorSetupError} Coordinate x < {coordinateMin}");
             }
 
-            if (location.Coordinate.Y < DEFAULTS.COORDINATE_MIN)
+            if (location.Coordinate.X >= coordinateMax)
             {
-                throw new GameConfigException($"{sectorSetupError}Coordinate y < {DEFAULTS.COORDINATE_MIN}");
+                throw new GameConfigException($"{sectorSetupError} Coordinate x >= {coordinateMax}");
             }
 
-            if (location.Coordinate.Y > DEFAULTS.COORDINATE_MAX)
+            if (location.Coordinate.Y < coordinateMin)
             {
-                throw new GameConfigException($"{sectorSetupError}Coordinate y > {DEFAULTS.COORDINATE_MAX}");
+                throw new GameConfigException($"{sectorSetupError}Coordinate y < {coordinateMin}");
+            }
+
+            if (location.Coordinate.Y >= coordinateMax)
+            {
+                throw new GameConfigException($"{sectorSetupError}Coordinate y >= {coordinateMax}");
             }
 
             this.Coordinate = new Coordinate(new LocationDef(location.Sector, new Point(location.Coordinate.X, location.Coordinate.Y)));

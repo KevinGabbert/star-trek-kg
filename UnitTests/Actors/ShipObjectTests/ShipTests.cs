@@ -1,5 +1,10 @@
 using NUnit.Framework;
+using StarTrek_KG.Actors;
 using StarTrek_KG.Config;
+using StarTrek_KG.Enums;
+using StarTrek_KG.Exceptions;
+using StarTrek_KG.Output;
+using StarTrek_KG.Playfield;
 
 namespace UnitTests.Tests
 {
@@ -66,6 +71,21 @@ namespace UnitTests.Tests
                 Assert.AreEqual(sevenSector, 0, "iteration: " + i);
                 Assert.AreEqual(eightSector, 0, "iteration: " + i);
             }
+        }
+
+        [Test]
+        public void Constructor_When_Map_Has_No_Sectors_Throws_GameException()
+        {
+            var map = new Map
+            {
+                Config = new StarTrekKGSettings().GetConfig(),
+                Write = new Interaction(new StarTrekKGSettings())
+            };
+            var coordinate = new Coordinate(new LocationDef(new Point(0, 0), new Point(0, 0)));
+
+            Assert.That(
+                () => new Ship(FactionName.Federation, "Test Ship", coordinate, map),
+                Throws.TypeOf<GameException>());
         }
     }
 }
