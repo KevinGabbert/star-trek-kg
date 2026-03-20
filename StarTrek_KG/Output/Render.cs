@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using StarTrek_KG.Config.Elements;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Interfaces;
 using StarTrek_KG.Playfield;
@@ -9,6 +10,7 @@ using StarTrek_KG.Settings;
 using StarTrek_KG.Subsystem;
 using StarTrek_KG.TypeSafeEnums;
 using StarTrek_KG.Actors;
+using StarTrek_KG.Types;
 
 namespace StarTrek_KG.Output
 {
@@ -77,6 +79,136 @@ namespace StarTrek_KG.Output
             }
 
             this.ScanLine(this.Config.GetText("CRSBottomBorder"), lrsBottom + this.Config.GetText("AppVersion"));
+        }
+
+        public IEnumerable<string> GetScanLegendLines()
+        {
+            var playerGlyph = this.GetStringSettingOrDefault("PlayerShipGlyph", DEFAULTS.PLAYERSHIP).Trim();
+            var starGlyph = this.GetStringSettingOrDefault("StarGlyph", DEFAULTS.STAR).Trim();
+            var starbaseGlyph = this.GetStringSettingOrDefault("StarbaseGlyph", DEFAULTS.STARBASE).Trim();
+            var legendEntries = new[]
+            {
+                new KeyValuePair<string, string>(playerGlyph, "you"),
+                new KeyValuePair<string, string>(starGlyph, "star"),
+                new KeyValuePair<string, string>(starbaseGlyph, "starbase"),
+                new KeyValuePair<string, string>(".", "deuterium/cloud"),
+                new KeyValuePair<string, string>("~", "anomaly"),
+                new KeyValuePair<string, string>("#", "zip reveal"),
+                new KeyValuePair<string, string>(this.SymbolCell("HostileOutpostGlyph", "}{>").Trim(), "outpost"),
+                new KeyValuePair<string, string>(this.SymbolCell("TemporalRiftChar", "/").Trim(), "rift"),
+                new KeyValuePair<string, string>(this.SymbolCell("BlackHoleChar", "°").Trim(), "black hole"),
+                new KeyValuePair<string, string>(this.SymbolCell("TechnologyCacheChar", "T").Trim(), "tech cache"),
+                new KeyValuePair<string, string>(this.SymbolCell("WormholeChar", "∞").Trim(), "wormhole"),
+                new KeyValuePair<string, string>("???", "unexplored")
+            };
+
+            yield return "Legend:";
+            foreach (var line in this.FormatEntriesInColumns(legendEntries, 110))
+            {
+                yield return line;
+            }
+            yield return string.Empty;
+            yield return string.Empty;
+
+            var lrsLegendEntries = this.GetLrsLegendEntries().ToList();
+            if (lrsLegendEntries.Any())
+            {
+                yield return "LRS Glyphs:";
+                foreach (var line in this.FormatEntriesInColumns(lrsLegendEntries, 110))
+                {
+                    yield return line;
+                }
+                yield return "Use obj <glyph> to decode combined LRS feature codes.";
+                yield return string.Empty;
+                yield return string.Empty;
+            }
+
+            var shipLegend = this.GetShipLegendEntries().ToList();
+            if (!shipLegend.Any())
+            {
+                yield break;
+            }
+
+            yield return "Ships:";
+            foreach (var wrappedLine in this.FormatEntriesInColumns(shipLegend, 110))
+            {
+                yield return wrappedLine;
+            }
+            yield return string.Empty;
+            yield return string.Empty;
+        }
+
+        private IEnumerable<KeyValuePair<string, string>> GetShipLegendEntries()
+        {
+            var factions = this.Config?.Get?.Factions;
+            if (factions == null)
+            {
+                yield break;
+            }
+
+            foreach (var faction in factions.Cast<Faction>()
+                         .Where(f => f != null && !string.IsNullOrWhiteSpace(f.designator) && !string.IsNullOrWhiteSpace(f.name))
+                         .GroupBy(f => f.designator.Trim(), StringComparer.OrdinalIgnoreCase)
+                         .Select(g => g.First())
+                         .OrderBy(f => f.name))
+            {
+                yield return new KeyValuePair<string, string>(faction.designator.Trim(), faction.name);
+            }
+        }
+
+        private IEnumerable<KeyValuePair<string, string>> GetLrsLegendEntries()
+        {
+            yield return this.CreateLrsLegendEntry(LrsFeatureMask.None, "none");
+            yield return this.CreateLrsLegendEntry(LrsFeatureMask.Starbase, "starbase");
+            yield return this.CreateLrsLegendEntry(LrsFeatureMask.Wormhole, "wormhole");
+            yield return this.CreateLrsLegendEntry(LrsFeatureMask.Deuterium, "deuterium");
+            yield return this.CreateLrsLegendEntry(LrsFeatureMask.TemporalRift, "rift");
+            yield return this.CreateLrsLegendEntry(LrsFeatureMask.TechnologyCache, "tech cache");
+            yield return this.CreateLrsLegendEntry(LrsFeatureMask.Hazard, "hazard");
+        }
+
+        private KeyValuePair<string, string> CreateLrsLegendEntry(LrsFeatureMask mask, string name)
+        {
+            return new KeyValuePair<string, string>(Interaction.EncodeFeatureMask(this.Config, mask).ToString(), name);
+        }
+
+        private IEnumerable<string> FormatEntriesInColumns(IEnumerable<KeyValuePair<string, string>> entries, int maxWidth)
+        {
+            var entryList = entries
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.Key) && !string.IsNullOrWhiteSpace(entry.Value))
+                .ToList();
+            if (!entryList.Any())
+            {
+                yield break;
+            }
+
+            const int gap = 3;
+            var glyphWidth = entryList.Max(entry => entry.Key.Length);
+            var nameWidth = entryList.Max(entry => entry.Value.Length);
+            var columnWidth = glyphWidth + 1 + nameWidth + gap;
+            var columnCount = Math.Max(1, maxWidth / columnWidth);
+            var rowCount = (int)Math.Ceiling(entryList.Count / (double)columnCount);
+
+            for (int row = 0; row < rowCount; row++)
+            {
+                var line = new StringBuilder();
+
+                for (int column = 0; column < columnCount; column++)
+                {
+                    var index = row + (column * rowCount);
+                    if (index >= entryList.Count)
+                    {
+                        continue;
+                    }
+
+                    var entry = entryList[index];
+                    var formattedEntry = entry.Key.PadRight(glyphWidth) + " " + entry.Value.PadRight(nameWidth);
+                    var isLastColumn = column == columnCount - 1 || index + rowCount >= entryList.Count;
+                    line.Append(isLastColumn ? formattedEntry.TrimEnd() : formattedEntry.PadRight(columnWidth));
+                }
+
+                yield return line.ToString().TrimEnd();
+            }
         }
 
         private string GetSRSRowIndicator(int row, IMap map, Location location)
@@ -478,11 +610,13 @@ namespace StarTrek_KG.Output
 
             var sb = new StringBuilder();
             sb.Append(left);
+            var centeredStart = Math.Max(0, (innerWidth - subsystems.Count) / 2);
             for (var i = 0; i < innerWidth; i++)
             {
-                if (i < subsystems.Count)
+                var subsystemIndex = i - centeredStart;
+                if (subsystemIndex >= 0 && subsystemIndex < subsystems.Count)
                 {
-                    var subsystem = subsystems[i];
+                    var subsystem = subsystems[subsystemIndex];
                     var color = subsystem.Damage <= 0 ? green : subsystem.Damage == 1 ? yellow : red;
                     sb.Append($"[[;{color};]{fill}]");
                 }

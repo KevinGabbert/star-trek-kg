@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
+using StarTrek_KG.Config;
 using StarTrek_KG.Enums;
 using StarTrek_KG.Extensions;
 using StarTrek_KG.Interfaces;
@@ -164,6 +167,101 @@ namespace UnitTests.Output
             Assert.That(output.Contains(" . "), Is.False);
             Assert.That(output.Contains(maskedDeuterium), Is.True);
             Assert.That(output.Contains(maskedHostile), Is.True);
+        }
+
+        [Test]
+        public void SRS_Render_Does_Not_Append_Scan_Legend()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1Friendly();
+
+            var map = setup.TestMap;
+            var render = new Render(map.Game.Interact, map.Game.Config);
+            var sector = map.Sectors.GetActive();
+            var location = map.Playership.GetLocation();
+            var sb = new StringBuilder();
+
+            map.Game.Interact.Output.Clear();
+
+            render.CreateSRSViewScreen(sector, map, location, 0, sector.Name, false, sb);
+
+            var output = string.Join("\n", map.Game.Interact.Output.Queue);
+            Assert.That(output.Contains("Legend:"), Is.False);
+        }
+
+        [Test]
+        public void CRS_Render_Does_Not_Append_Scan_Legend()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1Friendly();
+
+            var map = setup.TestMap;
+            var render = new Render(map.Game.Interact, map.Game.Config);
+            var sector = map.Sectors.GetActive();
+            var location = map.Playership.GetLocation();
+            var sb = new StringBuilder();
+
+            map.Game.Interact.Output.Clear();
+
+            render.CreateCRSViewScreen(sector, map, location, 0, sector.Name, false, sb);
+
+            var output = string.Join("\n", map.Game.Interact.Output.Queue);
+            Assert.That(output.Contains("Legend:"), Is.False);
+        }
+
+        [Test]
+        public void CRS_Subsystem_Lights_Are_Centered_In_Top_Border()
+        {
+            var setup = new Test_Setup();
+            setup.SetupMapWith1Friendly();
+
+            var map = setup.TestMap;
+            var render = new Render(map.Game.Interact, new CrsBarEnabledSettings());
+            var method = typeof(Render).GetMethod("BuildCrsTopBorderDisplay", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            var result = (string)method.Invoke(render, new object[] { "+----------------------+", map.Playership });
+            var normalized = Regex.Replace(result, @"\[\[;[^\]]*;\][^\]]\]", "*");
+            var firstLight = normalized.IndexOf('*', 1);
+            var lastLight = normalized.LastIndexOf('*', normalized.Length - 2);
+            var leftPad = normalized.Substring(1, firstLight - 1).Count(ch => ch == '-');
+            var rightPad = normalized.Substring(lastLight + 1, normalized.Length - (lastLight + 2)).Count(ch => ch == '-');
+
+            Assert.That(leftPad, Is.GreaterThan(0));
+            Assert.That(System.Math.Abs(leftPad - rightPad), Is.LessThanOrEqualTo(1));
+        }
+
+        private sealed class CrsBarEnabledSettings : IStarTrekKGSettings
+        {
+            private readonly StarTrekKGSettings _inner = new StarTrekKGSettings();
+
+            public StarTrekKGSettings Get { get => _inner.Get; set => _inner.Get = value; }
+            public StarTrek_KG.Config.Collections.Names StarSystems => _inner.StarSystems;
+            public StarTrek_KG.Config.Collections.NameValues ConsoleText => _inner.ConsoleText;
+            public StarTrek_KG.Config.Collections.Factions Factions => _inner.Factions;
+            public StarTrek_KG.Config.Collections.NameValues GameSettings => _inner.GameSettings;
+            public StarTrek_KG.Config.Elements.MenusElement Menus => _inner.Menus;
+            public List<StarTrek_KG.Commands.CommandDef> LoadCommands() => _inner.LoadCommands();
+            public StarTrekKGSettings GetConfig() => _inner.GetConfig();
+            public List<string> ShipNames(FactionName faction) => _inner.ShipNames(faction);
+            public List<FactionThreat> GetThreats(FactionName faction) => _inner.GetThreats(faction);
+            public StarTrek_KG.Config.Collections.MenuItems GetMenuItems(string menuName) => _inner.GetMenuItems(menuName);
+            public List<string> GetStarSystems() => _inner.GetStarSystems();
+            public string GetText(string name) => _inner.GetText(name);
+            public string GetText(string textToGet, string textToGet2) => _inner.GetText(textToGet, textToGet2);
+
+            public T GetSetting<T>(string name)
+            {
+                if (name == "enable-crs-subsystem-bar")
+                {
+                    return (T)(object)true;
+                }
+
+                return _inner.GetSetting<T>(name);
+            }
+
+            public string Setting(string name) => _inner.Setting(name);
+            public T CheckAndCastValue<T>(string name, StarTrek_KG.Config.Elements.NameValue element, bool whiteSpaceIsOk = false) => _inner.CheckAndCastValue<T>(name, element, whiteSpaceIsOk);
+            public void Reset() => _inner.Reset();
         }
     }
 }

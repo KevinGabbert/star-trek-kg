@@ -101,7 +101,6 @@ namespace StarTrek_KG.Subsystem
                 this.ShipConnectedTo.Map.Game);
 
             this.ShipConnectedTo.Map.Game.Interact.SingleLine($"Galaxy: {this.GetCurrentGalaxyName()}");
-            this.ShipConnectedTo.Map.Game.Interact.SingleLine("Legend: ??? = unexplored");
             this.ShipConnectedTo.Map.Game.Interact.SingleLine(
                 $"Quadrants: {QuadrantRules.GetQuadrantSymbol("Alpha")}={this.GetQuadrantNameSafe(map, "QuadrantAlphaName", "Alpha")}, " +
                 $"{QuadrantRules.GetQuadrantSymbol("Beta")}={this.GetQuadrantNameSafe(map, "QuadrantBetaName", "Beta")}, " +

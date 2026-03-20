@@ -445,7 +445,7 @@ namespace StarTrek_KG.Output
             return (char)('A' + alpha);
         }
 
-        private static char EncodeFeatureMask(IStarTrekKGSettings config, LrsFeatureMask mask)
+        public static char EncodeFeatureMask(IStarTrekKGSettings config, LrsFeatureMask mask)
         {
             var alphabet = GetFeatureMaskAlphabet(config);
             var index = (int)mask;
@@ -459,17 +459,27 @@ namespace StarTrek_KG.Output
 
         private static int DecodeFeatureMask(IStarTrekKGSettings config, char code)
         {
-            return GetFeatureMaskAlphabet(config).IndexOf(code);
+            var alphabet = GetFeatureMaskAlphabet(config);
+            return alphabet.IndexOf(char.ToUpperInvariant(code));
         }
 
-        private static string GetFeatureMaskAlphabet(IStarTrekKGSettings config)
+        public static string GetFeatureMaskAlphabet(IStarTrekKGSettings config)
         {
+            const string legacyAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
+            const string mixedAlphabet = "\u00B7\u023A\u0243\u0394\u0398\u0141\u00D8\u0166\u01B5\u0220\u0416\u04A0\u04A8\u039E\u03A6\u03A8\u03A9\u03DE\u03E0\u03E2\u023B\u0110\u0126\u0197\u01A2\u01A6\u01AC\u01B2\u01EE\u023D\u024C\u024E\u0494\u04DC\u049E\u04E0\u0402\u0409\u040A\u04A6\u0245\u023E\u0241\u0187\u01F7\u0222\u021E\u0198\u0181\u018A\u0193\u019D\u01A4\u01A7\u01B1\u01B7\u01E4\u021C\u0244\u0248\u0289\u024A\u019C\u0224";
+
             try
             {
                 var configured = config.GetSetting<string>("LRSFeatureMaskAlphabet");
                 if (!string.IsNullOrWhiteSpace(configured))
                 {
-                    return configured.Trim();
+                    var trimmed = configured.Trim();
+                    if (trimmed == legacyAlphabet)
+                    {
+                        return mixedAlphabet;
+                    }
+
+                    return trimmed;
                 }
             }
             catch
@@ -477,7 +487,7 @@ namespace StarTrek_KG.Output
                 // Use fallback below.
             }
 
-            return "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
+            return mixedAlphabet;
         }
 
         //public IEnumerable<string> RenderIRSData(IEnumerable<IRSResult> irsData, Game game)
@@ -978,6 +988,7 @@ namespace StarTrek_KG.Output
                     retVal.AddRange(this.Output.WriteLine("  lrs   Long range scan"));
                     retVal.AddRange(this.Output.WriteLine("  grs   Galactic record scan (full galaxy map)"));
                     retVal.AddRange(this.Output.WriteLine("  crs   Combined range scan"));
+                    retVal.AddRange(this.Output.WriteLine("  leg   Show scan legend / glyph key"));
                     retVal.AddRange(this.Output.WriteLine("  obj   Describe sector object types / decode compact LRS code"));
                     retVal.AddRange(this.Output.WriteLine(""));
                     retVal.AddRange(this.Output.WriteLine("WEAPONS"));
@@ -1067,8 +1078,8 @@ namespace StarTrek_KG.Output
 
             if (tokens.Length < 2)
             {
-                this.Output.WriteLine("Usage: obj <feature code|sector name>");
-                this.Output.WriteLine("Examples: obj 7, obj G, obj Zane");
+                this.Output.WriteLine("Usage: obj <feature glyph|sector name>");
+                this.Output.WriteLine("Examples: obj \u0166, obj \u03A9, obj Zane");
                 return this.Output.Queue.ToList();
             }
 
@@ -1540,6 +1551,10 @@ namespace StarTrek_KG.Output
             {
                 retVal = this.DecodeLrsFeatureMaskCommand(playerShip).ToList();
             }
+            else if (menuCommand == Menu.leg.ToString() || string.Equals(menuCommand, "legend", StringComparison.OrdinalIgnoreCase))
+            {
+                retVal = this.OutputScanLegend(playerShip).ToList();
+            }
             else
             {
                 if ((menuCommand != "?") && (menuCommand != "help")) //todo: resource this
@@ -1558,6 +1573,33 @@ namespace StarTrek_KG.Output
             }
 
             return retVal.ToList();
+        }
+
+        private IEnumerable<string> OutputScanLegend(IShip playerShip)
+        {
+            var render = new Render(this, this.Config);
+            var legendLines = render.GetScanLegendLines().ToList();
+            for (var i = 0; i < legendLines.Count; i++)
+            {
+                var line = legendLines[i];
+                var isLastLine = i == legendLines.Count - 1;
+                var needsSectionGap = string.Equals(line, "LRS Glyphs:", StringComparison.Ordinal) ||
+                                      string.Equals(line, "Ships:", StringComparison.Ordinal);
+                if (needsSectionGap)
+                {
+                    this.Output.Write("\n\n" + line + "\n");
+                }
+                else if (isLastLine)
+                {
+                    this.Output.Write(line + "\n\n");
+                }
+                else
+                {
+                    this.Output.WriteLine(line);
+                }
+            }
+
+            return this.Output.Queue.ToList();
         }
 
         private void ConsumeOneTurn(IMap map)

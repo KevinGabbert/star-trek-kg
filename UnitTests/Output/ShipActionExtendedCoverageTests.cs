@@ -230,6 +230,64 @@ namespace UnitTests.Output
         }
 
         [Test]
+        public void Legend_Command_Returns_Scan_Key()
+        {
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "leg");
+
+            Assert.IsTrue(output.Any(line => line == "Legend:"));
+            Assert.IsTrue(output.Any(line => line == "LRS Glyphs:"));
+            Assert.IsTrue(output.Any(line => line == "Ships:"));
+            Assert.IsTrue(output.Any(line => line.Contains("wormhole")));
+            Assert.IsTrue(output.Any(line => line.Contains("unexplored")));
+        }
+
+        [Test]
+        public void Legend_Command_Left_Justifies_Legend_Lines()
+        {
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "leg");
+            var legendLines = output
+                .Where(line => line == "Legend:" || line == "LRS Glyphs:" || line == "Ships:" || line.Contains("unexplored") || line.Contains("wormhole"))
+                .ToList();
+
+            Assert.IsNotEmpty(legendLines);
+            Assert.IsTrue(legendLines.All(line => line.Length == 0 || !char.IsWhiteSpace(line[0])));
+        }
+
+        [Test]
+        public void Legend_Command_Uses_Columnar_Table_Layout()
+        {
+            var output = _interact.ReadAndOutput(_game.Map.Playership, _game.Map.Text, "leg");
+            var legendHeaderIndex = output.FindIndex(line => line.Trim() == "Legend:");
+            var lrsHeaderIndex = output.FindIndex(line => line.Trim() == "LRS Glyphs:");
+            var shipsHeaderIndex = output.FindIndex(line => line.Trim() == "Ships:");
+            var legendBody = output.Skip(legendHeaderIndex + 1).Take(lrsHeaderIndex - legendHeaderIndex - 2).ToList();
+            var lrsBody = output.Skip(lrsHeaderIndex + 1).Take(shipsHeaderIndex - lrsHeaderIndex - 3).ToList();
+            var shipsBody = output.Skip(shipsHeaderIndex + 1).TakeWhile(line => !string.IsNullOrEmpty(line)).ToList();
+
+            Assert.That(legendHeaderIndex, Is.GreaterThanOrEqualTo(0));
+            Assert.That(lrsHeaderIndex, Is.GreaterThan(legendHeaderIndex));
+            Assert.That(shipsHeaderIndex, Is.GreaterThan(lrsHeaderIndex));
+            Assert.That(legendBody.Any(line => line.Contains("you")), Is.True);
+            Assert.That(legendBody.Any(line => line.Contains("star")), Is.True);
+            Assert.That(lrsBody.Any(line => line.Contains("starbase")), Is.True);
+            Assert.That(lrsBody.Any(line => line.Contains("none")), Is.True);
+            Assert.That(output.Any(line => line.Contains("Use obj <glyph> to decode combined LRS feature codes.")), Is.True);
+            Assert.That(output[lrsHeaderIndex], Does.StartWith("\n\n"));
+            Assert.That(output[shipsHeaderIndex], Does.StartWith("\n\n"));
+            Assert.That(output[legendHeaderIndex + 1], Does.Not.StartWith("Legend: "));
+            Assert.That(shipsBody.Any(line => line.Contains("Bajoran")), Is.True);
+            Assert.That(output[shipsHeaderIndex + 1], Does.Not.StartWith("Ships: "));
+            Assert.That(output[lrsHeaderIndex - 1], Is.EqualTo(string.Empty));
+            Assert.That(output[lrsHeaderIndex - 2], Is.EqualTo(string.Empty));
+            Assert.That(output[shipsHeaderIndex - 1], Is.EqualTo(string.Empty));
+            Assert.That(output[shipsHeaderIndex - 2], Is.EqualTo(string.Empty));
+            Assert.That(output.Last(), Does.EndWith("\n\n"));
+            Assert.That(legendBody.Any(line => System.Text.RegularExpressions.Regex.IsMatch(line, @"\S+\s+you\b")), Is.True);
+            Assert.That(lrsBody.Any(line => System.Text.RegularExpressions.Regex.IsMatch(line, @"\S+\s+none\b")), Is.True);
+            Assert.That(shipsBody.Any(line => System.Text.RegularExpressions.Regex.IsMatch(line, @"\S+\s+Bajoran\b")), Is.True);
+        }
+
+        [Test]
         public void Missing_HostileMaxRetreatAttempts_Does_Not_Throw_During_Attack_Turn()
         {
             var config = new MissingRetreatAttemptsConfig();

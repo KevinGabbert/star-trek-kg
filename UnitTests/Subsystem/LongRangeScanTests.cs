@@ -164,6 +164,7 @@ namespace UnitTests.Subsystem
             this.Game.Map = new Map(new SetupOptions
             {
                 Initialize = true,
+                AddNebulae = false,
                 CoordinateDefs = new CoordinateDefs
                     {
                         new CoordinateDef(new LocationDef(new Point(0,0), new Point(0, 0)), CoordinateItem.PlayerShip),

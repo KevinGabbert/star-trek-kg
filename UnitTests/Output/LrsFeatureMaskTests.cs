@@ -16,6 +16,9 @@ namespace UnitTests.Output
     [TestFixture]
     public class LrsFeatureMaskTests
     {
+        private const string MixedMaskSeven = "\u0166";
+        private const string MixedTechnologyCache = "\u03A9";
+
         [SetUp]
         public void SetUp()
         {
@@ -23,7 +26,7 @@ namespace UnitTests.Output
         }
 
         [Test]
-        public void RunLrsScan_Renders_Compact_Feature_Code_In_Three_Characters()
+        public void RunLrsScan_Renders_Mixed_Engineered_Feature_Glyph()
         {
             var game = new Game(new StarTrekKGSettings(), new SetupOptions
             {
@@ -48,11 +51,11 @@ namespace UnitTests.Output
 
             var output = LongRangeScan.For(game.Map.Playership).RunLRSScan(game.Map.Playership.GetLocation());
 
-            Assert.IsTrue(output.Any(line => line.Contains("227")));
+            Assert.IsTrue(output.Any(line => line.Contains($"22{MixedMaskSeven}")));
         }
 
         [Test]
-        public void Obj_Decodes_Feature_Code_To_Configured_Names()
+        public void Obj_Decodes_Mixed_Engineered_Feature_Glyph_To_Configured_Names()
         {
             var game = new Game(new StarTrekKGSettings(), new SetupOptions
             {
@@ -66,7 +69,7 @@ namespace UnitTests.Output
                 }
             });
 
-            var output = game.Interact.ReadAndOutput(game.Map.Playership, game.Map.Text, "obj 7");
+            var output = game.Interact.ReadAndOutput(game.Map.Playership, game.Map.Text, $"obj {MixedMaskSeven}");
 
             Assert.IsTrue(output.Any(line => line.Contains("starbase wormhole deuterium")));
         }
@@ -90,6 +93,50 @@ namespace UnitTests.Output
             var sectorResult = LongRangeScan.Execute(game.Map.Sectors[0, 0]);
 
             Assert.That((sectorResult.FeatureMask & LrsFeatureMask.TechnologyCache) != 0, Is.True);
+        }
+
+        [Test]
+        public void Obj_Decodes_Mixed_Engineered_Technology_Cache_Glyph()
+        {
+            var game = new Game(new StarTrekKGSettings(), new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 0)), CoordinateItem.PlayerShip)
+                }
+            });
+
+            var output = game.Interact.ReadAndOutput(game.Map.Playership, game.Map.Text, $"obj {MixedTechnologyCache}");
+
+            Assert.IsTrue(output.Any(line => line.Contains("technology cache")));
+        }
+
+        [Test]
+        public void Legend_Command_Lists_Actual_Lrs_Glyph_Encodings()
+        {
+            var game = new Game(new StarTrekKGSettings(), new SetupOptions
+            {
+                Initialize = true,
+                StrictDeterministic = true,
+                AddStars = false,
+                AddNebulae = false,
+                CoordinateDefs = new CoordinateDefs
+                {
+                    new CoordinateDef(new LocationDef(new Point(0, 0), new Point(0, 0)), CoordinateItem.PlayerShip)
+                }
+            });
+
+            var output = game.Interact.ReadAndOutput(game.Map.Playership, game.Map.Text, "leg");
+            var expectedStarbaseGlyph = Interaction.EncodeFeatureMask(game.Config, LrsFeatureMask.Starbase);
+            var expectedTechCacheGlyph = Interaction.EncodeFeatureMask(game.Config, LrsFeatureMask.TechnologyCache);
+
+            Assert.That(output.Any(line => line == "LRS Glyphs:"), Is.True);
+            Assert.That(output.Any(line => line.Contains($"{expectedStarbaseGlyph}") && line.Contains("starbase")), Is.True);
+            Assert.That(output.Any(line => line.Contains($"{expectedTechCacheGlyph}") && line.Contains("tech cache")), Is.True);
         }
 
         [Test]

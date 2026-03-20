@@ -116,6 +116,16 @@ namespace UnitTests.Output
         }
 
         [Test]
+        public void ReadAndOutput_Grs_Does_Not_Print_Legend_By_Default()
+        {
+            var output = _interact.ReadAndOutput(Game.Map.Playership, "map", "grs");
+
+            Assert.IsNotNull(output);
+            Assert.IsFalse(output.Any(line => line.Contains("Legend:")));
+            Assert.IsFalse(output.Any(line => line.Contains("???=unexplored")));
+        }
+
+        [Test]
         public void ReadAndOutput_Gname_Renames_Current_Galaxy()
         {
             var output = _interact.ReadAndOutput(Game.Map.Playership, "map", "gname Milky Way Prime");
